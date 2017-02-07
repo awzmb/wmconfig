@@ -24,12 +24,6 @@ font -misc-fixed-medium-r-normal--13-120-75-75-C-70-iso10646-1
 # no border / window title bar
 new_window 1pixel
 
-# color scheme
-client.focused          #B20000  #B20000  #FFFFFF
-client.focused_inactive #333333  #333333  #999999
-client.unfocused        #333333  #333333  #999999
-client.urgent           #FF0000  #8C5665  #FF0000
-
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
 
@@ -170,7 +164,7 @@ bindsym Escape mode "default"
 
 bindsym $mod+r mode "resize"
 
-# colors
+# color scheme
 # class                 border  backgr. text    indicator
 client.focused          #4c7899 #285577 #ffffff #2e9ef4
 client.focused_inactive #333333 #5f676a #ffffff #484e50
