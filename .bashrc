@@ -5,6 +5,8 @@
 # Support for 256 colors
 #export TERM=”screen-256color”
 
+PS1="\e[1;34m\u@\h \e[1;36m>>> \e[m "
+
 # If not running interactively, don't do anything
 [ -z "$PS1" ] && return
 
@@ -63,6 +65,14 @@ else
 fi
 unset color_prompt force_color_prompt
 
+# If id command returns zero, youâ€™ve root access.
+if [ $(id -u) -eq 0 ];
+then # you are root, set red colour prompt
+  PS1="\\[$(tput setaf 1)\\]\\u@\\h:\\w #\\[$(tput sgr0)\\]"
+else # normal
+  PS1="\e[1;34m\u@\h \e[1;36m>>> \e[m "
+fi
+
 # If this is an xterm set the title to user@host:dir
 case "$TERM" in
 xterm*|rxvt*)
@@ -118,6 +128,3 @@ fi
 if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
     . /etc/bash_completion
 fi
-
-# Powerline shell changes
-if [ -f ~/.local/lib/python2.7/site-packages/powerline/bindings/bash/powerline.sh ]; then source ~/.local/lib/python2.7/site-packages/powerline/bindings/bash/powerline.sh; fi
