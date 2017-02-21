@@ -5,12 +5,12 @@
 # this file and re-run i3-config-wizard(1).
 #
 
-exec gnome-session --session=i3
-exec nm-applet --no-startup-id
-#exec feh --bg-scale /usr/share/backgrounds/wall.png
-exec --no-startup-id nitrogen --restore
-exec --no-startup-id compton
-#exec xfce4-power-manager
+exec gnome-session --session=i3 # useless crap
+exec --no-startup-id nm-applet # network manager applet
+exec --no-startup-id nitrogen --restore # wallpaper
+exec --no-startup-id compton # compositor (removes tearing)
+exec --no-startup-id xfce4-power-manager # power management
+exec --no-startup-id autocutsel # clipboard usage for urxvt
 
 # i3 config file (v4)
 #
