@@ -93,6 +93,9 @@ bindsym $mod+a focus parent
 #bindsym $mod+F12 exec gnome-screensaver-command --lock
 bindsym $mod+F11 exec i3lock -c 191919
 
+# start shutter for screenshots
+bindsym --release $mod+Print exec scrot -s ~/screenshots/screenshot.png
+
 # switch to workspace
 bindsym $mod+1 workspace 1
 bindsym $mod+2 workspace 2
