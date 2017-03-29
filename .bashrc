@@ -2,10 +2,8 @@
 # see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
 # for examples
 
-# Support for 256 colors
-#export TERM=”screen-256color”
 
-PS1="\e[1;34m\u@\h \e[1;36m>>> \e[m "
+
 
 # If not running interactively, don't do anything
 [ -z "$PS1" ] && return
@@ -65,12 +63,12 @@ else
 fi
 unset color_prompt force_color_prompt
 
-# If id command returns zero, youâ€™ve root access.
+# if id command returns zero, you have root access.
 if [ $(id -u) -eq 0 ];
 then # you are root, set red colour prompt
   PS1="\\[$(tput setaf 1)\\]\\u@\\h:\\w #\\[$(tput sgr0)\\]"
 else # normal
-  PS1="\e[1;34m\u@\h \e[1;36m>>> \e[m "
+  PS1="\[\033[01;34m\]\u@\h\[\033[01;36m\] \w \e[01;34m>>>\[\033[00m\] "
 fi
 
 # If this is an xterm set the title to user@host:dir
@@ -112,6 +110,9 @@ alias xlviewer='wine /home/dennis/.wine/drive_c/Office12/XLVIEW.EXE'
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
+
+# colored ca
+alias ccat='pygmentize -g'
 
 # Alias definitions.
 # You may want to put all your additions into a separate file like
