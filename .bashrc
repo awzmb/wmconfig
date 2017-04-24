@@ -129,3 +129,5 @@ fi
 if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
     . /etc/bash_completion
 fi
+
+export PATH=$PATH:/opt/tibco/phantomjs-2.1.1-linux-x86_64/bin
