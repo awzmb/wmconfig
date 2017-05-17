@@ -2,8 +2,7 @@
 sudo apt-get update \
 && sudo apt-get install -y \
 i3 \
-rxvt-unicode-256-color \
-nm-applet \
+rxvt-unicode-256color \
 nitrogen \
 compton \
 xfce4-power-manager \
