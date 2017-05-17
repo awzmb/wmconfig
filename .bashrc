@@ -97,16 +97,6 @@ alias ll='ls -alF'
 alias la='ls -A'
 alias l='ls -CF'
 
-# ssh tunnel
-alias tun-ancud-dwh-test='ssh -L 5432:localhost:5432 ancud-dwh@dwh-test.ancud.de'
-alias tun-ancud-dwh-live='ssh -L 5432:localhost:5432 ancud-dwh@dwh-live.ancud.de'
-alias tun-ancud-projectile='ssh -L 3306:localhost:3306 dwh-tunnel@projectile.ancud.de'
-alias deploy-ancud-dwh-test-cockpit='scp /home/dennis/workspace/ancud-dwh-cockpit/CockpitDWH/target/cockpit-dwh-0.0.1-SNAPSHOT.war ancud-dwh@dwh-test.ancud.de:/opt/upload-cockpit/'
-alias deploy-ancud-dwh-test-job='scp /home/dennis/ProjectileExtract*.zip ancud-dwh@dwh-test.ancud.de:/opt/upload-talend/'
-
-# excel viewer
-alias xlviewer='wine /home/dennis/.wine/drive_c/Office12/XLVIEW.EXE'
-
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
@@ -131,3 +121,9 @@ if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
 fi
 
 export PATH=$PATH:/opt/tibco/phantomjs-2.1.1-linux-x86_64/bin
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/home/dennis/tools/google-cloud-sdk/path.bash.inc' ]; then source '/home/dennis/tools/google-cloud-sdk/path.bash.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/home/dennis/tools/google-cloud-sdk/completion.bash.inc' ]; then source '/home/dennis/tools/google-cloud-sdk/completion.bash.inc'; fi

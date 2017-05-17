@@ -1,5 +1,5 @@
 #!/bin/sh
-&& sudo apt-get update \
+sudo apt-get update \
 && sudo apt-get install -y \
 i3 \
 rxvt-unicode-256-color \
@@ -14,4 +14,5 @@ gdm \
 pcmanfm \
 scrot \
 git \
+vim \
 && sudo apt-get remove -y unity
