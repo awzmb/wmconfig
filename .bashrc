@@ -101,9 +101,6 @@ alias l='ls -CF'
 #   sleep 10; alert
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 
-# colored ca
-alias ccat='pygmentize -g'
-
 # Alias definitions.
 # You may want to put all your additions into a separate file like
 # ~/.bash_aliases, instead of adding them here directly.
@@ -121,9 +118,3 @@ if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
 fi
 
 export PATH=$PATH:/opt/tibco/phantomjs-2.1.1-linux-x86_64/bin
-
-# The next line updates PATH for the Google Cloud SDK.
-if [ -f '/home/dennis/tools/google-cloud-sdk/path.bash.inc' ]; then source '/home/dennis/tools/google-cloud-sdk/path.bash.inc'; fi
-
-# The next line enables shell command completion for gcloud.
-if [ -f '/home/dennis/tools/google-cloud-sdk/completion.bash.inc' ]; then source '/home/dennis/tools/google-cloud-sdk/completion.bash.inc'; fi
