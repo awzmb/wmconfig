@@ -8,6 +8,7 @@ nitrogen \
 compton \
 xfce4-power-manager \
 light-theme-gnome \
+network-manager-applet \
 pcmanfm \
 scrot \
 git \
