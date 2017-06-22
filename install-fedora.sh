@@ -27,4 +27,6 @@ glib2-devel \
 && sudo cp clipboard /usr/lib64/urxvt/perl/ \
 && git clone https://github.com/vinceliuice/vimix-gtk-themes.git \
 && sudo ./vimix-gtk-themes/Vimix-installer.sh \
-&& rm -rf vimix-gtk-themes
+&& rm -rf vimix-gtk-themes \
+&& sudo dnf config-manager --add-repo http://download.opensuse.org/repositories/home:Horst3180/Fedora_25/home:Horst3180.repo \
+&& sudo dnf install arc-theme

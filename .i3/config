@@ -10,7 +10,6 @@ exec --no-startup-id nm-applet # network manager applet
 exec --no-startup-id nitrogen --restore # wallpaper
 exec --no-startup-id compton # compositor (removes tearing)
 exec --no-startup-id xfce4-power-manager # power management
-exec --no-startup-id autocutsel # clipboard usage for urxvt
 
 # i3 config file (v4)
 #
@@ -92,9 +91,14 @@ bindsym $mod+a focus parent
 # screensaver / lock screen
 bindsym $mod+F11 exec i3lock -c 191919
 
+# volume control (pulseaudio)
+bindsym XF86AudioRaiseVolume exec --no-startup-id pactl -- set-sink-volume 0 +5% #increase sound volume
+bindsym XF86AudioLowerVolume exec --no-startup-id pactl -- set-sink-volume 0 -5% #decrease sound volume
+bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute 0 toggle # mute sound
+
 # start shutter for screenshots
-bindsym --release $mod+Print exec scrot -s -d 3 ~/screenshots/screenshot-delay.png
-bindsym --release Print exec scrot -s ~/screenshots/screenshot.png
+bindsym --release $mod+Print exec scrot -s -d 3 ~/documents/screenshots/screenshot-delay.png
+bindsym --release Print exec scrot -s ~/documents/screenshots/screenshot.png
 
 # switch to workspace
 bindsym $mod+1 workspace 1
