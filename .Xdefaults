@@ -67,3 +67,8 @@ URxvt.tabbed.title: no
 
 ! urxvt powerline symbols
 #URxvt*font: xft:Terminess Powerline:size=12
+
+! urcvt xclip usage
+URxvt.keysym.Shift-Control-V: perl:clipboard:paste
+URxvt.iso14755: False
+URxvt.perl-ext-common: default,clipboard
