@@ -29,11 +29,15 @@ qt5-qtwebengine \
 qt5-qtwebchannel \
 qt5-qtsensors \
 qt5-qtlocation \
-# Screencasting
-gtk-recordmydesktop \
+ffmpeg \
+gstreamer1-plugins-ugly \
 && sudo cp clipboard /usr/lib64/urxvt/perl/ \
 && git clone https://github.com/vinceliuice/vimix-gtk-themes.git \
 && sudo ./vimix-gtk-themes/Vimix-installer.sh \
 && rm -rf vimix-gtk-themes \
+# Arc theme
 && sudo dnf config-manager --add-repo http://download.opensuse.org/repositories/home:Horst3180/Fedora_25/home:Horst3180.repo \
-&& sudo dnf install arc-theme
+&& sudo dnf install-y arc-theme
+# Screencasting via peek
+&& sudo dnf config-manager --add-repo http://download.opensuse.org/repositories/home:/Bajoja/Fedora_25/home:Bajoja.repo \
+&& sudo dnf install -y peek
