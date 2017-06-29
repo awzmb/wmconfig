@@ -27,6 +27,10 @@ glib2-devel \
 # Albion Online
 qt5-qtwebengine \
 qt5-qtwebchannel \
+qt5-qtsensors \
+qt5-qtlocation \
+# Screencasting
+gtk-recordmydesktop \
 && sudo cp clipboard /usr/lib64/urxvt/perl/ \
 && git clone https://github.com/vinceliuice/vimix-gtk-themes.git \
 && sudo ./vimix-gtk-themes/Vimix-installer.sh \
