@@ -18,6 +18,7 @@
 exec gnome-session --session=i3 # useless crap
 exec --no-startup-id nm-applet # network manager applet
 #exec --no-startup-id nitrogen --restore # wallpaper
+exec --no-startup-id feh --bg-tile ~/wmconfig/wallpaper/tiled_1.jpg
 exec --no-startup-id compton # compositor (removes tearing)
 exec --no-startup-id xfce4-power-manager # power management
 exec --no-startup-id blueman-applet
@@ -34,7 +35,7 @@ new_window 1pixel
 floating_modifier $mod
 
 # start a terminal
-bindsym $mod+Return exec urxvt
+bindsym $mod+Return exec lxterminal
 
 # kill focused window
 bindsym $mod+Shift+Q kill
@@ -182,7 +183,7 @@ bindsym XF86AudioRaiseVolume exec --no-startup-id pactl -- set-sink-volume 0 +5%
 bindsym XF86AudioLowerVolume exec --no-startup-id pactl -- set-sink-volume 0 -5% #decrease sound volume
 bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute 0 toggle # mute sound
 
-# start shutter for screenshots
+# start scrot for screenshots
 bindsym --release $mod+Print exec scrot -s -d 3 ~/documents/screenshots/screenshot-delay.png
 bindsym --release Print exec scrot -s ~/documents/screenshots/screenshot.png
 
