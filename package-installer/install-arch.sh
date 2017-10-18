@@ -14,4 +14,6 @@ sudo pacman -Sy \
   pcmanfm \
   atom \
   steam \
-  feh
+  feh \
+  lxappearance \
+  lxterminal
