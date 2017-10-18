@@ -17,7 +17,6 @@
 
 exec gnome-session --session=i3 # useless crap
 exec --no-startup-id nm-applet # network manager applet
-#exec --no-startup-id nitrogen --restore # wallpaper
 exec --no-startup-id feh --bg-tile ~/wmconfig/wallpaper/tiled_1.jpg
 exec --no-startup-id compton # compositor (removes tearing)
 exec --no-startup-id xfce4-power-manager # power management
@@ -238,3 +237,16 @@ bar {
 	position top
 	#tray_output primary
 }
+
+
+# =============================================================================
+# Configure workspaces
+# =============================================================================
+
+# move focused workspace between monitors
+bindsym $mod+Ctrl+Right move workspace to output right
+bindsym $mod+Ctrl+Left move workspace to output left
+
+# assigning workspaces to specific programs
+assign [class="Thunderbird"] → 8
+assign [class="HipChat"] → 9
