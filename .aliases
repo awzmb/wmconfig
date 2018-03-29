@@ -1,8 +1,11 @@
 #!/bin/sh
 
-# Basic commands
+# basic commands
 alias ls='ls --color=auto'
 alias ll='ls -alF --color=auto'
+
+# colored cat output
+alias ccat='pygmentize -g'
 
 # docker backup functionality
 # backup files from a docker volume into /tmp/backup.tar.gz
@@ -25,3 +28,6 @@ function docker-volume-restore() {
   echo "Double checking files..."
   docker run --rm -v /tmp:/backup --volumes-from "$1" busybox ls -lh "${@:2}"
 }
+
+# python pip upgrades
+alias pipupgrade='pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U'
