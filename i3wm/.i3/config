@@ -17,10 +17,14 @@
 
 exec gnome-session --session=i3 # useless crap
 exec --no-startup-id nm-applet # network manager applet
-exec --no-startup-id feh --bg-tile ~/wmconfig/wallpaper/tiled_1.jpg
+exec --no-startup-id feh --bg-tile ~/wmconfig/wallpaper/wallpaper.jpg
 exec --no-startup-id compton # compositor (removes tearing)
 exec --no-startup-id xfce4-power-manager # power management
-exec --no-startup-id blueman-applet
+exec --no-startup-id blueman-applet # bluetooth manager
+exec --no-startup-id dropbox
+#exec --no-startup-id autocutsel -fork & # clipboard
+#exec --no-startup-id autocutsel -selection PRIMARY -fork & # clipboard
+
 
 set $mod Mod4
 
@@ -203,6 +207,10 @@ mode "$mode_system" {
     bindsym Escape mode "default"
 }
 
+# networkmanager dmenu integration
+bindsym $mod+shift+w exec --no-startup-id networkmanager_dmenu
+
+
 # =============================================================================
 # Assign colors
 # =============================================================================
@@ -225,7 +233,7 @@ bar {
 	colors {
 		background #191919
 		statusline #00A5FF #that neon blue
-		separator #191919
+		separator  #191919
 
     active_workspace        #004b74 #004b74 #888888
     focused_workspace       #00A5FF #00A5FF #191919
@@ -249,4 +257,6 @@ bindsym $mod+Ctrl+Left move workspace to output left
 
 # assigning workspaces to specific programs
 assign [class="Thunderbird"] → 8
+assign [class="Evolution"] → 8
 assign [class="HipChat"] → 9
+assign [class="Stride"] → 10
