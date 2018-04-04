@@ -210,6 +210,9 @@ mode "$mode_system" {
 # networkmanager dmenu integration
 bindsym $mod+shift+w exec --no-startup-id networkmanager_dmenu
 
+# change keyboard layout
+bindsym $mod+shift+F7 exec --no-startup-id setxkbmap us -variant intl
+bindsym $mod+shift+F8 exec --no-startup-id setxkbmap de
 
 # =============================================================================
 # Assign colors
