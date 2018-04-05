@@ -16,4 +16,11 @@ sudo pacman -Sy \
   steam \
   feh \
   lxappearance \
-  lxterminal
+  lxterminal \
+  i3-exit \
+  nitrogen \
+  i3-scrot \
+  blurlock \
+  xfce4-power-manager \
+  pavucontrol \
+  pulseaudio
