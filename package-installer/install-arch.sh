@@ -22,5 +22,15 @@ sudo pacman -Sy \
   i3-scrot \
   blurlock \
   xfce4-power-manager \
+  zsh \
+  zsh-syntax-highlighting \
+  ysh-completions \
   pavucontrol \
-  pulseaudio
+  pulseaudio &&
+sudo pacman -S --needed \
+  base-devel \
+  git \
+  wget \
+  lsb-release
+
+
