@@ -17,20 +17,16 @@ sudo pacman -Sy \
   feh \
   lxappearance \
   lxterminal \
-  i3-exit \
   nitrogen \
-  i3-scrot \
-  blurlock \
   xfce4-power-manager \
   zsh \
   zsh-syntax-highlighting \
-  ysh-completions \
+  zsh-completions \
   pavucontrol \
   pulseaudio &&
 sudo pacman -S --needed \
   base-devel \
   git \
   wget \
-  lsb-release
-
-
+  lsb-release \
+  ttf-hack
