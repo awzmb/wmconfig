@@ -29,4 +29,15 @@ sudo pacman -S --needed \
   git \
   wget \
   lsb-release \
-  ttf-hack
+  ttf-hack \
+  evince \
+  terminus-font \
+  pass \
+  neomutt \
+  ranger \
+  gnupg \
+  mpg123 \
+  && \
+gpg --full-gen-key && \
+pass init dennis.bundschuh@ancud.de \
+pass insert Mail/main
