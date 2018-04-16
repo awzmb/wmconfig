@@ -193,7 +193,7 @@ mode "$mode_system" {
 bindsym $mod+shift+w exec --no-startup-id networkmanager_dmenu
 
 # change keyboard layout
-bindsym $mod+shift+F7 exec --no-startup-id setxkbmap us -variant intl
+bindsym $mod+shift+F7 exec --no-startup-id setxkbmap altgr-intl
 bindsym $mod+shift+F8 exec --no-startup-id setxkbmap de
 
 # =============================================================================
