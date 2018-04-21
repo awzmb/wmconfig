@@ -37,6 +37,7 @@ sudo pacman -S --needed \
   ranger \
   gnupg \
   mpg123 \
+  tlp \
   && \
 gpg --full-gen-key && \
 pass init dennis.bundschuh@ancud.de \
