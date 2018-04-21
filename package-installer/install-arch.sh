@@ -38,6 +38,7 @@ sudo pacman -S --needed \
   gnupg \
   mpg123 \
   tlp \
+  calcurse \
   && \
 gpg --full-gen-key && \
 pass init dennis.bundschuh@ancud.de \
