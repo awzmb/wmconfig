@@ -2,18 +2,13 @@
 # Autostart
 # =============================================================================
 
-exec gnome-session --session=i3 # useless crap
-exec --no-startup-id nm-applet # network manager applet
-exec --no-startup-id flashfocus # focus change animation
-#exec --no-startup-id feh --bg-tile ~/wmconfig/wallpaper/wallpaper.jpg
-exec --no-startup-id compton # compositor (removes tearing)
-exec --no-startup-id xfce4-power-manager # power management
-exec --no-startup-id blueman-applet # bluetooth manager
+exec --no-startup-id nm-applet 			# network manager applet
+exec --no-startup-id flashfocus 		# focus change animation
+exec --no-startup-id compton 			# compositor (removes tearing)
+exec --no-startup-id xfce4-power-manager 	# power management
+exec --no-startup-id blueman-applet 		# bluetooth manager
 exec --no-startup-id dropbox
-#exec --no-startup-id autocutsel -fork & # clipboard
-#exec --no-startup-id autocutsel -selection PRIMARY -fork & # clipboard
 exec --no-startup-id pulseaudio
-exec --no-startup-id pa-applet
 exec --no-startup-id nitrogen --restore; sleep 1; compton -b
 exec --no-startup-id clipit
 exec --no-startup-id setxkbmap us -variant altgr-intl
@@ -45,6 +40,7 @@ floating_modifier $mod
 # start a terminal
 #bindsym $mod+Return exec lxterminal
 bindsym $mod+Return exec i3-sensible-terminal
+#bindsym $mod+Return exec urxvt
 
 # kill focused window
 bindsym $mod+Shift+Q kill

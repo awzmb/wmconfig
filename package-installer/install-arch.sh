@@ -1,46 +1,47 @@
 #!/bin/sh
 sudo pacman -Sy \
-  file-roller \
   jdk8-openjdk \
-  scrot \
+  scrot \				# screenshots
   firefox \
-  compton \
-  xfce4-settings \
-  lxterminal \
+  compton \				# transparency and tearing removal
+  xfce4-settings \			# cool settings manager for quick changes
+  rxvt-unicode \			# primary terminal emulator
+  lxterminal \				# secondary terminal emulator
   blueman \
-  docker \
-  docker-compose \
-  python-docker \
-  pcmanfm \
-  atom \
-  steam \
-  feh \
+  docker \				
+  docker-compose \			
+  ansible \				
+  python-docker \			# ansible dependency
+  pcmanfm \				# graphical file manager
+  atom \				# graphical editor
+  steam \				
   lxappearance \
-  lxterminal \
-  nitrogen \
+  nitrogen \				# wallpaper manager
   xfce4-power-manager \
   zsh \
   zsh-syntax-highlighting \
   zsh-completions \
-  pavucontrol \
+  pavucontrol \				# graphical sound manager
   pulseaudio &&
 sudo pacman -S --needed \
   base-devel \
   git \
   wget \
   lsb-release \
-  ttf-hack \
-  evince \
-  terminus-font \
-  pass \
-  neomutt \
-  ranger \
+  ttf-hack \				# secondary font
+  evince \				# pdf viewer
+  terminus-font \			# main fonts
+  neomutt \				# email client
+  notmuch \				# email tagging
+  isync \				# email imap synchronisation
+  msmtp \				# send mail
+  ranger \				# primary file manager
   gnupg \
   mpg123 \
   tlp \
   calcurse \
-  libcaca \				#provides img2txt
-  python-pylint \			#python checker / debugger
+  libcaca \				# provides img2txt
+  python-pylint \			# python checker / debugger
   && \
 gpg --full-gen-key && \
 pass init dennis.bundschuh@ancud.de \
