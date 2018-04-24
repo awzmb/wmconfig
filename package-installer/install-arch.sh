@@ -39,6 +39,8 @@ sudo pacman -S --needed \
   mpg123 \
   tlp \
   calcurse \
+  libcaca \				#provides img2txt
+  python-pylint \			#python checker / debugger
   && \
 gpg --full-gen-key && \
 pass init dennis.bundschuh@ancud.de \

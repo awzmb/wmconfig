@@ -5,5 +5,6 @@ yaourt intellij &&
 yaourt adobe-source-code-pro-fonts &&
 yaourt hipchat &&
 yaourt ultra flat icons &&
-yaourt lxdm theme
-
+yaourt lxdm theme &&
+yaourt arc flatabulous &&
+yaourt vundle

@@ -16,6 +16,8 @@ exec --no-startup-id pulseaudio
 exec --no-startup-id pa-applet
 exec --no-startup-id nitrogen --restore; sleep 1; compton -b
 exec --no-startup-id clipit
+exec --no-startup-id setxkbmap us -variant altgr-intl
+
 
 # =============================================================================
 # Basic Setup
@@ -41,7 +43,8 @@ hide_edge_borders none
 floating_modifier $mod
 
 # start a terminal
-bindsym $mod+Return exec lxterminal
+#bindsym $mod+Return exec lxterminal
+bindsym $mod+Return exec i3-sensible-terminal
 
 # kill focused window
 bindsym $mod+Shift+Q kill
@@ -59,7 +62,7 @@ bindsym $mod+F5 exec hipchat
 bindsym $mod+F6 exec lxterminal -e neomutt
 
 # calendar
-bindsym $mod+F1 exec lxterminal -e calcusre
+bindsym $mod+F1 exec lxterminal -e calcurse
 
 # change focus
 bindsym $mod+j focus left
