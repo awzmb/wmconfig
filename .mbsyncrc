@@ -1,0 +1,58 @@
+#################################
+######## Account ancud ########
+#################################
+
+IMAPAccount ancud
+Host mail.ancud.de
+User dennis.bundschuh@ancud.de
+#PassCmd "security find-internet-password -s 'mail.ancud.de' -a 'dennis.bundschuh@ancud.de' -w"
+PassCmd "pass Mail/account"
+SSLType STARTTLS
+#SSLVersions TLSv1.2
+CertificateFile /etc/ssl/certs/ca-certificates.crt
+
+# Remote storage
+IMAPStore ancud-remote
+Account ancud
+
+# Local storage
+MaildirStore ancud-local
+Path ~/.mail/ancud/
+Inbox ~/.mail/ancud/INBOX
+
+Channel ancud-inbox
+Master :ancud-remote:"INBOX"
+Slave :ancud-local:INBOX
+Create Both
+Expunge Both
+
+Channel ancud-drafts
+Master :ancud-remote:"Drafts"
+Slave :ancud-local:drafts
+Create Both
+Expunge Both
+
+Channel ancud-sent
+Master :ancud-remote:"Sent"
+Slave :ancud-local:sent
+Create Both
+Expunge Both
+
+Channel ancud-trash
+Master :ancud-remote:"Trash"
+Slave :ancud-local:trash
+Create Both
+Expunge Both
+
+Channel ancud-spam
+Master :ancud-remote:"Spam"
+Slave :ancud-local:spam
+Create Both
+Expunge Both
+
+Group ancud
+Channel ancud-inbox
+Channel ancud-drafts
+Channel ancud-sent
+Channel ancud-trash
+Channel ancud-spam

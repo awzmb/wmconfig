@@ -14,6 +14,7 @@ sudo pacman -Sy \
   python-docker \			# ansible dependency
   pcmanfm \				# graphical file manager
   atom \				# graphical editor
+  pass \				# simple password manager
   steam \				
   lxappearance \
   nitrogen \				# wallpaper manager
