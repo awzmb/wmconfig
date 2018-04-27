@@ -21,38 +21,10 @@ Path ~/.mail/ancud/
 Inbox ~/.mail/ancud/INBOX
 
 Channel ancud-inbox
-Master :ancud-remote:"INBOX"
-Slave :ancud-local:INBOX
+Master :ancud-remote:
+Slave :ancud-local:
+Patterns * 
 Create Both
 Expunge Both
-
-Channel ancud-drafts
-Master :ancud-remote:"Drafts"
-Slave :ancud-local:drafts
-Create Both
-Expunge Both
-
-Channel ancud-sent
-Master :ancud-remote:"Sent"
-Slave :ancud-local:sent
-Create Both
-Expunge Both
-
-Channel ancud-trash
-Master :ancud-remote:"Trash"
-Slave :ancud-local:trash
-Create Both
-Expunge Both
-
-Channel ancud-spam
-Master :ancud-remote:"Spam"
-Slave :ancud-local:spam
-Create Both
-Expunge Both
-
-Group ancud
-Channel ancud-inbox
-Channel ancud-drafts
-Channel ancud-sent
-Channel ancud-trash
-Channel ancud-spam
+Sync Pull
+SyncState *
