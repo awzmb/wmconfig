@@ -2,7 +2,7 @@
 " Based on https://github.com/amix/vimrc
 
 " Use Bash shell
-set shell=bash
+set shell=zsh
 
 " To avoid duplicate scope database error
 set nocscopeverbose
@@ -26,11 +26,13 @@ Plugin 'VundleVim/Vundle.vim'
 
 Plugin 'Valloric/YouCompleteMe'
 Plugin 'rdnetto/YCM-Generator'
+Plugin 'ervandew/supertab'
 Plugin 'joe-skb7/cscope-maps'
 Plugin 'scrooloose/nerdtree'
 Plugin 'itchyny/lightline.vim'
 Plugin 'ctrlpvim/ctrlp.vim'
 Plugin 'infoslack/vim-docker'
+Plugin 'pearofducks/ansible-vim'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -61,6 +63,9 @@ let g:mapleader = ","
 " (useful for handling the permission-denied error)
 command W w !sudo tee % > /dev/null
 
+" syntax highlighting
+syntax on
+
 " Set utf8 as standard encoding and en_US as the standard language
 set encoding=utf8
 
@@ -90,6 +95,9 @@ set expandtab
 
 " Be smart when using tabs ;)
 set smarttab
+
+" SuperTabCompletion for eclim
+let g:SuperTabDefaultCompletionType = 'context'
 
 " 1 tab == 4 spaces
 set shiftwidth=4
