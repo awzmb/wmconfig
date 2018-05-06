@@ -43,6 +43,7 @@ sudo pacman -S --needed \
   calcurse \
   libcaca \				# provides img2txt
   python-pylint \			# python checker / debugger
+  w3m \                 # console browser for mutt html emails
   && \
 gpg --full-gen-key && \
 pass init dennis.bundschuh@ancud.de \

@@ -23,7 +23,7 @@ Inbox ~/.mail/ancud/INBOX
 Channel ancud-inbox
 Master :ancud-remote:
 Slave :ancud-local:
-Patterns * 
+Patterns * "!Archives/*" "!Boxer*" "!Other*" "!Shared*" "!Journal*" "!Vorlagen*" "!Configuration" "!Calendar" "!Freebusy" "!Notes" "!Files" "!Archives*"
 Create Both
 Expunge Both
 Sync Pull

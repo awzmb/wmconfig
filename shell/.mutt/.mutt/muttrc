@@ -1,30 +1,34 @@
-# nice manpage here
 # http://linux.die.net/man/5/muttrc
-# set useragent to somethign awesome like eck
-# first turn off user_agent
-# toggle flagged messages
+
 # https://github.com/neomutt/neomutt/issues/621
 bind index . noop
+
 # .i will show all new/flagged
 macro index .i  "<limit>(~N|~F)<Enter>"  "view new/flag"
+
 # .a will show all again
 macro index .a  "<limit>~A<Enter>"       "view all"
 set user_agent=no
 my_hdr User-Agent:Mutt/1.6.2-neo (NetBSD/sparc64)
+
 # show message count in sidebar
 # https://github.com/neomutt/neomutt/releases
-#set sidebar_format = "%B%?F? [%F]?%* %?N?%N/?%S"
+set sidebar_format = "%B%?F? [%F]?%* %?N?%N/?%S"
+
 ### edit: removing flagged messages tag, people abuse this
 set sidebar_format = "%B %* %?N?%N/?%S"
 set mail_check_stats = yes
 set sidebar_width = 30
 set sidebar_visible     = yes
 color sidebar_new yellow default
+
 # dont mark messages old
 set mark_old = no
+
 # these bind keys for the folder pane
-# ctrl-n, ctrl-p to select next, prev folder 
-# ctrl-o to open selected folder 
+#ctrl-n, ctrl-p to select next, prev folder 
+#ctrl-o to open selected folder 
+
 ### EDIT MARK ALL READ
 macro index .r "T.*\n;WN" "party time, excellent"
 bind index \CP sidebar-prev 
@@ -33,7 +37,7 @@ bind index \CO sidebar-open
 bind pager \CP sidebar-prev 
 bind pager \CN sidebar-next 
 bind pager \CO sidebar-open 
-#set folder="~/Mail/mailboxes"
+
 ##set edit_headers = yes
 bind index \t next-unread
 bind pager   \t          next-unread
@@ -42,36 +46,46 @@ bind pager  ,\t      previous-unread
 
 # sort by thread
 set sort = threads
+
 # b toggles sidebar visibility 
 #macro index b '<enter-command>toggle sidebar_visible<enter>' 
 #macro pager b '<enter-command>toggle sidebar_visible<enter>' 
 macro index b '<enter-command>toggle sidebar_visible<enter><refresh>' 
 macro pager b '<enter-command>toggle sidebar_visible<enter><redraw-screen>' 
+
 ### save my sent messages
 #set record=imaps://wfoster@mail.example.com/Sent
-set record=~/.mail/Sent
+set record=~/.mail/sent
+
 #### useful settings from docs
 # activate TLS if available on the server
+
 #set signature = "~/.signature"
 set ssl_starttls=yes
+
 # always use SSL when connecting to a server
 set ssl_force_tls=yes
+
 # Don't wait to enter mailbox manually 
 unset imap_passive        
-#       # Automatically poll subscribed mailboxes for new mail (new in 1.5.11)
+
+# Automatically poll subscribed mailboxes for new mail (new in 1.5.11)
 set imap_check_subscribed
+
 # Reduce polling frequency to a sane level
-## trobert banhammer
-##set mail_check=60
 set mail_check=300
+
 # And poll the current mailbox more often (not needed with IDLE in post 1.5.11)
 set timeout=10
+
 # keep a cache of headers for faster loading (1.5.9+?)
 #set header_cache=~/.mutt/hcache
 #set header_cache=~/Localmail/hcache
 #set header_cache=~/Localmail/hcache
+
 # Display download progress every 5K
 set net_inc=5
+
 # force envelope and sender
 set use_from
 set envelope_from
@@ -79,32 +93,35 @@ set hostname="ancud.de"
 set realname="Dennis Bundschuh"
 set from="dennis.bundschuh@ancud.de"
 
-# IMAP: offlineimap
-set folder = "~/mail"
-source ~/.mutt/mailboxes
-set spoolfile = "+account/INBOX"
-set record = "+account/Sent\ Items"
-set postponed = "+account/Drafts"
+# IMAP: mbsync
 # NEEDED for maildir format
-#set mbox_type=Maildir
-#set folder=~/,mail/
-#set spoolfile=~/.mail/INBOX
+set mbox_type=Maildir
+set record = "~/.mail/ancud/sent" 
+set postponed = "~/.mail/ancud/drafts"
+set folder="~/.mail/ancud/"
+set spoolfile="~/.mail/ancud/INBOX"
 
+mailboxes ! + `\
+ for file in ~/.mail/ancud/*; do \
+   box=$(basename "$file"); \
+   if [ ! "$box" = '.' -a ! "$box" = '..' -a ! "$box" = '.customflags' \
+       -a ! "$box" = '.subscriptions' ]; then \
+     echo -n "\"+$box\" "; \
+   fi; \
+ done`
 
-######### BEGIN IMAP FOLDERS
-#mailboxes =INBOX \
-#=Sent \
-#=Drafts \
-#=Junk \
-#=Trash \
-#=browbeat-review \
-#=community-cage \
-#=ENG \
-#=ENG.bugzilla \
-#=ENG.conf-talks \
-#=ENG.os-list-dev \
-#=github
-######### END IMAP FOLDERS
+#mailboxes = "+[ancud]/Archive"
+#mailboxes = "+sent"
+#mailboxes = "+[ancud]/sent"
+#mailboxes = "+[ancud]/AS:addi-data"
+#mailboxes = "+[ancud]/AS:audi-efs"
+#mailboxes = "+[ancud]/AS:bwi"
+#mailboxes = "+[ancud]/AS:cherry-jira"
+#mailboxes = "+[ancud]/AS:eichstaett"
+#mailboxes = "+[ancud]/AS:helmholtz"
+#mailboxes = "+[ancud]/AS:noris"
+#mailboxes = "+[ancud]/AS:puma"
+#mailboxes = "+[ancud]/AS:suselinux"
 
 ###### UPDATED NOTMUCH SETTINGS #######
 
@@ -154,10 +171,11 @@ set smtp_url="smtp://mail.ancud.de"
 ### GMAIL USERS NEED THIS:
 ### set smtp_url = 'smtps://username@examplecompany.com@smtp.gmail.com'
 ### set smtp_pass = 'YOUR_APP_PASSWORD'
-#set sendmail="/usr/sbin/sendmail"
-set mailcap_path 	= ~/.mutt/mailcap
+set sendmail="/usr/bin/msmtp"
+set mailcap_path = ~/.mutt/mailcap
 # automatically open evil HTML
 auto_view text/html
+alternative_order text/plain text/enriched text/html
 
 set mime_forward="yes"
 set mime_forward_rest="yes"
@@ -170,14 +188,18 @@ color quoted5   red         default
 color quoted6   blue        default
 color signature green       default
 color tilde     cyan  default
+
 ### edit try new colors
 color   tree        magenta             default
+
 # new set sidebar delim
-set sidebar_divider_char='★'
+#set sidebar_divider_char='★'
+
 ### make new messages yellow
 color index brightyellow default ~N # New#
 #color header white          black   .               # Headers are this color,
 #color header white    black   ^Subject        # except for `Subject:'.
+
 ### latest edit
 color header white        default .               # Headers are this color,
 color header red    white ^Subject        # except for `Subject:'.
@@ -187,6 +209,7 @@ color header black          green   ^Followup-To:   # followup header
 color status    brightblue default
 color indicator default red
 color markers   cyan  black
+
 ## GPG encrypt to self option
 # http://www.neomutt.org/feature/smime-encrypt-self/
 #set smime_encrypt_self = yes
