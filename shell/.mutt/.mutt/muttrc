@@ -31,18 +31,13 @@ set mark_old = no
 
 ### EDIT MARK ALL READ
 macro index .r "T.*\n;WN" "party time, excellent"
-bind index \CP sidebar-prev 
-bind index \CN sidebar-next 
-bind index \CO sidebar-open 
-bind pager \CP sidebar-prev 
-bind pager \CN sidebar-next 
-bind pager \CO sidebar-open 
+bind index,pager \CP sidebar-prev 
+bind index,pager \CN sidebar-next 
+bind index,pager \CO sidebar-open 
 
 ##set edit_headers = yes
-bind index \t next-unread
-bind pager   \t          next-unread
-bind index  ,\t      previous-unread
-bind pager  ,\t      previous-unread
+bind index,pager \t  next-unread
+bind index,pager ,\t previous-unread
 
 # sort by thread
 set sort = threads
@@ -96,11 +91,12 @@ set from="dennis.bundschuh@ancud.de"
 # IMAP: mbsync
 # NEEDED for maildir format
 set mbox_type=Maildir
-set record = "~/.mail/ancud/sent" 
-set postponed = "~/.mail/ancud/drafts"
+set record = "~/.mail/ancud/Sent" 
+set postponed = "~/.mail/ancud/Drafts"
 set folder="~/.mail/ancud/"
 set spoolfile="~/.mail/ancud/INBOX"
 
+# read all mailboxes from mbsync / offlineimap
 mailboxes ! + `\
  for file in ~/.mail/ancud/*; do \
    box=$(basename "$file"); \
@@ -110,18 +106,6 @@ mailboxes ! + `\
    fi; \
  done`
 
-#mailboxes = "+[ancud]/Archive"
-#mailboxes = "+sent"
-#mailboxes = "+[ancud]/sent"
-#mailboxes = "+[ancud]/AS:addi-data"
-#mailboxes = "+[ancud]/AS:audi-efs"
-#mailboxes = "+[ancud]/AS:bwi"
-#mailboxes = "+[ancud]/AS:cherry-jira"
-#mailboxes = "+[ancud]/AS:eichstaett"
-#mailboxes = "+[ancud]/AS:helmholtz"
-#mailboxes = "+[ancud]/AS:noris"
-#mailboxes = "+[ancud]/AS:puma"
-#mailboxes = "+[ancud]/AS:suselinux"
 
 ###### UPDATED NOTMUCH SETTINGS #######
 
@@ -179,36 +163,40 @@ alternative_order text/plain text/enriched text/html
 
 set mime_forward="yes"
 set mime_forward_rest="yes"
-color quoted0   blue        default
-color quoted1   green       default
-color quoted2   red         default
-color quoted3   blue        default
-color quoted4   green       default
-color quoted5   red         default
-color quoted6   blue        default
-color signature green       default
-color tilde     cyan  default
+
+# mutt colors
+source ~/.mutt/colors
+
+#color quoted0   blue        default
+#color quoted1   green       default
+#color quoted2   red         default
+#color quoted3   blue        default
+#color quoted4   green       default
+#color quoted5   red         default
+#color quoted6   blue        default
+#color signature green       default
+#color tilde     cyan  default
 
 ### edit try new colors
-color   tree        magenta             default
+#color   tree        magenta             default
 
 # new set sidebar delim
 #set sidebar_divider_char='★'
 
 ### make new messages yellow
-color index brightyellow default ~N # New#
+#color index brightyellow default ~N # New#
 #color header white          black   .               # Headers are this color,
 #color header white    black   ^Subject        # except for `Subject:'.
 
 ### latest edit
-color header white        default .               # Headers are this color,
-color header red    white ^Subject        # except for `Subject:'.
-color header black          red     ^(X-Spam-Status:\ Yes|X-Virus-Report:)
-color header black          red     ^Newsgroups:.*, # cross-posted
-color header black          green   ^Followup-To:   # followup header
-color status    brightblue default
-color indicator default red
-color markers   cyan  black
+#color header white        default .               # Headers are this color,
+#color header red    white ^Subject        # except for `Subject:'.
+#color header black          red     ^(X-Spam-Status:\ Yes|X-Virus-Report:)
+#color header black          red     ^Newsgroups:.*, # cross-posted
+#color header black          green   ^Followup-To:   # followup header
+#color status    brightblue default
+#color indicator default red
+#color markers   cyan  black
 
 ## GPG encrypt to self option
 # http://www.neomutt.org/feature/smime-encrypt-self/
