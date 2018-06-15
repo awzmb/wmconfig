@@ -2,12 +2,14 @@
 yaourt flashfocus &&
 yaourt spotify &&
 yaourt intellij &&
+yaourt intellij-jdk &&
 yaourt adobe-source-code-pro-fonts &&
 yaourt hipchat &&
 yaourt ultra flat icons &&
 yaourt lxdm theme &&
 yaourt arc flatabulous &&
-yaourt vundle
+yaourt vundle &&
+i3lock-fancy
 
 # YouCompleteMe workaround for ncurses5-lib-compat
 sudo pacman-key --refresh-keys

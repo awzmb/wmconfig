@@ -44,6 +44,9 @@ sudo pacman -S --needed \
   libcaca \				# provides img2txt
   python-pylint \			# python checker / debugger
   w3m \                 # console browser for mutt html emails
+  python-markdown \     # confluence-vim
+  python-html2text \    # confluence-vim
+  python-requests \     # confluence-vim
   && \
 gpg --full-gen-key && \
 pass init dennis.bundschuh@ancud.de \

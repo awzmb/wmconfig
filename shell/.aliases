@@ -32,5 +32,8 @@ function docker-volume-restore() {
 # python pip upgrades
 #alias pipupgrade='pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U'
 
-# neomutt + offlineimap
-alias mutt='offlineimap -o && neomutt'
+# neomutt + maildir sync
+alias mutt='mbsync -a && neomutt'
+
+# firejail firefox
+alias ff='firejail firefox'
