@@ -1,0 +1,8 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhistcnt =6
+let g:netrw_dirhist_6='/home/dsbundschuh/documents/elasticsearch/filebeat-7.5.2-linux-x86_64/logfiles'
+let g:netrw_dirhist_5='/home/dsbundschuh/documents/elasticsearch/filebeat-7.5.2-linux-x86_64'
+let g:netrw_dirhist_4='/home/dsbundschuh/documents/elasticsearch/filebeat-7.5.2-linux-x86_64/logfiles'
+let g:netrw_dirhist_3='/home/dsbundschuh/documents/elasticsearch/filebeat-7.5.2-linux-x86_64'
+let g:netrw_dirhist_2='/home/dsbundschuh/documents/elasticsearch/metricbeat-7.5.2-linux-x86_64'
+let g:netrw_dirhist_1='/home/dsbundschuh'

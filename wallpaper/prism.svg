@@ -1,0 +1,359 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   inkscape:export-ydpi="96"
+   inkscape:export-xdpi="96"
+   inkscape:export-filename="/home/dsbundschuh/workspace/wmconfig/wallpaper/prism.png"
+   inkscape:version="1.0beta2 (unknown)"
+   sodipodi:docname="prism.svg"
+   id="svg8"
+   version="1.1"
+   viewBox="0 0 507.99998 285.75"
+   height="285.75mm"
+   width="508mm">
+  <defs
+     id="defs2">
+    <linearGradient
+       y2="326.57919"
+       x2="244.5834"
+       y1="346.89761"
+       x1="223.34151"
+       gradientUnits="userSpaceOnUse"
+       id="SVGID_28_">
+      <stop
+         id="stop2370"
+         style="stop-color:#006C7F"
+         offset="0" />
+      <stop
+         id="stop2372"
+         style="stop-color:#1C8AC7"
+         offset="1" />
+    </linearGradient>
+    <linearGradient
+       y2="306.8024"
+       x2="162.4207"
+       y1="346.97821"
+       x1="175.35091"
+       gradientUnits="userSpaceOnUse"
+       id="SVGID_29_">
+      <stop
+         id="stop2377"
+         style="stop-color:#DF2322"
+         offset="0" />
+      <stop
+         id="stop2379"
+         style="stop-color:#8B0304"
+         offset="1" />
+    </linearGradient>
+    <linearGradient
+       y2="332.81839"
+       x2="190.78239"
+       y1="288.4873"
+       x1="183.7041"
+       gradientUnits="userSpaceOnUse"
+       id="SVGID_30_">
+      <stop
+         id="stop2384"
+         style="stop-color:#DF2322"
+         offset="0" />
+      <stop
+         id="stop2386"
+         style="stop-color:#8B0304"
+         offset="1" />
+    </linearGradient>
+    <linearGradient
+       y2="294.6619"
+       x2="246.6647"
+       y1="219.8515"
+       x1="190.326"
+       gradientUnits="userSpaceOnUse"
+       id="SVGID_31_">
+      <stop
+         id="stop2393"
+         style="stop-color:#84C441"
+         offset="0" />
+      <stop
+         id="stop2395"
+         style="stop-color:#335C14"
+         offset="1" />
+    </linearGradient>
+    <linearGradient
+       y2="156.5058"
+       x2="124.3752"
+       y1="283.27841"
+       x1="234.4368"
+       gradientUnits="userSpaceOnUse"
+       id="SVGID_32_">
+      <stop
+         id="stop2400"
+         style="stop-color:#84C441"
+         offset="0" />
+      <stop
+         id="stop2402"
+         style="stop-color:#335C14"
+         offset="1" />
+    </linearGradient>
+    <linearGradient
+       y2="243.4095"
+       x2="200.4655"
+       y1="307.13669"
+       x1="265.11621"
+       gradientUnits="userSpaceOnUse"
+       id="SVGID_33_">
+      <stop
+         id="stop2407"
+         style="stop-color:#84C441"
+         offset="0" />
+      <stop
+         id="stop2409"
+         style="stop-color:#335C14"
+         offset="1" />
+    </linearGradient>
+    <linearGradient
+       y2="199.0993"
+       x2="208.1142"
+       y1="245.2829"
+       x1="185.02229"
+       gradientUnits="userSpaceOnUse"
+       id="SVGID_34_">
+      <stop
+         id="stop2414"
+         style="stop-color:#E71B85"
+         offset="0" />
+      <stop
+         id="stop2416"
+         style="stop-color:#790043"
+         offset="1" />
+    </linearGradient>
+    <linearGradient
+       y2="175.1171"
+       x2="188.9821"
+       y1="187.12151"
+       x1="190.2085"
+       gradientUnits="userSpaceOnUse"
+       id="SVGID_35_">
+      <stop
+         id="stop2421"
+         style="stop-color:#E71B85"
+         offset="0" />
+      <stop
+         id="stop2423"
+         style="stop-color:#790043"
+         offset="1" />
+    </linearGradient>
+    <linearGradient
+       y2="306.3093"
+       x2="182.89529"
+       y1="221.3342"
+       x1="99.153999"
+       gradientUnits="userSpaceOnUse"
+       id="SVGID_36_">
+      <stop
+         id="stop2428"
+         style="stop-color:#ED6C23"
+         offset="0" />
+      <stop
+         id="stop2430"
+         style="stop-color:#BC2F1B"
+         offset="1" />
+    </linearGradient>
+    <linearGradient
+       y2="375.8699"
+       x2="104.4999"
+       y1="325.99161"
+       x1="143.2942"
+       gradientUnits="userSpaceOnUse"
+       id="SVGID_37_">
+      <stop
+         id="stop2435"
+         style="stop-color:#ED6C23"
+         offset="0" />
+      <stop
+         id="stop2437"
+         style="stop-color:#BC2F1B"
+         offset="1" />
+    </linearGradient>
+    <linearGradient
+       y2="278.4736"
+       x2="159.9705"
+       y1="301.29691"
+       x1="201.30119"
+       gradientUnits="userSpaceOnUse"
+       id="SVGID_38_">
+      <stop
+         id="stop2442"
+         style="stop-color:#ED6C23"
+         offset="0" />
+      <stop
+         id="stop2444"
+         style="stop-color:#BC2F1B"
+         offset="1" />
+    </linearGradient>
+    <linearGradient
+       y2="328.88541"
+       x2="233.14059"
+       y1="298.40381"
+       x1="262.23669"
+       gradientUnits="userSpaceOnUse"
+       id="SVGID_39_">
+      <stop
+         id="stop2449"
+         style="stop-color:#006C7F"
+         offset="0" />
+      <stop
+         id="stop2451"
+         style="stop-color:#000F28"
+         offset="1" />
+    </linearGradient>
+  </defs>
+  <sodipodi:namedview
+     inkscape:window-maximized="1"
+     inkscape:window-y="28"
+     inkscape:window-x="0"
+     inkscape:window-height="872"
+     inkscape:window-width="1600"
+     inkscape:guide-bbox="true"
+     showguides="true"
+     fit-margin-bottom="0"
+     fit-margin-right="0"
+     fit-margin-left="0"
+     fit-margin-top="0"
+     showgrid="false"
+     inkscape:document-rotation="0"
+     inkscape:current-layer="layer1"
+     inkscape:document-units="mm"
+     inkscape:cy="553.62596"
+     inkscape:cx="786.00615"
+     inkscape:zoom="0.4140259"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     borderopacity="1.0"
+     bordercolor="#666666"
+     pagecolor="#ffffff"
+     id="base">
+    <sodipodi:guide
+       id="guide4549"
+       orientation="0,-1"
+       position="-111.25318,-253.17777" />
+    <sodipodi:guide
+       id="guide4551"
+       orientation="1,0"
+       position="960.82297,132.59627" />
+    <sodipodi:guide
+       id="guide4599"
+       orientation="1,0"
+       position="254.73163,175.15381" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     transform="translate(290.13708,138.67519)"
+     id="layer1"
+     inkscape:groupmode="layer"
+     inkscape:label="Layer 1">
+    <rect
+       y="-138.67519"
+       x="-290.13708"
+       height="285.75"
+       width="508"
+       id="rect847"
+       style="fill:#282a33;fill-opacity:1;stroke-width:1.12837" />
+    <g
+       transform="matrix(0.30002838,0,0,0.30002838,-236.66478,-129.85266)"
+       id="g4597">
+      <polygon
+         class="st47"
+         points="272.2,300.3 271.5,308 225.6,336.8 220.2,323.1 "
+         id="polygon2454"
+         style="fill:url(#SVGID_39_)"
+         transform="matrix(3.5837849,0,0,3.5837849,-54.017076,-586.11981)" />
+      <polygon
+         class="st35"
+         points="272.2,300.3 277.6,309.6 232.1,345.8 228.8,327 "
+         id="polygon2375"
+         style="fill:url(#SVGID_28_)"
+         transform="matrix(3.5837849,0,0,3.5837849,-54.017076,-586.11981)" />
+      <polygon
+         class="st36"
+         points="170.9,253.9 127.2,314.4 212.3,357.2 192.3,282.5 "
+         id="polygon2382"
+         style="fill:url(#SVGID_29_)"
+         transform="matrix(3.5837849,0,0,3.5837849,-54.017076,-586.11981)" />
+      <polygon
+         class="st37"
+         points="205.7,332.5 173.9,338 212.4,357.3 "
+         id="polygon2389"
+         style="fill:url(#SVGID_30_)"
+         transform="matrix(3.5837849,0,0,3.5837849,-54.017076,-586.11981)" />
+      <polygon
+         class="st38"
+         points="214.1,194.7 214.1,194.1 213.9,194.4 213.7,194.1 213.7,194.7 177.9,244.2 199.4,270 213.9,213.7 226.7,315.2 269.2,293.4 "
+         id="polygon2391"
+         transform="matrix(3.5837849,0,0,3.5837849,-54.017076,-586.11981)" />
+      <polygon
+         class="st39"
+         points="213.9,194.4 214,230.8 207.7,299.7 269.2,293.4 "
+         id="polygon2398"
+         style="fill:url(#SVGID_31_)"
+         transform="matrix(3.5837849,0,0,3.5837849,-54.017076,-586.11981)" />
+      <polygon
+         class="st40"
+         points="242.7,245.6 214.1,231.3 207.7,299.7 218,298.8 256.1,269.5 "
+         id="polygon2405"
+         style="fill:url(#SVGID_32_)"
+         transform="matrix(3.5837849,0,0,3.5837849,-54.017076,-586.11981)" />
+      <polygon
+         class="st41"
+         points="209.6,280.4 221.8,296.3 256.1,270 251.6,261.9 211.6,258.2 "
+         id="polygon2412"
+         style="fill:url(#SVGID_33_)"
+         transform="matrix(3.5837849,0,0,3.5837849,-54.017076,-586.11981)" />
+      <polygon
+         class="st42"
+         points="214.2,213.8 194.3,253.1 177.6,233.2 213.9,194.4 "
+         id="polygon2419"
+         style="fill:url(#SVGID_34_)"
+         transform="matrix(3.5837849,0,0,3.5837849,-54.017076,-586.11981)" />
+      <polygon
+         class="st43"
+         points="200.2,211.6 199,210.3 186.2,224 185.5,242.6 193,251.5 194.9,251.8 205.1,231.7 "
+         id="polygon2426"
+         style="fill:url(#SVGID_35_)"
+         transform="matrix(3.5837849,0,0,3.5837849,-54.017076,-586.11981)" />
+      <polygon
+         class="st44"
+         points="194.2,278.6 187.1,320.6 127.6,296.4 172.9,250 "
+         id="polygon2433"
+         style="fill:url(#SVGID_36_)"
+         transform="matrix(3.5837849,0,0,3.5837849,-54.017076,-586.11981)" />
+      <polygon
+         class="st45"
+         points="194.2,278.6 178.6,257.7 165.9,257.1 159.4,263.7 164.9,311.6 175.6,315.9 189.1,308.5 "
+         id="polygon2440"
+         style="fill:url(#SVGID_37_)"
+         transform="matrix(3.5837849,0,0,3.5837849,-54.017076,-586.11981)" />
+      <polygon
+         class="st46"
+         points="160.4,273.1 163.7,302.4 190.7,299.4 194.2,278.6 190.2,273.3 165.8,269.1 "
+         id="polygon2447"
+         style="fill:url(#SVGID_38_)"
+         transform="matrix(3.5837849,0,0,3.5837849,-54.017076,-586.11981)" />
+    </g>
+  </g>
+</svg>

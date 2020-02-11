@@ -11,6 +11,9 @@ set nocscopeverbose
 set nocompatible              " be iMproved, required
 filetype off                  " required
 
+" Use 'nord' colorscheme after installation via vundle
+"colorscheme nord
+
 " set the runtime path to include Vundle and initialize
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
@@ -24,8 +27,8 @@ Plugin 'VundleVim/Vundle.vim'
 " Keep Plugin commands between vundle#begin/end.
 " plugin on GitHub repo
 
-Plugin 'Valloric/YouCompleteMe'
-Plugin 'rdnetto/YCM-Generator'
+"Plugin 'Valloric/YouCompleteMe'
+"Plugin 'rdnetto/YCM-Generator'
 Plugin 'ervandew/supertab'
 Plugin 'joe-skb7/cscope-maps'
 Plugin 'scrooloose/nerdtree'
@@ -33,6 +36,9 @@ Plugin 'itchyny/lightline.vim'
 Plugin 'ctrlpvim/ctrlp.vim'
 Plugin 'infoslack/vim-docker'
 Plugin 'pearofducks/ansible-vim'
+Plugin 'jistr/vim-nerdtree-tabs'
+Plugin 'arcticicestudio/nord-vim'
+Plugin 'alawibaba/confluence-vim'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -245,7 +251,7 @@ nnoremap <leader>gy :YcmGenerateConfig<CR>
 """"""""""""""""""""""
 " change the lightline theme
 let g:lightline = {
-      \ 'colorscheme': 'jellybeans',
+      \ 'colorscheme': 'nord',
       \ }
 
 """""""""""""""""""""

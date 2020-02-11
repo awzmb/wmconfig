@@ -1,0 +1,1 @@
+xwinwrap -ov -g 1600x900+0+0 -- mpv -wid WID ~/workspace/wmconfig/wallpaper/viewovercity.mp4 --no-osc --no-osd-bar --loop-file --player-operation-mode=cplayer --no-audio --panscan=1.0 --no-input-default-bindings

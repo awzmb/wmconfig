@@ -1,0 +1,4 @@
+#!/bin/sh
+
+# user scripts
+export PATH=~/.scripts:$PATH

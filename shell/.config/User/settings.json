@@ -1,0 +1,29 @@
+{
+    "telemetry.enableCrashReporter": false,
+    "telemetry.enableTelemetry": false,
+    "vscode-neovim.neovimInitPath": "~/.config/nvim/init.vim",
+    "vscode-neovim.neovimPath": "/usr/bin/nvim",
+    "editor.minimap.enabled": false,
+    "editor.renderWhitespace": "none",
+    "workbench.colorTheme": "Nord",
+    "workbench.colorCustomizations": {
+        "activityBar.activeBackground": "#31333c",
+        "activityBar.background": "#282a33",
+        "editor.background": "#282a33",
+        "editor.selectionHighlightBackground": "#31333c",
+        "editor.selectionBackground": "#56586b",
+        "editor.selectionForeground": "#bbc1ca",
+        "editorGroupHeader.tabsBackground": "#282a33",
+        "editorGutter.background": "#2c2e38",
+        "list.activeSelectionBackground": "#31333c",
+        "breadcrumb.background": "#2c2e38",
+        "list.hoverBackground": "#31333c",
+        "sideBar.background": "#31333c",
+        "sideBar.dropBackground": "#282a33",
+        "scrollbarSlider.background": "#31333c",
+        "statusBar.background": "#282a33",
+        "statusBar.border": "#31333c"
+    },
+    "editor.suggestSelection": "first",
+    "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue"
+}

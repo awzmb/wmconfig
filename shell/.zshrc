@@ -2,12 +2,21 @@
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
-  export ZSH=/home/dsbundschuh/.oh-my-zsh
+export ZSH=/home/dsbundschuh/.oh-my-zsh
 
 # Set name of the theme to load. Optionally, if you set this to "random"
 # it'll load a random theme each time that oh-my-zsh is loaded.
 # See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
-ZSH_THEME="lukerandall"
+#ZSH_THEME="sorin"
+#ZSH_THEME="3den"
+ZSH_THEME="afowler"
+
+# Set list of themes to load
+# Setting this variable when ZSH_THEME=random
+# cause zsh load theme from this variable instead of
+# looking in ~/.oh-my-zsh/themes/
+# An empty array have no effect
+# ZSH_THEME_RANDOM_CANDIDATES=( "robbyrussell" "agnoster" )
 
 # Uncomment the following line to use case-sensitive completion.
 # CASE_SENSITIVE="true"
@@ -51,7 +60,9 @@ ZSH_THEME="lukerandall"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git)
+plugins=(
+  git aws
+)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -84,7 +95,17 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
-zstyle ':completion:*:*:docker:*' option-stacking yes
-zstyle ':completion:*:*:docker-*:*' option-stacking yes
+# basic commands
+alias ls='ls --color=auto'
+alias l='ls -lF --color=auto'
+alias ll='ls -alF --color=auto'
+alias docker='podman'
 
-source ~/.aliases
+# show as xterm for ssh sessions
+export TERM=xterm-256color
+
+# dont ask password via gui
+export GIT_ASKPASS=
+
+# remove annoying folders which keep being created
+rm -rf Downloads && rm -rf Desktop

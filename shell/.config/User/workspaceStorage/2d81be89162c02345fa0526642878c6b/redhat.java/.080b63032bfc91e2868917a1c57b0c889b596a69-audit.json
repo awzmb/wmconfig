@@ -1,0 +1,14 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 2
+    },
+    "auditLog": "/home/dsbundschuh/.config/Code/User/workspaceStorage/2d81be89162c02345fa0526642878c6b/redhat.java/.080b63032bfc91e2868917a1c57b0c889b596a69-audit.json",
+    "files": [
+        {
+            "date": 1581019987973,
+            "name": "/home/dsbundschuh/.config/Code/User/workspaceStorage/2d81be89162c02345fa0526642878c6b/redhat.java/client.log.2020-02-06",
+            "hash": "7e5d246c5676dc3ab11e977b5c8472b9"
+        }
+    ]
+}

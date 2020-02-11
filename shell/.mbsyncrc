@@ -1,29 +1,29 @@
 #################################
-######## Account ancud ########
+######## Account gmail ########
 #################################
 
-IMAPAccount ancud
-Host mail.ancud.de
-User dennis.bundschuh@ancud.de
-#PassCmd "security find-internet-password -s 'mail.ancud.de' -a 'dennis.bundschuh@ancud.de' -w"
-PassCmd "pass Mail/account"
-SSLType STARTTLS
-#SSLVersions TLSv1.2
-CertificateFile /etc/ssl/certs/ca-certificates.crt
+IMAPAccount gmail
+Host imap.gmail.com
+User bundschuh.dennis@gmail.com
+AuthMechs LOGIN
+PassCmd "pass mail/main"
+SSLType IMAPS
+SSLVersions TLSv1.2
+CertificateFile /etc/ssl/certs/ca-bundle.crt
 
 # Remote storage
-IMAPStore ancud-remote
-Account ancud
+IMAPStore gmail-remote
+Account gmail
 
 # Local storage
-MaildirStore ancud-local
-Path ~/.mail/ancud/
-Inbox ~/.mail/ancud/INBOX
+MaildirStore gmail-local
+Path ~/.mail/gmail/
+Inbox ~/.mail/gmail/INBOX
 
-Channel ancud-inbox
-Master :ancud-remote:
-Slave :ancud-local:
-Patterns * "!Archives/*" "!Boxer*" "!Other*" "!Shared*" "!Journal*" "!Vorlagen*" "!Configuration" "!Calendar" "!Freebusy" "!Notes" "!Files" "!Archives*"
+Channel gmail-inbox
+Master :gmail-remote:
+Slave :gmail-local:
+Patterns * ![Gmail]* "[Gmail]/All Mail"
 Create Both
 Expunge Both
 Sync Pull

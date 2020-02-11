@@ -1,0 +1,7 @@
+!! Xft settings help the problem with small font in google chromium tabs!
+!! Xft.dpi: 96  is the setting that makes the tab font larger
+Xft.dpi: 96
+Xft.antialias: true
+Xft.rgba: rgb
+Xft.hinting: true
+Xft.hintstyle: hintslight
