@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <channel name="displays" version="1.0">
-  <property name="ActiveProfile" type="string" value="Default"/>
+  <property name="ActiveProfile" type="string" value="83d6311e87d4775ca4b3a411e3a334581ad8951e"/>
   <property name="Default" type="empty">
     <property name="eDP-1" type="string" value="Laptop">
       <property name="Active" type="bool" value="true"/>
@@ -16,14 +16,14 @@
         <property name="Y" type="int" value="0"/>
       </property>
     </property>
-    <property name="DP-1" type="string" value="NEC Corporation ">
+    <property name="DP-1" type="string" value="Samsung Electric Company 22&quot;">
       <property name="Active" type="bool" value="true"/>
-      <property name="EDID" type="string" value="3f45cfb29746a9f35042a0eeeb88d7d5a26393ee"/>
-      <property name="Resolution" type="string" value="1280x800"/>
-      <property name="RefreshRate" type="double" value="59.810326"/>
+      <property name="EDID" type="string" value="52d70f089b0c99a8b26323d87c3b5e65d3070ba0"/>
+      <property name="Resolution" type="string" value="1680x1050"/>
+      <property name="RefreshRate" type="double" value="59.883253"/>
       <property name="Rotation" type="int" value="0"/>
       <property name="Reflection" type="string" value="0"/>
-      <property name="Primary" type="bool" value="false"/>
+      <property name="Primary" type="bool" value="true"/>
       <property name="Position" type="empty">
         <property name="X" type="int" value="0"/>
         <property name="Y" type="int" value="0"/>
@@ -32,4 +32,66 @@
   </property>
   <property name="Notify" type="bool" value="true"/>
   <property name="AutoEnableProfiles" type="bool" value="true"/>
+  <property name="3f13b17d07a400c9d6cf420d94a5174891b8bef6" type="string" value="frankfurt">
+    <property name="eDP-1" type="string" value="Laptop">
+      <property name="Active" type="bool" value="false"/>
+      <property name="EDID" type="string" value="0f894d7ba47e0472d91cb5daf7afd863d78ba747"/>
+      <property name="Resolution" type="string" value="1600x900"/>
+      <property name="RefreshRate" type="double" value="119.976590"/>
+      <property name="Rotation" type="int" value="0"/>
+      <property name="Reflection" type="string" value="0"/>
+      <property name="Primary" type="bool" value="false"/>
+      <property name="Position" type="empty">
+        <property name="X" type="int" value="1680"/>
+        <property name="Y" type="int" value="406"/>
+      </property>
+    </property>
+    <property name="DP-1" type="string" value="Samsung Electric Company 22&quot;">
+      <property name="Active" type="bool" value="true"/>
+      <property name="EDID" type="string" value="52d70f089b0c99a8b26323d87c3b5e65d3070ba0"/>
+      <property name="Resolution" type="string" value="1680x1050"/>
+      <property name="RefreshRate" type="double" value="59.883253"/>
+      <property name="Rotation" type="int" value="0"/>
+      <property name="Reflection" type="string" value="0"/>
+      <property name="Primary" type="bool" value="true"/>
+      <property name="Position" type="empty">
+        <property name="X" type="int" value="0"/>
+        <property name="Y" type="int" value="0"/>
+      </property>
+    </property>
+  </property>
+  <property name="b07aaf5ef716008c0e6bad4bb1bb9203201213b4" type="string" value="evolu">
+    <property name="eDP-1" type="string" value="Laptop">
+      <property name="Active" type="bool" value="false"/>
+      <property name="EDID" type="string" value="0f894d7ba47e0472d91cb5daf7afd863d78ba747"/>
+    </property>
+    <property name="DP-1" type="string" value="Lenovo Group Limited 28&quot;">
+      <property name="Active" type="bool" value="true"/>
+      <property name="EDID" type="string" value="1633b83ce23eb5d955cdabed48c084f5bf24781b"/>
+      <property name="Resolution" type="string" value="1920x1080"/>
+      <property name="RefreshRate" type="double" value="59.933878"/>
+      <property name="Rotation" type="int" value="0"/>
+      <property name="Reflection" type="string" value="0"/>
+      <property name="Primary" type="bool" value="true"/>
+      <property name="Position" type="empty">
+        <property name="X" type="int" value="0"/>
+        <property name="Y" type="int" value="0"/>
+      </property>
+    </property>
+  </property>
+  <property name="83d6311e87d4775ca4b3a411e3a334581ad8951e" type="string" value="mobile">
+    <property name="eDP-1" type="string" value="Laptop">
+      <property name="Active" type="bool" value="true"/>
+      <property name="EDID" type="string" value="0f894d7ba47e0472d91cb5daf7afd863d78ba747"/>
+      <property name="Resolution" type="string" value="1600x900"/>
+      <property name="RefreshRate" type="double" value="119.976590"/>
+      <property name="Rotation" type="int" value="0"/>
+      <property name="Reflection" type="string" value="0"/>
+      <property name="Primary" type="bool" value="true"/>
+      <property name="Position" type="empty">
+        <property name="X" type="int" value="0"/>
+        <property name="Y" type="int" value="0"/>
+      </property>
+    </property>
+  </property>
 </channel>

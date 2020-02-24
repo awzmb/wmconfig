@@ -108,4 +108,4 @@ export TERM=xterm-256color
 export GIT_ASKPASS=
 
 # remove annoying folders which keep being created
-rm -rf Downloads && rm -rf Desktop
+rm -rf Downloads && rm -rf Desktop && rm -rf AnyDesk

@@ -289,8 +289,41 @@ d/home/dsbundschuh/workspace/wmconfig
 	..
 0
 d/home/dsbundschuh/workspace
-	save-config.sh
-13
+	elasticsearch-bkp
+6
+d/home/dsbundschuh/workspace/elasticsearch-bkp
+	.gitignore
+2
+d/home/dsbundschuh/workspace
+	..
+0
+d/home/dsbundschuh
+	workspace
+33
+d/home
+	dsbundschuh
+1
+d/home/dsbundschuh
+	container
+28
+d/home/dsbundschuh/container
+	atlassian-demo
+1
+d/home/dsbundschuh/container/atlassian-demo
+	atlassian-bamboo
+2
+d/home/dsbundschuh/container
+	atlassian-demo
+1
+d/home/dsbundschuh
+	workspace
+4
+d/home/dsbundschuh/workspace
+	aws-testing-container
+3
+d/home/dsbundschuh/workspace/aws-testing-container
+	.gitignore
+3
 d
 
 # Right window history (oldest to newest):
@@ -444,6 +477,21 @@ D/home/dsbundschuh/workspace
 D/home/dsbundschuh/workspace/wmconfig
 	shell
 4
+D/home/dsbundschuh/workspace
+	elasticsearch
+5
+D/home/dsbundschuh/workspace/elasticsearch
+	..
+0
+D/home/dsbundschuh/workspace
+	aws-testing-container
+3
+D/home/dsbundschuh/workspace/aws-testing-container
+	podman
+5
+D/home/dsbundschuh/workspace/aws-testing-container/podman
+	..
+0
 D
 
 # Command line history (oldest to newest):

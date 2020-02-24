@@ -213,14 +213,38 @@ bindsym $mod+F12 exec --no-startup-id xfce4-session-logout --suspend
 bindsym $mod+shift+F12 exec --no-startup-id xfce4-session-logout --halt
 
 # change display settings via dmenu
-bindsym $mod+shift+m exec --no-startup-id ~/.scripts/display-settings
+#bindsym $mod+shift+m exec --no-startup-id ~/.scripts/display-settings
 
 # networkmanager dmenu integration
-bindsym $mod+shift+w exec --no-startup-id networkmanager_dmenu -fn "Terminus-12" -nb '#21232b' -nf '#D8DEE9' -sb '#5294e2' -sf '#111111'
+bindsym $mod+shift+w exec --no-startup-id networkmanager_dmenu \
+    -fn "Terminus-12" \
+    -nb $(xrdb -query | awk '/^\*.background:/  {print $2}') \
+    -nf $(xrdb -query | awk '/^\*.foreground:/  {print $2}') \
+    -sf $(xrdb -query | awk '/^\*.color12:/  {print $2}') \
+    -sb $(xrdb -query | awk '/^\*.background:/  {print $2}')
 
 # change keyboard layout
 bindsym $mod+shift+F7 exec --no-startup-id setxkbmap us -variant altgr-intl
 bindsym $mod+shift+F8 exec --no-startup-id setxkbmap de
+
+# set locker and open menu via polybar or i3bar
+set $Locker xflock4 && sleep 1
+
+set $mode_system System (l) lock, (e) logout, (s) suspend, (m) menu, (r) reboot, (Shift+s) shutdown
+mode "$mode_system" {
+    bindsym l exec --no-startup-id $Locker, mode "default"
+    bindsym e exec --no-startup-id i3-msg exit, mode "default"
+    bindsym s exec --no-startup-id xfce4-session-logout --halt, mode "default"
+    bindsym m exec --no-startup-id xfce4-session-logout, mode "default"
+    bindsym r exec --no-startup-id xfce4-session-logout --reboot, mode "default"
+    bindsym Shift+s exec --no-startup-id systemctl poweroff -i, mode "default"
+
+    # back to normal: Enter or Escape
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+
+bindsym $mod+Pause mode "$mode_system"
 
 # =============================================================================
 # Assign colors
@@ -241,22 +265,23 @@ client.urgent           #2f343a #900000 #ffffff #900000
 # Start i3bar to display a workspace bar (plus the system information i3status
 # finds out, if available)
 #bar {
-#	colors {
-#		background #191919
-#		statusline #00A5FF #that neon blue
-#		separator  #191919
-#
-#    active_workspace        #004b74 #004b74 #888888
-#    focused_workspace       #00A5FF #00A5FF #191919
-#    inactive_workspace      #191919 #191919 #888888
-    #urgent_workspace       #00A5FF #FFFFFF #333333
-#        }
-#
-#	mode hide
-#    hidden_state hide
-#    status_command i3status
-#	position top
-	#tray_output primary
+    #colors {
+        #background #282a33
+        #statusline #00a5ff
+        #separator  #282a33
+
+        #active_workspace        #004b74 #004b74 #888888
+        #focused_workspace       #00A5FF #00A5FF #191919
+        #inactive_workspace      #191919 #191919 #888888
+        #urgent_workspace        #00A5FF #FFFFFF #333333
+        #}
+
+    #mode dock
+    #hidden_state show
+    #status_command i3status
+    #position top
+    #tray_output primary
+    #tray_padding 4
 #}
 
 

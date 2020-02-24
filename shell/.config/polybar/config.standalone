@@ -17,15 +17,14 @@
 ;==========================================================
 
 [colors]
-;background = ${xrdb:color0:#222}
-background = #282a33
+background = ${xrdb:background:#222}
 background-alt = #3a3c4a
-;foreground = ${xrdb:color7:#222}
-foreground = #d8dee9
+foreground = ${xrdb:foreground:#222}
 foreground-alt = #555555
 primary = #777777
-secondary = #e60053
-alert = #bd2c40
+secondary = ${xrdb:color12:#222}
+alert = ${xrdb:color1:#222}
+
 
 [bar/main]
 monitor = ${env:MONITOR:}
@@ -233,7 +232,7 @@ format-disconnected =
 ;label-disconnected = %ifname% disconnected
 ;label-disconnected-foreground = ${colors.foreground-alt}
 
-ramp-signal-0 = "R++"
+ramp-signal-0 = "R--"
 ramp-signal-1 = "R-"
 ramp-signal-2 = "R"
 ramp-signal-3 = "R+"

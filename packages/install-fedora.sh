@@ -17,9 +17,14 @@ sudo dnf -y install \
     pavucontrol \
     nitrogen \
     paper-icon-theme \
-    podman \
     calc \
-    inkscape
+    inkscape \
+    unrar
+
+# podman
+sudo dnf -y install \
+    podman \
+    podman-compose
 
 # install qogir theme
 sudo dnf -y install gtk-murrine-engine gtk2-engines
@@ -58,13 +63,17 @@ sudo dnf copr enable zeno/spotify-rust
 sudo dnf install spotifyd spotify-tui
 systemctl --user enable --now spotifyd.service
 
+# zathura document viewer
+sudo dnf install -y \
+    zathura \
+    zathura-pdf-mupdf
+
 # browser
 sudo dnf -y install \
     chromium-browser-privacy \
     firejail surf
 
 # polybar
-sudo dnf copr enable atim/polybar
 sudo dnf -y install \
     polybar \
     fontawesome-fonts \
@@ -159,8 +168,8 @@ sudo dnf -y install \
     kubernetes-client \
     kubernetes \
     libvirt-daemon-kvm
-curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-1.6.2.rpm \
- && sudo rpm -ivh minikube-1.6.2.rpm
+curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 \
+   && sudo install minikube-linux-amd64 /usr/local/bin/minikube
 minikube config set vm-driver kvm2
 sudo systemctl enable libvirtd
 
