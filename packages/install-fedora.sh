@@ -16,6 +16,7 @@ sudo dnf -y install \
     picom \
     pavucontrol \
     nitrogen \
+    feh \
     paper-icon-theme \
     calc \
     inkscape \
@@ -163,15 +164,15 @@ curl --silent --location "https://github.com/weaveworks/eksctl/releases/download
 sudo mv /tmp/eksctl /usr/local/bin
 
 # kubernetes and minikube
-sudo dnf -y install \
-    @virtualization \
-    kubernetes-client \
-    kubernetes \
-    libvirt-daemon-kvm
-curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 \
-   && sudo install minikube-linux-amd64 /usr/local/bin/minikube
-minikube config set vm-driver kvm2
-sudo systemctl enable libvirtd
+#sudo dnf -y install \
+    #@virtualization \
+    #kubernetes-client \
+    #kubernetes \
+    #libvirt-daemon-kvm
+#curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 \
+   #&& sudo install minikube-linux-amd64 /usr/local/bin/minikube
+#minikube config set vm-driver kvm2
+#sudo systemctl enable libvirtd
 
 # helm kubernetes package manager
 curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
@@ -208,7 +209,4 @@ sudo wget https://goo.gl/H2SViY -O /etc/udev/rules.d/99-8bitdo-bluetooth-control
 #sudo chmod +x /etc/netctl/interfaces/wlp2s0
 
 # additional stuff
-
-
-
-#unset $SSH_ASKPASS
+unset $SSH_ASKPASS

@@ -31,12 +31,6 @@ r2
 
 # Left window history (oldest to newest):
 d/home/dsbundschuh/workspace/wmconfig/shell
-	.config
-1
-d/home/dsbundschuh/workspace/wmconfig/shell/.config
-	..
-0
-d/home/dsbundschuh/workspace/wmconfig/shell
 	.vifm
 4
 d/home/dsbundschuh/workspace/wmconfig/shell/.vifm
@@ -323,7 +317,19 @@ d/home/dsbundschuh/workspace
 3
 d/home/dsbundschuh/workspace/aws-testing-container
 	.gitignore
-3
+4
+d/home/dsbundschuh/workspace
+	aws-datacenter-testing
+2
+d/home/dsbundschuh
+	container
+4
+d/home/dsbundschuh/container
+	atlassian-demo
+1
+d/home/dsbundschuh/container/atlassian-demo
+	..
+0
 d
 
 # Right window history (oldest to newest):
@@ -490,6 +496,15 @@ D/home/dsbundschuh/workspace/aws-testing-container
 	podman
 5
 D/home/dsbundschuh/workspace/aws-testing-container/podman
+	..
+0
+D/home/dsbundschuh/workspace/aws-testing-container
+	podman
+3
+D/home/dsbundschuh/workspace
+	atlassian-stack
+1
+D/home/dsbundschuh/workspace/atlassian-stack
 	..
 0
 D

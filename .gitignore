@@ -1,3 +1,5 @@
 shell/.config/nvim/bundle/*
 shell/.vim/bundle/*
 *.swp
+.netrwhist
+viminfo

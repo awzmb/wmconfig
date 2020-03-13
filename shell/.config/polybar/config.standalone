@@ -21,10 +21,9 @@ background = ${xrdb:background:#222}
 background-alt = #3a3c4a
 foreground = ${xrdb:foreground:#222}
 foreground-alt = #555555
-primary = #777777
-secondary = ${xrdb:color12:#222}
+primary = #3a3c4a
+secondary = ${xrdb:color3:#222}
 alert = ${xrdb:color1:#222}
-
 
 [bar/main]
 monitor = ${env:MONITOR:}
