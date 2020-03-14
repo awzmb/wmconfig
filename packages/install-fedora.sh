@@ -203,6 +203,7 @@ sudo mv /tmp/eksctl /usr/local/bin
 curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
 chmod 700 get_helm.sh
 ./get_helm.sh
+rm ./get_helm.sh
 # !!!! fedora 31 workaround systemd.unified_cgroup_hierarchy=0 intel_iommu=on to
 # /etc/default/grub then run grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg
 
