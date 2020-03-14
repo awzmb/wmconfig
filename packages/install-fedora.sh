@@ -68,6 +68,14 @@ sudo dnf -y copr enable zeno/spotify-rust
 sudo dnf install -y spotifyd spotify-tui
 systemctl --user enable --now spotifyd.service
 
+# common media players
+sudo dnf -y install \
+    vlc \
+    vlc-extras
+
+# snap container platform
+sudo dnf -y install snapd
+
 # zathura document viewer
 sudo dnf install -y \
     zathura \
