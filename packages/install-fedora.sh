@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# update packages to current level
+sudo dnf -y update
+
 # xfce4 dm
 sudo dnf -y install \
     @xfce-desktop-environment \
@@ -8,9 +11,15 @@ sudo dnf -y install \
 
 # basic packages
 sudo dnf -y install \
-    zsh vim neovim vifm util-linux-user \
-    i3 bemenu \
-    redshift redshift-gtk \
+    zsh \
+    vim \
+    neovim \
+    vifm \
+    util-linux-user \
+    i3 \
+    rofi \
+    redshift \
+    redshift-gtk \
     vim neovim \
     xss-lock \
     picom \
@@ -22,20 +31,15 @@ sudo dnf -y install \
     inkscape \
     unrar
 
+# install fonts
+sudo dnf -y install \
+    terminus-fonts \
+    terminus-fonts-console
+
 # podman
 sudo dnf -y install \
     podman \
     podman-compose
-
-# install qogir theme
-sudo dnf -y install gtk-murrine-engine gtk2-engines
-git clone https://github.com/vinceliuice/Qogir-theme.git
-exec Qogir-theme/install-sh
-rm -rf Qogir-theme
-
-git clone https://github.com/vinceliuice/Qogir-icon-theme.git
-exec Qogir-icon-theme/install.sh
-rm -rf Qogir-icon-theme
 
 # password storage
 sudo dnf -y install \
@@ -60,8 +64,8 @@ sudo dnf -y install tlp tlp-rdw
 sudo systemctl enable tlp
 
 # spotify terminal
-sudo dnf copr enable zeno/spotify-rust
-sudo dnf install spotifyd spotify-tui
+sudo dnf -y copr enable zeno/spotify-rust
+sudo dnf install -y spotifyd spotify-tui
 systemctl --user enable --now spotifyd.service
 
 # zathura document viewer
@@ -90,7 +94,7 @@ sudo dnf -y install xfce4-screensaver
 # visual studio code
 sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
 sudo sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/vscode.repo'
-sudo dnf check-update && sudo dnf install code
+sudo dnf check-update && sudo dnf -y install code
 
 # vulkan graphics
 sudo dnf -y install vulkan-loader vulkan-headers vulkan-tools
@@ -121,11 +125,32 @@ sudo dnf -y install \
     isync \
     msmtp
 
+# brave browser
+sudo sudo dnf -y install dnf-plugins-core
+sudo dnf -y config-manager --add-repo https://brave-browser-rpm-release.s3.brave.com/x86_64/
+sudo rpm --import https://brave-browser-rpm-release.s3.brave.com/brave-core.asc
+sudo dnf -y install brave-browser
+
 # terminal tools and software
 sudo dnf -y install \
-    w3m w3m-img \
+    w3m \
+    w3m-img \
     python3-neovim \
     calcurse
+
+# alacritty terminal emulator
+sudo dnf -y copr enable pschyska/alacritty
+sudo dnf -y install alacritty
+
+# install qogir theme
+sudo dnf -y install gtk-murrine-engine gtk2-engines
+git clone https://github.com/vinceliuice/Qogir-theme.git
+sh ./Qogir-theme/install.sh
+rm -rf Qogir-theme
+
+git clone https://github.com/vinceliuice/Qogir-icon-theme.git
+sh ./Qogir-icon-theme/install.sh
+rm -rf Qogir-icon-theme
 
 # password management
 sudo dnf -y install gnupg
@@ -197,7 +222,9 @@ sudo dnf -y remove \
     abrt \
     tumbler \
     epiphany-runtime \
-    mpv
+    mpv \
+    tracker \
+    tracker-miners
 
 # 8bitdo SF30 bluetooth controller settings
 sudo wget https://goo.gl/H2SViY -O /etc/udev/rules.d/99-8bitdo-bluetooth-controllers.rules
@@ -207,6 +234,9 @@ sudo wget https://goo.gl/H2SViY -O /etc/udev/rules.d/99-8bitdo-bluetooth-control
 #sudo echo "#!/usr/bin/env sh" >> /etc/netctl/interfaces/wlp2s0
 #sudo echo "/usr/bin/macchanger -r interface" >> /etc/netctl/interfaces/wlp2s0
 #sudo chmod +x /etc/netctl/interfaces/wlp2s0
+
+# oh my zsh
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)
 
 # additional stuff
 unset $SSH_ASKPASS
