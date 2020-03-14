@@ -2,7 +2,7 @@
 BASEPATH=./shell
 HOMEPATH=~/
 
-for application in "alacritty" "clipit" "i3" "mc" "nvim" "polybar" "vifm" "touchegg" "xfce4" "Code/User" "rofi"
+for application in "alacritty" "clipit" "i3" "mc" "nvim" "polybar" "vifm" "touchegg" "xfce4" "Code/User" "rofi" "dunst"
 do
   mkdir -p ${BASEPATH}/.config/${application}
   cp -r ${HOMEPATH}/.config/${application} ${BASEPATH}/.config/
