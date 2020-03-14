@@ -94,7 +94,8 @@ sudo dnf -y install xfce4-screensaver
 # visual studio code
 sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
 sudo sh -c 'echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/vscode.repo'
-sudo dnf check-update && sudo dnf -y install code
+sudo dnf -y check-update
+sudo dnf -y install code
 
 # vulkan graphics
 sudo dnf -y install vulkan-loader vulkan-headers vulkan-tools
@@ -237,7 +238,10 @@ sudo wget https://goo.gl/H2SViY -O /etc/udev/rules.d/99-8bitdo-bluetooth-control
 #sudo chmod +x /etc/netctl/interfaces/wlp2s0
 
 # oh my zsh
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+
+# install steam gaming platform
+sudo dnf -y install steam
 
 # additional stuff
 unset $SSH_ASKPASS
