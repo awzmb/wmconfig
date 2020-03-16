@@ -234,7 +234,8 @@ sudo dnf -y remove \
     epiphany-runtime \
     mpv \
     tracker \
-    tracker-miners
+    tracker-miners \
+    blueberry
 
 # 8bitdo SF30 bluetooth controller settings
 sudo wget https://goo.gl/H2SViY -O /etc/udev/rules.d/99-8bitdo-bluetooth-controllers.rules
@@ -250,6 +251,9 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/too
 
 # install steam gaming platform
 sudo dnf -y install steam
+
+# parsec streaming service
+wget https://tinyurl.com/parsec-fedora ; bash parsec-fedora
 
 # additional stuff
 unset $SSH_ASKPASS
