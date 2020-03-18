@@ -49,7 +49,8 @@ sudo dnf -y install \
 # python environment
 sudo dnf -y install \
     pipenv \
-    python3-autopep8
+    python3-autopep8 \
+    yamllint
 
 # java environment
 sudo dnf -y install \
@@ -74,7 +75,10 @@ sudo dnf -y install \
     vlc-extras
 
 # snap container platform
-sudo dnf -y install snapd
+#sudo dnf -y install snapd
+
+# flatpak container platform
+sudo dnf -y install flatpak
 
 # zathura document viewer
 sudo dnf install -y \
@@ -254,6 +258,24 @@ sudo dnf -y install steam
 
 # parsec streaming service
 wget https://tinyurl.com/parsec-fedora ; bash parsec-fedora
+rm parsec-fedora
+
+# install snap packages
+#snap install \
+    #adapta-gtk-snap \
+    #gtk-common-themes \
+    #gtk2-common-themes \
+    #spotify \
+    #spotifyd \
+    #spt
+
+# install flatpak packages
+snap install \
+    com.discordapp.Discord \
+    com.spotify.Client \
+    com.teamspeak.TeamSpeak \
+    org.gtk.Gtk3theme.Qogir \
+    org.gtk.Gtk3theme.Qogir-win-dark
 
 # additional stuff
 unset $SSH_ASKPASS
