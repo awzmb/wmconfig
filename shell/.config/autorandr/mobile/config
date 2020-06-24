@@ -1,0 +1,10 @@
+output DP-1
+off
+output HDMI-1
+off
+output eDP-1
+crtc 0
+mode 1600x900
+pos 0x0
+primary
+rate 59.99

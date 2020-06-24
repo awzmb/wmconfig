@@ -3,11 +3,28 @@
 # update packages to current level
 sudo dnf -y update
 
+ORIGIN_PATH=${pwd}
+
 # xfce4 dm
+#sudo dnf -y install \
+#    @xfce-desktop-environment \
+#    xfce4-vala \
+#    xfce4-sensors-plugin
+
+# mate desktop
 sudo dnf -y install \
-    @xfce-desktop-environment \
-    xfce4-vala \
-    xfce4-sensors-plugin
+    mate-desktop \
+    mate-utils \
+    mate-settings-daemon \
+    mate-session-manager \
+    mate-screenshot \
+    mate-applets \
+    mate-control-center
+
+dconf write /org/mate/desktop/session/required-components/windowmanager "'i3'"
+dconf write /org/mate/desktop/applications/terminal/exec "'alacritty'"
+dconf write /org/mate/desktop/applications/browser/exec "'brave-browser'"
+dconf write /org/mate/desktop/background/show-desktop-icons "false"
 
 # basic packages
 sudo dnf -y install \
@@ -50,6 +67,7 @@ sudo dnf -y install \
 sudo dnf -y install \
     pipenv \
     python3-autopep8 \
+    python3-pands \
     yamllint
 
 # java environment
@@ -63,6 +81,13 @@ sudo rpm -Uvh http://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-re
 # enable tlp power management
 sudo dnf -y install tlp tlp-rdw
 sudo systemctl enable tlp
+
+# autorandr display management
+sudo dnf copr enable macieks/autorandr -y
+sudo dnf install -y autorandr
+
+# install polybar-reload script
+pip install --user polybar-reload
 
 # spotify terminal
 sudo dnf -y copr enable zeno/spotify-rust
@@ -138,6 +163,13 @@ sudo dnf -y install \
     isync \
     msmtp
 
+# install mutt-wizard
+git clone https://github.com/LukeSmithxyz/mutt-wizard
+cd mutt-wizard
+sudo make install
+cd ${ORIGIN_PATH}
+rm -rf mutt-wizard
+
 # brave browser
 sudo sudo dnf -y install dnf-plugins-core
 sudo dnf -y config-manager --add-repo https://brave-browser-rpm-release.s3.brave.com/x86_64/
@@ -152,7 +184,7 @@ sudo dnf -y install \
     calcurse
 
 # alacritty terminal emulator
-sudo dnf -y copr enable pschyska/alacritty
+sudo dnf copr enable atim/alacritty -y
 sudo dnf -y install alacritty
 
 # install qogir theme
@@ -269,13 +301,21 @@ rm parsec-fedora
     #spotifyd \
     #spt
 
+# install spotify-tui
+sudo dnf copr enable szpadel/spotifyd -y
+sudo dnf copr enable atim/spotify-tui -y
+sudo dnf -y install \
+    spotifyd \
+    spotify-tui
+
 # install flatpak packages
 snap install \
     com.discordapp.Discord \
     com.spotify.Client \
     com.teamspeak.TeamSpeak \
     org.gtk.Gtk3theme.Qogir \
-    org.gtk.Gtk3theme.Qogir-win-dark
+    org.gtk.Gtk3theme.Qogir-win-dark \
+    net.sourceforge.chromium-bsu
 
 # additional stuff
 unset $SSH_ASKPASS

@@ -5,7 +5,8 @@
 # kill xfce4 panel (temporary solution)
 exec --no-startup-id killall xfce4-panel
 # start polybar with custom script
-exec_always --no-startup-id ~/.config/polybar/polybar &
+exec_always --no-startup-id ~/.local/bin/polybar-reload
+#exec_always --no-startup-id ~/.config/polybar/polybar &
 # focus change animation
 exec --no-startup-id flashfocus
 # compositor and wallpaper

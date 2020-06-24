@@ -107,5 +107,14 @@ export TERM=xterm-256color
 # dont ask password via gui
 export GIT_ASKPASS=
 
+# favourite editor
+export EDITOR='nvim'
+
+# set us intl keyboard
+setxkbmap us -variant altgr-intl
+
+# set vi mode
+bindkey -v
+
 # remove annoying folders which keep being created
 rm -rf Downloads && rm -rf Desktop && rm -rf AnyDesk
