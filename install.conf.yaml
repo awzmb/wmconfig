@@ -8,6 +8,7 @@
 - create:
     - ~/.config/nvim
     - ~/.vim/undo-history
+    - ~/.config/Code/User
 
 - link:
     ~/.tmux.conf: .tmux.conf
@@ -23,7 +24,7 @@
     ~/.config/polybar: .config/polybar
     ~/.config/rofi: .config/rofi
     ~/.config/vifm: .config/vifm
-    ~/.config/Code: .config/Code
+    ~/.config/Code/User/settings.json: .config/Code/User/settings.json
 
 - shell:
     - [git submodule update --init --recursive, Installing submodules]
