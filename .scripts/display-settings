@@ -1,20 +1,15 @@
-#!/bin/bash                                                                                                                                                                                                                                                    
-# This script is intended to make switching between laptop and external displays easier when using i3+dmenu                                                                                                                                                    
-# To run this script, map it to some shortcut in your i3 config, e.g:                                                                                                                                                                                          
-# bindsym $mod+p exec --no-startup-id $config/display.sh                                                                                                                                                                                                       
-# IMPORTANT: run chmod +x on the script to make it executable                                                                                                                                                                                                  
-# The result is 4 options appearing in dmenu, from which you can choose                                                                                                                                                                                        
-                                                                                                                                                                                                                                                               
-                                                                                                                                                                                                                                                               
-# This is your default laptop screen, detect by running `xrandr`                                                                                                                                                                                               
-INTERNAL_OUTPUT="LVDS-1"                                                                                                                                                                                                                                       
-                                                                                                                                                                                                                                                               
-# choices will be displayed in dmenu                                                                                                                                                                                                                           
-choices="laptop\ndual\nexternal\nclone"                                                                                                                                                                                                                        
-                                                                                                                                                                                                                                                               
-# Your choice in dmenu will determine what xrandr command to run                                                                                                                                                                                               
-chosen=$(echo -e $choices | dmenu -i)                                                                                                                                                                                                                          
-                                                                                                                                                                                                                                                               
+#!/bin/sh 
+# This script is intended to make switching between laptop and external displays easier when using i3+dmenu
+# To run this script, map it to some shortcut in your i3 config, e.g: 
+# bindsym $mod+p exec --no-startup-id $config/display.sh 
+# IMPORTANT: run chmod +x on the script to make it executable
+# The result is 4 options appearing in dmenu, from which you can choose
+# This is your default laptop screen, detect by running `xrandr`
+INTERNAL_OUTPUT="LVDS-1"
+# choices will be displayed in dmenu 
+choices="laptop\ndual\nexternal\nclone"
+# Your choice in dmenu will determine what xrandr command to run
+chosen=$(echo -e $choices | dmenu -i) 
 # This is used to determine wihch external display you have connected
 # This may vary between OS. e.g VGA1 instead of VGA-1
 if [ `xrandr | grep VGA-1 | grep -c ' connected '` -eq 1 ]; then
@@ -48,5 +43,4 @@ case "$chosen" in
     laptop) xrandr --output $INTERNAL_OUTPUT --auto --primary --output $EXTERNAL_OUTPUT --off ;;
     clone) xrandr --output $INTERNAL_OUTPUT --auto --output $EXTERNAL_OUTPUT --auto --same-as $INTERNAL_OUTPUT ;;
     dual) xrandr --output $INTERNAL_OUTPUT --auto --output $EXTERNAL_OUTPUT --auto --right-of $INTERNAL_OUTPUT --primary ;;
-
 esac

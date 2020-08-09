@@ -1,2 +1,0 @@
-#! /bin/sh
-dmenu -p "$1" -fa 'xos4 Terminus:size=12' -nf '#204a87' -nb '#204a87' -sf black -sb '#babdb6' <&- && echo
