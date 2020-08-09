@@ -2,35 +2,34 @@
 set nocompatible
 filetype off
 
-set rtp+=~/.config/nvim/bundle/Vundle.vim
+set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin('~/.config/nvim/bundle')
 
 Plugin 'VundleVim/Vundle.vim'
 
-" Custom plugins...
-" EasyMotion - Allows <leader><leader>(b|e) to jump to (b)eginning or (end)
+" easymotion - allows <leader><leader>(b|e) to jump to (b)eginning or (end)
 " of words.
 Plugin 'easymotion/vim-easymotion'
-" Neomake build tool (mapped below to <c-b>)
+" neomake build tool (mapped below to <c-b>)
 Plugin 'benekastah/neomake'
-" Autocomplete for python
+" autocomplete for python
 Plugin 'davidhalter/jedi-vim'
-" Remove extraneous whitespace when edit mode is exited
+" remove extraneous whitespace when edit mode is exited
 Plugin 'thirtythreeforty/lessspace.vim'
-" Autoformat for several languages (get npm install -g js-beautify for
+" autoformat for several languages (get npm install -g js-beautify for
 " javascript_
 Plugin 'chiel92/vim-autoformat'
 
-" LaTeX editing
-"Plugin 'LaTeX-Box-Team/LaTeX-Box'
+" latex editing
+"plugin 'latex-box-team/latex-box'
 Plugin 'lervag/vimtex'
 Plugin 'donRaphaco/neotex', { 'for': 'tex' }
 
-" Status bar mods
+" status bar mods
 Plugin 'itchyny/lightline.vim'
 Plugin 'airblade/vim-gitgutter'
 
-" Tab completion
+" tab completion
 Plugin 'ervandew/supertab'
 
 " cscope-maps
@@ -48,7 +47,7 @@ Plugin 'pearofducks/ansible-vim'
 Plugin 'jistr/vim-nerdtree-tabs'
 Plugin 'arcticicestudio/nord-vim'
 
-" After all plugins...
+" after all plugins...
 call vundle#end()
 filetype plugin indent on
 
@@ -76,9 +75,7 @@ function! Completefunc(findstart, base)
 endfunction
 
 "call SuperTabChain(Completefunc, '<c-n>')
-
 "let g:SuperTabCompletionContexts = ['g:ContextText2']
-
 
 """"""" General coding stuff """""""
 " Highlight 80th column
@@ -94,14 +91,6 @@ set completeopt=menuone,preview,noinsert
 " Let vim-gitgutter do its thing on large files
 let g:gitgutter_max_signs=10000
 
-" If your terminal's background is white (light theme), uncomment the following
-" to make EasyMotion's cues much easier to read.
-" hi link EasyMotionTarget String
-" hi link EasyMotionShade Comment
-" hi link EasyMotionTarget2First String
-" hi link EasyMotionTarget2Second Statement
-
-
 """"""" Python stuff """""""
 syntax enable
 set number showmatch
@@ -113,13 +102,6 @@ let python_highlight_all = 1
 " Set up leaders
 let mapleader=","
 let maplocalleader="\\"
-
-" Arrow keys up/down move visually up and down rather than by whole lines.  In
-" other words, wrapped lines will take longer to scroll through, but better
-" control in long bodies of text.
-" NOTE - Disabled since <leader><leader>w|e|b works well with easymotion
-"noremap <up> gk
-"noremap <down> gj
 
 " Neomake and other build commands (ctrl-b)
 nnoremap <C-b> :w<cr>:Neomake<cr>

@@ -1,17 +1,30 @@
 - defaults:
     link:
       relink: true
+      force: true
 
 - clean: ['~']
 
-- link:
-    ~/.tmux.conf: tmux.conf
-    ~/.vim: vim
-    ~/.vimrc: vimrc
-
 - create:
-    - ~/downloads
+    - ~/.config/nvim
     - ~/.vim/undo-history
+
+- link:
+    ~/.tmux.conf: .tmux.conf
+    ~/.vim: .vim
+    ~/.vimrc: .vimrc
+    ~/.config/nvim/init.vim: .vimrc
+    ~/.config/alacritty: .config/alacritty
+    ~/.config/autorandr: .config/autorandr
+    ~/.config/clipit: .config/clipit
+    ~/.config/dunst: .config/dunst
+    ~/.config/i3: .config/i3
+    ~/.config/mc: .config/mc
+    ~/.config/polybar: .config/polybar
+    ~/.config/rofi: .config/rofi
+    ~/.config/vifm: .config/vifm
+    ~/.config/Code: .config/Code
 
 - shell:
     - [git submodule update --init --recursive, Installing submodules]
+    - [sh -c "$(curl -fsSL https://raw.githubusercontent.com/zdharma/zinit/master/doc/install.sh)", Installing zinit]
