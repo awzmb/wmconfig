@@ -14,6 +14,20 @@
     ~/.tmux.conf: .tmux.conf
     ~/.vim: .vim
     ~/.vimrc: .vimrc
+    ~/.mbsyncrc: .mbsyncrc
+    ~/.msmtprc: .msmtprc
+    ~/.path: .path
+    ~/.scripts: .scripts
+    ~/.mutt: .mutt
+    ~/.zsh: .zsh
+    ~/.zshrc: .zshrc
+    ~/.Xresources: .Xresources
+    ~/.Xdefaults: .Xdefaults
+    ~/.bashrc: .bashrc
+    ~/.aliases: .aliases
+    ~/.dir_colors: .dir_colors
+    ~/.gtkrc-2.0: .gtkrc-2.0
+    ~/.vifm: .vifm
     ~/.config/nvim/init.vim: .vimrc
     ~/.config/alacritty: .config/alacritty
     ~/.config/autorandr: .config/autorandr

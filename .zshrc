@@ -1,120 +1,69 @@
-# If you come from bash you might have to change your $PATH.
-# export PATH=$HOME/bin:/usr/local/bin:$PATH
+# source theme
+source ~/.zsh/theme.zsh
 
-# Path to your oh-my-zsh installation.
-export ZSH=/home/dsbundschuh/.oh-my-zsh
+# aliases
+source ~/.aliases
 
-# Set name of the theme to load. Optionally, if you set this to "random"
-# it'll load a random theme each time that oh-my-zsh is loaded.
-# See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
-#ZSH_THEME="sorin"
-#ZSH_THEME="3den"
-ZSH_THEME="afowler"
+### Added by Zinit's installer
+if [[ ! -f $HOME/.zinit/bin/zinit.zsh ]]; then
+    print -P "%F{33}▓▒░ %F{220}Installing %F{33}DHARMA%F{220} Initiative Plugin Manager (%F{33}zdharma/zinit%F{220})…%f"
+    command mkdir -p "$HOME/.zinit" && command chmod g-rwX "$HOME/.zinit"
+    command git clone https://github.com/zdharma/zinit "$HOME/.zinit/bin" && \
+        print -P "%F{33}▓▒░ %F{34}Installation successful.%f%b" || \
+        print -P "%F{160}▓▒░ The clone has failed.%f%b"
+fi
 
-# Set list of themes to load
-# Setting this variable when ZSH_THEME=random
-# cause zsh load theme from this variable instead of
-# looking in ~/.oh-my-zsh/themes/
-# An empty array have no effect
-# ZSH_THEME_RANDOM_CANDIDATES=( "robbyrussell" "agnoster" )
+source "$HOME/.zinit/bin/zinit.zsh"
+autoload -Uz _zinit
+(( ${+_comps} )) && _comps[zinit]=_zinit
+### End of Zinit's installer chunk
 
-# Uncomment the following line to use case-sensitive completion.
-# CASE_SENSITIVE="true"
 
-# Uncomment the following line to use hyphen-insensitive completion. Case
-# sensitive completion must be off. _ and - will be interchangeable.
-# HYPHEN_INSENSITIVE="true"
+### custom configuration
+# modules
+zinit light marlonrichert/zsh-autocomplete
+zinit light zdharma/fast-syntax-highlighting
 
-# Uncomment the following line to disable bi-weekly auto-update checks.
-# DISABLE_AUTO_UPDATE="true"
+# styles and completions
+autoload -Uz compinit
+compinit -u -d "${HOME}/.zcompdump_${ZSH_VERSION}"
 
-# Uncomment the following line to change how often to auto-update (in days).
-# export UPDATE_ZSH_DAYS=13
+# https://www.zsh.org/mla/users/2015/msg00467.html
+# shellcheck disable=SC2016
+zstyle -e ':completion:*:*:ssh:*:my-accounts' users-hosts \
+	'[[ -f ${HOME}/.ssh/config && $key = hosts ]] && key=my_hosts reply=()'
 
-# Uncomment the following line to disable colors in ls.
-# DISABLE_LS_COLORS="true"
+# allow ssh tab completion for mosh hostnames
+compdef mosh=ssh
 
-# Uncomment the following line to disable auto-setting terminal title.
-# DISABLE_AUTO_TITLE="true"
+# install fzf
+zinit ice from"gh-r" as"command"
+zinit load junegunn/fzf-bin
 
-# Uncomment the following line to enable command auto-correction.
-# ENABLE_CORRECTION="true"
+# rastonalize dot module
+rationalise-dot() {
+  if [[ $LBUFFER = *.. ]]; then
+    LBUFFER+=/..
+  else
+    LBUFFER+=.
+  fi
+}
 
-# Uncomment the following line to display red dots whilst waiting for completion.
-# COMPLETION_WAITING_DOTS="true"
+zle -N rationalise-dot
+bindkey . rationalise-dot
+# without the following, typing a period aborts incremental history search
+bindkey -M isearch . self-insert
 
-# Uncomment the following line if you want to disable marking untracked files
-# under VCS as dirty. This makes repository status check for large repositories
-# much, much faster.
-# DISABLE_UNTRACKED_FILES_DIRTY="true"
+# zstyle
+zstyle ':completion:*' menu select
+zstyle ':autocomplete:list-choices:*' min-input 3
+zstyle ':autocomplete:list-choices:*' max-lines 80%
+zstyle ':autocomplete:*' groups always
 
-# Uncomment the following line if you want to change the command execution time
-# stamp shown in the history command output.
-# The optional three formats: "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
-# HIST_STAMPS="mm/dd/yyyy"
-
-# Would you like to use another custom folder than $ZSH/custom?
-# ZSH_CUSTOM=/path/to/new-custom-folder
-
-# Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
-# Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
-# Example format: plugins=(rails git textmate ruby lighthouse)
-# Add wisely, as too many plugins slow down shell startup.
-plugins=(
-  git aws
-)
-
-source $ZSH/oh-my-zsh.sh
-
-# User configuration
-
-# export MANPATH="/usr/local/man:$MANPATH"
-
-# You may need to manually set your language environment
-# export LANG=en_US.UTF-8
-
-# Preferred editor for local and remote sessions
-# if [[ -n $SSH_CONNECTION ]]; then
-#   export EDITOR='vim'
-# else
-#   export EDITOR='mvim'
-# fi
-
-# Compilation flags
-# export ARCHFLAGS="-arch x86_64"
-
-# ssh
-# export SSH_KEY_PATH="~/.ssh/rsa_id"
-
-# Set personal aliases, overriding those provided by oh-my-zsh libs,
-# plugins, and themes. Aliases can be placed here, though oh-my-zsh
-# users are encouraged to define aliases within the ZSH_CUSTOM folder.
-# For a full list of active aliases, run `alias`.
-#
-# Example aliases
-# alias zshconfig="mate ~/.zshrc"
-# alias ohmyzsh="mate ~/.oh-my-zsh"
-
-# basic commands
-alias ls='ls --color=auto'
-alias l='ls -lF --color=auto'
-alias ll='ls -alF --color=auto'
-alias docker='podman'
-
-# show as xterm for ssh sessions
-export TERM=xterm-256color
-
-# dont ask password via gui
-export GIT_ASKPASS=
-
-# favourite editor
-export EDITOR='nvim'
-
-# set us intl keyboard
-setxkbmap us -variant altgr-intl
-
-# set vi mode
-bindkey -v
-
-# remove annoying folders which keep being created
-rm -rf Downloads && rm -rf Desktop && rm -rf AnyDesk
+# use the vi navigation keys (hjkl) besides cursor keys in menu completion
+zmodload zsh/complist
+bindkey -M menuselect 'h' vi-backward-char        # left
+bindkey -M menuselect 'k' vi-up-line-or-history   # up
+bindkey -M menuselect 'l' vi-forward-char         # right
+bindkey -M menuselect 'j' vi-down-line-or-history # bottom
+### End of Zinit's installer chunk
