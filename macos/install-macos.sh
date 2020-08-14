@@ -3,6 +3,9 @@
 # disable verification
 sudo spctl --master-disable
 
+# change hostname
+sudo scutil --set HostName bawzmbp
+
 #/bin/zsh -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 
 # add font tap to brew cask
@@ -17,5 +20,7 @@ brew install \
 brew cask install \
   alacritty \
   spotify \
-  karabiner-elements
+  karabiner-elements \
+  discord \
+  steermouse
 
