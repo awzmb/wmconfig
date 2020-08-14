@@ -1,5 +1,6 @@
 shell/.config/nvim/bundle/*
 shell/.vim/bundle/*
 *.swp
+*.swo
 .netrwhist
 viminfo
