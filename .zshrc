@@ -18,11 +18,16 @@ autoload -Uz _zinit
 (( ${+_comps} )) && _comps[zinit]=_zinit
 ### End of Zinit's installer chunk
 
-
 ### custom configuration
-# modules
+
+# vi bindings
+bindkey -v
+
+# modules (turbo mode)
+zinit ice wait'!0'
 zinit light marlonrichert/zsh-autocomplete
 zinit light zdharma/fast-syntax-highlighting
+zinit light zpm-zsh/colorize
 
 # styles and completions
 autoload -Uz compinit

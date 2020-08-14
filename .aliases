@@ -1,7 +1,8 @@
 #!/bin/sh
 
 # basic stuff
-alias ll='ls -lAh'
+alias ll='ls -lAh --color=auto'
+alias ls='ls -F --color=auto'
 
 # python pip upgrades
 alias pip-upgrade='pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U'
