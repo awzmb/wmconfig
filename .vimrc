@@ -16,14 +16,11 @@ Plugin 'benekastah/neomake'
 Plugin 'davidhalter/jedi-vim'
 " remove extraneous whitespace when edit mode is exited
 Plugin 'thirtythreeforty/lessspace.vim'
-" autoformat for several languages (get npm install -g js-beautify for
-" javascript_
-Plugin 'chiel92/vim-autoformat'
 
 " latex editing
 "plugin 'latex-box-team/latex-box'
-Plugin 'lervag/vimtex'
-Plugin 'donRaphaco/neotex', { 'for': 'tex' }
+"Plugin 'lervag/vimtex'
+"Plugin 'donRaphaco/neotex', { 'for': 'tex' }
 
 " status bar mods
 Plugin 'itchyny/lightline.vim'

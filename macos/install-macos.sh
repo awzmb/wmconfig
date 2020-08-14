@@ -37,6 +37,7 @@ brew install \
 # brew cask
 brew cask install \
   alacritty \
+  amethyst \
   spotify \
   karabiner-elements \
   discord \
@@ -45,15 +46,14 @@ brew cask install \
   microsoft-teams \
   keepassxc \
   1password \
-  docker \
-  ubersicht
+  docker
 
 # install wm and hotkey manager
-brew install \
-    koekeishiya/formulae/skhd \
-    koekeishiya/formulae/yabai
-brew services start yabai
-brew update
-brew services restart --all
+#brew install \
+    #koekeishiya/formulae/skhd \
+    #koekeishiya/formulae/yabai
+#brew services start yabai
+#brew update
+#brew services restart --all
 
 # install k8s tools via asdf
