@@ -4,6 +4,9 @@ source ~/.zsh/theme.zsh
 # aliases
 source ~/.aliases
 
+# add script folder to path
+export PATH="~/scripts:$PATH"
+
 ### Added by Zinit's installer
 if [[ ! -f $HOME/.zinit/bin/zinit.zsh ]]; then
     print -P "%F{33}▓▒░ %F{220}Installing %F{33}DHARMA%F{220} Initiative Plugin Manager (%F{33}zdharma/zinit%F{220})…%f"
@@ -19,7 +22,6 @@ autoload -Uz _zinit
 ### End of Zinit's installer chunk
 
 ### custom configuration
-
 # vi bindings
 bindkey -v
 
@@ -71,5 +73,3 @@ bindkey -M menuselect 'h' vi-backward-char        # left
 bindkey -M menuselect 'k' vi-up-line-or-history   # up
 bindkey -M menuselect 'l' vi-forward-char         # right
 bindkey -M menuselect 'j' vi-down-line-or-history # bottom
-### End of Zinit's installer chunk
-### End of Zinit's installer chunk

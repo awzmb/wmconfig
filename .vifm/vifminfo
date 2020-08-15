@@ -13,7 +13,7 @@
 # Bookmarks:
 
 # TUI:
-ar
+al
 q0
 v2
 ov
@@ -24,13 +24,13 @@ r2
 # Left window history (oldest to newest):
 d/home/dsbundschuh
 	downloads
-4
+3
 d
 
 # Right window history (oldest to newest):
 D/home/dsbundschuh
 	downloads
-4
+3
 D
 
 # Command line history (oldest to newest):

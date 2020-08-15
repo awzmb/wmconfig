@@ -5,12 +5,12 @@
 # kill xfce4 panel (temporary solution)
 exec --no-startup-id killall xfce4-panel
 # start polybar with custom script
-exec_always --no-startup-id ~/.local/bin/polybar-reload
+exec_always --no-startup-id ~/.scripts/polybar-reload
 #exec_always --no-startup-id ~/.config/polybar/polybar &
 # focus change animation
 exec --no-startup-id flashfocus
 # compositor and wallpaper
-exec_always --no-startup-id feh --bg-scale ~/workspace/wmconfig/wallpaper/prism.png; sleep 1; picom -b
+exec_always --no-startup-id feh --bg-scale ~/.cfg/wallpaper/prism.png; sleep 1; picom -b
 #exec --no-startup-id nitrogen --restore; sleep 1; picom -b
 # power management
 #exec --no-startup-id xfce4-power-manager

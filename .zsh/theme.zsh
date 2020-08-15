@@ -5,7 +5,7 @@ function k8s_info {
   if [ -f ~/.kube/config ]; then
     k8s_context=$(cat ~/.kube/config | grep "current-context:" | sed "s/current-context: //")
     if [ ! -z $k8s_context ]; then
-      echo " %F{135}(k8s: $k8s_context)"
+      echo " %F{135}($k8s_context)"
     fi
   fi
 }
@@ -22,19 +22,20 @@ autoload -U add-zsh-hook
 autoload -Uz vcs_info
 
 # colors
-c_red="%F{red}"
-c_green="%F{green}"
-c_cyan="%F{cyan}"
-c_blue="%F{blue}"
-c_yellow="%F{yellow}"
-c_magenta="%F{magenta}"
-c_background="%F{0}"
+black="%F{0}"
+red="%F{1}"
+green="%F{2}"
+yellow="%F{3}"
+blue="%F{4}"
+magenta="%F{5}"
+cyan="%F{6}"
+white="%F{7}"
 
 # enable VCS systems you use
 zstyle ':vcs_info:*' enable git svn
 
 # check-for-changes can be really slow.
-# you should disable it, if you work with large repositories
+# disable if you work with large repositories
 zstyle ':vcs_info:*:prompt:*' check-for-changes true
 
 # set formats
@@ -44,25 +45,26 @@ zstyle ':vcs_info:*:prompt:*' check-for-changes true
 # %a - action (e.g. rebase-i)
 # %R - repository path
 # %S - path in the repository
-RESET_COLOR="%f"
-FMT_BRANCH="(%{$c_cyan%}%b%u%c${RESET_COLOR})"
-FMT_ACTION="(%{$c_green%}%a${RESET_COLOR})"
-FMT_UNSTAGED="%{$c_yellow%}:"
-FMT_STAGED="%{$c_green%}:"
+reset_color="%f"
+FMT_BRANCH="(%{$cyan%}%b%u%c${reset_color})"
+FMT_ACTION="(%{$green%}%a${reset_color})"
+FMT_UNSTAGED="%{$yellow%}:"
+FMT_STAGED="%{$green%}:"
 
+# vcs style settings
 zstyle ':vcs_info:*:prompt:*' unstagedstr   "${FMT_UNSTAGED}"
 zstyle ':vcs_info:*:prompt:*' stagedstr     "${FMT_STAGED}"
 zstyle ':vcs_info:*:prompt:*' actionformats "${FMT_BRANCH}${FMT_ACTION}"
 zstyle ':vcs_info:*:prompt:*' formats       "${FMT_BRANCH}"
 zstyle ':vcs_info:*:prompt:*' nvcsformats   ""
 
+# extend vcs_info to check for untracked files or updated submodules
 function precmd {
-    # check for untracked files or updated submodules, since vcs_info doesn't
     if git ls-files --other --exclude-standard 2> /dev/null | grep -q "."; then
         PR_GIT_UPDATE=1
-        FMT_BRANCH="(%{$c_cyan%}%b%u%c%{$c_red%}:${RESET_COLOR})"
+        FMT_BRANCH="<%{$cyan%}%b%u%c%{$red%}:${reset_color}>"
     else
-        FMT_BRANCH="(%{$c_cyan%}%b%u%c${RESET_COLOR})"
+        FMT_BRANCH="<%{$cyan%}%b%u%c${reset_color}>"
     fi
     zstyle ':vcs_info:*:prompt:*' formats " ${FMT_BRANCH}"
 
@@ -70,7 +72,26 @@ function precmd {
 }
 add-zsh-hook precmd precmd
 
-pr_24h_clock=' %*'
+# use red color if in su prompt
+if [ $UID -eq 0 ]; then CARETCOLOR="${red}"; else CARETCOLOR="${blue}"; fi
 
-PS1='%m %{${fg_bold[blue]}%}:: %{$RESET_COLOR%}%{${fg[c_green]}%}%3~ %{${fg_bold[$CARETCOLOR]}%}»%{${RESET_COLOR}%}
-%{$c_blue%}%n${RESET_COLOR}@%{$c_blue%}%m${RESET_COLOR} %{$c_blue%}%~${RESET_COLOR}$vcs_info_msg_0_$(k8s_info)$(aws_info)${RESET_COLOR} %{$c_green%}»${RESET_COLOR} '
+# build prompt
+function get_prompt {
+	echo -n "%F{6}%n%f" # User
+	echo -n "%F{8}@%f" # at
+	echo -n "%F{12}%m%f" # Host
+	echo -n "%F{8}:%f" # in
+	echo -n "%{$reset_color%}%~" # Dir
+	echo -n "$vcs_info_msg_0_" # Git branch
+	#echo -n "\n"
+	echo -n "$(k8s_info)$(aws_info)%{$reset_color%} " # $ or #
+	echo -n "%{$green%}»${reset_color} " # $ or #
+
+}
+
+PS1='$(get_prompt)'
+
+# prompt configuration
+#PS1='%m %{${fg_bold[blue]}%}:: %{$reset_color%}%{${fg[green]}%}%3~ ${reset_color}$vcs_info_msg_0_$(k8s_info)$(aws_info)%{${fg_bold[$CARETCOLOR]}%}»%{${reset_color}%} '
+#PS1='%m %{$blue}%}:: %{$reset_color%}%{$green}%3~ $vcs_info_msg_0_$(k8s_info)$(aws_info)%{$CARETCOLOR}»%{${reset_color}%} '
+#%{$blue%}%n${reset_color}@%{$blue%}%m${reset_color} %{$blue%}%~${reset_color}$vcs_info_msg_0_$(k8s_info)$(aws_info)${reset_color} %{$green%}»${reset_color} '
