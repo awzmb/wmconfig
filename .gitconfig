@@ -1,0 +1,20 @@
+[user]
+	name = awzmb
+	email = bundschuh.dennis@gmail.com
+
+[core]
+	editor = vim
+
+[merge]
+	tool = vimdiff
+
+[alias]
+    # git log history with all
+    gra = log --all --graph --decorate
+    # git log history with oneline
+    gro = log --all --graph --decorate --oneline
+
+# allow local customizations in the .gitconfig_local file
+#[include]
+#	path = ~/.gitconfig_local
+

@@ -72,3 +72,4 @@ bindkey -M menuselect 'k' vi-up-line-or-history   # up
 bindkey -M menuselect 'l' vi-forward-char         # right
 bindkey -M menuselect 'j' vi-down-line-or-history # bottom
 ### End of Zinit's installer chunk
+### End of Zinit's installer chunk

@@ -21,18 +21,6 @@ setopt prompt_subst
 autoload -U add-zsh-hook
 autoload -Uz vcs_info
 
-# separator dashes size
-function separator_dashes {
-	local PYTHON_ENV="$VIRTUAL_ENV"
-	[[ -z "$PYTHON_ENV" ]] && PYTHON_ENV="$CONDA_DEFAULT_ENV"
-
-	if [[ -n "$PYTHON_ENV" && "$PS1" = \(* ]]; then
-		echo $(( COLUMNS - ${#PYTHON_ENV} - 3 ))
-	else
-		echo $COLUMNS
-	fi
-}
-
 # colors
 c_red="%F{red}"
 c_green="%F{green}"
@@ -84,5 +72,5 @@ add-zsh-hook precmd precmd
 
 pr_24h_clock=' %*'
 
-PS1='%{$c_background%}${(l.$(separator_dashes)..-.)}%{$reset_color%}
+PS1='%m %{${fg_bold[blue]}%}:: %{$RESET_COLOR%}%{${fg[c_green]}%}%3~ %{${fg_bold[$CARETCOLOR]}%}»%{${RESET_COLOR}%}
 %{$c_blue%}%n${RESET_COLOR}@%{$c_blue%}%m${RESET_COLOR} %{$c_blue%}%~${RESET_COLOR}$vcs_info_msg_0_$(k8s_info)$(aws_info)${RESET_COLOR} %{$c_green%}»${RESET_COLOR} '

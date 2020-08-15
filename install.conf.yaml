@@ -28,6 +28,7 @@
     ~/.dir_colors: .dir_colors
     ~/.gtkrc-2.0: .gtkrc-2.0
     ~/.vifm: .vifm
+    ~/.gitconfig: .gitconfig
     ~/.config/nvim/init.vim: .vimrc
     ~/.config/alacritty: .config/alacritty
     ~/.config/autorandr: .config/autorandr
@@ -38,6 +39,8 @@
     ~/.config/polybar: .config/polybar
     ~/.config/rofi: .config/rofi
     ~/.config/vifm: .config/vifm
+    ~/.config/yabai: .config/yabai
+    ~/.config/skhd: .config/skhd
     ~/.config/Code/User/settings.json: .config/Code/User/settings.json
 
 - shell:
