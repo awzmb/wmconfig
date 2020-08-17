@@ -9,6 +9,7 @@
     - ~/.config/nvim
     - ~/.vim/undo-history
     - ~/.config/Code/User
+    - ~/.zsh
 
 - link:
     ~/.tmux.conf: .tmux.conf
@@ -19,7 +20,7 @@
     ~/.path: .path
     ~/.scripts: .scripts
     ~/.mutt: .mutt
-    ~/.zsh: .zsh
+    ~/.zsh/theme.zsh: .zsh/theme.zsh
     ~/.zshrc: .zshrc
     ~/.Xresources: .Xresources
     ~/.Xdefaults: .Xdefaults
