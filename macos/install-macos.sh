@@ -36,7 +36,8 @@ brew install \
   isync \
   notmuch \
   screen \
-  ranger
+  ranger \
+  htop
 
 # to start isync as service execute: 'brew services start isync'
 
@@ -56,12 +57,12 @@ brew cask install \
   docker
 
 # install wm and hotkey manager
-#brew install \
-    #koekeishiya/formulae/skhd \
-    #koekeishiya/formulae/yabai
-#brew services start yabai
-#brew update
-#brew services restart --all
+brew install \
+    koekeishiya/formulae/skhd \
+    koekeishiya/formulae/yabai
+brew services start yabai
+brew update
+brew services restart --all
 
 # install k8s tools via asdf
 asdf plugin-add 1password

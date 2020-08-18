@@ -190,3 +190,10 @@ bindkey -M menuselect 'j' vi-down-line-or-history # bottom
 if [ "$(uname)" = "Darwin" ]; then
   source "$( brew --prefix asdf )/asdf.sh"
 fi
+### End of Zinit's installer chunk
+### End of Zinit's installer chunk
+### End of Zinit's installer chunk
+### End of Zinit's installer chunk
+### End of Zinit's installer chunk
+### End of Zinit's installer chunk
+### End of Zinit's installer chunk

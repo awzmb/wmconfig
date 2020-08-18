@@ -2,15 +2,15 @@
     link:
       relink: true
       force: true
+      create: true
 
 - clean: ['~']
 
 - create:
+    - ~/.zsh
     - ~/.config/nvim
     - ~/.vim/undo-history
-    - ~/.config/Code/User
-    - ~/.config/VSCodium/User
-    - ~/.zsh
+    - ~/.config/alacritty
 
 - link:
     ~/.tmux.conf: .tmux.conf
@@ -28,24 +28,32 @@
     ~/.bashrc: .bashrc
     ~/.aliases: .aliases
     ~/.dir_colors: .dir_colors
-    ~/.gtkrc-2.0: .gtkrc-2.0
     ~/.vifm: .vifm
     ~/.gitconfig: .gitconfig
-    ~/.config/nvim/init.vim: .vimrc
-    ~/.config/alacritty/alacritty.yml:
-      if: '[ `uname` = Darwin ]'
-      path: .config/alacritty/alacritty.yml.macos
-    ~/.config/alacritty/alacritty.yml:
-      if: '[ `uname` = Linux ]'
-      path: .config/alacritty/alacritty.yml.linux
-    ~/.config/autorandr: .config/autorandr
-    ~/.config/clipit: .config/clipit
-    ~/.config/dunst: .config/dunst
-    ~/.config/i3: .config/i3
     ~/.config/mc: .config/mc
-    ~/.config/polybar: .config/polybar
-    ~/.config/rofi: .config/rofi
     ~/.config/vifm: .config/vifm
+    ~/.config/nvim/init.vim: .vimrc
+    ~/.config/autorandr:
+      if: '[ `uname` = Linux ]'
+      path: .config/autorandr
+    ~/.gtkrc-2.0:
+      if: '[ `uname` = Linux ]'
+      path: .gtkrc-2.0
+    ~/.config/clipit:
+      if: '[ `uname` = Linux ]'
+      path: .config/clipit
+    ~/.config/dunst:
+      if: '[ `uname` = Linux ]'
+      path: .config/dunst
+    ~/.config/i3:
+      if: '[ `uname` = Linux ]'
+      path: .config/i3
+    ~/.config/polybar:
+      if: '[ `uname` = Linux ]'
+      path: .config/polybar
+    ~/.config/rofi:
+      if: '[ `uname` = Linux ]'
+      path: .config/rofi
     ~/.config/yabai:
       if: '[ `uname` = Darwin ]'
       path: .config/yabai
@@ -58,6 +66,12 @@
     ~/.config/VSCodium/User/settings.json:
       if: '[ `uname` = Linux ]'
       path: .config/Code/User/settings.json
+    ~/.config/alacritty/alacritty.yml:
+      if: '[ `uname` = Darwin ]'
+      path: .config/alacritty/alacritty.yml.macos
+    ~/.config/alacritty/alacritty.yml:
+      if: '[ `uname` = Linux ]'
+      path: .config/alacritty/alacritty.yml.linux
 
 - shell:
     - [git submodule update --init --recursive, Installing submodules]
