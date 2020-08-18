@@ -37,6 +37,7 @@ brew install \
 # brew cask
 brew cask install \
   alacritty \
+  brave-browser \
   amethyst \
   spotify \
   karabiner-elements \
@@ -57,3 +58,19 @@ brew cask install \
 #brew services restart --all
 
 # install k8s tools via asdf
+asdf plugin-add 1password
+asdf plugin-add bat
+asdf plugin-add eksctl
+asdf plugin-add helm
+asdf plugin-add helm-cr
+asdf plugin-add helm-docs
+asdf plugin-add helmfile
+asdf plugin-add k3d
+asdf plugin-add k9s
+asdf plugin-add kubectl
+asdf plugin-add kubectx
+asdf plugin-add kubeseal
+asdf plugin-add terraform
+asdf plugin-add terraform-docs
+asdf plugin-add terraform-lsp
+asdf plugin-add terraform-validator
