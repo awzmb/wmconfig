@@ -16,8 +16,6 @@ exec_always --no-startup-id feh --bg-scale ~/.cfg/wallpaper/prism.png; sleep 1; 
 #exec --no-startup-id xfce4-power-manager
 # bluetooth manager
 #exec --no-startup-id blueman-applet
-# dropbox
-#exec --no-startup-id dropbox
 # clipboard
 #exec --no-startup-id clipit
 # set keymap
@@ -26,8 +24,6 @@ exec --no-startup-id setxkbmap us -variant altgr-intl
 exec --no-startup-id redshift-gtk -l 52:13
 # unclutter to hide mouse pointer after 5s
 #exec --no-startup-id unclutter
-# audio server
-#exec --no-startup-id pulseaudio -D; sleep 5;killall pulseaudio;pulseaudio -D
 # start xss-lock to suspend and lock on lid close (laptop)
 #exec xss-lock -- gdmflexiserver
 
