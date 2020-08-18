@@ -27,7 +27,7 @@ bindkey -v
 
 # modules (turbo mode)
 zinit ice wait'!0'
-zinit light marlonrichert/zsh-autocomplete
+#zinit light marlonrichert/zsh-autocomplete
 zinit light zdharma/fast-syntax-highlighting
 zinit light zpm-zsh/colorize
 
@@ -113,29 +113,41 @@ setopt hist_reduce_blanks
 setopt share_history
 
 # fuzzy matching for typos
-zstyle ':completion:*' completer _complete _match _approximate
-zstyle ':completion:*:match:*' original only
-zstyle ':completion:*:approximate:*' max-errors 1 numeric
+#zstyle ':completion:*' completer _complete _match _approximate
+#zstyle ':completion:*:match:*' original only
+#zstyle ':completion:*:approximate:*' max-errors 1 numeric
 
-# cd will never select parent
-zstyle ':completion:*:cd:*' ignore-parents parent pwd
+# menu style completion
+CASE_SENSITIVE="false"
+setopt MENU_COMPLETE
+setopt no_list_ambiguous
+zstyle ':completion:*' menu yes select
+
+# fzf based completion
+#zstyle ':completion:*' menu select
+#zstyle ':autocomplete:list-choices:*' min-input 3
+#zstyle ':autocomplete:list-choices:*' max-lines 80%
+#zstyle ':autocomplete:tab:*' completion cycle
+#zstyle ':autocomplete:tab:*' completion fzf
+#zstyle ':autocomplete:*' groups always
 
 # tab completion for PIDs
 zstyle ':completion:*:*:*:*:processes' command "ps -u `whoami` -o pid,user,comm,command -w -w"
 zstyle ':completion:*:*:kill:*' menu yes select
 zstyle ':completion:*:kill:*' force-list always
 
-# zsh completions chache
-CACHEDIR="$HOME/.zsh/cache"
-
-# create $CACHEDIR if it does not exist
-if [ ! -d $CACHEDIR ]; then
-  mkdir -p $CACHEDIR
-fi
+# cd will never select parent
+zstyle ':completion:*:cd:*' ignore-parents parent pwd
 
 # cache completions
-zstyle ':completion:*' use-cache on
-zstyle ':completion:*' cache-path $CACHEDIR
+#if [ ! -d $CACHEDIR ]; then
+  #mkdir -p $CACHEDIR
+#fi
+#CACHEDIR="$HOME/.zsh/cache"
+#zstyle ':completion:*' use-cache on
+#zstyle ':completion:*' cache-path $CACHEDIR
+
+# completion vim keybindings
 case "$TERM" in
   *xterm*|screen-256color)
     # alt + arrows
@@ -277,14 +289,6 @@ bindkey -M isearch . self-insert
 
 # load bashcompinit for some old bash completions
 autoload bashcompinit && bashcompinit
-
-# zstyle
-zstyle ':completion:*' menu select
-zstyle ':autocomplete:list-choices:*' min-input 3
-zstyle ':autocomplete:list-choices:*' max-lines 80%
-zstyle ':autocomplete:tab:*' completion cycle
-zstyle ':autocomplete:tab:*' completion fzf
-zstyle ':autocomplete:*' groups always
 
 # use the vi navigation keys (hjkl) besides cursor keys in menu completion
 zmodload zsh/complist
