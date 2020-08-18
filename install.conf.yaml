@@ -33,12 +33,12 @@
     ~/.vifm: .vifm
     ~/.gitconfig: .gitconfig
     ~/.config/nvim/init.vim: .vimrc
-    ~/.config/alacritty/alacritty.yml.macos:
+    ~/.config/alacritty/alacritty.yml:
       if: '[ `uname` = Darwin ]'
-      path: .config/alacritty/alacritty.yml
-    ~/.config/alacritty/alacritty.yml.linux:
+      path: .config/alacritty/alacritty.yml.macos
+    ~/.config/alacritty/alacritty.yml:
       if: '[ `uname` = Linux ]'
-      path: .config/alacritty/alacritty.yml
+      path: .config/alacritty/alacritty.yml.linux
     ~/.config/autorandr: .config/autorandr
     ~/.config/clipit: .config/clipit
     ~/.config/dunst: .config/dunst
@@ -53,12 +53,12 @@
     ~/.config/skhd:
       if: '[ `uname` = Darwin ]'
       path: .config/skhd
-    ~/.config/Code/User/settings.json:
+    ~/Library/Application\ Support/VSCodium/User/settings.json:
       if: '[ `uname` = Darwin ]'
-      path: Library/Application\ Support/VSCodium/User/settings.json
-    ~/.config/Code/User/settings.json:
+      path: .config/Code/User/settings.json
+    ~/.config/VSCodium/User/settings.json:
       if: '[ `uname` = Linux ]'
-      path: .config/VSCodium/User/settings.json
+      path: .config/Code/User/settings.json
 
 - shell:
     - [git submodule update --init --recursive, Installing submodules]
