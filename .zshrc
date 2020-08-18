@@ -294,4 +294,4 @@ bindkey -M menuselect 'l' vi-forward-char         # right
 bindkey -M menuselect 'j' vi-down-line-or-history # bottom
 
 # asdf completion
-zinit light kiurchv/asdf.plugin.zsh
+#zinit light kiurchv/asdf.plugin.zsh
