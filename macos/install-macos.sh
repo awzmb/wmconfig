@@ -35,7 +35,8 @@ brew install \
   neomutt \
   isync \
   notmuch \
-  screen
+  screen \
+  ranger
 
 # to start isync as service execute: 'brew services start isync'
 

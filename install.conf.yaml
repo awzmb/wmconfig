@@ -10,7 +10,6 @@
     - ~/.vim/undo-history
     - ~/.config/Code/User
     - ~/.config/VSCodium/User
-    - ~/.config/alacritty
     - ~/.zsh
 
 - link:
