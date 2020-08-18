@@ -22,7 +22,7 @@
     ~/.path: .path
     ~/.scripts: .scripts
     ~/.mutt: .mutt
-    ~/.zsh/theme.zsh: .zsh/theme.zsh
+    ~/.zsh/theme.zsh: .theme.zsh
     ~/.zshrc: .zshrc
     ~/.Xresources: .Xresources
     ~/.Xdefaults: .Xdefaults
@@ -53,7 +53,7 @@
     ~/.config/skhd:
       if: '[ `uname` = Darwin ]'
       path: .config/skhd
-    ~/Library/Application\ Support/VSCodium/User/settings.json:
+    ~/Library/ApplicationSupport/VSCodium/User/settings.json:
       if: '[ `uname` = Darwin ]'
       path: .config/Code/User/settings.json
     ~/.config/VSCodium/User/settings.json:
