@@ -50,8 +50,8 @@ zstyle ':vcs_info:*:prompt:*' check-for-changes true
 reset_color="%f"
 FMT_BRANCH="<%{$blue%}%b%u%c${reset_color}>"
 FMT_ACTION="<%{$green%}%a${reset_color}>"
-FMT_UNSTAGED="%{$blue%} "
-FMT_STAGED="%{$blue%} "
+FMT_UNSTAGED="%{$blue%}:"
+FMT_STAGED="%{$blue%}:"
 
 # vcs style settings
 zstyle ':vcs_info:*:prompt:*' unstagedstr   "${FMT_UNSTAGED}"

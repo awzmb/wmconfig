@@ -30,9 +30,14 @@ brew install \
   jq \
   jd \
   git \
-  k3d \
   krew \
-  pass
+  pass \
+  neomutt \
+  isync \
+  notmuch \
+  screen
+
+# to start isync as service execute: 'brew services start isync'
 
 # brew cask
 brew cask install \
@@ -74,3 +79,7 @@ asdf plugin-add terraform
 asdf plugin-add terraform-docs
 asdf plugin-add terraform-lsp
 asdf plugin-add terraform-validator
+
+# fix insecure directory problem
+sudo chmod -R 755 /usr/local/share/zsh
+sudo chown -R $(whoami):staff /usr/local/share/zsh
