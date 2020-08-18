@@ -1,0 +1,1 @@
+/home/dsbundschuh/.cfg/.theme.zsh

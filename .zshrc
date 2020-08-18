@@ -294,4 +294,6 @@ bindkey -M menuselect 'l' vi-forward-char         # right
 bindkey -M menuselect 'j' vi-down-line-or-history # bottom
 
 # asdf completion
-source "$( brew --prefix asdf )/asdf.sh"
+if [ "$(uname)" = "Darwin" ]; then
+  source "$( brew --prefix asdf )/asdf.sh"
+fi
