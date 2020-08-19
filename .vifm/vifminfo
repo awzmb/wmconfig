@@ -2,13 +2,13 @@
 
 # Marks:
 'b
-	/home/dsbundschuh/bin/
+	/Users/awzm/bin/
 	..
-1529067226
+1597840484
 'h
-	/home/dsbundschuh/
+	/Users/awzm/
 	..
-1529067226
+1597840484
 
 # Bookmarks:
 
@@ -25,15 +25,105 @@ r2
 d/home/dsbundschuh
 	downloads
 3
+d/home
+	..
+0
+d/
+	home
+9
+d/home
+	..
+0
+d/
+	Users
+3
+d/Users
+	awzm
+2
+d/Users/awzm
+	Workspace
+10
+d/Users/awzm/Workspace
+	terraform-prod
+3
+d/Users/awzm/Workspace/terraform-prod
+	playground
+1
+d/Users/awzm/Workspace/terraform-prod/playground
+	..
+0
+d/Users/awzm/Workspace/terraform-prod
+	..
+0
 d
 
 # Right window history (oldest to newest):
 D/home/dsbundschuh
 	downloads
 3
+D/home
+	..
+0
+D/
+	bin
+5
+D/bin
+	..
+0
+D/
+	Users
+3
+D/Users
+	awzm
+2
+D/Users/awzm
+	Workspace
+10
+D/Users/awzm/Workspace
+	platform-terraform-infra
+2
+D/Users/awzm/Workspace/platform-terraform-infra
+	environments
+1
+D/Users/awzm/Workspace/platform-terraform-infra/environments
+	..
+0
+D/Users/awzm/Workspace/platform-terraform-infra
+	environments
+1
+D/Users/awzm/Workspace/platform-terraform-infra/environments
+	playground
+8
+D/Users/awzm/Workspace/platform-terraform-infra/environments/playground
+	..
+0
+D/Users/awzm/Workspace/platform-terraform-infra/environments
+	playground
+8
+D/Users/awzm/Workspace/platform-terraform-infra/environments/playground
+	..
+0
+D/Users/awzm/Workspace/platform-terraform-infra/environments
+	..
+0
+D/Users/awzm/Workspace/platform-terraform-infra
+	environments
+1
+D/Users/awzm/Workspace/platform-terraform-infra/environments
+	playground
+8
+D/Users/awzm/Workspace/platform-terraform-infra/environments/playground
+	..
+0
+D/Users/awzm/Workspace/platform-terraform-infra/environments
+	README.md
+11
 D
 
 # Command line history (oldest to newest):
+:rm
+:zo
+:za
 :q
 
 # Search history (oldest to newest):
@@ -43,10 +133,13 @@ D
 # Local filter history (oldest to newest):
 
 # Registers:
+""/Users/awzm/.local/share/vifm/Trash/000_Taskfile.yml
 
 # Directory stack (oldest to newest):
 
 # Trash content:
+t/Users/awzm/.local/share/vifm/Trash/000_Taskfile.yml
+	/Users/awzm/Workspace/terraform-prod/Taskfile.yml
 
 # State:
 f
@@ -55,6 +148,6 @@ i1
 [F
 F
 I1
-].1
+].0
 ]F
 s0
