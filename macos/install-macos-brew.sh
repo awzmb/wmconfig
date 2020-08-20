@@ -66,6 +66,10 @@ brew install \
 # init gpg key with 'gpg --full-gen-key'
 # store password with 'pass insert spotify'
 
+# starleaf video conference tool
+brew cask install \
+  starleaf
+
 # install wm and hotkey manager
 brew install \
     koekeishiya/formulae/skhd \

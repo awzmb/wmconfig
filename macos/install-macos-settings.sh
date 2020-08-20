@@ -137,7 +137,6 @@ defaults write com.apple.finder FXInfoPanesExpanded -dict \
   Privileges -bool true
 
 # change minimize/maximize window effect
-change minimize/maximize window effect
 defaults write com.apple.dock mineffect -string "scale"
 
 # minimize windows into their application’s icon
