@@ -71,10 +71,6 @@ brew install \
 # init gpg key with 'gpg --full-gen-key'
 # store password with 'pass insert spotify'
 
-# starleaf video conference tool
-brew cask install \
-  starleaf
-
 # install wm and hotkey manager
 brew install \
     koekeishiya/formulae/skhd \
@@ -105,3 +101,8 @@ asdf plugin add terraform-validator
 # fix zsh 'insecure directory' problem
 sudo chmod -R 755 /usr/local/share/zsh
 sudo chown -R $(whoami):staff /usr/local/share/zsh
+
+# install vscodium extensions
+code --install-extension \
+  hashicorp.terraform \
+  vscodevim.vim
