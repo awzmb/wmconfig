@@ -11,7 +11,7 @@ brew install \
   ansible \
   awscli \
   go-task/tap/go-task \
-  grep \
+  grep --with-default-names \
   jq \
   jd \
   git \
@@ -55,7 +55,12 @@ brew cask install \
 # fonts
 brew cask install \
   font-terminus \
-  font-hack
+  font-hack \
+  font-hack-nerd-font \
+  font-fira-mono-nerd-font \
+  font-bitstream-vera-sans-mono-nerd-font \
+  font-terminess-ttf-nerd-font \
+  font-victor-mono-nerd-font
 
 # spotify with terminal client
 brew install \

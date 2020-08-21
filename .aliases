@@ -1,6 +1,7 @@
 #!/bin/sh
 
 # basic stuff
+alias l='ls -lh'
 alias ll='ls -lAh'
 alias ls='ls -F'
 

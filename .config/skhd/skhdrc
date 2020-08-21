@@ -1,6 +1,5 @@
 # open terminal
-ctrl + shift - return : /Applications/iTerm.app/Contents/MacOS/iTerm2
-ctrl + shift - d : /Application/dmenu-mac.app/Contents/MacOS/dmenu-mac
+shift + ctrl - return : /Applications/iTerm.app/Contents/MacOS/iTerm2
 
 # focus window
 alt - h : yabai -m window --focus west

@@ -14,7 +14,7 @@
 
 # TUI:
 al
-q0
+q1
 v2
 ov
 m-1
@@ -53,8 +53,17 @@ d/Users/awzm/Workspace/terraform-prod/playground
 	..
 0
 d/Users/awzm/Workspace/terraform-prod
-	..
-0
+	modules
+1
+d/Users/awzm/Workspace
+	terraform-aws-ec2-instance
+3
+d/Users/awzm/Workspace/terraform-aws-ec2-instance
+	example
+1
+d/Users/awzm/Workspace/terraform-aws-ec2-instance/example
+	main.tf
+1
 d
 
 # Right window history (oldest to newest):
@@ -116,14 +125,38 @@ D/Users/awzm/Workspace/platform-terraform-infra/environments/playground
 	..
 0
 D/Users/awzm/Workspace/platform-terraform-infra/environments
-	README.md
-11
+	playground
+8
+D/Users/awzm/Workspace/platform-terraform-infra
+	..
+0
+D/Users/awzm/Workspace
+	terraform-prod
+5
+D/Users/awzm
+	Workspace
+10
+D/Users/awzm/Workspace
+	terraform-prod
+5
+D/Users/awzm/Workspace/terraform-prod
+	modules
+3
+D/Users/awzm/Workspace/terraform-prod/modules
+	linux-instance
+1
+D/Users/awzm/Workspace/terraform-prod/modules/linux-instance
+	..
+0
 D
 
 # Command line history (oldest to newest):
 :rm
 :zo
 :za
+:cd ..
+:vim
+:vi
 :q
 
 # Search history (oldest to newest):
