@@ -22,12 +22,15 @@ Plugin 'thirtythreeforty/lessspace.vim'
 "Plugin 'lervag/vimtex'
 "Plugin 'donRaphaco/neotex', { 'for': 'tex' }
 
+" terraform
+Plugin 'hashivim/vim-terraform'
+
 " status bar mods
 Plugin 'itchyny/lightline.vim'
 Plugin 'airblade/vim-gitgutter'
 
-" tab completion
-Plugin 'ervandew/supertab'
+" coc language server client
+Plugin 'neoclide/coc.nvim', {'branch': 'release'}
 
 " cscope-maps
 Plugin 'joe-skb7/cscope-maps'
@@ -64,15 +67,10 @@ noremap <F3> :Autoformat<CR>
 " open NERDTree with Ctrl+n
 map <C-n> :NERDTreeToggle<CR>
 
+""""""" coc configuration """""""
+" Use <c-space> to trigger completion.
+inoremap <silent><expr> <c-space> coc#refresh()
 
-""""""" SuperTab configuration """""""
-"let g:SuperTabDefaultCompletionType = "<c-x><c-u>"
-function! Completefunc(findstart, base)
-    return "\<c-x>\<c-p>"
-endfunction
-
-"call SuperTabChain(Completefunc, '<c-n>')
-"let g:SuperTabCompletionContexts = ['g:ContextText2']
 
 """"""" General coding stuff """""""
 " Highlight 80th column

@@ -30,6 +30,8 @@ brew install \
   keychain \
   coreutils \
   ack \
+  wget \
+  tmuxinator \
   gnu-sed --with-default-names
 # to start isync as service run 'brew services start isync'
 
@@ -46,6 +48,15 @@ brew cask install \
   keepassxc \
   1password \
   docker
+
+# install node and npm for coc (vim)
+brew install \
+  node \
+  npm \
+  yarn
+
+# zsh completions
+wget https://raw.githubusercontent.com/tmuxinator/tmuxinator/master/completion/tmuxinator.zsh -O /usr/local/share/zsh/site-functions/_tmuxinator
 
 # install dmenu port and disable spotlight
 brew cask install \
