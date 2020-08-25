@@ -1,6 +1,7 @@
-shell/.config/nvim/bundle/*
-shell/.vim/bundle/*
 *.swp
 *.swo
 .netrwhist
 viminfo
+.vim/backup
+.vim/undo
+.vim/swap
