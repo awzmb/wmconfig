@@ -11,10 +11,6 @@
     - ~/.config/nvim
     - ~/.vim/undo-history
     - ~/.config/alacritty
-    - ~/.vim
-    - ~/.vim/undo
-    - ~/.vim/backup
-    - ~/.vim/swp
 
 - link:
     ~/.tmux.conf: .tmux.conf

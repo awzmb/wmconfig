@@ -49,11 +49,26 @@ brew cask install \
   1password \
   docker
 
-# install node and npm for coc (vim)
+# install coc and language server (vim)
 brew install \
   node \
   npm \
-  yarn
+  yarn \
+  yaml-language-server \
+  hashicorp/tap/terraform-ls
+# add certificates for npm and yarn if zscaler is running
+# cat xxxx.cer >> /usr/local/etc/openssl/cert.pem might be necessary
+if [ -e '~/.certificates' ]; then
+  npm config set strict-ssl false && \
+  yarn config set strict-ssl false
+fi
+
+# coc languages
+# TODO: install automatically via vim
+#:CocInstall coc-yaml
+#:CocInstall coc-docker
+#:CocInstall coc-python
+#:CocInstall coc-gitignore
 
 # zsh completions
 wget https://raw.githubusercontent.com/tmuxinator/tmuxinator/master/completion/tmuxinator.zsh -O /usr/local/share/zsh/site-functions/_tmuxinator
