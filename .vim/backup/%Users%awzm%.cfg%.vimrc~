@@ -289,7 +289,7 @@ hi clear CursorLine
 augroup CLClear
   autocmd! ColorScheme * hi clear CursorLine
 augroup END
-":hi CursorLine cterm=NONE ctermbg=darkred ctermfg=white guibg=darkred guifg=white
+:hi CursorLine cterm=NONE ctermbg=darkred ctermfg=white guibg=darkred guifg=white
 
 """"""" python stuff """""""
 syntax enable
