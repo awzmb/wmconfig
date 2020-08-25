@@ -82,11 +82,10 @@ brew cask install \
 brew cask install \
   font-terminus \
   font-hack \
+  font-edlo \
   font-hack-nerd-font \
   font-fira-mono-nerd-font \
-  font-bitstream-vera-sans-mono-nerd-font \
-  font-terminess-ttf-nerd-font \
-  font-victor-mono-nerd-font
+  font-bitstream-vera-sans-mono-nerd-font
 
 # spotify with terminal client
 brew install \
