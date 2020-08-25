@@ -85,7 +85,9 @@ brew cask install \
   font-edlo \
   font-hack-nerd-font \
   font-fira-mono-nerd-font \
-  font-bitstream-vera-sans-mono-nerd-font
+  font-bitstream-vera-sans-mono-nerd-font \
+  font-profontx \
+  font-proggy-clean-tt-nerd-font
 
 # spotify with terminal client
 brew install \

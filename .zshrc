@@ -219,3 +219,7 @@ echo -ne '\e[5 q'
 preexec() {
    echo -ne '\e[5 q'
 }
+### End of Zinit's installer chunk
+### End of Zinit's installer chunk
+### End of Zinit's installer chunk
+### End of Zinit's installer chunk

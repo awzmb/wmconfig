@@ -9,12 +9,18 @@
 - create:
     - ~/.zsh
     - ~/.config/nvim
-    - ~/.vim/undo-history
     - ~/.config/alacritty
+    - ~/.vim
+    - ~/.vim/undo
+    - ~/.vim/backup
+    - ~/.vim/swp
 
 - link:
     ~/.tmux.conf: .tmux.conf
-    ~/.vim: .vim
+    ~/.vim/coc-settings.json:
+      path: .vim/coc-settings.json
+    ~/.vim/bundle:
+      path: .vim/bundle
     ~/.vimrc: .vimrc
     ~/.mbsyncrc: .mbsyncrc
     ~/.msmtprc: .msmtprc
