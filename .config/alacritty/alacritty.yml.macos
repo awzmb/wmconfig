@@ -71,19 +71,19 @@ scrolling:
 font:
   # Normal (roman) font face
   normal:
-    family: ProggyCleanTT
+    family: Hack
     # The `style` can be specified to pick a specific face.
     style: Regular
 
   # Bold font face
   bold:
-    family: ProggyCleanTT
+    family: Hack
     # The `style` can be specified to pick a specific face.
     style: Bold
 
   # Italic font face
   italic:
-    family: ProggyCleanTT
+    family: Hack
     # The `style` can be specified to pick a specific face.
     style: Italic
 

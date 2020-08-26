@@ -22,7 +22,7 @@ Plugin 'thirtythreeforty/lessspace.vim'
 "Plugin 'lervag/vimtex'
 "Plugin 'donRaphaco/neotex', { 'for': 'tex' }
 
-" terraform
+" terraform and hcl
 Plugin 'hashivim/vim-terraform'
 
 " status bar mods
@@ -37,7 +37,7 @@ Plugin 'joe-skb7/cscope-maps'
 
 " nerdtree navigation and git plugin
 Plugin 'scrooloose/nerdtree'
-Plugin 'Xuyuanp/nerdtree-git-plugin'
+"Plugin 'Xuyuanp/nerdtree-git-plugin'
 
 " commenting plugin
 Plugin 'scrooloose/nerdcommenter'
@@ -77,7 +77,7 @@ autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
 " close vim automatically if nerdtree is the last open window
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 " close nerdtree after opening a file
-let NERDTreeQuitOnOpen = 1
+let NERDTreeQuitOnOpen = 0
 " automatically delete buffer when deleting a file with nerdtree
 let NERDTreeAutoDeleteBuffer = 1
 " show hidden files by default
@@ -282,14 +282,12 @@ set swapfile
 " remove multiple spaces on single backspace
 set shiftwidth=2 tabstop=2 softtabstop=2 expandtab autoindent
 " highlight current line
-if !has('nvim')
+function s:SetCursorLine()
   set cursorline
-endif
-hi clear CursorLine
-augroup CLClear
-  autocmd! ColorScheme * hi clear CursorLine
-augroup END
-":hi CursorLine cterm=NONE ctermbg=darkred ctermfg=white guibg=darkred guifg=white
+  set nocursorcolumn
+  hi cursorline cterm=none ctermbg=0 ctermfg=NONE
+endfunction
+autocmd VimEnter * call s:SetCursorLine()
 
 """"""" python stuff """""""
 syntax enable
