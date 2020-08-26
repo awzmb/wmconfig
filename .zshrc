@@ -219,3 +219,8 @@ echo -ne '\e[5 q'
 preexec() {
    echo -ne '\e[5 q'
 }
+
+# fix for zscaler if .certificates exists in home
+if [ -d "$HOME/.certificates" ]; then
+  export AWS_CA_BUNDLE=$HOME/.certificates/Certificates.pem
+fi
