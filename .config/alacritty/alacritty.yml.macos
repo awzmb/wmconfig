@@ -183,7 +183,7 @@ colors:
   primary:
     #background: '0x282828'
     #background: '0x282A33'
-    background: '0x222222'
+    background: '0x262626'
     foreground: '0xD8DEE9'
   cursor:
     text: '0x2E3440'
