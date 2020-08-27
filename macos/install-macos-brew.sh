@@ -32,6 +32,7 @@ brew install \
   ack \
   wget \
   tmuxinator \
+  fzf \
   gnu-sed --with-default-names
 # to start isync as service run 'brew services start isync'
 
@@ -83,10 +84,8 @@ brew cask install \
   font-terminus \
   font-hack \
   font-edlo \
-  font-hack-nerd-font \
-  font-fira-mono-nerd-font \
+  font-dejavu \
   font-bitstream-vera-sans-mono-nerd-font \
-  font-profontx \
   font-proggy-clean-tt-nerd-font
 
 # spotify with terminal client

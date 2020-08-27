@@ -42,6 +42,10 @@ Plugin 'scrooloose/nerdtree'
 " commenting plugin
 Plugin 'scrooloose/nerdcommenter'
 
+" show colors (hex, rgb, etc.)
+"Plugin 'RRethy/vim-hexokinase', { 'do': 'make hexokinase' }
+Plugin 'lilydjwg/colorizer'
+
 " other stuff
 Plugin 'infoslack/vim-docker'
 Plugin 'pearofducks/ansible-vim'
