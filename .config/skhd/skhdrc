@@ -159,5 +159,6 @@ alt - p : yabai -m window --toggle sticky;\
           yabai -m window --grid 5:5:4:0:1:1
 
 # change layout of desktop
-ctrl + alt - a : yabai -m space --layout bsp
-ctrl + alt - d : yabai -m space --layout float
+# currently deactivated. using the alt -t toggle for floating windows instead
+#ctrl + alt - a : yabai -m space --layout bsp
+#ctrl + alt - d : yabai -m space --layout float

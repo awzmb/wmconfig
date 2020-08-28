@@ -4,59 +4,57 @@
 brew tap homebrew/cask-fonts
 
 # default packages
-brew install \
-  tmux \
-  neovim \
-  asdf \
-  ansible \
-  awscli \
-  go-task/tap/go-task \
-  grep --with-default-names \
-  jq \
-  jd \
-  git \
-  krew \
-  pass \
-  neomutt \
-  isync \
-  notmuch \
-  screen \
-  ranger \
-  htop \
-  gpg \
-  tree\
-  openssl \
-  neofetch \
-  keychain \
-  coreutils \
-  ack \
-  wget \
-  tmuxinator \
-  fzf \
-  gnu-sed --with-default-names
+brew install tmux
+brew install neovim
+brew install asdf
+brew install ansible
+brew install awscli
+brew install go-task/tap/go-task
+brew install grep --with-default-names
+brew install jq
+brew install jd
+brew install git
+brew install krew
+brew install pass
+brew install neomutt
+brew install isync
+brew install notmuch
+brew install screen
+brew install ranger
+brew install htop
+brew install gpg
+brew install tree
+brew install openssl
+brew install neofetch
+brew install keychain
+brew install coreutils
+brew install ack
+brew install wget
+brew install tmuxinator
+brew install fzf
+brew install gnu-sed --with-default-names
 # to start isync as service run 'brew services start isync'
 
 # brew cask
-brew cask install \
-  alacritty \
-  brave-browser \
-  spotify \
-  karabiner-elements \
-  discord \
-  steermouse \
-  vscodium \
-  microsoft-teams \
-  keepassxc \
-  1password \
-  docker
+brew cask install alacritty
+brew cask install brave-browser
+brew cask install spotify
+brew cask install karabiner-elements
+brew cask install discord
+brew cask install steermouse
+brew cask install vscodium
+brew cask install microsoft-teams
+brew cask install keepassxc
+brew cask install 1password
+brew cask install docker
+brew cask install drawio
 
 # install coc and language server (vim)
-brew install \
-  node \
-  npm \
-  yarn \
-  yaml-language-server \
-  hashicorp/tap/terraform-ls
+brew install node
+brew install npm
+brew install yarn
+brew install yaml-language-server
+brew install hashicorp/tap/terraform-ls
 # add certificates for npm and yarn if zscaler is running
 # cat xxxx.cer >> /usr/local/etc/openssl/cert.pem might be necessary
 if [ -e '~/.certificates' ]; then
@@ -75,32 +73,28 @@ fi
 wget https://raw.githubusercontent.com/tmuxinator/tmuxinator/master/completion/tmuxinator.zsh -O /usr/local/share/zsh/site-functions/_tmuxinator
 
 # install dmenu port and disable spotlight
-brew cask install \
-  dmenu-mac
+brew cask install dmenu-mac
 # to turn off spotlight, follow https://www.fireebok.com/resource/how-to-turn-off-and-turn-on-spotlight-on-macos-mojave.html
 
 # fonts
-brew cask install \
-  font-terminus \
-  font-hack \
-  font-edlo \
-  font-dejavu \
-  font-bitstream-vera-sans-mono-nerd-font \
-  font-proggy-clean-tt-nerd-font
+brew cask install font-terminus
+brew cask install font-hack
+brew cask install font-edlo
+brew cask install font-dejavu
+brew cask install font-bitstream-vera-sans-mono-nerd-font
+brew cask install font-proggy-clean-tt-nerd-font
 
 # spotify with terminal client
-brew install \
-  portaudio \
-  spotifyd \
-  spotify-tui
+brew install portaudio
+brew install spotifyd
+brew install spotify-tui
 # start with brew services start spotifyd
 # init gpg key with 'gpg --full-gen-key'
 # store password with 'pass insert spotify'
 
 # install wm and hotkey manager
-brew install \
-    koekeishiya/formulae/skhd \
-    koekeishiya/formulae/yabai
+brew install koekeishiya/formulae/skhd
+brew install koekeishiya/formulae/yabai
 brew services start yabai
 brew services start skhd
 brew update
