@@ -31,6 +31,12 @@ export PATH="~/.scripts:$PATH"
 # source theme
 source ~/.zsh/theme.zsh
 
+# completion settings
+source ~/.zsh/completion-settings.zsh
+
+# change ls colors to match system
+source ~/.zsh/completion-colors.zsh
+
 # general settings
 source ~/.zsh/general-settings.zsh
 
