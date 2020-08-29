@@ -50,6 +50,9 @@ source ~/.zsh/rationalize-dot.zsh
 # vi mode settings
 source ~/.zsh/vi-mode.zsh
 
+# tab completion generator
+source ~/.zsh/completion-generator.zsh
+
 # asdf completion
 if [ "$(uname)" = "Darwin" ]; then
   source "$( brew --prefix asdf )/asdf.sh"
