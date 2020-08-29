@@ -64,3 +64,4 @@ if [ -d "$HOME/.certificates" ]; then
 fi
 ### End of Zinit's installer chunk
 ### End of Zinit's installer chunk
+### End of Zinit's installer chunk

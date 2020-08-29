@@ -396,19 +396,6 @@ createKeyboardShortcuts(){
         echo
     fi
 
-    # iTunes
-    app=/Applications/iTunes.app
-    if [ -a "$app" ]; then
-        echo "Adding: $app"
-        bundleid=$(get_BundleId "$app")
-        appList+="$bundleid\n"
-        defaults write "$bundleid" NSUserKeyEquivalents "{
-            'Equalizer' = '${CMD}E';
-        }"
-        defaults read "$bundleid" NSUserKeyEquivalents
-        echo
-    fi
-
     # iTerm2
     app=$HOME/Applications/iTerm.app
     if [ -a "$app" ]; then
@@ -423,47 +410,6 @@ createKeyboardShortcuts(){
             'Move Tab Left' = '${CMD}${SHIFT}${LEFT}';
             'Move Tab Right' = '${CMD}${SHIFT}${RIGHT}';
             'Look Up in Dash' = '${CMD}L';
-        }"
-        defaults read "$bundleid" NSUserKeyEquivalents
-        echo
-    fi
-
-    # Chrome
-    app=/Applications/Google\ Chrome.app
-    if [ -a "$app" ]; then
-        bundleid=$(get_BundleId "$app")
-        echo "Adding: $app"
-        appList+="$bundleid\n"
-        defaults write "$bundleid" NSUserKeyEquivalents "{
-            'About Google Chrome' = '${CMD}.';
-            'Extensions' = '${CMD}e';
-            'Select Next Tab' = '${CMD}${RIGHT}';
-            'Select Previous Tab' = '${CMD}${LEFT}';
-            'Task Manager' = '${CTRL}t';
-            'key-aws-accounts-menu' = '${CTRL}a';
-            'key-aws-regions-menu' = '${CTRL}r';
-            'key-aws-services-menu' = '${CTRL}s';
-            'key-confluence-systems' = '${CMD}${SHIFT}c';
-            'key-github-ansiblesite' = '${CMD}${SHIFT}a';
-            'key-jira-systems' = '${CMD}${SHIFT}j';
-            'key-namely' = '${CMD}${SHIFT}o';
-            'key-webstore-extensions' = '${CMD}${SHIFT}e';
-            'key-zendesk-systems-custom' = '${CMD}${SHIFT}z';
-        }"
-        defaults read "$bundleid" NSUserKeyEquivalents
-        echo
-    fi
-
-    # HipChat
-    app=$HOME/Applications/HipChat.app
-    if [ -a "$app" ]; then
-        bundleid=$(get_BundleId "$app")
-        echo "Adding: $app"
-        appList+="$bundleid\n"
-        defaults write "$bundleid" NSUserKeyEquivalents "{
-            'Quit HipChat' = '${OPT}${SHIFT}Q';
-            'Show Next Chat' = '${CMD}${DOWN}';
-            'Show Previous Chat' = '${CMD}${UP}';
         }"
         defaults read "$bundleid" NSUserKeyEquivalents
         echo
