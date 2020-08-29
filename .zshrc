@@ -63,3 +63,4 @@ if [ -d "$HOME/.certificates" ]; then
   export AWS_CA_BUNDLE=$HOME/.certificates/Certificates.pem
 fi
 ### End of Zinit's installer chunk
+### End of Zinit's installer chunk
