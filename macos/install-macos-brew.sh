@@ -32,6 +32,7 @@ brew install ack
 brew install wget
 brew install tmuxinator
 brew install fzf
+brew install bat
 brew install gnu-sed --with-default-names
 # to start isync as service run 'brew services start isync'
 

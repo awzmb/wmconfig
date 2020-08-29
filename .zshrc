@@ -19,7 +19,8 @@ bindkey -v
 # modules (turbo mode)
 zinit ice wait'!0'
 #zinit light marlonrichert/zsh-autocomplete
-zinit light zdharma/fast-syntax-highlighting
+
+# colorizes various shell tools (grep, diff, ip, ...)
 zinit light zpm-zsh/colorize
 
 # aliases
@@ -53,7 +54,6 @@ source ~/.zsh/vi-mode.zsh
 if [ "$(uname)" = "Darwin" ]; then
   source "$( brew --prefix asdf )/asdf.sh"
 fi
-
 
 # fix for zscaler if .certificates exists in home
 if [ -d "$HOME/.certificates" ]; then
