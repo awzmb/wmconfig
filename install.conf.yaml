@@ -7,13 +7,14 @@
 - clean: ['~']
 
 - create:
-    - ~/.config/nvim
-    - ~/.config/alacritty
     - ~/.vim
     - ~/.vim/undo
     - ~/.vim/backup
     - ~/.vim/swp
     - ~/.zshcache
+    - ~/.config/nvim
+    - ~/.config/alacritty
+    - ~/.config/karabiner
 
 - link:
     ~/.tmux.conf: .tmux.conf
@@ -63,6 +64,9 @@
     ~/.config/yabai:
       if: '[ `uname` = Darwin ]'
       path: .config/yabai
+    ~/.config/karabiner/karabiner.json:
+      if: '[ `uname` = Darwin ]'
+      path: .config/karabiner/karabiner.json
     ~/.config/skhd:
       if: '[ `uname` = Darwin ]'
       path: .config/skhd

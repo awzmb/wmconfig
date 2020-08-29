@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# a full list of all possible defaultscommands can be found here
+# https://ss64.com/osx/syntax-defaults.html
+
 # disable app verification
 sudo spctl --master-disable
 
@@ -14,6 +17,21 @@ sudo defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.serve
 # close any open system preferences panes, to prevent them from overriding
 # settings we’re about to change
 osascript -e 'tell application "System Preferences" to quit'
+
+# ask for the administrator password upfront
+sudo -v
+
+# keep-alive: update existing `sudo` time stamp until `.macos` has finished
+while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+
+# disable the sound effects on boot
+sudo nvram SystemAudioVolume=" "
+
+# set the timezone; see `sudo systemsetup -listtimezones` for other values
+sudo systemsetup -settimezone "Europe/Berlin" > /dev/null
+
+# increase sound quality for bluetooth headphones/headsets
+defaults write com.apple.BluetoothAudioAgent "Apple Bitpool Min (editable)" -int 40
 
 # disable notification center and remove the menu bar icon
 launchctl unload -w /System/Library/LaunchAgents/com.apple.notificationcenterui.plist 2> /dev/null
@@ -80,8 +98,14 @@ defaults write com.apple.screensaver askForPasswordDelay -int 0
 # reference: https://github.com/kevinsuttle/macos-defaults/issues/17#issuecomment-266633501
 defaults write NSGlobalDomain AppleFontSmoothing -int 1
 
+# enable hidpi display modes (requires restart)
+sudo defaults write /Library/Preferences/com.apple.windowserver DisplayResolutionEnabled -bool true
+
 # finder: allow quitting via ⌘ + q; doing so will also hide desktop icons
 defaults write com.apple.finder QuitMenuItem -bool true
+
+# hide desktop icons (still accessible via ~/Desktop folder)
+defaults write com.apple.finder CreateDesktop -bool false
 
 # finder: disable window animations and get info animations
 defaults write com.apple.finder DisableAllAnimations -bool true
@@ -304,6 +328,152 @@ defaults write com.apple.TextEdit PlainTextEncodingForWrite -int 4
 # enable the debug menu in disk utility
 defaults write com.apple.DiskUtility DUDebugMenuEnabled -bool true
 defaults write com.apple.DiskUtility advanced-image-options -bool true
+
+# always show ~/Library folder
+chflags nohidden ~/Library/
+
+# keyboard shortcuts
+addEntries() {
+    # check if universal access / custom menu key exists
+    if defaults read com.apple.universalaccess com.apple.custommenu.apps > /dev/null 2>&1; then
+        defaults delete com.apple.universalaccess com.apple.custommenu.apps
+    fi
+    defaults write com.apple.universalaccess com.apple.custommenu.apps -array
+
+    # write all apps to custommenu
+    defaults write com.apple.universalaccess com.apple.custommenu.apps -array-add $(echo -e "$appList")
+    echo "All apps with custom shortcuts:"
+    defaults read com.apple.universalaccess com.apple.custommenu.apps
+
+    # restart cfprefsd and finder for changes to take effect.
+    # you may also have to restart any apps that were running
+    # when you changed their keyboard shortcuts. there is some
+    # amount of voodoo as to what you do or do not have to
+    # restart, and when.
+    killall cfprefsd
+    killall Finder
+}
+
+# get the bundleid for each app
+get_BundleId(){
+    mdls -raw -name kMDItemCFBundleIdentifier "$1"
+}
+
+
+createKeyboardShortcuts(){
+    # improve readability
+    app=""
+    appList=""
+    CMD="@"
+    CTRL="^"
+    OPT="~"
+    SHIFT="$"
+    UP='\U2191'
+    DOWN='\U2193'
+    LEFT='\U2190'
+    RIGHT='\U2192'
+    TAB='\U21e5'
+
+    Global
+    defaults write NSGlobalDomain NSUserKeyEquivalents "{
+        'About This Mac' = '${CMD}${SHIFT}${OPT}A';
+    }"
+
+    # Finder
+    app=/System/Library/CoreServices/Finder.app
+    if [ -a "$app" ]; then
+        bundleid=$(get_BundleId "$app")
+        echo "Adding: $app $bundleid"
+        appList+="$bundleid\n"
+        defaults write "$bundleid" NSUserKeyEquivalents "{
+            'Show Package Contents' = '${CMD}${SHIFT}O';
+            'Show Next Tab' = '${CMD}${RIGHT}';
+            'Show Previous Tab' = '${CMD}${LEFT}';
+            'Screenshots' = '${CMD}${SHIFT}S';
+            'Downloads' = '${CMD}${SHIFT}D';
+        }"
+        defaults read "$bundleid" NSUserKeyEquivalents
+        echo
+    fi
+
+    # iTunes
+    app=/Applications/iTunes.app
+    if [ -a "$app" ]; then
+        echo "Adding: $app"
+        bundleid=$(get_BundleId "$app")
+        appList+="$bundleid\n"
+        defaults write "$bundleid" NSUserKeyEquivalents "{
+            'Equalizer' = '${CMD}E';
+        }"
+        defaults read "$bundleid" NSUserKeyEquivalents
+        echo
+    fi
+
+    # iTerm2
+    app=$HOME/Applications/iTerm.app
+    if [ -a "$app" ]; then
+        bundleid=$(get_BundleId "$app")
+        echo "Adding: $app"
+        appList+="$bundleid\n"
+        defaults write "$bundleid" NSUserKeyEquivalents "{
+            'Copy with Styles' = '${CMD}C';
+            'Find Cursor' = '${CMD}${OPT}/';
+            'Select Previous Tab' = '${CMD}${LEFT}';
+            'Select Next Tab' = '${CMD}${RIGHT}';
+            'Move Tab Left' = '${CMD}${SHIFT}${LEFT}';
+            'Move Tab Right' = '${CMD}${SHIFT}${RIGHT}';
+            'Look Up in Dash' = '${CMD}L';
+        }"
+        defaults read "$bundleid" NSUserKeyEquivalents
+        echo
+    fi
+
+    # Chrome
+    app=/Applications/Google\ Chrome.app
+    if [ -a "$app" ]; then
+        bundleid=$(get_BundleId "$app")
+        echo "Adding: $app"
+        appList+="$bundleid\n"
+        defaults write "$bundleid" NSUserKeyEquivalents "{
+            'About Google Chrome' = '${CMD}.';
+            'Extensions' = '${CMD}e';
+            'Select Next Tab' = '${CMD}${RIGHT}';
+            'Select Previous Tab' = '${CMD}${LEFT}';
+            'Task Manager' = '${CTRL}t';
+            'key-aws-accounts-menu' = '${CTRL}a';
+            'key-aws-regions-menu' = '${CTRL}r';
+            'key-aws-services-menu' = '${CTRL}s';
+            'key-confluence-systems' = '${CMD}${SHIFT}c';
+            'key-github-ansiblesite' = '${CMD}${SHIFT}a';
+            'key-jira-systems' = '${CMD}${SHIFT}j';
+            'key-namely' = '${CMD}${SHIFT}o';
+            'key-webstore-extensions' = '${CMD}${SHIFT}e';
+            'key-zendesk-systems-custom' = '${CMD}${SHIFT}z';
+        }"
+        defaults read "$bundleid" NSUserKeyEquivalents
+        echo
+    fi
+
+    # HipChat
+    app=$HOME/Applications/HipChat.app
+    if [ -a "$app" ]; then
+        bundleid=$(get_BundleId "$app")
+        echo "Adding: $app"
+        appList+="$bundleid\n"
+        defaults write "$bundleid" NSUserKeyEquivalents "{
+            'Quit HipChat' = '${OPT}${SHIFT}Q';
+            'Show Next Chat' = '${CMD}${DOWN}';
+            'Show Previous Chat' = '${CMD}${UP}';
+        }"
+        defaults read "$bundleid" NSUserKeyEquivalents
+        echo
+    fi
+}
+
+# finally add those shortcuts
+createKeyboardShortcuts
+addEntries
+
 
 # restart all changed applications
 for app in "Activity Monitor" \

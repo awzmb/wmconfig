@@ -1,5 +1,8 @@
 # open terminal
 shift + ctrl - return : /Applications/Alacritty.app/Contents/MacOS/alacritty
+shift + ctrl - space : /Applications/dmenu-mac.app/Contents/MacOS/dmenu-mac
+shift + ctrl - e: /Applications/dmenu-mac.app/Contents/MacOS/dmenu-mac
+shift + ctrl - / : /Applications/dmenu-mac.app/Contents/MacOS/dmenu-mac
 #shift + ctrl - return : /Applications/iTerm.app/Contents/MacOS/iTerm2
 
 # focus window
