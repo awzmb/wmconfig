@@ -41,9 +41,6 @@ source ~/.zsh/completion-colors.zsh
 # general settings
 source ~/.zsh/general-settings.zsh
 
-# fzf tab completion
-source ~/.zsh/fzf-tab-completion.zsh
-
 # rationalize dot
 source ~/.zsh/rationalize-dot.zsh
 
@@ -52,6 +49,9 @@ source ~/.zsh/vi-mode.zsh
 
 # tab completion generator
 source ~/.zsh/completion-generator.zsh
+
+# fzf tab completion
+source ~/.zsh/fzf-tab-completion.zsh
 
 # asdf completion
 if [ "$(uname)" = "Darwin" ]; then

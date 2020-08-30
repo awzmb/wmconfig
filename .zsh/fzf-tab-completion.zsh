@@ -4,15 +4,24 @@ zinit light Aloxaf/fzf-tab
 
 ## open fzf search with ctrl+o
 # function to open fzf
-_start_fzf_search() {
+_start_fzf_vim_search() {
 	zle -I
 	(
 		vim $(fzf)
 	) < /dev/tty
 }
 zle -N _start_fzf_search
-# keybinding
-bindkey '^O' _start_fzf_search
+# function to open fzf history search
+_start_fzf_history_search() {
+	zle -I
+	(
+    cat $HOME/.zsh_history | fzf
+	) < /dev/tty
+}
+zle -N _start_fzf_history_search
+# keybinding (ctrl+o for vim search, ctrl+r for history search)
+bindkey '^o' _start_fzf_vim_search
+bindkey '^r' _start_fzf_history_search
 
 ## settings
 # use fd for fzf search and do not exclude hidden files
@@ -31,6 +40,10 @@ export FZF_DEFAULT_OPTS="${FZF_DEFAULT_OPTS} --color=16"
   #--color='bg:237,bg+:236,info:143,border:240,spinner:108' \
   #--color='hl:65,fg:252,header:65,fg+:252' \
   #--color='pointer:161,marker:168,prompt:110,hl+:108'"
+# reverse layout (display first entry on top
+export FZF_DEFAULT_OPTS="${FZF_DEFAULT_OPTS} --layout=reverse"
+# only use a certain percent of the terminal instead of full height
+export FZF_DEFAULT_OPTS="${FZF_DEFAULT_OPTS} --height 40%"
 
 # disable sort when completing options of any command
 zstyle ':completion:complete:*:options' sort false
