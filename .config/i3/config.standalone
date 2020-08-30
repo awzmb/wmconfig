@@ -8,6 +8,8 @@ exec --no-startup-id flashfocus
 exec --no-startup-id nitrogen --restore; sleep 1; picom -b
 # power management
 exec --no-startup-id xfce4-power-manager
+# remap capslock to escape
+exec_always --no-startup-id setxkbmap -option 'ctrl:nocaps' && xcape -e 'Caps_Lock=Escape'
 # bluetooth manager
 exec --no-startup-id blueman-applet
 # dropbox

@@ -9,6 +9,8 @@ exec_always --no-startup-id ~/.scripts/polybar &
 exec_always --no-startup-id ~/.scripts/polybar-reload
 # focus change animation
 exec --no-startup-id flashfocus
+# remap capslock to escape
+exec_always --no-startup-id setxkbmap -option caps:escape
 # compositor and wallpaper
 exec_always --no-startup-id feh --bg-scale ~/.cfg/wallpaper/prism.png; sleep 1; picom -b
 #exec --no-startup-id nitrogen --restore; sleep 1; picom -b
