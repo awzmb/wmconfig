@@ -90,37 +90,8 @@ setopt MENU_COMPLETE
 setopt no_list_ambiguous
 zstyle ':completion:*' menu yes select
 
-# fzf based completion
-#zstyle ':completion:*' menu select
-#zstyle ':autocomplete:list-choices:*' min-input 3
-#zstyle ':autocomplete:list-choices:*' max-lines 80%
-#zstyle ':autocomplete:tab:*' completion cycle
-#zstyle ':autocomplete:tab:*' completion fzf
-#zstyle ':autocomplete:*' groups always
-
-# tab completion for PIDs
-zstyle ':completion:*:*:*:*:processes' command "ps -u `whoami` -o pid,user,comm,command -w -w"
-zstyle ':completion:*:*:kill:*' menu yes select
-zstyle ':completion:*:kill:*' force-list always
-
-# cd will never select parent
-zstyle ':completion:*:cd:*' ignore-parents parent pwd
-
-# cache completions
-#if [ ! -d $CACHEDIR ]; then
-  #mkdir -p $CACHEDIR
-#fi
-#CACHEDIR="$HOME/.zsh/cache"
-#zstyle ':completion:*' use-cache on
-#zstyle ':completion:*' cache-path $CACHEDIR
-
 # completions
 compinit -u -d "${HOME}/.zcompdump_${ZSH_VERSION}"
-
-# https://www.zsh.org/mla/users/2015/msg00467.html
-# shellcheck disable=SC2016
-zstyle -e ':completion:*:*:ssh:*:my-accounts' users-hosts \
-	'[[ -f ${HOME}/.ssh/config && $key = hosts ]] && key=my_hosts reply=()'
 
 # allow ssh tab completion for mosh hostnames
 compdef mosh=ssh

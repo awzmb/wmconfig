@@ -1,6 +1,18 @@
-### fzf tab completion
+### fzf tab completion (partially overwrites general settings)
 ## module
 zinit light Aloxaf/fzf-tab
+
+## open fzf search with ctrl+o
+# function to open fzf
+_start_fzf_search() {
+	zle -I
+	(
+		vim $(fzf)
+	) < /dev/tty
+}
+zle -N _start_fzf_search
+# keybinding
+bindkey '^O' _start_fzf_search
 
 ## settings
 # use fd for fzf search and do not exclude hidden files
@@ -19,7 +31,6 @@ export FZF_DEFAULT_OPTS="${FZF_DEFAULT_OPTS} --color=16"
   #--color='bg:237,bg+:236,info:143,border:240,spinner:108' \
   #--color='hl:65,fg:252,header:65,fg+:252' \
   #--color='pointer:161,marker:168,prompt:110,hl+:108'"
-
 
 # disable sort when completing options of any command
 zstyle ':completion:complete:*:options' sort false

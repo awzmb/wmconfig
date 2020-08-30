@@ -38,6 +38,9 @@ zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#) ([0-9a-z-
 zstyle ':completion:*:cd:*' tag-order local-directories directory-stack path-directories
 
 # use caching so that commands like apt and dpkg complete are useable
+if [ ! -d $CACHEDIR ]; then
+  mkdir -p $CACHEDIR
+fi
 zstyle ':completion::complete:*' use-cache 1
 zstyle ':completion::complete:*' cache-path "$HOME/.zshcache"
 
@@ -85,3 +88,6 @@ if [[ $COMPLETION_WAITING_DOTS = true ]]; then
   zle -N expand-or-complete-with-dots
   bindkey "^I" expand-or-complete-with-dots
 fi
+
+# compdump
+#compinit -u -d "${HOME}/.zcompdump_${ZSH_VERSION}"
