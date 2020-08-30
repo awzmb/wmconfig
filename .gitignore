@@ -5,3 +5,4 @@ viminfo
 .vim/backup
 .vim/undo
 .vim/swp
+node_modules
