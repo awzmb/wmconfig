@@ -10,7 +10,7 @@ _start_fzf_vim_search() {
 		vim $(fzf)
 	) < /dev/tty
 }
-zle -N _start_fzf_search
+zle -N _start_fzf_vim_search
 # function to open fzf history search
 _start_fzf_history_search() {
 	zle -I
