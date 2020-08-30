@@ -3,8 +3,9 @@
 zinit light Aloxaf/fzf-tab
 
 ## settings
-# dont exclude hidden files
-export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
+# use fd for fzf search and do not exclude hidden files
+export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git --color=always'
+export FZF_DEFAULT_OPTS="--ansi"
 
 # disable sort when completing options of any command
 zstyle ':completion:complete:*:options' sort false

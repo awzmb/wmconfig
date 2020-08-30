@@ -94,10 +94,10 @@ bindsym $mod+Up focus up
 bindsym $mod+Right focus right
 
 # move focused window
-bindsym $mod+Shift+J move left
-bindsym $mod+Shift+K move down
-bindsym $mod+Shift+L move up
-bindsym $mod+Shift+Odiaeresis move right
+bindsym $mod+Shift+H move left
+bindsym $mod+Shift+J move down
+bindsym $mod+Shift+K move up
+bindsym $mod+Shift+L move right
 
 # alternatively, you can use the cursor keys:
 bindsym $mod+Shift+Left move left
@@ -150,16 +150,16 @@ mode "resize" {
         # more space on its left
 
         bindsym j resize shrink left 10 px or 10 ppt
-        bindsym Shift+J resize grow   left 10 px or 10 ppt
+        bindsym Shift+H resize grow   left 10 px or 10 ppt
 
         bindsym k resize shrink down 10 px or 10 ppt
-        bindsym Shift+K resize grow   down 10 px or 10 ppt
+        bindsym Shift+J resize grow   down 10 px or 10 ppt
 
         bindsym l resize shrink up 10 px or 10 ppt
-        bindsym Shift+L resize grow   up 10 px or 10 ppt
+        bindsym Shift+K resize grow   up 10 px or 10 ppt
 
         bindsym odiaeresis resize shrink right 10 px or 10 ppt
-        bindsym Shift+Odiaeresis resize grow   right 10 px or 10 ppt
+        bindsym Shift+L resize grow   right 10 px or 10 ppt
 
                 # same bindings, but for the arrow keys
         bindsym Left resize shrink left 10 px or 10 ppt

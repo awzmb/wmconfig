@@ -53,7 +53,8 @@ sudo dnf -y install \
     jd \
     tree \
     ack \
-    git
+    git \
+    fd-find
 
 # install fonts
 sudo dnf -y install \
