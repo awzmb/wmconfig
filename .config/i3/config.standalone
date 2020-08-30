@@ -12,7 +12,7 @@ exec --no-startup-id xfce4-power-manager
 exec_always --no-startup-id setxkbmap -option 'ctrl:nocaps' && xcape -e 'Caps_Lock=Escape'
 # bluetooth manager
 exec --no-startup-id blueman-applet
-# dropbox
+# dropboxj
 exec --no-startup-id dropbox
 # clipboard
 exec --no-startup-id clipit

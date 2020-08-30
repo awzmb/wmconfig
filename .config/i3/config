@@ -9,6 +9,8 @@ exec_always --no-startup-id ~/.scripts/polybar &
 exec_always --no-startup-id ~/.scripts/polybar-reload
 # focus change animation
 exec --no-startup-id flashfocus
+# set keymap
+exec --no-startup-id setxkbmap us -variant altgr-intl
 # remap capslock to escape
 exec_always --no-startup-id setxkbmap -option caps:escape
 # compositor and wallpaper
@@ -20,8 +22,6 @@ exec_always --no-startup-id feh --bg-scale ~/.cfg/wallpaper/prism.png; sleep 1; 
 #exec --no-startup-id blueman-applet
 # clipboard
 #exec --no-startup-id clipit
-# set keymap
-exec --no-startup-id setxkbmap us -variant altgr-intl
 # filter blue light during nighttime
 exec --no-startup-id redshift-gtk -l 52:13
 # unclutter to hide mouse pointer after 5s
@@ -39,7 +39,7 @@ exec --no-startup-id redshift-gtk -l 52:13
 set $term alacritty
 
 # set mod key (Mod1=<Alt>, Mod4=<Super>)
-set $mod Mod4
+set $mod Mod1
 
 # font for window titles. ISO 10646 = Unicode
 #font -xos4-terminus-bold-r-normal--14-140-72-72-c-80-iso10646-1
@@ -82,10 +82,10 @@ bindsym $mod+F4 exec $term -e neomutt
 bindsym $mod+F1 exec $term -e calcurse
 
 # change focus
-bindsym $mod+j focus left
-bindsym $mod+k focus down
-bindsym $mod+l focus up
-bindsym $mod+odiaeresis focus right
+bindsym $mod+h focus left
+bindsym $mod+j focus down
+bindsym $mod+k focus up
+bindsym $mod+l focus right
 
 # alternatively, you can use the cursor keys:
 bindsym $mod+Left focus left
@@ -106,10 +106,10 @@ bindsym $mod+Shift+Up move up
 bindsym $mod+Shift+Right move right
 
 # split in horizontal orientation
-bindsym $mod+h split h
+bindsym $mod+Shift+h split h
 
 # split in vertical orientation
-bindsym $mod+v split v
+bindsym $mod+Shift+v split v
 
 # enter fullscreen mode for the focused container
 bindsym $mod+f fullscreen

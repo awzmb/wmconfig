@@ -30,7 +30,7 @@ Plugin 'itchyny/lightline.vim'
 Plugin 'airblade/vim-gitgutter'
 
 " coc language server client
-Plugin 'neoclide/coc.nvim', {'branch': 'release'}
+Plugin 'neoclide/coc.nvim'
 
 " cscope-maps
 Plugin 'joe-skb7/cscope-maps'
@@ -54,6 +54,19 @@ Plugin 'arcticicestudio/nord-vim'
 " finish plugin loading
 call vundle#end()
 filetype plugin indent on
+
+" coc extensions
+let g:coc_global_extensions = [
+            \'coc-prettier',
+            \'coc-json',
+            \'coc-svg',
+            \'coc-tslint',
+            \'coc-tsserver',
+            \'coc-yaml',
+            \'coc-docker',
+            \'coc-python',
+            \'coc-gitignore'
+            \]
 
 " color scheme
 colorscheme nord
