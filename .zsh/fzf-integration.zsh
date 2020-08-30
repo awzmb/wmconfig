@@ -15,7 +15,7 @@ zle -N _start_fzf_search
 _start_fzf_history_search() {
 	zle -I
 	(
-    cat $HOME/.zsh_history | fzf
+    cat $HOME/.zsh_history | fzf | zsh -e
 	) < /dev/tty
 }
 zle -N _start_fzf_history_search
