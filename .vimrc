@@ -32,6 +32,13 @@ Plugin 'airblade/vim-gitgutter'
 " coc language server client
 Plugin 'neoclide/coc.nvim'
 
+" git commit browser (start with :GV)
+Plugin 'tpope/vim-fugitive'
+Plugin 'junegunn/gv.vim'
+
+" fzf plugin
+Plugin 'junegunn/fzf'
+
 " cscope-maps
 Plugin 'joe-skb7/cscope-maps'
 

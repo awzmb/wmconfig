@@ -63,13 +63,6 @@ if [ -e '~/.certificates' ]; then
   yarn config set strict-ssl false
 fi
 
-# coc languages
-# TODO: install automatically via vim
-#:CocInstall coc-yaml
-#:CocInstall coc-docker
-#:CocInstall coc-python
-#:CocInstall coc-gitignore
-
 # zsh completions
 wget https://raw.githubusercontent.com/tmuxinator/tmuxinator/master/completion/tmuxinator.zsh -O /usr/local/share/zsh/site-functions/_tmuxinator
 

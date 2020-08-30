@@ -46,7 +46,14 @@ sudo dnf -y install \
     paper-icon-theme \
     calc \
     inkscape \
-    unrar
+    unrar \
+    exa \
+    bat \
+    jq \
+    jd \
+    tree \
+    ack \
+    git
 
 # install fonts
 sudo dnf -y install \
