@@ -1,9 +1,8 @@
 # open terminal
-shift + ctrl - return : /Applications/Alacritty.app/Contents/MacOS/alacritty
-shift + ctrl - space : /Applications/dmenu-mac.app/Contents/MacOS/dmenu-mac
-#shift + ctrl - e: /Applications/dmenu-mac.app/Contents/MacOS/dmenu-mac
-#shift + ctrl - / : /Applications/dmenu-mac.app/Contents/MacOS/dmenu-mac
-#shift + ctrl - return : /Applications/iTerm.app/Contents/MacOS/iTerm2
+shift + alt - return : /Applications/Alacritty.app/Contents/MacOS/alacritty
+# TODO: find out why this is not working as expected
+#shift + alt - return : open -a "Alacritty"
+shift + alt - space : open -a "dmenu-mac"
 
 # focus window
 alt - h : yabai -m window --focus west
@@ -23,17 +22,11 @@ shift + alt - j : yabai -m window --swap south
 shift + alt - k : yabai -m window --swap north
 shift + alt - l : yabai -m window --swap east
 
-# balance size of windows
-shift + alt - 0 : yabai -m space --balance
-
-# make floating window fill screen
-shift + alt - up     : yabai -m window --grid 1:1:0:0:1:1
-
-# make floating window fill left-half of screen
-shift + alt - left   : yabai -m window --grid 1:2:0:0:1:1
-
-# make floating window fill right-half of screen
-shift + alt - right  : yabai -m window --grid 1:2:1:0:1:1
+# move window with keyboard curser buttons
+shift + alt - left  : yabai -m window --swap west
+shift + alt - down  : yabai -m window --swap south
+shift + alt - up    : yabai -m window --swap north
+shift + alt - right : yabai -m window --swap east
 
 # create desktop, move window and follow focus - uses jq for parsing json (brew install jq)
 shift + cmd - n : yabai -m space --create && \

@@ -15,7 +15,7 @@ zle -N _start_fzf_vim_search
 _start_fzf_history_search() {
 	zle -I
 	(
-    cat $HOME/.zsh_history | fzf | zsh -e
+  $(cat $HOME/.zsh_history | fzf)
 	) < /dev/tty
 }
 zle -N _start_fzf_history_search
@@ -74,12 +74,12 @@ zstyle ':fzf-tab:complete:cd:*' extra-opts --preview=$extract'exa -1 --color=alw
 ## command
 FZF_TAB_COMMAND=(
   fzf
-    --ansi   # Enable ANSI color support, necessary for showing groups
+    #--ansi   # Enable ANSI color support, necessary for showing groups
     --expect='$continuous_trigger,$print_query' # For continuous completion and print query
-    '--color=hl:$(( $#headers == 0 ? 108 : 255 ))'
-    --nth=2,3 --delimiter='\x00'  # Don't search prefix
-    --layout=reverse --height='${FZF_TMUX_HEIGHT:=75%}'
-    --tiebreak=begin -m --bind=tab:down,btab:up,change:top,ctrl-space:toggle --cycle
+    #'--color=hl:$(( $#headers == 0 ? 108 : 255 ))'
+    #--nth=2,3 --delimiter='\x00'  # Don't search prefix
+    #--layout=reverse --height='${FZF_TMUX_HEIGHT:=75%}'
+    #--tiebreak=begin -m --bind=tab:down,btab:up,change:top,ctrl-space:toggle --cycle
     '--query=$query'   # $query will be expanded to query string at runtime.
     '--header-lines=$#headers' # $#headers will be expanded to lines of headers at runtime
     --print-query

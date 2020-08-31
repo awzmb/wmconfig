@@ -53,6 +53,9 @@ Plugin 'scrooloose/nerdcommenter'
 "Plugin 'RRethy/vim-hexokinase', { 'do': 'make hexokinase' }
 Plugin 'lilydjwg/colorizer'
 
+" edit confluence pages in vim
+Plugin 'lusis/confluence-vim'
+
 " other stuff
 Plugin 'infoslack/vim-docker'
 Plugin 'pearofducks/ansible-vim'
@@ -349,6 +352,9 @@ let g:fzf_colors =
   \ 'marker':  ['fg', 'Keyword'],
   \ 'spinner': ['fg', 'Label'],
   \ 'header':  ['fg', 'Comment'] }
+
+""""""" confluence-vim """""""
+let g:confluence_url = 'https://confluence.dkb.ag/wiki/rest/api/content'
 
 """"""" keybindings """""""
 " set up leaders

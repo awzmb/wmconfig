@@ -34,8 +34,21 @@ brew install tmuxinator
 brew install fzf
 brew install bat
 brew install fd
+brew install markdown
+brew install html2text
+brew install
+brew install
+brew install
 brew install gnu-sed --with-default-names
 # to start isync as service run 'brew services start isync'
+
+# python stuff
+# TODO: make install fancier
+sudo -H python -m ensurepip
+pip install \
+  markdown \
+  html2text \
+  requests
 
 # brew cask
 brew cask install alacritty
@@ -50,6 +63,7 @@ brew cask install keepassxc
 brew cask install 1password
 brew cask install docker
 brew cask install drawio
+brew cask install whichspace
 
 # install coc and language server (vim)
 brew install node

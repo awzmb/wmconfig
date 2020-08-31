@@ -359,7 +359,8 @@ get_BundleId(){
     mdls -raw -name kMDItemCFBundleIdentifier "$1"
 }
 
-
+## keyboard shortcuts
+# TODO: find list with all system shortcuts to modify
 createKeyboardShortcuts(){
     # improve readability
     app=""
