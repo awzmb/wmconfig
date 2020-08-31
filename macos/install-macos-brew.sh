@@ -34,21 +34,21 @@ brew install tmuxinator
 brew install fzf
 brew install bat
 brew install fd
-brew install markdown
-brew install html2text
-brew install
-brew install
-brew install
 brew install gnu-sed --with-default-names
 # to start isync as service run 'brew services start isync'
 
-# python stuff
-# TODO: make install fancier
+# python stuff for coding and terminal interfaces
 sudo -H python -m ensurepip
 pip install \
   markdown \
   html2text \
-  requests
+  requests \
+  beautifulsoup4 \
+  pyyaml \
+  pyxdg \
+  pytz \
+  python-dateutil \
+  urwid
 
 # brew cask
 brew cask install alacritty

@@ -2,6 +2,7 @@
 
 # a full list of all possible defaultscommands can be found here
 # https://ss64.com/osx/syntax-defaults.html
+# for a full list of all options run 'defaults read | less'
 
 # disable app verification
 sudo spctl --master-disable
@@ -30,14 +31,29 @@ sudo nvram SystemAudioVolume=" "
 # set the timezone; see `sudo systemsetup -listtimezones` for other values
 sudo systemsetup -settimezone "Europe/Berlin" > /dev/null
 
-# increase sound quality for bluetooth headphones/headsets
-defaults write com.apple.BluetoothAudioAgent "Apple Bitpool Min (editable)" -int 40
-
 # disable notification center and remove the menu bar icon
 launchctl unload -w /System/Library/LaunchAgents/com.apple.notificationcenterui.plist 2> /dev/null
 
+# disable annoying apple spell correction and cloud save features
+defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled -bool false
+defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
+defaults write NSGlobalDomain NSAutomaticPeriodSubstitutionEnabled -bool false
+defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
+defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
+defaults write NSGlobalDomain NSDocumentSaveNewDocumentsToCloud -bool false
+
+# set fn state to enable usage of F1,..,FX keys without hitting fn first
+defaults write com.apple.keyboard.fnState -bool true
+
+# increase sound quality for bluetooth headphones/headsets
+defaults write com.apple.BluetoothAudioAgent "Apple Bitpool Min (editable)" -int 40
+
 # disable transparency in the menu bar and elsewhere
 defaults write com.apple.universalaccess reduceTransparency -bool true
+
+# reduce motion to speed up space switching
+defaults write com.apple.universalaccess reduceMotionEnabled -bool true
+defaults write com.apple.Accessibility ReduceMotionEnabled -bool true
 
 # set highlight color to green
 defaults write NSGlobalDomain AppleHighlightColor -string "0.764700 0.976500 0.568600"
@@ -344,14 +360,6 @@ addEntries() {
     defaults write com.apple.universalaccess com.apple.custommenu.apps -array-add $(echo -e "$appList")
     echo "All apps with custom shortcuts:"
     defaults read com.apple.universalaccess com.apple.custommenu.apps
-
-    # restart cfprefsd and finder for changes to take effect.
-    # you may also have to restart any apps that were running
-    # when you changed their keyboard shortcuts. there is some
-    # amount of voodoo as to what you do or do not have to
-    # restart, and when.
-    killall cfprefsd
-    killall Finder
 }
 
 # get the bundleid for each app
@@ -375,46 +383,46 @@ createKeyboardShortcuts(){
     RIGHT='\U2192'
     TAB='\U21e5'
 
-    Global
+    # Global
     defaults write NSGlobalDomain NSUserKeyEquivalents "{
         'About This Mac' = '${CMD}${SHIFT}${OPT}A';
     }"
 
     # Finder
-    app=/System/Library/CoreServices/Finder.app
-    if [ -a "$app" ]; then
-        bundleid=$(get_BundleId "$app")
-        echo "Adding: $app $bundleid"
-        appList+="$bundleid\n"
-        defaults write "$bundleid" NSUserKeyEquivalents "{
-            'Show Package Contents' = '${CMD}${SHIFT}O';
-            'Show Next Tab' = '${CMD}${RIGHT}';
-            'Show Previous Tab' = '${CMD}${LEFT}';
-            'Screenshots' = '${CMD}${SHIFT}S';
-            'Downloads' = '${CMD}${SHIFT}D';
-        }"
-        defaults read "$bundleid" NSUserKeyEquivalents
-        echo
-    fi
+    #app=/System/Library/CoreServices/Finder.app
+    #if [ -a "$app" ]; then
+        #bundleid=$(get_BundleId "$app")
+        #echo "Adding: $app $bundleid"
+        #appList+="$bundleid\n"
+        #defaults write "$bundleid" NSUserKeyEquivalents "{
+            #'Show Package Contents' = '${CMD}${SHIFT}O';
+            #'Show Next Tab' = '${CMD}${RIGHT}';
+            #'Show Previous Tab' = '${CMD}${LEFT}';
+            #'Screenshots' = '${CMD}${SHIFT}S';
+            #'Downloads' = '${CMD}${SHIFT}D';
+        #}"
+        #defaults read "$bundleid" NSUserKeyEquivalents
+        #echo
+    #fi
 
     # iTerm2
-    app=$HOME/Applications/iTerm.app
-    if [ -a "$app" ]; then
-        bundleid=$(get_BundleId "$app")
-        echo "Adding: $app"
-        appList+="$bundleid\n"
-        defaults write "$bundleid" NSUserKeyEquivalents "{
-            'Copy with Styles' = '${CMD}C';
-            'Find Cursor' = '${CMD}${OPT}/';
-            'Select Previous Tab' = '${CMD}${LEFT}';
-            'Select Next Tab' = '${CMD}${RIGHT}';
-            'Move Tab Left' = '${CMD}${SHIFT}${LEFT}';
-            'Move Tab Right' = '${CMD}${SHIFT}${RIGHT}';
-            'Look Up in Dash' = '${CMD}L';
-        }"
-        defaults read "$bundleid" NSUserKeyEquivalents
-        echo
-    fi
+    #app=$HOME/Applications/iTerm.app
+    #if [ -a "$app" ]; then
+        #bundleid=$(get_BundleId "$app")
+        #echo "Adding: $app"
+        #appList+="$bundleid\n"
+        #defaults write "$bundleid" NSUserKeyEquivalents "{
+            #'Copy with Styles' = '${CMD}C';
+            #'Find Cursor' = '${CMD}${OPT}/';
+            #'Select Previous Tab' = '${CMD}${LEFT}';
+            #'Select Next Tab' = '${CMD}${RIGHT}';
+            #'Move Tab Left' = '${CMD}${SHIFT}${LEFT}';
+            #'Move Tab Right' = '${CMD}${SHIFT}${RIGHT}';
+            #'Look Up in Dash' = '${CMD}L';
+        #}"
+        #defaults read "$bundleid" NSUserKeyEquivalents
+        #echo
+    #fi
 }
 
 # finally add those shortcuts
