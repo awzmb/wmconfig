@@ -22,6 +22,12 @@ zle -N _start_fzf_history_search
 # keybinding (ctrl+o for vim search, ctrl+r for history search)
 bindkey '^o' _start_fzf_vim_search
 bindkey '^r' _start_fzf_history_search
+# TODO: check if
+# "^I" fzf-completion
+# "^R" fzf-history-widget
+# "^T" fzf-file-widget
+# "^[c" fzf-cd-widget
+# works since this implementation is buggy
 
 ## settings
 # use fd for fzf search and do not exclude hidden files
