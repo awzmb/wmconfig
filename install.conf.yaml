@@ -36,7 +36,7 @@
     ~/.aliases: .aliases
     ~/.dir_colors: .dir_colors
     ~/.vifm: .vifm
-    ~/.gitconfig: .gitconfig
+    #~/.gitconfig: .gitconfig
     ~/.config/mc: .config/mc
     ~/.config/vifm: .config/vifm
     ~/.config/nvim/init.vim: .vimrc

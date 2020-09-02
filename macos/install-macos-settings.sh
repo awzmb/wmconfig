@@ -13,8 +13,6 @@ sudo scutil --set HostName "bawzmbp"
 sudo scutil --set LocalHostName "bawzmbp"
 sudo defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName -string "bawzmbp"
 
-#/bin/zsh -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
-
 # close any open system preferences panes, to prevent them from overriding
 # settings we’re about to change
 osascript -e 'tell application "System Preferences" to quit'
@@ -47,6 +45,13 @@ defaults write com.apple.keyboard.fnState -bool true
 
 # increase sound quality for bluetooth headphones/headsets
 defaults write com.apple.BluetoothAudioAgent "Apple Bitpool Min (editable)" -int 40
+
+# do not automatically pair with bluetoot audio devices
+sudo defaults write /Library/Preferences/com.apple.Bluetooth.plist DontPageAudioDevices 1
+# this is for specific bluetooth devices
+#sudo defaults write /Library/Preferences/com.apple.Bluetooth.plist IgnoredDevices -array-add '<MAC ADDRESS>'
+# you can get the mac address via device cache
+#sudo defaults read /Library/Preferences/com.apple.Bluetooth.plist DeviceCache
 
 # disable transparency in the menu bar and elsewhere
 defaults write com.apple.universalaccess reduceTransparency -bool true
@@ -369,6 +374,7 @@ get_BundleId(){
 
 ## keyboard shortcuts
 # TODO: find list with all system shortcuts to modify
+# TODO: change outlook hotkeys to enable movement by h,j,k,l
 createKeyboardShortcuts(){
     # improve readability
     app=""
@@ -428,7 +434,6 @@ createKeyboardShortcuts(){
 # finally add those shortcuts
 createKeyboardShortcuts
 addEntries
-
 
 # restart all changed applications
 for app in "Activity Monitor" \
