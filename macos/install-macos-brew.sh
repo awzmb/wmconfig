@@ -4,37 +4,39 @@
 brew tap homebrew/cask-fonts
 
 # default packages
-brew install tmux
-brew install neovim
-brew install asdf
-brew install ansible
-brew install awscli
-brew install go-task/tap/go-task
-brew install grep --with-default-names
-brew install jq
-brew install jd
-brew install git
-brew install krew
-brew install pass
-brew install neomutt
-brew install isync
-brew install notmuch
-brew install screen
-brew install ranger
-brew install htop
-brew install gpg
-brew install tree
+brew install tmux # terminal multiplexer
+brew install neovim # editor
+brew install asdf # manage dev related cli tools (terraform, kubectl,..)
+brew install ansible # configuration management
+brew install awscli # amazon web services cli
+brew install go-task/tap/go-task # better make
+brew install grep --with-default-names # gnu grep (executed via ggrep)
+brew install jq # parse json
+brew install jd # post stdout as json
+brew install git # git
+brew install krew # kubectl plugin manager
+brew install pass # gnu cli password manager
+brew install neomutt # read mail
+brew install isync # sync mail
+brew install notmuch # search and tag mail
+brew install screen # gnu screen (if for some reason tmux is not applicable)
+brew install ranger # file manager
+brew install htop # resource monitor
+brew install gpg # decrypt and encrypt files
+brew install tree # show directory content as tree
 brew install openssl
 brew install neofetch
 brew install keychain
 brew install coreutils
 brew install ack
-brew install wget
-brew install tmuxinator
-brew install fzf
-brew install bat
-brew install fd
-brew install gnu-sed --with-default-names
+brew install wget # load files via http/https
+brew install tmuxinator # manage tmux sessions (ide setup)
+brew install fzf # fuzzy finder (essential)
+brew install bat # cat with syntax highlighting
+brew install fd # faster find alternative
+brew install w3m # cli browser
+brew install navi # read cheatsheets cli
+brew install gnu-sed # gnu sed (executed via gsed)
 # to start isync as service run 'brew services start isync'
 
 # python stuff for coding and terminal interfaces
@@ -51,25 +53,24 @@ pip install \
   urwid
 
 # brew cask
-brew cask install alacritty
-brew cask install brave-browser
-brew cask install spotify
-brew cask install karabiner-elements
-brew cask install discord
-brew cask install steermouse
-brew cask install vscodium
-brew cask install microsoft-teams
-brew cask install keepassxc
-brew cask install 1password
-brew cask install docker
-brew cask install drawio
-brew cask install whichspace
+brew cask install alacritty # terminal emulator
+brew cask install brave-browser # google chrome alternative
+brew cask install spotify # music
+brew cask install karabiner-elements # modify keyboard input
+brew cask install discord # slack for gaming
+brew cask install steermouse # improve macos default mouse speed acceleration
+brew cask install vscodium # visual studio code as foss
+brew cask install microsoft-teams # most hated collaboration client
+brew cask install keepassxc # manage keepass
+brew cask install 1password # onepass client
+brew cask install docker # container
+brew cask install drawio # draw flowcharts, graphs and models
+brew cask install whichspace # show current space number in dock
 
 # install coc and language server (vim)
 brew install node
 brew install npm
 brew install yarn
-brew install yaml-language-server
 brew install hashicorp/tap/terraform-ls
 # add certificates for npm and yarn if zscaler is running
 # cat xxxx.cer >> /usr/local/etc/openssl/cert.pem might be necessary
@@ -110,7 +111,6 @@ brew update
 brew services restart --all
 
 # install k8s tools via asdf
-asdf plugin add 1password
 asdf plugin add bat
 asdf plugin add eksctl
 asdf plugin add helm
@@ -132,6 +132,9 @@ sudo chmod -R 755 /usr/local/share/zsh
 sudo chown -R $(whoami):staff /usr/local/share/zsh
 
 # install vscodium extensions
-code --install-extension \
-  hashicorp.terraform \
-  vscodevim.vim
+#code --install-extension \
+#  hashicorp.terraform \
+#  vscodevim.vim
+
+# finally upgrade packages if already installed
+brew update && brew upgrade
