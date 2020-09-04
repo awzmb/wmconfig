@@ -8,7 +8,6 @@ brew install tmux # terminal multiplexer
 brew install neovim # editor
 brew install asdf # manage dev related cli tools (terraform, kubectl,..)
 brew install ansible # configuration management
-brew install awscli # amazon web services cli
 brew install go-task/tap/go-task # better make
 brew install grep --with-default-names # gnu grep (executed via ggrep)
 brew install jq # parse json
@@ -66,6 +65,12 @@ brew cask install 1password # onepass client
 brew cask install docker # container
 brew cask install drawio # draw flowcharts, graphs and models
 brew cask install whichspace # show current space number in dock
+
+# aws tools
+brew install awscli # amazon web services cli
+brew install aws-iam-authenticator # aws iam authentication for eks
+brew install aws-shell # interactive awscli alternative
+brew cask install aws-vpn-client # aws vpn for safe connections to account
 
 # install coc and language server (vim)
 brew install node
