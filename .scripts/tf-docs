@@ -1,0 +1,13 @@
+#!/bin/sh
+
+# Keep module docs up to date
+# Last grep is used to ignore certain folders
+for directory in $(find . -type d ! -path "./.git/*")
+do
+  if [ -f $directory/main.tf ]; then
+		terraform-docs md $directory > $directory/README.md
+		if [ $? -eq 0 ] ; then
+			git add "./$directory/README.md"
+		fi
+  fi
+done

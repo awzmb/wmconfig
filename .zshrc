@@ -27,7 +27,7 @@ zinit light zpm-zsh/colorize
 source ~/.aliases
 
 # add script folder to path
-export PATH="~/.scripts:$PATH"
+export PATH="$HOME/.scripts:$PATH"
 
 # source theme
 source ~/.zsh/theme.zsh

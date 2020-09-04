@@ -312,7 +312,7 @@ set shiftwidth=2 tabstop=2 softtabstop=2 expandtab autoindent
 function s:SetCursorLine()
   set cursorline
   set nocursorcolumn
-  hi cursorline cterm=none ctermbg=0 ctermfg=NONE
+  hi CursorLine cterm=none ctermbg=0 ctermfg=none
 endfunction
 autocmd VimEnter * call s:SetCursorLine()
 
