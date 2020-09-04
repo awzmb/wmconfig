@@ -20,7 +20,7 @@ osascript -e 'tell application "System Preferences" to quit'
 # ask for the administrator password upfront
 sudo -v
 
-# keep-alive: update existing `sudo` time stamp until `.macos` has finished
+# keep-alive: update existing `sudo` time stamp until script has finished
 while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 
 # disable the sound effects on boot
@@ -326,8 +326,8 @@ defaults write com.googlecode.iterm2 PromptOnQuit -bool false
 # prevent time machine from prompting to use new hard drives as backup volume
 defaults write com.apple.TimeMachine DoNotOfferNewDisksForBackup -bool true
 
-# disable local time machine backups
-hash tmutil &> /dev/null && sudo tmutil disablelocal
+# disable time machine backups
+hash tmutil &> /dev/null && sudo tmutil disable
 
 # show the main window when launching activity monitor
 defaults write com.apple.ActivityMonitor OpenMainWindow -bool true
@@ -354,45 +354,45 @@ defaults write com.apple.DiskUtility advanced-image-options -bool true
 chflags nohidden ~/Library/
 
 # keyboard shortcuts
-addEntries() {
-    # check if universal access / custom menu key exists
-    if defaults read com.apple.universalaccess com.apple.custommenu.apps > /dev/null 2>&1; then
-        defaults delete com.apple.universalaccess com.apple.custommenu.apps
-    fi
-    defaults write com.apple.universalaccess com.apple.custommenu.apps -array
+#addEntries() {
+    ## check if universal access / custom menu key exists
+    #if defaults read com.apple.universalaccess com.apple.custommenu.apps > /dev/null 2>&1; then
+        #defaults delete com.apple.universalaccess com.apple.custommenu.apps
+    #fi
+    #defaults write com.apple.universalaccess com.apple.custommenu.apps -array
 
-    # write all apps to custommenu
-    defaults write com.apple.universalaccess com.apple.custommenu.apps -array-add $(echo -e "$appList")
-    echo "All apps with custom shortcuts:"
-    defaults read com.apple.universalaccess com.apple.custommenu.apps
-}
+    ## write all apps to custommenu
+    #defaults write com.apple.universalaccess com.apple.custommenu.apps -array-add $(echo -e "$appList")
+    #echo "All apps with custom shortcuts:"
+    #defaults read com.apple.universalaccess com.apple.custommenu.apps
+#}
 
 # get the bundleid for each app
-get_BundleId(){
-    mdls -raw -name kMDItemCFBundleIdentifier "$1"
-}
+#get_BundleId(){
+    #mdls -raw -name kMDItemCFBundleIdentifier "$1"
+#}
 
 ## keyboard shortcuts
 # TODO: find list with all system shortcuts to modify
 # TODO: change outlook hotkeys to enable movement by h,j,k,l
-createKeyboardShortcuts(){
-    # improve readability
-    app=""
-    appList=""
-    CMD="@"
-    CTRL="^"
-    OPT="~"
-    SHIFT="$"
-    UP='\U2191'
-    DOWN='\U2193'
-    LEFT='\U2190'
-    RIGHT='\U2192'
-    TAB='\U21e5'
+#createKeyboardShortcuts(){
+    ## improve readability
+    #app=""
+    #appList=""
+    #CMD="@"
+    #CTRL="^"
+    #OPT="~"
+    #SHIFT="$"
+    #UP='\U2191'
+    #DOWN='\U2193'
+    #LEFT='\U2190'
+    #RIGHT='\U2192'
+    #TAB='\U21e5'
 
-    # Global
-    defaults write NSGlobalDomain NSUserKeyEquivalents "{
-        'About This Mac' = '${CMD}${SHIFT}${OPT}A';
-    }"
+    ## Global
+    #defaults write NSGlobalDomain NSUserKeyEquivalents "{
+        #'About This Mac' = '${CMD}${SHIFT}${OPT}A';
+    #}"
 
     # Finder
     #app=/System/Library/CoreServices/Finder.app
@@ -429,11 +429,11 @@ createKeyboardShortcuts(){
         #defaults read "$bundleid" NSUserKeyEquivalents
         #echo
     #fi
-}
+#}
 
 # finally add those shortcuts
-createKeyboardShortcuts
-addEntries
+#createKeyboardShortcuts
+#addEntries
 
 # restart all changed applications
 for app in "Activity Monitor" \
