@@ -66,6 +66,7 @@ brew cask install 1password # onepass client
 brew cask install docker # container
 brew cask install drawio # draw flowcharts, graphs and models
 brew cask install whichspace # show current space number in dock
+brew cask install monitorcontrol # control brightness and volume on external display
 
 # aws tools
 brew install awscli # amazon web services cli
