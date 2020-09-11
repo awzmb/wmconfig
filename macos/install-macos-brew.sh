@@ -24,10 +24,10 @@ brew install htop # resource monitor
 brew install gpg # decrypt and encrypt files
 brew install tree # show directory content as tree
 brew install openssl
-brew install neofetch
+brew install neofetch # system information
 brew install keychain
 brew install coreutils
-brew install ack
+brew install ack # grep-like text finder
 brew install wget # load files via http/https
 brew install tmuxinator # manage tmux sessions (ide setup)
 brew install fzf # fuzzy finder (essential)
@@ -36,6 +36,7 @@ brew install fd # faster find alternative
 brew install w3m # cli browser
 brew install navi # read cheatsheets cli
 brew install gnu-sed # gnu sed (executed via gsed)
+brew install reattach-to-user-namespace # copy to system clipboard from vim and tmux
 # to start isync as service run 'brew services start isync'
 
 # python stuff for coding and terminal interfaces
@@ -71,6 +72,9 @@ brew install awscli # amazon web services cli
 brew install aws-iam-authenticator # aws iam authentication for eks
 brew install aws-shell # interactive awscli alternative
 brew cask install aws-vpn-client # aws vpn for safe connections to account
+
+# terraform tools
+brew install transcend-io/tap/terragrunt-atlantis-config
 
 # install coc and language server (vim)
 brew install node

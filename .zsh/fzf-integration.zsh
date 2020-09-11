@@ -10,24 +10,20 @@ _start_fzf_vim_search() {
 		vim $(fzf)
 	) < /dev/tty
 }
+autoload _start_fzf_vim_search
 zle -N _start_fzf_vim_search
+
 # function to open fzf history search
 _start_fzf_history_search() {
-	zle -I
-	(
-  $(cat $HOME/.zsh_history | fzf)
-	) < /dev/tty
+  BUFFER=$(history -t '%Y-%m-%d %H:%M:%S' 0 | grep -v 1969 | fzf +s +m -x --tac -e -q "$BUFFER" | awk '{print substr($0, index($0, $4))}')
+  zle end-of-line
 }
+autoload _start_fzf_history_search
 zle -N _start_fzf_history_search
+
 # keybinding (ctrl+o for vim search, ctrl+r for history search)
 bindkey '^o' _start_fzf_vim_search
 bindkey '^r' _start_fzf_history_search
-# TODO: check if
-# "^I" fzf-completion
-# "^R" fzf-history-widget
-# "^T" fzf-file-widget
-# "^[c" fzf-cd-widget
-# works since this implementation is buggy
 
 ## settings
 # use fd for fzf search and do not exclude hidden files

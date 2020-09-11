@@ -44,7 +44,11 @@ Plugin 'joe-skb7/cscope-maps'
 
 " nerdtree navigation and git plugin
 Plugin 'scrooloose/nerdtree'
-"Plugin 'Xuyuanp/nerdtree-git-plugin'
+Plugin 'Xuyuanp/nerdtree-git-plugin'
+
+" fern tree / project navigation (nerdtree replacement)
+"Plugin 'antoinemadec/FixCursorHold.nvim'
+"Plugin 'lambdalisue/fern.vim'
 
 " commenting plugin
 Plugin 'scrooloose/nerdcommenter'
@@ -94,6 +98,21 @@ let g:lightline = {
 """"""" vim-autoformat configuration """""""
 " start formatting with F3
 noremap <F3> :Autoformat<CR>
+
+""""""" fern configuration """""""
+" open fern as drawer in current working directory with ctrl+n
+"map <C-n> :Fern . -drawer -toggle -reveal=%<CR>
+"" initialize options for fern (options visible by hitting ? in fern buffer)
+"function! s:init_fern() abort
+  "" Use 'select' instead of 'edit' for default 'open' action
+  "nmap <buffer> <Plug>(fern-action-open) <Plug>(fern-action-open:select)
+  "nmap <buffer> <Plug>(fern-action-hidden) <Plug>(fern-action-hidden:set)
+"endfunction
+
+"augroup fern-custom
+  "autocmd! *
+  "autocmd FileType fern call s:init_fern()
+"augroup END
 
 """"""" nerdtree configuration """""""
 " open nerdtree with ctrl+n
@@ -226,13 +245,13 @@ augroup end
 
 " applying codeaction to the selected region.
 " Example: `<leader>aap` for current paragraph
-xmap <leader>a  <Plug>(coc-codeaction-selected)
-nmap <leader>a  <Plug>(coc-codeaction-selected)
+xmap <leader>a <Plug>(coc-codeaction-selected)
+nmap <leader>a <Plug>(coc-codeaction-selected)
 
 " remap keys for applying codeaction to the current buffer.
-nmap <leader>ac  <Plug>(coc-codeaction)
+nmap <leader>ac <Plug>(coc-codeaction)
 " apply autofix to problem on the current line.
-nmap <leader>qf  <Plug>(coc-fix-current)
+nmap <leader>qf <Plug>(coc-fix-current)
 
 " map function and class text objects
 " NOTE: requires 'textDocument.documentSymbol' support from the language server.
@@ -254,10 +273,10 @@ xmap <silent> <C-s> <Plug>(coc-range-select)
 command! -nargs=0 Format :call CocAction('format')
 
 " Add `:Fold` command to fold current buffer.
-command! -nargs=? Fold :call     CocAction('fold', <f-args>)
+command! -nargs=? Fold :call CocAction('fold', <f-args>)
 
 " Add `:OR` command for organize imports of the current buffer.
-command! -nargs=0 OR   :call     CocAction('runCommand', 'editor.action.organizeImport')
+command! -nargs=0 OR :call CocAction('runCommand', 'editor.action.organizeImport')
 
 " add (neo)vim's native statusline support.
 " NOTE: Please see `:h coc-status` for integrations with external plugins that
