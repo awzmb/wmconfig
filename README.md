@@ -15,5 +15,4 @@ MacOS:
 Linux:
 ```bash
 ./linux/install-[DISTRO].sh
-./
 ```
