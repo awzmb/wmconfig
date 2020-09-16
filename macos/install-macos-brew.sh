@@ -136,6 +136,7 @@ asdf plugin add terraform
 asdf plugin add terraform-docs
 asdf plugin add terraform-lsp
 asdf plugin add terraform-validator
+asdf plugin add terragrunt
 
 # fix zsh 'insecure directory' problem
 sudo chmod -R 755 /usr/local/share/zsh
