@@ -50,8 +50,13 @@ source ~/.zsh/vi-mode.zsh
 # tab completion generator
 source ~/.zsh/completion-generator.zsh
 
+# fzf integration
+source ~/.zsh/fzf-settings.zsh
+source ~/.zsh/fzf-completion.zsh
+source ~/.zsh/fzf-keybindings.zsh
+
 # fzf tab completion
-source ~/.zsh/fzf-integration.zsh
+source ~/.zsh/fzf-tab-completion.zsh
 
 # asdf completion
 if [ "$(uname)" = "Darwin" ]; then
