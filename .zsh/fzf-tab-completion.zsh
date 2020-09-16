@@ -2,33 +2,6 @@
 ## module
 zinit light Aloxaf/fzf-tab
 
-## open fzf search with ctrl+o
-# function to open fzf
-#_start_fzf_vim_search() {
-	#zle -I
-	#(
-		#vim $(fzf)
-	#) < /dev/tty
-#}
-#autoload _start_fzf_vim_search
-#zle -N _start_fzf_vim_search
-
-# function to open fzf history search
-#_start_fzf_history_search() {
-  #BUFFER=$(history -t '%Y-%m-%d %H:%M:%S' 0 | grep -v 1969 | fzf +s +m -x --tac -e -q "$BUFFER" | awk '{print substr($0, index($0, $4))}')
-  #zle end-of-line
-#}
-#_start_fzf_history_search() {
-  #BUFFER=$(history -t '%Y-%m-%d %H:%M:%S' 0 | grep -v 1969 | fzf +s +m -x --tac -e -q "$BUFFER" | awk '{print substr($0, index($0, $4))}')
-  #zle end-of-line
-#}
-#autoload _start_fzf_history_search
-#zle -N _start_fzf_history_search
-
-# keybinding (ctrl+o for vim search, ctrl+r for history search)
-bindkey '^o' _start_fzf_vim_search
-bindkey '^r' _start_fzf_history_search
-
 # disable sort when completing options of any command
 zstyle ':completion:complete:*:options' sort false
 
@@ -69,3 +42,31 @@ FZF_TAB_COMMAND=(
     --print-query
 )
 zstyle ':fzf-tab:*' command $FZF_TAB_COMMAND
+
+### legacy stuff (replaced by native fzf zsh)
+## open fzf search with ctrl+o
+# function to open fzf
+#_start_fzf_vim_search() {
+	#zle -I
+	#(
+		#vim $(fzf)
+	#) < /dev/tty
+#}
+#autoload _start_fzf_vim_search
+#zle -N _start_fzf_vim_search
+
+# function to open fzf history search
+#_start_fzf_history_search() {
+  #BUFFER=$(history -t '%Y-%m-%d %H:%M:%S' 0 | grep -v 1969 | fzf +s +m -x --tac -e -q "$BUFFER" | awk '{print substr($0, index($0, $4))}')
+  #zle end-of-line
+#}
+#_start_fzf_history_search() {
+  #BUFFER=$(history -t '%Y-%m-%d %H:%M:%S' 0 | grep -v 1969 | fzf +s +m -x --tac -e -q "$BUFFER" | awk '{print substr($0, index($0, $4))}')
+  #zle end-of-line
+#}
+#autoload _start_fzf_history_search
+#zle -N _start_fzf_history_search
+
+# keybinding (ctrl+o for vim search, ctrl+r for history search)
+#bindkey '^o' _start_fzf_vim_search
+#bindkey '^r' _start_fzf_history_search
