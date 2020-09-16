@@ -1,14 +1,19 @@
 Installation
 ------------
 
-Download:
-
+Execute:
 ```bash
-pip install dotbot
+./install
 ```
 
-Execute:
-
+MacOS:
 ```bash
-dotbot -c 
+./macos/install-macos-settings.sh
+./macos/install-macos-brew.sh
+```
+
+Linux:
+```bash
+./linux/install-[DISTRO].sh
+./
 ```
