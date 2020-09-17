@@ -36,6 +36,7 @@ brew install fd # faster find alternative
 brew install w3m # cli browser
 brew install navi # read cheatsheets cli
 brew install gnu-sed # gnu sed (executed via gsed)
+brew install newsboat # terminal rss news reader
 brew install reattach-to-user-namespace # copy to system clipboard from vim and tmux
 # to start isync as service run 'brew services start isync'
 
