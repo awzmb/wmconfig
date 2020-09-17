@@ -68,14 +68,12 @@ brew cask install drawio # draw flowcharts, graphs and models
 brew cask install whichspace # show current space number in dock
 brew cask install monitorcontrol # control brightness and volume on external display
 
-# aws tools
+# aws and azure tools
 brew install awscli # amazon web services cli
 brew install aws-iam-authenticator # aws iam authentication for eks
 brew install aws-shell # interactive awscli alternative
+brew install azure-cli # microsoft azure cli
 brew cask install aws-vpn-client # aws vpn for safe connections to account
-
-# terraform tools
-brew install transcend-io/tap/terragrunt-atlantis-config
 
 # install coc and language server (vim)
 brew install node
@@ -137,6 +135,9 @@ asdf plugin add terraform-docs
 asdf plugin add terraform-lsp
 asdf plugin add terraform-validator
 asdf plugin add terragrunt
+
+# terraform tools
+brew install transcend-io/tap/terragrunt-atlantis-config
 
 # fix zsh 'insecure directory' problem
 sudo chmod -R 755 /usr/local/share/zsh
