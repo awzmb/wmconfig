@@ -128,6 +128,9 @@ let NERDTreeQuitOnOpen = 0
 let NERDTreeAutoDeleteBuffer = 1
 " show hidden files by default
 let NERDTreeShowHidden=1
+" change default arrows
+let g:NERDTreeDirArrowExpandable = '+'
+let g:NERDTreeDirArrowCollapsible = '-'
 
 """"""" nerdtree git configuration """""""
 " hide brackets around symbols

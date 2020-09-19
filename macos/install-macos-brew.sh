@@ -8,6 +8,7 @@ brew install tmux # terminal multiplexer
 brew install neovim # editor
 brew install asdf # manage dev related cli tools (terraform, kubectl,..)
 brew install ansible # configuration management
+brew install go # go lang binary
 brew install go-task/tap/go-task # better make
 brew install grep --with-default-names # gnu grep (executed via ggrep)
 brew install jq # parse json
@@ -37,6 +38,7 @@ brew install w3m # cli browser
 brew install navi # read cheatsheets cli
 brew install gnu-sed # gnu sed (executed via gsed)
 brew install newsboat # terminal rss news reader
+brew install catimg # render images in terminal
 brew install reattach-to-user-namespace # copy to system clipboard from vim and tmux
 # to start isync as service run 'brew services start isync'
 

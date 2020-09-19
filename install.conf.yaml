@@ -39,6 +39,7 @@
     #~/.gitconfig: .gitconfig
     ~/.config/mc: .config/mc
     ~/.config/vifm: .config/vifm
+    ~/.config/newsboat: .config/newsboat
     ~/.config/nvim/init.vim: .vimrc
     ~/.config/autorandr:
       if: '[ `uname` = Linux ]'
