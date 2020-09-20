@@ -39,6 +39,7 @@ brew install navi # read cheatsheets cli
 brew install gnu-sed # gnu sed (executed via gsed)
 brew install newsboat # terminal rss news reader
 brew install catimg # render images in terminal
+brew install exa # new old editor (for preview with fzf)
 brew install reattach-to-user-namespace # copy to system clipboard from vim and tmux
 # to start isync as service run 'brew services start isync'
 
