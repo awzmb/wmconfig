@@ -26,7 +26,9 @@ Plugin 'thirtythreeforty/lessspace.vim'
 Plugin 'hashivim/vim-terraform'
 
 " status bar mods
-Plugin 'itchyny/lightline.vim'
+"Plugin 'itchyny/lightline.vim'
+Plugin 'vim-airline/vim-airline'
+"Plugin 'vim-airline/vim-airline-themes'
 Plugin 'airblade/vim-gitgutter'
 
 " coc language server client
@@ -44,7 +46,6 @@ Plugin 'joe-skb7/cscope-maps'
 
 " nerdtree navigation and git plugin
 Plugin 'scrooloose/nerdtree'
-Plugin 'Xuyuanp/nerdtree-git-plugin'
 
 " fern tree / project navigation (nerdtree replacement)
 "Plugin 'antoinemadec/FixCursorHold.nvim'
@@ -63,7 +64,10 @@ Plugin 'lusis/confluence-vim'
 " other stuff
 Plugin 'infoslack/vim-docker'
 Plugin 'pearofducks/ansible-vim'
+
+" colorscheme
 Plugin 'arcticicestudio/nord-vim'
+Plugin 'chriskempson/base16-vim'
 
 " finish plugin loading
 call vundle#end()
@@ -82,18 +86,14 @@ let g:coc_global_extensions = [
             \'coc-gitignore'
             \]
 
-" color scheme
+""""""" colorscheme """""""
+set termguicolors
+syntax on
 colorscheme nord
 
 """"""" jedi-vim """""""
 " Don't mess up undo history
 let g:jedi#show_call_signatures = "0"
-
-""""""" lightline configuration """""""
-" change the lightline theme
-let g:lightline = {
-      \ 'colorscheme': 'nord',
-      \ }
 
 """"""" vim-autoformat configuration """""""
 " start formatting with F3

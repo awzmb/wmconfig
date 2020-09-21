@@ -3,14 +3,14 @@
 # Any items in the `env` entry below will be added as
 # environment variables. Some entries may override variables
 # set by alacritty itself.
-#env:
+env:
   # TERM variable
   #
   # This value is used to set the `$TERM` environment variable for
   # each instance of Alacritty. If it is not present, alacritty will
   # check the local terminfo database and use 'alacritty' if it is
   # available, otherwise 'xterm-256color' is used.
-  #TERM: xterm-256color
+  TERM: xterm-256color
 
 window:
   # Window dimensions (changes require restart)
@@ -71,24 +71,24 @@ scrolling:
 font:
   # Normal (roman) font face
   normal:
-    family: DejaVuSansMono
+    family: Hack
     # The `style` can be specified to pick a specific face.
     style: Regular
 
   # Bold font face
   bold:
-    family: DejaVuSansMono
+    family: Hack
     # The `style` can be specified to pick a specific face.
     style: Bold
 
   # Italic font face
   italic:
-    family: DejaVuSansMono
+    family: Hack
     # The `style` can be specified to pick a specific face.
     style: Italic
 
   # Point size
-  size: 13.0
+  size: 12.6
 
   # Offset is the extra space around each character. `offset.y` can be thought of
   # as modifying the line spacing, and `offset.x` as modifying the letter spacing.
@@ -112,101 +112,91 @@ debug.persistent_logging: false
 # If `true`, bold text is drawn using the bright color variants.
 draw_bold_text_with_bright_colors: true
 
-# Colors (Tomorrow Night Bright)
-#colors:
-  # Default colors
-  #  primary:
-  # background: '0x232323'
-  # foreground: '0xeaeaea'
-
-    # Bright and dim foreground colors
-    #
-    # The dimmed foreground color is calculated automatically if it is not present.
-    # If the bright foreground color is not set, or `draw_bold_text_with_bright_colors`
-    # is `false`, the normal foreground color will be used.
-    #dim_foreground: '0x9a9a9a'
-    #bright_foreground: '0xffffff'
-
-  # Cursor colors
-  #
-  # Colors which should be used to draw the terminal cursor. If these are unset,
-  # the cursor color will be the inverse of the cell color.
-  #cursor:
-  #  text: '0x000000'
-  #  cursor: '0xffffff'
-
-  # Normal colors
-  #normal:
-  # black:   '0x000000'
-  # red:     '0xd54e53'
-  # green:   '0xb9ca4a'
-  # yellow:  '0xe6c547'
-  # blue:    '0x7aa6da'
-  # magenta: '0xc397d8'
-  # cyan:    '0x70c0ba'
-  # white:   '0xffffff'
-
-  # Bright colors
-  #bright:
-  # black:   '0x666666'
-  # red:     '0xff3334'
-  # green:   '0x9ec400'
-  # yellow:  '0xe7c547'
-  # blue:    '0x7aa6da'
-  # magenta: '0xb77ee0'
-  # cyan:    '0x54ced6'
-  # white:   '0xffffff'
-
-  # Dim colors
-  #
-  # If the dim colors are not set, they will be calculated automatically based
-  # on the `normal` colors.
-  #dim:
-  # black:   '0x333333'
-  # red:     '0xf2777a'
-  # green:   '0x99cc99'
-  # yellow:  '0xffcc66'
-  # blue:    '0x6699cc'
-  # magenta: '0xcc99cc'
-  # cyan:    '0x66cccc'
-  # white:   '0xdddddd'
-
-  # Indexed Colors
-  #
-  # The indexed colors include all colors from 16 to 256.
-  # When these are not set, they're filled with sensible defaults.
-  #indexed_colors:
-  #  - { index: 16, color: '0x000000' }
-
 # Nordic Color Scheme
-colors:
-  primary:
-    #background: '0x282828'
-    #background: '0x282A33'
-    background: '0x262626'
-    foreground: '0xD8DEE9'
-  cursor:
-    text: '0x2E3440'
-    cursor: '0xD8DEE9'
-  normal:
-    black: '0x3B4252'
-    red: '0xBF616A'
-    green: '0xA3BE8C'
-    yellow: '0xEBCB8B'
-    blue: '0x81A1C1'
-    magenta: '0xB48EAD'
-    cyan: '0x88C0D0'
-    white: '0xE5E9F0'
-  bright:
-    black: '0x4C566A'
-    red: '0xBF616A'
-    green: '0xA3BE8C'
-    yellow: '0xEBCB8B'
-    blue: '0x81A1C1'
-    magenta: '0xB48EAD'
-    cyan: '0x8FBCBB'
-    white: '0xECEFF4'
+#colors:
+  #primary:
+    #background: '#292929'
+    #foreground: '#D8DEE9'
+  #cursor:
+    #text: '#2E3440'
+    #cursor: '#D8DEE9'
+  #normal:
+    #black: '#3B4252'
+    #red: '#BF616A'
+    #green: '#A3BE8C'
+    #yellow: '#EBCB8B'
+    #blue: '#81A1C1'
+    #magenta: '#B48EAD'
+    #cyan: '#88C0D0'
+    #white: '#E5E9F0'
+  #bright:
+    #black: '#4C566A'
+    #red: '#BF616A'
+    #green: '#A3BE8C'
+    #yellow: '#EBCB8B'
+    #blue: '#81A1C1'
+    #magenta: '#B48EAD'
+    #cyan: '#8FBCBB'
+    #white: '#ECEFF4'
 
+# Nordic Color Scheme (schematic)
+colors:
+  bright:
+    black: '#4c566a'
+    blue: '#81A1C1'
+    cyan: '#8FBCBB'
+    green: '#a3be8c'
+    magenta: '#B48EAD'
+    red: '#BF616A'
+    white: '#ECEFF4'
+    yellow: '#EBCB8B'
+  cursor:
+    cursor: '#D8DEE9'
+    Text: '#292929'
+  normal:
+    black: '#3B4252'
+    blue: '#81A1C1'
+    cyan: '#88C0D0'
+    green: '#A3BE8C'
+    magenta: '#B48EAD'
+    red: '#BF616A'
+    white: '#E5E9F0'
+    yellow: '#EBCB8B'
+  primary:
+    background: '#292929'
+    foreground: '#d8dee9'
+  selection:
+    background: '#ECEFF4'
+    text: '#4C566A'
+
+#colors:
+  #bright:
+    #black: '#797379'
+    #blue: '#989498'
+    #cyan: '#b33508'
+    #green: '#433b42'
+    #magenta: '#d5d3d5'
+    #red: '#fd8b19'
+    #white: '#ffffff'
+    #yellow: '#5c545b'
+  #cursor:
+    #cursor: '#b9b5b8'
+    #text: '#322931'
+  #normal:
+    #black: '#322931'
+    #blue: '#1290bf'
+    #cyan: '#149b93'
+    #green: '#8fc13e'
+    #magenta: '#c85e7c'
+    #red: '#dd464c'
+    #white: '#b9b5b8'
+    #yellow: '#fdcc59'
+  #primary:
+    #background: '#292929'
+    #foreground: '#b9b5b8'
+  #selection:
+    #background: '#5c545b'
+    #text: '#b9b5b8'
 
 # Visual Bell
 #
