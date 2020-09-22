@@ -113,90 +113,34 @@ debug.persistent_logging: false
 draw_bold_text_with_bright_colors: true
 
 # Nordic Color Scheme
-#colors:
-  #primary:
-    #background: '#292929'
-    #foreground: '#D8DEE9'
-  #cursor:
-    #text: '#2E3440'
-    #cursor: '#D8DEE9'
-  #normal:
-    #black: '#3B4252'
-    #red: '#BF616A'
-    #green: '#A3BE8C'
-    #yellow: '#EBCB8B'
-    #blue: '#81A1C1'
-    #magenta: '#B48EAD'
-    #cyan: '#88C0D0'
-    #white: '#E5E9F0'
-  #bright:
-    #black: '#4C566A'
-    #red: '#BF616A'
-    #green: '#A3BE8C'
-    #yellow: '#EBCB8B'
-    #blue: '#81A1C1'
-    #magenta: '#B48EAD'
-    #cyan: '#8FBCBB'
-    #white: '#ECEFF4'
-
-# Nordic Color Scheme (schematic)
 colors:
   bright:
     black: '#4c566a'
-    blue: '#81A1C1'
-    cyan: '#8FBCBB'
+    blue: '#81a1c1'
+    cyan: '#8fbcbb'
     green: '#a3be8c'
-    magenta: '#B48EAD'
-    red: '#BF616A'
-    white: '#ECEFF4'
-    yellow: '#EBCB8B'
+    magenta: '#b48ead'
+    red: '#bf616a'
+    white: '#eceff4'
+    yellow: '#ebcb8b'
   cursor:
-    cursor: '#D8DEE9'
+    cursor: '#d8dee9'
     Text: '#292929'
   normal:
-    black: '#3B4252'
-    blue: '#81A1C1'
-    cyan: '#88C0D0'
-    green: '#A3BE8C'
-    magenta: '#B48EAD'
-    red: '#BF616A'
-    white: '#E5E9F0'
-    yellow: '#EBCB8B'
+    black: '#3b4252'
+    blue: '#81a1c1'
+    cyan: '#88c0d0'
+    green: '#a3be8c'
+    magenta: '#b48ead'
+    red: '#bf616a'
+    white: '#e5e9f0'
+    yellow: '#ebcb8b'
   primary:
     background: '#292929'
     foreground: '#d8dee9'
   selection:
-    background: '#ECEFF4'
-    text: '#4C566A'
-
-#colors:
-  #bright:
-    #black: '#797379'
-    #blue: '#989498'
-    #cyan: '#b33508'
-    #green: '#433b42'
-    #magenta: '#d5d3d5'
-    #red: '#fd8b19'
-    #white: '#ffffff'
-    #yellow: '#5c545b'
-  #cursor:
-    #cursor: '#b9b5b8'
-    #text: '#322931'
-  #normal:
-    #black: '#322931'
-    #blue: '#1290bf'
-    #cyan: '#149b93'
-    #green: '#8fc13e'
-    #magenta: '#c85e7c'
-    #red: '#dd464c'
-    #white: '#b9b5b8'
-    #yellow: '#fdcc59'
-  #primary:
-    #background: '#292929'
-    #foreground: '#b9b5b8'
-  #selection:
-    #background: '#5c545b'
-    #text: '#b9b5b8'
+    background: '#eceff4'
+    text: '#4c566a'
 
 # Visual Bell
 #
