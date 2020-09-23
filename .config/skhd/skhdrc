@@ -122,7 +122,7 @@ alt - y : yabai -m space --mirror y-axis
 alt - x : yabai -m space --mirror x-axis
 
 # toggle desktop offset
-alt - a : yabai -m space --toggle padding; yabai -m space --toggle gap
+#alt - a : yabai -m space --toggle padding; yabai -m space --toggle gap
 
 # toggle window parent zoom
 #alt - d : yabai -m window --toggle zoom-parent
@@ -144,15 +144,15 @@ alt - t : yabai -m window --toggle float;\
           yabai -m window --grid 4:4:1:1:2:2
 
 # toggle sticky (show on all spaces)
-alt - s : yabai -m window --toggle sticky
+#alt - s : yabai -m window --toggle sticky
 
 # toggle topmost (keep above other windows)
-alt - o : yabai -m window --toggle topmost
+#alt - o : yabai -m window --toggle topmost
 
 # toggle sticky, topmost and resize to picture-in-picture size
-alt - p : yabai -m window --toggle sticky;\
-          yabai -m window --toggle topmost;\
-          yabai -m window --grid 5:5:4:0:1:1
+#alt - p : yabai -m window --toggle sticky;\
+          #yabai -m window --toggle topmost;\
+          #yabai -m window --grid 5:5:4:0:1:1
 
 # change layout of desktop
 # currently deactivated. using the alt -t toggle for floating windows instead
