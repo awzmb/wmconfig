@@ -71,24 +71,24 @@ scrolling:
 font:
   # Normal (roman) font face
   normal:
-    family: Hack
+    family: CozetteVector
     # The `style` can be specified to pick a specific face.
     style: Regular
 
   # Bold font face
   bold:
-    family: Hack
+    family: CozetteVector
     # The `style` can be specified to pick a specific face.
     style: Bold
 
   # Italic font face
   italic:
-    family: Hack
+    family: CozetteVector
     # The `style` can be specified to pick a specific face.
     style: Italic
 
   # Point size
-  size: 12.6
+  size: 14.0
 
   # Offset is the extra space around each character. `offset.y` can be thought of
   # as modifying the line spacing, and `offset.x` as modifying the letter spacing.

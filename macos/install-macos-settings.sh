@@ -53,6 +53,12 @@ sudo defaults write /Library/Preferences/com.apple.Bluetooth.plist DontPageAudio
 # you can get the mac address via device cache
 #sudo defaults read /Library/Preferences/com.apple.Bluetooth.plist DeviceCache
 
+# disable font smoothing (use only for non hidpi displays)
+defaults write -g CGFontRenderingFontSmoothingDisabled -bool NO
+
+# adjust font smoothing (possible values: 1=medium,2=medium,3=strong)
+#defaults -currentHost write -globalDomain AppleFontSmoothing -int 1
+
 # disable transparency in the menu bar and elsewhere
 defaults write com.apple.universalaccess reduceTransparency -bool true
 

@@ -105,6 +105,7 @@ brew cask install font-edlo
 brew cask install font-dejavu
 brew cask install font-bitstream-vera-sans-mono-nerd-font
 brew cask install font-proggy-clean-tt-nerd-font
+brew cask install font-cozette
 
 # spotify with terminal client
 brew install portaudio
