@@ -6,7 +6,16 @@ alias ll='ls -lAh'
 alias ls='ls -F'
 
 # python pip upgrades
-alias pip-upgrade='pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U'
+alias pip-upgrade='python3 -m pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U'
 
 # neomutt + maildir sync
 alias mutt='mbsync -a && neomutt'
+
+# git aliases
+alias ga='git add --all'
+alias gc='git checkout'
+alias gcm='git commit -m'
+alias gl='git log'
+alias gs='git show'
+alias gd='git diff'
+alias gdc='git diff --cached'

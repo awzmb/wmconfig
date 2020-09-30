@@ -39,7 +39,8 @@ brew install navi # read cheatsheets cli
 brew install gnu-sed # gnu sed (executed via gsed)
 brew install newsboat # terminal rss news reader
 brew install catimg # render images in terminal
-brew install exa # new old editor (for preview with fzf)
+brew install exa # preview files with fzf
+brew install gh # github cli tool
 brew install reattach-to-user-namespace # copy to system clipboard from vim and tmux
 # to start isync as service run 'brew services start isync'
 
@@ -77,6 +78,7 @@ brew install awscli # amazon web services cli
 brew install aws-iam-authenticator # aws iam authentication for eks
 brew install aws-shell # interactive awscli alternative
 brew install azure-cli # microsoft azure cli
+brew cask install session-manager-plugin # aws plugin to connect to ec2 instances via ssm
 brew cask install aws-vpn-client # aws vpn for safe connections to account
 
 # install coc and language server (vim)
