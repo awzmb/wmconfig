@@ -41,6 +41,7 @@ brew install newsboat # terminal rss news reader
 brew install catimg # render images in terminal
 brew install exa # preview files with fzf
 brew install gh # github cli tool
+brew install profclems/tap/glab # gitlab cli tool
 brew install reattach-to-user-namespace # copy to system clipboard from vim and tmux
 # to start isync as service run 'brew services start isync'
 

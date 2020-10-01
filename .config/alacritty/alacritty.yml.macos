@@ -142,6 +142,32 @@ colors:
     background: '#eceff4'
     text: '#4c566a'
 
+#colors:
+  #primary:
+    #background: "#292929"
+    #foreground: "#d8dee9"
+  #selection:
+    #background: '#eceff4'
+    #text: '#4c566a'
+  #normal:
+    #black: "#EDEDED"
+    #red: "#D7005F"
+    #green: "#718C00"
+    #yellow: "#D75F00"
+    #blue: "#4271AE"
+    #magenta: "#8959A8"
+    #cyan: "#3E999F"
+    #white: "#4D4D4C"
+  #bright:
+    #black: "#969694"
+    #red: "#D7005F"
+    #green: "#718C00"
+    #yellow: "#D75F00"
+    #blue: "#4271AE"
+    #magenta: "#8959A8"
+    #cyan: "#3E999F"
+    #white: "#F5F5F5"
+
 # Visual Bell
 #
 # Any time the BEL code is received, Alacritty "rings" the visual bell. Once
