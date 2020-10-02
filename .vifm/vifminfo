@@ -2,13 +2,13 @@
 
 # Marks:
 'b
-	/Users/awzm/bin/
+	/home/dsbundschuh/bin/
 	..
-1597840484
+1600595597
 'h
-	/Users/awzm/
+	/home/dsbundschuh/
 	..
-1597840484
+1600595597
 
 # Bookmarks:
 
@@ -64,6 +64,9 @@ d/Users/awzm/Workspace/terraform-aws-ec2-instance
 d/Users/awzm/Workspace/terraform-aws-ec2-instance/example
 	main.tf
 1
+d/
+	run
+13
 d
 
 # Right window history (oldest to newest):
@@ -149,6 +152,9 @@ D/Users/awzm/Workspace/terraform-prod/modules/linux-instance
 	..
 0
 D/Users/awzm/Workspace/terraform-prod
+	
+0
+D/
 	
 0
 D
