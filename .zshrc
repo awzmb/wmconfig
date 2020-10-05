@@ -58,12 +58,28 @@ source ~/.zsh/fzf-keybindings.zsh
 # fzf tab completion
 source ~/.zsh/fzf-tab-completion.zsh
 
+# several fixes for different systems
+source ~/.zsh/fixes.zsh
+
 # asdf completion
 if [ "$(uname)" = "Darwin" ]; then
   source "$( brew --prefix asdf )/asdf.sh"
 fi
 
+# source linux asdf (git)
+. $HOME/.asdf/asdf.sh
+
 # fix for zscaler if .certificates exists in home
 if [ -d "$HOME/.certificates" ]; then
   export AWS_CA_BUNDLE=$HOME/.certificates/Certificates.pem
 fi
+
+# additional stuff
+if [ "$(uname)" = "Linux" ]; then
+  unset SSH_ASKPASS
+  setxkbmap us -variant altgr-intl
+  setxkbmap -option caps:escape
+fi
+
+# trigger completion initialization a last time
+compinit

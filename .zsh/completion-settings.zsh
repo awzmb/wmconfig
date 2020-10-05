@@ -1,6 +1,7 @@
 # load zsh-completions plugin
 zinit light zsh-users/zsh-completions
-autoload -U compinit && compinit
+autoload -U compinit
+compinit
 zmodload -i zsh/complist
 
 WORDCHARS=''

@@ -87,7 +87,7 @@ let g:coc_global_extensions = [
             \]
 
 """"""" colorscheme """""""
-#set termguicolors
+"set termguicolors
 syntax on
 colorscheme nord
 
