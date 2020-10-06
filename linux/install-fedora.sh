@@ -324,5 +324,10 @@ snap install \
     org.gtk.Gtk3theme.Qogir-win-dark \
     net.sourceforge.chromium-bsu
 
+# install asdf for tool management
+git clone https://github.com/asdf-vm/asdf.git ~/.asdf
+cd ~/.asdf
+git checkout "$(git describe --abbrev=0 --tags)"
+
 # additional stuff
 unset $SSH_ASKPASS
