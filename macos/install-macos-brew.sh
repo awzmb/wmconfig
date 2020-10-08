@@ -10,7 +10,7 @@ brew install asdf # manage dev related cli tools (terraform, kubectl,..)
 brew install ansible # configuration management
 brew install go # go lang binary
 brew install go-task/tap/go-task # better make
-brew install grep --with-default-names # gnu grep (executed via ggrep)
+brew install grep # gnu grep (executed via ggrep)
 brew install jq # parse json
 brew install jd # post stdout as json
 brew install git # git

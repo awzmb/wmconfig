@@ -2,13 +2,13 @@
 
 # Marks:
 'b
-	/home/dsbundschuh/bin/
+	/Users/dennisbundschuh/bin/
 	..
-1600595597
+1601999294
 'h
-	/home/dsbundschuh/
+	/Users/dennisbundschuh/
 	..
-1600595597
+1601999294
 
 # Bookmarks:
 
@@ -65,8 +65,11 @@ d/Users/awzm/Workspace/terraform-aws-ec2-instance/example
 	main.tf
 1
 d/
-	run
-13
+	System
+2
+d/System
+	DriverKit
+2
 d
 
 # Right window history (oldest to newest):

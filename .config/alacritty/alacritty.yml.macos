@@ -125,7 +125,7 @@ colors:
     yellow: '#ebcb8b'
   cursor:
     cursor: '#d8dee9'
-    Text: '#292929'
+    Text: '#232323'
   normal:
     black: '#3b4252'
     blue: '#81a1c1'
@@ -136,7 +136,7 @@ colors:
     white: '#e5e9f0'
     yellow: '#ebcb8b'
   primary:
-    background: '#292929'
+    background: '#232323'
     foreground: '#d8dee9'
   selection:
     background: '#eceff4'
@@ -144,7 +144,7 @@ colors:
 
 #colors:
   #primary:
-    #background: "#292929"
+    #background: "#232323"
     #foreground: "#d8dee9"
   #selection:
     #background: '#eceff4'
