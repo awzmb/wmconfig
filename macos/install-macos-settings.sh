@@ -8,9 +8,10 @@
 sudo spctl --master-disable
 
 # change hostname and sharing name
-sudo scutil --set ComputerName "bawzmbp"
-sudo scutil --set HostName "bawzmbp"
-sudo scutil --set LocalHostName "bawzmbp"
+# TODO: ask for hostname and leave original when empty
+#sudo scutil --set ComputerName "bawzmbp"
+#sudo scutil --set HostName "bawzmbp"
+#sudo scutil --set LocalHostName "bawzmbp"
 sudo defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName -string "bawzmbp"
 
 # close any open system preferences panes, to prevent them from overriding
