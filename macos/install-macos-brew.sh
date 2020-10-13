@@ -66,7 +66,7 @@ brew cask install brave-browser # google chrome alternative
 brew cask install spotify # music
 brew cask install karabiner-elements # modify keyboard input
 brew cask install discord # slack for gaming
-brew cask install steermouse # improve macos default mouse speed acceleration
+#brew cask install steermouse # improve macos default mouse speed acceleration
 brew cask install vscodium # visual studio code as foss
 brew cask install microsoft-teams # most hated collaboration client
 brew cask install keepassxc # manage keepass
