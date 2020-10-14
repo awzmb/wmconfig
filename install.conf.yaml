@@ -12,9 +12,10 @@
     - ~/.vim/backup
     - ~/.vim/swp
     - ~/.zshcache
-    - ~/.config/nvim
     - ~/.config/alacritty
     - ~/.config/karabiner
+    - ~/.config/nvim
+    - ~/.config/vifm
 
 - link:
     ~/.tmux.conf: .tmux.conf
@@ -38,7 +39,8 @@
     ~/.vifm: .vifm
     #~/.gitconfig: .gitconfig
     ~/.config/mc: .config/mc
-    ~/.config/vifm: .config/vifm
+    ~/.config/vifm/vifmrc: .config/vifm/vifmrc
+    ~/.config/vifm/colors: .config/vifm/colors
     ~/.config/newsboat: .config/newsboat
     ~/.config/nvim/init.vim: .vimrc
     ~/.config/autorandr:

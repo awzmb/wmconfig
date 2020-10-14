@@ -337,6 +337,7 @@ function s:SetCursorLine()
   hi CursorLine cterm=none ctermbg=0 ctermfg=none
 endfunction
 autocmd VimEnter * call s:SetCursorLine()
+autocmd BufNew * call s:SetCursorLine()
 
 """"""" python stuff """""""
 syntax enable
