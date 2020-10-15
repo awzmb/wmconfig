@@ -136,7 +136,7 @@ colors:
     white: '#e5e9f0'
     yellow: '#ebcb8b'
   primary:
-    background: '#232323'
+    background: '#202020'
     foreground: '#d8dee9'
   selection:
     background: '#eceff4'
