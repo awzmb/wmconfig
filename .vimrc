@@ -61,6 +61,9 @@ Plugin 'lilydjwg/colorizer'
 " edit confluence pages in vim
 Plugin 'lusis/confluence-vim'
 
+" automated closing, paranthesis, brackets, quotes
+Plugin 'KaraMCC/vim-gemini'
+
 " other stuff
 Plugin 'infoslack/vim-docker'
 Plugin 'pearofducks/ansible-vim'
@@ -378,6 +381,13 @@ let g:fzf_colors =
 
 """"""" confluence-vim """""""
 let g:confluence_url = 'https://confluence.dkb.ag/wiki/rest/api/content'
+
+""""""" vim-terraform """""""
+" allow vim-terraform to align settings automatically with tabularize
+let g:terraform_align=1
+" allow vim-terraform to automatically format *.tf and *.tfvars files with
+" terraform fmt. you can also do this manually with the :terraformfmt command
+let g:terraform_fmt_on_save=1
 
 """"""" keybindings """""""
 " set up leaders
