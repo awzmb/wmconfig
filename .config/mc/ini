@@ -81,7 +81,7 @@ editor_backup_extension=~
 editor_filesize_threshold=64M
 editor_stop_format_chars=-+*\\,.;:&>
 mcview_eof=
-skin=default
+skin=dracula
 
 safe_overwrite=false
 
@@ -95,7 +95,7 @@ menubar_visible=true
 free_space=true
 horizontal_split=false
 vertical_equal=true
-left_panel_size=106
+left_panel_size=73
 horizontal_equal=true
 top_panel_size=1
 
