@@ -113,6 +113,7 @@ brew cask install font-dejavu
 brew cask install font-bitstream-vera-sans-mono-nerd-font
 brew cask install font-proggy-clean-tt-nerd-font
 brew cask install font-cozette
+brew cask install font-jetbrains-mono-nerd-font
 
 # spotify with terminal client
 brew install portaudio
