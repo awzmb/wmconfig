@@ -36,7 +36,6 @@
     ~/.bashrc: .bashrc
     ~/.aliases: .aliases
     ~/.dir_colors: .dir_colors
-    ~/.vifm: .vifm
     #~/.gitconfig: .gitconfig
     ~/.config/mc: .config/mc
     ~/.config/vifm/vifmrc: .config/vifm/vifmrc
