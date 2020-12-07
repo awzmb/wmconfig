@@ -16,6 +16,7 @@
     - ~/.config/karabiner
     - ~/.config/nvim
     - ~/.config/vifm
+    - ~/.terraform.d/cache
 
 - link:
     ~/.tmux.conf: .tmux.conf
@@ -36,6 +37,7 @@
     ~/.bashrc: .bashrc
     ~/.aliases: .aliases
     ~/.dir_colors: .dir_colors
+    ~/.terraformrc: .terraformrc
     #~/.gitconfig: .gitconfig
     ~/.config/mc: .config/mc
     ~/.config/vifm/vifmrc: .config/vifm/vifmrc
