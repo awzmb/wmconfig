@@ -44,6 +44,7 @@ brew install gh # github cli tool
 brew install zip # cli zip
 brew install p7zip # cli 7zip
 brew install ctags # indexing methos, classes, variables in tags file (used by vim)
+brew install pre-commit # define git pre-commit hooks as yaml
 brew install profclems/tap/glab # gitlab cli tool
 brew install reattach-to-user-namespace # copy to system clipboard from vim and tmux
 # to start isync as service run 'brew services start isync'
