@@ -86,6 +86,7 @@ let g:coc_global_extensions = [
             \'coc-yaml',
             \'coc-docker',
             \'coc-python',
+            \'coc-go',
             \'coc-gitignore'
             \]
 
