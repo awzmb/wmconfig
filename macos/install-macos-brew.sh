@@ -116,6 +116,7 @@ brew cask install font-bitstream-vera-sans-mono-nerd-font
 brew cask install font-proggy-clean-tt-nerd-font
 brew cask install font-cozette
 brew cask install font-jetbrains-mono-nerd-font
+brew cask install font-gnu-unifont
 
 # spotify with terminal client
 brew install portaudio
@@ -152,7 +153,7 @@ asdf plugin add terraform-validator
 asdf plugin add terragrunt
 
 # terraform tools
-brew install transcend-io/tap/terragrunt-atlantis-config
+#brew install transcend-io/tap/terragrunt-atlantis-config
 
 # fix zsh 'insecure directory' problem
 sudo chmod -R 755 /usr/local/share/zsh
