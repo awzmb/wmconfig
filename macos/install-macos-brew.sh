@@ -79,6 +79,7 @@ brew cask install drawio # draw flowcharts, graphs and models
 brew cask install whichspace # show current space number in dock
 brew cask install monitorcontrol # control brightness and volume on external display
 brew cask install lens # kubernetes management gui tool
+brew cask install shift # handle multiple accounts (gmail, slack, discord, etc.) with one application
 
 # aws and azure tools
 brew install awscli # amazon web services cli
