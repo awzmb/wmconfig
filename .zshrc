@@ -29,6 +29,12 @@ source ~/.aliases
 # add script folder to path
 export PATH="$HOME/.scripts:$PATH"
 
+# add golaang path
+export GOPATH="$HOME/go"
+export GOROOT="/usr/local/opt/go/libexec"
+export PATH="$PATH:$GOPATH/bin"
+export PATH="$PATH:$GOROOT/bin"
+
 # source theme
 source ~/.zsh/theme.zsh
 
@@ -66,6 +72,10 @@ if [ "$(uname)" = "Darwin" ]; then
   source "$( brew --prefix asdf )/asdf.sh"
 fi
 
+# asdf terragrunt terraform version fix
+#if [ "$(uname)" = "Darwin" ]; then
+#  export TERRAGRUNT_TFPATH=$(asdf which terraform)
+#fi
 
 # fix for zscaler if .certificates exists in home
 if [ -d "$HOME/.certificates" ]; then

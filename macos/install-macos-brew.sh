@@ -159,6 +159,9 @@ asdf plugin add terragrunt
 sudo chmod -R 755 /usr/local/share/zsh
 sudo chown -R $(whoami):staff /usr/local/share/zsh
 
+# discord terminal tools
+go get github.com/diamondburned/discordlogin # get discord token by using export TOKEN=$(discordlogin)
+
 # install vscodium extensions
 #code --install-extension \
 #  hashicorp.terraform \
