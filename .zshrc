@@ -68,9 +68,9 @@ source ~/.zsh/fzf-tab-completion.zsh
 source ~/.zsh/fixes.zsh
 
 # asdf completion
-if [ "$(uname)" = "Darwin" ]; then
-  source "$( brew --prefix asdf )/asdf.sh"
-fi
+#if [ "$(uname)" = "Darwin" ]; then
+#  source "$( brew --prefix asdf )/asdf.sh"
+#fi
 
 # asdf terragrunt terraform version fix
 #if [ "$(uname)" = "Darwin" ]; then
@@ -87,7 +87,7 @@ if [ "$(uname)" = "Linux" ]; then
   # dont use gui to enter git credentials
   unset SSH_ASKPASS
   # source linux asdf (git)
-  . $HOME/.asdf/asdf.sh
+#  . $HOME/.asdf/asdf.sh
   # keyboard layout
   setxkbmap us -variant altgr-intl
   # use caps as escape button
