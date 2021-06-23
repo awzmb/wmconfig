@@ -6,7 +6,6 @@ brew tap homebrew/cask-fonts
 # default packages
 brew install tmux # terminal multiplexer
 brew install neovim # editor
-brew install asdf # manage dev related cli tools (terraform, kubectl,..)
 brew install ansible # configuration management
 brew install go # go lang binary
 brew install go-task/tap/go-task # better make
@@ -69,17 +68,13 @@ brew cask install brave-browser # google chrome alternative
 brew cask install spotify # music
 brew cask install karabiner-elements # modify keyboard input
 brew cask install discord # slack for gaming
-#brew cask install steermouse # improve macos default mouse speed acceleration
 brew cask install vscodium # visual studio code as foss
 brew cask install microsoft-teams # most hated collaboration client
-brew cask install keepassxc # manage keepass
-brew cask install 1password # onepass client
 brew cask install docker # container
-brew cask install drawio # draw flowcharts, graphs and models
-brew cask install whichspace # show current space number in dock
 brew cask install monitorcontrol # control brightness and volume on external display
 brew cask install lens # kubernetes management gui tool
 brew cask install shift # handle multiple accounts (gmail, slack, discord, etc.) with one application
+#brew cask install steermouse # improve macos default mouse speed acceleration
 
 # aws and azure tools
 brew install awscli # amazon web services cli
@@ -136,22 +131,22 @@ brew update
 brew services restart --all
 
 # install k8s tools via asdf
-asdf plugin add bat
-asdf plugin add eksctl
-asdf plugin add helm
-asdf plugin add helm-cr
-asdf plugin add helm-docs
-asdf plugin add helmfile
-asdf plugin add k3d
-asdf plugin add k9s
-asdf plugin add kubectl
-asdf plugin add kubectx
-asdf plugin add kubeseal
-asdf plugin add terraform
-asdf plugin add terraform-docs
-asdf plugin add terraform-lsp
-asdf plugin add terraform-validator
-asdf plugin add terragrunt
+# brew install asdf # manage dev related cli tools (terraform, kubectl,..)
+#asdf plugin add eksctl
+#asdf plugin add helm
+#asdf plugin add helm-cr
+#asdf plugin add helm-docs
+#asdf plugin add helmfile
+#asdf plugin add k3d
+#asdf plugin add k9s
+#asdf plugin add kubectl
+#asdf plugin add kubectx
+#asdf plugin add kubeseal
+#asdf plugin add terraform
+#asdf plugin add terraform-docs
+#asdf plugin add terraform-lsp
+#asdf plugin add terraform-validator
+#asdf plugin add terragrunt
 
 # terraform tools
 #brew install transcend-io/tap/terragrunt-atlantis-config
@@ -161,7 +156,7 @@ sudo chmod -R 755 /usr/local/share/zsh
 sudo chown -R $(whoami):staff /usr/local/share/zsh
 
 # discord terminal tools
-go get github.com/diamondburned/discordlogin # get discord token by using export TOKEN=$(discordlogin)
+#go get github.com/diamondburned/discordlogin # get discord token by using export TOKEN=$(discordlogin)
 
 # install vscodium extensions
 #code --install-extension \
