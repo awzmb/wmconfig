@@ -7,7 +7,7 @@ sudo apk add \
   openssl curl bat w3m exa zip \
   ctags zsh-vcs python3 ack p7zip \
   coreutils tree ranger nodejs \
-  npm yarn curl wget
+  npm yarn curl wget fd fzf openssh
 
 # additional stuff
 sudo apk add \
