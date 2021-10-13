@@ -21,7 +21,8 @@ zinit ice wait'!0'
 #zinit light marlonrichert/zsh-autocomplete
 
 # colorizes various shell tools (grep, diff, ip, ...)
-zinit light zpm-zsh/colorize
+# NOTE: currently disabled because alpine busybox does not support certain grep options
+#zinit light zpm-zsh/colorize
 
 # aliases
 source ~/.aliases
@@ -86,12 +87,10 @@ fi
 if [ "$(uname)" = "Linux" ]; then
   # dont use gui to enter git credentials
   unset SSH_ASKPASS
-  # source linux asdf (git)
-#  . $HOME/.asdf/asdf.sh
   # keyboard layout
-  setxkbmap us -variant altgr-intl
+  #setxkbmap us -variant altgr-intl
   # use caps as escape button
-  setxkbmap -option caps:escape
+  #setxkbmap -option caps:escape
 fi
 
 # trigger completion initialization
