@@ -12,7 +12,8 @@ install_default_packages () {
 		ctags zsh-vcs python3 ack p7zip \
 		coreutils tree ranger nodejs \
 		npm yarn curl wget fd fzf openssh \
-		coreutils nodejs grep awk tar
+		coreutils nodejs grep tar openssl \
+    ca-certificates
 
 	# additional stuff
 	sudo apk add \
@@ -32,9 +33,31 @@ install_default_packages () {
 }
 
 install_desktop_packages () {
-# desktop packages
-sudo apk add \
-  i3wm i3lock i3status
+	# desktop packages
+	sudo apk add \
+		-xorg-base lightdm-gtk-greeter \
+		alacritty alacritty-zsh-completion \
+		xfce4-screensaver dbus-x11 faenza-icon-theme\
+		xf86-video-vmware xf86-input-mouse \
+		xf86-input-keyboard
+
+	# i3 window manager
+	sudo apk add \
+		i3wm i3lock i3status
+
+	# install vnc service
+	sudo apk add \
+		x11vnc xvfb
+
+  # create start script
+  mkdir -p ${HOME}/.scripts
+	printf '#!/bin/sh\nnohup x11vnc -xkb -nopw -noxrecord -noxfixes -noxdamage -display :0 -loop -shared -forever -bg -auth /var/run/lightdm/root/:0 -rfbport 5900 -o /var/log/vnc.log > /dev/null 2>&1 &' > ${HOME}/.scripts/vncserver-start
+	chmod +x ${HOME}/.scripts/vncserver-start
+
+	# enable services
+	#sudo rc-service lightdm start
+	#sudo rc-update add lightdm
+	#sudo rc-update add local default
 }
 
 # user input
