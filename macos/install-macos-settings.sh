@@ -360,6 +360,10 @@ defaults write com.apple.DiskUtility advanced-image-options -bool true
 # always show ~/Library folder
 chflags nohidden ~/Library/
 
+# disable library validation (activate this to use system level modifications
+# with disabled system integrity protection)
+sudo defaults write /Library/Preferences/com.apple.security.libraryvalidation.plist DisableLibraryValidation -bool true
+
 # keyboard shortcuts
 #addEntries() {
     ## check if universal access / custom menu key exists
