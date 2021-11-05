@@ -35,7 +35,7 @@ install_default_packages () {
 install_desktop_packages () {
 	# desktop packages
 	sudo apk add \
-		-xorg-base lightdm-gtk-greeter \
+		lightdm lightdm-gtk-greeter \
 		alacritty alacritty-zsh-completion \
 		xfce4-screensaver dbus-x11 faenza-icon-theme\
 		xf86-video-vmware xf86-input-mouse \
