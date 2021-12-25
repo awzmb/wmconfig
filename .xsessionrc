@@ -1,0 +1,2 @@
+# map escape to capslock
+setxkbmap -option caps:escape
