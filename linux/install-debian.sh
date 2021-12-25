@@ -8,6 +8,11 @@ sudo apt update && sudo apt upgrade
 
 ORIGIN_PATH=${pwd}
 
+# install linux proprietary gpu firmware
+sudo apt -y install \
+  firmware-linux \
+  firmware-linux-nonfree
+
 # basic packages
 sudo apt -y install \
     zsh \
@@ -38,7 +43,8 @@ sudo apt -y install \
     sudo \
     fzf \
     curl \
-    wget
+    wget \
+    tmux
 
 # workaround fd command
 sudo ln -s /usr/bin/fdfind /usr/bin/fd
