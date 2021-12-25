@@ -41,6 +41,7 @@
     ~/.terraformrc: .terraformrc
     #~/.gitconfig: .gitconfig
     ~/.config/mc: .config/mc
+    ~/.config/kitty: .config/kitty
     ~/.config/vifm/vifmrc: .config/vifm/vifmrc
     ~/.config/vifm/colors: .config/vifm/colors
     ~/.config/newsboat: .config/newsboat

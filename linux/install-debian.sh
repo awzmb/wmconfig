@@ -15,44 +15,58 @@ sudo apt -y install \
 
 # basic packages
 sudo apt -y install \
-    zsh \
-    vim \
-    neovim \
-    vifm \
-    i3 \
-    rofi \
-    redshift \
-    redshift-gtk \
-    vim neovim \
-    xss-lock \
-    picom \
-    pavucontrol \
-    nitrogen \
-    feh \
-    paper-icon-theme \
-    calc \
-    inkscape \
-    unrar \
-    exa \
-    bat \
-    jq \
-    tree \
-    ack \
-    git \
-    fd-find \
-    sudo \
-    fzf \
-    curl \
-    wget \
-    tmux
+  zsh \
+  vim \
+  neovim \
+  vifm \
+  i3 \
+  rofi \
+  vim \
+  neovim \
+  xss-lock \
+  picom \
+  pavucontrol \
+  nitrogen \
+  feh \
+  calc \
+  unrar \
+  exa \
+  bat \
+  jq \
+  tree \
+  ack \
+  git \
+  fd-find \
+  sudo \
+  fzf \
+  curl \
+  wget \
+  tmux
+
+# additional desktop packages
+sudo apt -y install \
+  polybar \
+  powertop \
+  dunst \
+  xautolock \
+  nitrogen \
+  paper-icon-theme \
+  inkscape \
+  redshift \
+  redshift-gtk \
+  pulsemixer
+
+# evdev input drivers for natural scrolling
+sudo apt -y install \
+    xserver-xorg-input-evdev
 
 # workaround fd command
 sudo ln -s /usr/bin/fdfind /usr/bin/fd
 
 # install fonts
 sudo apt -y install \
-    terminus-fonts \
-    terminus-fonts-console
+    fonts-terminus \
+    fonts-terminus-otb
 
 # podman
 sudo apt -y install \
@@ -167,3 +181,29 @@ sudo apt -y install steam
 
 # additional stuff
 unset $SSH_ASKPASS
+
+# reverse mouse scroll direction (natural scrolling)
+sudo cat <<EOF > /etc/X11/xorg.conf.d/70-synaptics.conf
+Section "InputClass"
+    Identifier "touchpad"
+    Driver "synaptics"
+    MatchIsTouchpad "on"
+        Option "TapButton1" "0"
+#        Option "TapButton1" "1"
+        Option "TapButton2" "3"
+        Option "TapButton3" "2"
+        Option "VertEdgeScroll" "on"
+        Option "VertTwoFingerScroll" "on"
+    	Option "VertScrollDelta=-79"
+        Option "HorizEdgeScroll" "on"
+        Option "HorizTwoFingerScroll" "on"
+        Option "CircularScrolling" "on"
+        Option "CircScrollTrigger" "2"
+        Option "EmulateTwoFingerMinZ" "40"
+        Option "EmulateTwoFingerMinW" "8"
+        Option "CoastingSpeed" "0"
+        Option "FingerLow" "30"
+        Option "FingerHigh" "50"
+        Option "MaxTapTime" "125"
+EndSection
+EOF
