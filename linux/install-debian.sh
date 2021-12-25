@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# add non-free and contrib to sources.list
+sudo dpkg --add-architecture i386
+
 # update packages to current level
 sudo apt update && sudo apt upgrade
 
@@ -11,7 +14,6 @@ sudo apt -y install \
     vim \
     neovim \
     vifm \
-    util-linux-user \
     i3 \
     rofi \
     redshift \
@@ -29,13 +31,14 @@ sudo apt -y install \
     exa \
     bat \
     jq \
-    jd \
     tree \
     ack \
     git \
     fd-find \
     sudo \
-    fzf
+    fzf \
+    curl \
+    wget
 
 # workaround fd command
 sudo ln -s /usr/bin/fdfind /usr/bin/fd
@@ -47,19 +50,16 @@ sudo apt -y install \
 
 # podman
 sudo apt -y install \
-    podman \
-    podman-compose
+    podman
 
 # password storage
 sudo apt -y install \
-    pass \
-    passmenu
+    pass
 
 # python environment
 sudo apt -y install \
     pipenv \
     python3-autopep8 \
-    python3-pands \
     yamllint
 
 # enable tlp power management
@@ -71,39 +71,32 @@ pip install --user polybar-reload
 
 # common media players
 sudo apt -y install \
-    vlc \
-    vlc-extras
+    vlc
 
 # zathura document viewer
 sudo apt install -y \
-    zathura \
-    zathura-pdf-mupdf
+    zathura
 
 # browser
 sudo apt -y install \
-    chromium-browser-privacy \
     firejail surf
 
 # polybar
 sudo apt -y install \
-    polybar \
-    fontawesome-fonts \
-    fontawesome-fonts-web
+    polybar
 
 # flashfocus
 sudo apt -y install python3-xcffib
 sudo pip install flashfocus
 
 # vulkan graphics
-sudo apt -y install vulkan-loader vulkan-headers vulkan-tools
+sudo apt -y install \
+  vulkan-tools
 
 # wine and dxvk
 sudo apt -y install \
     lutris \
-    wine \
-    wine-dxvk \
-    wine-dxvk-dxgi \
-    libva-intel-driver
+    wine
 
 # install mutt-wizard
 git clone https://github.com/LukeSmithxyz/mutt-wizard
@@ -131,14 +124,17 @@ rm -rf Qogir-icon-theme
 
 # password management
 sudo apt -y install gnupg
-gpg --full-gen-key && \
-pass init bundschuh.dennis@gmail.com \
+if [ ! -d "${HOME}/.gnupg" ]; then
+  gpg --full-gen-key
+fi
+pass init bundschuh.dennis@gmail.com
 pass insert mail/main
 
 # aws tools
 sudo apt -y install \
-    aws-tools \
     awscli
+
+# aws eks tools
 curl --silent --location "https://github.com/weaveworks/eksctl/releases/download/latest_release/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
 sudo mv /tmp/eksctl /usr/local/bin
 
