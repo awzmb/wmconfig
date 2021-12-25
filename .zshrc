@@ -30,6 +30,11 @@ source ~/.aliases
 # add script folder to path
 export PATH="$HOME/.scripts:$PATH"
 
+# add snap to path on linux
+if [ "$(uname)" = "Linux" ]; then
+  export PATH="/snap/bin:$PATH"
+fi
+
 # add golaang path
 export GOPATH="$HOME/go"
 export GOROOT="/usr/local/opt/go/libexec"

@@ -19,15 +19,11 @@ sudo apt -y install \
   vim \
   neovim \
   vifm \
-  i3 \
-  rofi \
   vim \
   neovim \
   xss-lock \
   picom \
   pavucontrol \
-  nitrogen \
-  feh \
   calc \
   unrar \
   exa \
@@ -45,6 +41,9 @@ sudo apt -y install \
 
 # additional desktop packages
 sudo apt -y install \
+  i3 \
+  rofi \
+  feh \
   polybar \
   powertop \
   dunst \
@@ -55,6 +54,14 @@ sudo apt -y install \
   redshift \
   redshift-gtk \
   pulsemixer
+
+# install wayland i3 replacement
+sudo apt -y install \
+  weston \
+  sway \
+  swaybar \
+  xwayland
+
 
 # brave browser and premise
 sudo apt -y install \
@@ -76,7 +83,9 @@ sudo ln -s /usr/bin/fdfind /usr/bin/fd
 # install fonts
 sudo apt -y install \
     fonts-terminus \
-    fonts-terminus-otb
+    fonts-terminus-otb \
+    fonts-unifont \
+    fonts-hack
 
 # podman
 sudo apt -y install \
