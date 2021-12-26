@@ -67,6 +67,9 @@
     ~/.config/polybar:
       if: '[ `uname` = Linux ]'
       path: .config/polybar
+    ~/.config/waybar:
+      if: '[ `uname` = Linux ]'
+      path: .config/waybar
     ~/.config/rofi:
       if: '[ `uname` = Linux ]'
       path: .config/rofi

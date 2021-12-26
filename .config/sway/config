@@ -5,7 +5,7 @@
 # kill xfce4 panel (temporary solution)
 exec --no-startup-id killall xfce4-panel
 # start waybar
-exec_always --no-startup-id waybar
+exec_always --no-startup-id killall waybar; waybar
 # focus change animation
 exec --no-startup-id flashfocus
 # set keymap
