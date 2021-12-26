@@ -61,6 +61,9 @@
     ~/.config/i3:
       if: '[ `uname` = Linux ]'
       path: .config/i3
+    ~/.config/sway:
+      if: '[ `uname` = Linux ]'
+      path: .config/sway
     ~/.config/polybar:
       if: '[ `uname` = Linux ]'
       path: .config/polybar

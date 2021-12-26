@@ -4,9 +4,8 @@
 
 # kill xfce4 panel (temporary solution)
 exec --no-startup-id killall xfce4-panel
-# start polybar with custom script
-exec_always --no-startup-id ~/.scripts/polybar &
-exec_always --no-startup-id ~/.scripts/polybar-reload
+# start waybar
+exec_always --no-startup-id waybar
 # focus change animation
 exec --no-startup-id flashfocus
 # set keymap
@@ -17,11 +16,11 @@ exec_always --no-startup-id setxkbmap -option caps:escape
 exec_always --no-startup-id feh --bg-scale ~/.cfg/wallpaper/prism.png; sleep 1; picom -b
 #exec --no-startup-id nitrogen --restore; sleep 1; picom -b
 # power management
-#exec --no-startup-id xfce4-power-manager
+exec --no-startup-id xfce4-power-manager
 # bluetooth manager
-#exec --no-startup-id blueman-applet
+exec --no-startup-id blueman-applet
 # clipboard
-#exec --no-startup-id clipit
+exec --no-startup-id clipit
 # filter blue light during nighttime
 exec --no-startup-id redshift-gtk -l 52:13
 # unclutter to hide mouse pointer after 5s
@@ -30,24 +29,24 @@ exec --no-startup-id redshift-gtk -l 52:13
 #exec xss-lock -- gdmflexiserver
 
 
-
 # =============================================================================
 # Basic Setup
 # =============================================================================
 
+# set hidpi output scaling
+output eDP-1 scale 1.25
+
 # set terminal emulator
-#set $term alacritty
 set $term kitty
 
 # set mod key (Mod1=<Alt>, Mod4=<Super>)
 set $mod Mod1
 
 # font for window titles. ISO 10646 = Unicode
-#font -xos4-terminus-bold-r-normal--14-140-72-72-c-80-iso10646-1
 font -xos4-terminus-medium-r-normal--14-140-72-72-c-80-iso10646-1
 
 # no border / window title bar
-new_window none
+default_border none
 
 # Hide borders
 hide_edge_borders both
@@ -235,9 +234,9 @@ set $mode_system System (l) lock, (e) logout, (s) suspend, (m) menu, (r) reboot,
 mode "$mode_system" {
     bindsym l exec --no-startup-id $Locker, mode "default"
     bindsym e exec --no-startup-id i3-msg exit, mode "default"
-    bindsym s exec --no-startup-id xfce4-session-logout --halt, mode "default"
-    bindsym m exec --no-startup-id xfce4-session-logout, mode "default"
-    bindsym r exec --no-startup-id xfce4-session-logout --reboot, mode "default"
+    bindsym s exec --no-startup-id $Locker && systemctl suspend -i, mode "default"
+    bindsym h exec --no-startup-id $Locker && systemctl hibernate -i, mode "default"
+    bindsym r exec --no-startup-id systemctl reboot, mode "default"
     bindsym Shift+s exec --no-startup-id systemctl poweroff -i, mode "default"
 
     # back to normal: Enter or Escape
