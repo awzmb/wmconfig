@@ -1,5 +1,9 @@
 #!/bin/sh
 
+# NOTE: this installer script has been tested only on the
+# debian testing branch. some packages might not be available
+# on debian stable
+
 # add non-free and contrib to sources.list
 sudo dpkg --add-architecture i386
 
@@ -53,11 +57,14 @@ sudo apt -y install \
   inkscape \
   redshift \
   redshift-gtk \
-  pulsemixer
+  pulsemixer \
+  scrot \
+  lightdm \
+  lightdm-greeter-gtk \
+  lightdm-settings
 
 # install wayland i3 replacement
 sudo apt -y install \
-  weston \
   sway \
   swaybar \
   xwayland

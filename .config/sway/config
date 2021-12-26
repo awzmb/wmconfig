@@ -10,11 +10,6 @@ exec_always --no-startup-id killall waybar; waybar
 exec --no-startup-id flashfocus
 # set keymap
 exec --no-startup-id setxkbmap us -variant altgr-intl
-# remap capslock to escape
-exec_always --no-startup-id setxkbmap -option caps:escape
-# compositor and wallpaper
-exec_always --no-startup-id feh --bg-scale ~/.cfg/wallpaper/prism.png; sleep 1; picom -b
-#exec --no-startup-id nitrogen --restore; sleep 1; picom -b
 # power management
 exec --no-startup-id xfce4-power-manager
 # bluetooth manager
@@ -26,15 +21,16 @@ exec --no-startup-id redshift-gtk -l 52:13
 # unclutter to hide mouse pointer after 5s
 #exec --no-startup-id unclutter
 # start xss-lock to suspend and lock on lid close (laptop)
-#exec xss-lock -- gdmflexiserver
+exec xss-lock -- swaylock
 
 
 # =============================================================================
 # Basic Setup
 # =============================================================================
 
-# set hidpi output scaling
-output eDP-1 scale 1.25
+# set default locker
+#set $Locker xflock4 && sleep 1
+set $Locker swaylock
 
 # set terminal emulator
 set $term kitty
@@ -51,11 +47,25 @@ default_border none
 # Hide borders
 hide_edge_borders both
 
-# Use Mouse+$mod to drag floating windows to their wanted position
+# use mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
 
+# set hidpi output scaling
+output * scale 1.25
+
+# use solid color background
+output * bg #282A33 solid_color
+
+# activate natural scrolling
+input type:touchpad {
+    tap disabled
+    natural_scroll enabled
+}
+
+# map escape to capslock
+input * xkb_options caps:escape
+
 # start a terminal
-#bindsym $mod+Return exec i3-sensible-terminal
 bindsym $mod+Shift+Return exec $term
 
 # kill focused window
@@ -136,7 +146,7 @@ bindsym $mod+F8 exec work-layout
 
 # reload the configuration file
 bindsym $mod+Shift+C reload
-# restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
+# restart i3 inplace (preserves your layout/session, can be used to upgrade sway)
 bindsym $mod+Shift+R restart
 # exit i3 (logs you out of your X session)
 bindsym $mod+Shift+E exit
@@ -197,23 +207,11 @@ bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ to
 #bindsym XF86AudioMute exec --no-startup-id amixer -q set Master toggle
 
 # start scrot for screenshots
-bindsym $mod+Print --release exec --no-startup-id i3-scrot -w
-bindsym $mod+Shift+Print --release exec --no-startup-id i3-scrot -s
+bindsym $mod+Print --release exec --no-startup-id scrot -w
+bindsym $mod+Shift+Print --release exec --no-startup-id scrot -s
 
 # suspend
-bindsym $mod+F11 exec --no-startup-id xflock4
-
-# session manager
-bindsym $mod+Shift+F11 exec --no-startup-id xfce4-session-logout
-
-# suspend
-bindsym $mod+F12 exec --no-startup-id xfce4-session-logout --suspend
-
-# shutdown
-bindsym $mod+shift+F12 exec --no-startup-id xfce4-session-logout --halt
-
-# change display settings via dmenu
-#bindsym $mod+shift+m exec --no-startup-id ~/.scripts/display-settings
+bindsym $mod+F11 exec --no-startup-id $Locker && systemctl suspend -i
 
 # networkmanager dmenu integration
 bindsym $mod+shift+w exec --no-startup-id networkmanager_dmenu \
@@ -227,13 +225,11 @@ bindsym $mod+shift+w exec --no-startup-id networkmanager_dmenu \
 bindsym $mod+shift+F7 exec --no-startup-id setxkbmap us -variant altgr-intl
 bindsym $mod+shift+F8 exec --no-startup-id setxkbmap de
 
-# set locker and open menu via polybar or i3bar
-set $Locker xflock4 && sleep 1
-
+# lock, suspend and shutdown menu via waybar
 set $mode_system System (l) lock, (e) logout, (s) suspend, (m) menu, (r) reboot, (Shift+s) shutdown
 mode "$mode_system" {
     bindsym l exec --no-startup-id $Locker, mode "default"
-    bindsym e exec --no-startup-id i3-msg exit, mode "default"
+    bindsym e exec --no-startup-id swaymsg exit, mode "default"
     bindsym s exec --no-startup-id $Locker && systemctl suspend -i, mode "default"
     bindsym h exec --no-startup-id $Locker && systemctl hibernate -i, mode "default"
     bindsym r exec --no-startup-id systemctl reboot, mode "default"
@@ -262,7 +258,7 @@ client.urgent           #2f343a #900000 #ffffff #900000
 # Configure bar
 # =============================================================================
 
-# Start i3bar to display a workspace bar (plus the system information i3status
+# Start swaybar to display a workspace bar (plus the system information i3status)
 # finds out, if available)
 #bar {
     #colors {

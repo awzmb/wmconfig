@@ -4,7 +4,7 @@
     border: none;
     border-radius: 0;
     font-family: "Terminus (TTF)", Roboto, Helvetica, Arial, sans-serif;
-    font-size: 13.5px;
+    font-size: 15px;
     min-height: 0;
 }
 
@@ -22,7 +22,7 @@ window#waybar {
 }
 
 #workspaces button.focused {
-    background: #333333;
+    background: #3D3F4C;
     border-bottom: 0px solid @color15;
 }
 
@@ -51,12 +51,12 @@ window#waybar {
 
 @keyframes blink {
     to {
-        background-color: rgba(1, 1, 1, 0);
+        background-color: #010101;
     }
 }
 
 #battery.warning:not(.charging) {
-    background: #f53c3c;
+    background: #BF616A;
     color: white;
     animation-name: blink;
     animation-duration: 0.5s;
@@ -67,13 +67,13 @@ window#waybar {
 
 #cpu {
     background: transparent;
-    border-bottom: 3px solid @color5;
+    border-bottom: 0px solid @color5;
     color: white;
 }
 
 #memory {
     background: transparent;
-    border-bottom: 3px solid @color7;
+    border-bottom: 0px solid @color7;
     color: white;
 }
 
@@ -93,7 +93,7 @@ window#waybar {
 }
 
 #pulseaudio.muted {
-    border-bottom: 3px solid @color1
+    border-bottom: 0px solid @color1
 }
 
 #tray {
@@ -101,11 +101,11 @@ window#waybar {
 }
 
 #custom-sl.good {
-    border-bottom: 3px solid green;
+    border-bottom: 0px solid green;
 }
 
 #custom-sl.other {
-    border-bottom: 3px solid #F4AF39;
+    border-bottom: 0px solid #EBCB8B;
 }
 
 #custom-sl.minor {
