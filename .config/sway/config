@@ -29,11 +29,11 @@ exec xss-lock -- swaylock
 # =============================================================================
 
 # set default locker
-#set $Locker xflock4 && sleep 1
-set $Locker swaylock
+#set $locker xflock4 && sleep 1
+set $locker swaylock
 
 # set terminal emulator
-set $term kitty
+set $term foot
 
 # set mod key (Mod1=<Alt>, Mod4=<Super>)
 set $mod Mod1
@@ -54,7 +54,7 @@ floating_modifier $mod
 output * scale 1.25
 
 # use solid color background
-output * bg #282A33 solid_color
+output * bg #242933 solid_color
 
 # activate natural scrolling
 input type:touchpad {
@@ -211,7 +211,7 @@ bindsym $mod+Print --release exec --no-startup-id scrot -w
 bindsym $mod+Shift+Print --release exec --no-startup-id scrot -s
 
 # suspend
-bindsym $mod+F11 exec --no-startup-id $Locker && systemctl suspend -i
+bindsym $mod+F11 exec --no-startup-id $locker && systemctl suspend -i
 
 # networkmanager dmenu integration
 bindsym $mod+shift+w exec --no-startup-id networkmanager_dmenu \
@@ -228,10 +228,10 @@ bindsym $mod+shift+w exec --no-startup-id networkmanager_dmenu \
 # lock, suspend and shutdown menu via waybar
 set $mode_system System (l) lock, (e) logout, (s) suspend, (m) menu, (r) reboot, (Shift+s) shutdown
 mode "$mode_system" {
-    bindsym l exec --no-startup-id $Locker, mode "default"
+    bindsym l exec --no-startup-id $locker, mode "default"
     bindsym e exec --no-startup-id swaymsg exit, mode "default"
-    bindsym s exec --no-startup-id $Locker && systemctl suspend -i, mode "default"
-    bindsym h exec --no-startup-id $Locker && systemctl hibernate -i, mode "default"
+    bindsym s exec --no-startup-id $locker && systemctl suspend -i, mode "default"
+    bindsym h exec --no-startup-id $locker && systemctl hibernate -i, mode "default"
     bindsym r exec --no-startup-id systemctl reboot, mode "default"
     bindsym Shift+s exec --no-startup-id systemctl poweroff -i, mode "default"
 
@@ -290,8 +290,8 @@ client.urgent           #2f343a #900000 #ffffff #900000
 # to display names or symbols instead of plain workspace numbers you can use
 # something like: set $ws1 1:mail
 #                 set $ws2 2:
-set $ws1 1 
-set $ws2 2 
+set $ws1 1
+set $ws2 2
 set $ws3 3
 set $ws4 4
 set $ws5 5

@@ -9,7 +9,7 @@
 }
 
 window#waybar {
-    background: #282A33;
+    background: #242933;
     border-bottom: 1px solid transparent;
     color: white;
 }
@@ -22,7 +22,8 @@ window#waybar {
 }
 
 #workspaces button.focused {
-    background: #3D3F4C;
+    background: #EBCB8B;
+    color: #242933;
     border-bottom: 0px solid @color15;
 }
 

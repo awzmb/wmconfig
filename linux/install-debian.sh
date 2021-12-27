@@ -41,7 +41,8 @@ sudo apt -y install \
   fzf \
   curl \
   wget \
-  tmux
+  tmux \
+  ranger
 
 # additional desktop packages
 sudo apt -y install \
@@ -59,9 +60,12 @@ sudo apt -y install \
   redshift-gtk \
   pulsemixer \
   scrot \
+  grim \
+  slurp \
   lightdm \
   lightdm-greeter-gtk \
-  lightdm-settings
+  lightdm-settings \
+  terminology
 
 # install wayland i3 replacement
 sudo apt -y install \

@@ -23,7 +23,7 @@ Xft.lcdfilter: lcddefault
 #define nord13 #EBCB8B
 #define nord14 #A3BE8C
 #define nord15 #B48EAD
-#define nord16 #282A33
+#define nord16 #242933
 
 *.foreground:   nord4
 *.background:   nord16

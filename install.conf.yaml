@@ -16,6 +16,7 @@
     - ~/.config/karabiner
     - ~/.config/nvim
     - ~/.config/vifm
+    - ~/.config/foot
     - ~/.config/gtk-3.0
     - ~/.terraform.d/cache
 
@@ -43,6 +44,7 @@
     #~/.gitconfig: .gitconfig
     ~/.config/mc: .config/mc
     ~/.config/kitty: .config/kitty
+    ~/.config/foot: .config/foot
     ~/.config/vifm/vifmrc: .config/vifm/vifmrc
     ~/.config/vifm/colors: .config/vifm/colors
     ~/.config/newsboat: .config/newsboat
