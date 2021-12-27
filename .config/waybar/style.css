@@ -3,8 +3,8 @@
 * {
     border: none;
     border-radius: 0;
-    font-family: "Terminus (TTF)", Roboto, Helvetica, Arial, sans-serif;
-    font-size: 15px;
+    font-family: "Unifont", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
     min-height: 0;
 }
 
@@ -105,7 +105,7 @@ window#waybar {
 }
 
 #custom-sl.other {
-    border-bottom: 0px solid #EBCB8B;
+    border-bottom: 0px solid white;
 }
 
 #custom-sl.minor {

@@ -16,6 +16,7 @@
     - ~/.config/karabiner
     - ~/.config/nvim
     - ~/.config/vifm
+    - ~/.config/gtk-3.0
     - ~/.terraform.d/cache
 
 - link:
@@ -52,6 +53,9 @@
     ~/.gtkrc-2.0:
       if: '[ `uname` = Linux ]'
       path: .gtkrc-2.0
+    ~/.config/gtk-3.0:
+      if: '[ `uname` = Linux ]'
+      path: .config/gtk-3.0
     ~/.config/clipit:
       if: '[ `uname` = Linux ]'
       path: .config/clipit

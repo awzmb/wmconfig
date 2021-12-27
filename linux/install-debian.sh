@@ -69,6 +69,8 @@ sudo apt -y install \
   swaybar \
   xwayland
 
+# install ms core fonts
+sudo apt -y install ttf-mscorefonts-installer
 
 # brave browser and premise
 sudo apt -y install \
@@ -94,9 +96,15 @@ sudo apt -y install \
     fonts-unifont \
     fonts-hack
 
-# podman
+# podman (docker replacement)
 sudo apt -y install \
-    podman
+    podman \
+    podman-docker
+
+# ansible packages
+sudo apt -y install \
+    ansible \
+    ansible-lint
 
 # password storage
 sudo apt -y install \
@@ -127,10 +135,6 @@ sudo apt install -y \
 sudo apt -y install \
     firejail surf
 
-# polybar
-sudo apt -y install \
-    polybar
-
 # flashfocus
 sudo apt -y install python3-xcffib
 sudo pip install flashfocus
@@ -145,28 +149,25 @@ sudo apt -y install \
     wine
 
 # install mutt-wizard
-git clone https://github.com/LukeSmithxyz/mutt-wizard
-cd mutt-wizard
-sudo make install
-cd ${ORIGIN_PATH}
-rm -rf mutt-wizard
+#git clone https://github.com/LukeSmithxyz/mutt-wizard
+#cd mutt-wizard
+#sudo make install
+#cd ${ORIGIN_PATH}
+#rm -rf mutt-wizard
 
 # terminal tools and software
 sudo apt -y install \
     w3m \
     w3m-img \
     python3-neovim \
-    calcurse
+    calcurse \
+    elinks
 
-# install qogir theme
-sudo apt -y install gtk-murrine-engine gtk2-engines
-git clone https://github.com/vinceliuice/Qogir-theme.git
-sh ./Qogir-theme/install.sh
-rm -rf Qogir-theme
-
-git clone https://github.com/vinceliuice/Qogir-icon-theme.git
-sh ./Qogir-icon-theme/install.sh
-rm -rf Qogir-icon-theme
+# install gtk themes
+sudo apt -y install \
+  arc-theme \
+  papirus-icon-theme \
+  lxappearance
 
 # password management
 sudo apt -y install gnupg
@@ -208,28 +209,8 @@ sudo apt -y install steam
 # additional stuff
 unset $SSH_ASKPASS
 
-# reverse mouse scroll direction (natural scrolling)
-sudo cat <<EOF > /etc/X11/xorg.conf.d/70-synaptics.conf
-Section "InputClass"
-    Identifier "touchpad"
-    Driver "synaptics"
-    MatchIsTouchpad "on"
-        Option "TapButton1" "0"
-#        Option "TapButton1" "1"
-        Option "TapButton2" "3"
-        Option "TapButton3" "2"
-        Option "VertEdgeScroll" "on"
-        Option "VertTwoFingerScroll" "on"
-    	Option "VertScrollDelta=-79"
-        Option "HorizEdgeScroll" "on"
-        Option "HorizTwoFingerScroll" "on"
-        Option "CircularScrolling" "on"
-        Option "CircScrollTrigger" "2"
-        Option "EmulateTwoFingerMinZ" "40"
-        Option "EmulateTwoFingerMinW" "8"
-        Option "CoastingSpeed" "0"
-        Option "FingerLow" "30"
-        Option "FingerHigh" "50"
-        Option "MaxTapTime" "125"
-EndSection
-EOF
+# workaround: remove xdg-desktop-portal services to prevent slow
+# launch of some gtk apps (common problem with debian)
+sudo apt remove \
+  xdg-desktop-portal \
+  xdg-desktop-portal-wlr
