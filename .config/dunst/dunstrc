@@ -1,5 +1,5 @@
 [global]
-    font = xos4 Terminus 9
+    font = Unifont Medium 11
 
     # allow a small subset of html markup:
     # <b>bold</b>
@@ -47,7 +47,6 @@
     # ignore newlines '\n' in notifications
     ignore_newline = no
 
-
     # the geometry of the window
     # geometry [{width}]x{height}][+/-{x}+/-{y}]
     # The geometry of the message window.
@@ -87,7 +86,7 @@
 
     # should a notification popped up from history be sticky or
     # timeout as if it would normally do.
-    sticky_history = yes
+    sticky_history = no
 
     # The height of a single line. If the height is smaller than the font height,
     # it will get raised to the font height.

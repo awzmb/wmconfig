@@ -1,11 +1,11 @@
 # DO NOT EDIT! This file will be overwritten by LXAppearance.
 # Any customization should be done in ~/.gtkrc-2.0.mine instead.
 
-include "/home/dsbundschuh/.gtkrc-2.0.mine"
+include "/home/awzm/.gtkrc-2.0.mine"
 gtk-theme-name="Arc-Dark"
-gtk-icon-theme-name="zafiro-icon-theme"
-gtk-font-name="xos4 Terminus 12"
-gtk-cursor-theme-name="Adwaita"
+gtk-icon-theme-name="Paper"
+gtk-font-name="Unifont Medium 12"
+gtk-cursor-theme-name="Paper"
 gtk-cursor-theme-size=0
 gtk-toolbar-style=GTK_TOOLBAR_BOTH
 gtk-toolbar-icon-size=GTK_ICON_SIZE_LARGE_TOOLBAR
