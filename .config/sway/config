@@ -18,8 +18,8 @@ exec --no-startup-id blueman-applet
 exec --no-startup-id clipit
 # filter blue light during nighttime
 exec --no-startup-id redshift-gtk -l 52:13
-# unclutter to hide mouse pointer after 5s
-#exec --no-startup-id unclutter
+# bluetooth applet
+exec --no-startup-id blueman
 # start xss-lock to suspend and lock on lid close (laptop)
 exec xss-lock -- swaylock
 
@@ -29,8 +29,7 @@ exec xss-lock -- swaylock
 # =============================================================================
 
 # set default locker
-#set $locker xflock4 && sleep 1
-set $locker swaylock
+set $locker swaylock && sleep 1
 
 # set terminal emulator
 set $term foot

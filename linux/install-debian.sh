@@ -65,13 +65,18 @@ sudo apt -y install \
   lightdm \
   lightdm-greeter-gtk \
   lightdm-settings \
-  terminology
+  terminology \
+  kanshi
 
 # install wayland i3 replacement
 sudo apt -y install \
   sway \
   swaybar \
   xwayland
+
+# install bluetooth applet
+sudo apt -y install \
+  blueman
 
 # install ms core fonts
 sudo apt -y install ttf-mscorefonts-installer
@@ -86,39 +91,36 @@ sudo curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://b
 echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg arch=amd64] https://brave-browser-apt-release.s3.brave.com/ stable main" | sudo tee /etc/apt/sources.list.d/brave-browser-release.list
 sudo apt update && sudo apt -y install brave-browser
 
-# evdev input drivers for natural scrolling
-sudo apt -y install \
-    xserver-xorg-input-evdev
-
 # workaround fd command
 sudo ln -s /usr/bin/fdfind /usr/bin/fd
 
 # install fonts
 sudo apt -y install \
-    fonts-terminus \
-    fonts-terminus-otb \
-    fonts-unifont \
-    fonts-hack
+  fonts-terminus \
+  fonts-terminus-otb \
+  fonts-unifont \
+  fonts-hack
 
 # podman (docker replacement)
 sudo apt -y install \
-    podman \
-    podman-docker
+  podman \
+  podman-docker
 
 # ansible packages
 sudo apt -y install \
-    ansible \
-    ansible-lint
+  ansible \
+  ansible-lint
 
 # password storage
 sudo apt -y install \
-    pass
+  pass
 
 # python environment
 sudo apt -y install \
-    pipenv \
-    python3-autopep8 \
-    yamllint
+  pipenv \
+  python3-autopep8 \
+  yamllint
+pip install flashfocus
 
 # enable tlp power management
 sudo apt -y install tlp tlp-rdw
@@ -129,15 +131,16 @@ pip install --user polybar-reload
 
 # common media players
 sudo apt -y install \
-    vlc
+  vlc
 
 # zathura document viewer
 sudo apt install -y \
-    zathura
+  zathura
 
 # browser
 sudo apt -y install \
-    firejail surf
+  firejail \
+  surf
 
 # flashfocus
 sudo apt -y install python3-xcffib
@@ -149,28 +152,38 @@ sudo apt -y install \
 
 # wine and dxvk
 sudo apt -y install \
-    lutris \
-    wine
+  lutris \
+  wine
 
 # install mutt-wizard
-#git clone https://github.com/LukeSmithxyz/mutt-wizard
-#cd mutt-wizard
-#sudo make install
-#cd ${ORIGIN_PATH}
-#rm -rf mutt-wizard
+git clone https://github.com/LukeSmithxyz/mutt-wizard
+cd mutt-wizard
+sudo make install
+cd ${ORIGIN_PATH}
+rm -rf mutt-wizard
 
 # terminal tools and software
 sudo apt -y install \
-    w3m \
-    w3m-img \
-    python3-neovim \
-    calcurse \
-    elinks
+  w3m \
+  w3m-img \
+  python3-neovim \
+  calcurse \
+  elinks \
+  newsboat \
+  neofetch
+
+# email tools
+sudo apt -y install \
+  neomutt \
+  isync \
+  notmuch \
+  notmuch-mutt \
+  abook
 
 # install gtk themes
 sudo apt -y install \
   arc-theme \
-  papirus-icon-theme \
+  paper-icon-theme \
   lxappearance
 
 # password management
@@ -183,7 +196,7 @@ pass insert mail/main
 
 # aws tools
 sudo apt -y install \
-    awscli
+  awscli
 
 # aws eks tools
 curl --silent --location "https://github.com/weaveworks/eksctl/releases/download/latest_release/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp

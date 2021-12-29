@@ -49,6 +49,9 @@
     ~/.config/vifm/colors: .config/vifm/colors
     ~/.config/newsboat: .config/newsboat
     ~/.config/nvim/init.vim: .vimrc
+    ~/.config/kanshi:
+      if: '[ `uname` = Linux ]'
+      path: .config/kanshi
     ~/.config/autorandr:
       if: '[ `uname` = Linux ]'
       path: .config/autorandr
@@ -103,4 +106,4 @@
 
 - shell:
     - [git submodule update --init --recursive, Installing submodules]
-    - [sh -c "$(curl -fsSL https://raw.githubusercontent.com/zdharma/zinit/master/doc/install.sh)", Installing zinit]
+    - [sh -c "$(curl -fsSL https://raw.githubusercontent.com/zdharma-continuum/zinit/master/doc/install.sh)", Installing zinit]

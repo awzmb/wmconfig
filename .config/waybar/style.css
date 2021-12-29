@@ -100,19 +100,3 @@ window#waybar {
 #tray {
     background-color: transparent;
 }
-
-#custom-sl.good {
-    border-bottom: 0px solid green;
-}
-
-#custom-sl.other {
-    border-bottom: 0px solid white;
-}
-
-#custom-sl.minor {
-    background-color: red;
-}
-
-#custom-sl.major {
-    background-color: red;
-}
