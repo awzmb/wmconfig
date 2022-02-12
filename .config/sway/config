@@ -2,16 +2,8 @@
 # Autostart
 # =============================================================================
 
-# kill xfce4 panel (temporary solution)
-exec --no-startup-id killall xfce4-panel
-# start waybar
-exec_always --no-startup-id killall waybar; waybar
-# focus change animation
-exec --no-startup-id flashfocus
 # set keymap
 exec --no-startup-id setxkbmap us -variant altgr-intl
-# power management
-exec --no-startup-id xfce4-power-manager
 # bluetooth manager
 exec --no-startup-id blueman-applet
 # clipboard
@@ -20,9 +12,6 @@ exec --no-startup-id clipit
 exec --no-startup-id redshift-gtk -l 52:13
 # bluetooth applet
 exec --no-startup-id blueman
-# start xss-lock to suspend and lock on lid close (laptop)
-exec xss-lock -- dm-tool lock
-
 
 # =============================================================================
 # Basic Setup
@@ -259,26 +248,26 @@ client.urgent           #2f343a #900000 #ffffff #900000
 
 # Start swaybar to display a workspace bar (plus the system information i3status)
 # finds out, if available)
-#bar {
-#    colors {
-#        background #282A33
-#        statusline #00A5FF
-#        separator  #282A33
-#
-#        active_workspace    #004b74 #004b74 #D8DEE9
-#        focused_workspace   #3D3F4C #3D3F4C #D8DEE9
-#        inactive_workspace  #282A33 #282A33 #888888
-#        urgent_workspace    #00A5FF #FFFFFF #333333
-#    }
-#    height 25px
-#    mode dock
-#    hidden_state show
-#    status_command i3status -c ~/.config/i3/i3status.conf
-#    position top
-#    tray_output primary
-#    tray_padding 4
-#    font pango:Unifont 12
-#}
+bar {
+    colors {
+        background #282A33
+        statusline #00A5FF
+        separator  #282A33
+
+        active_workspace    #004b74 #004b74 #D8DEE9
+        focused_workspace   #3D3F4C #3D3F4C #D8DEE9
+        inactive_workspace  #282A33 #282A33 #888888
+        urgent_workspace    #00A5FF #FFFFFF #333333
+    }
+    height 28px
+    mode dock
+    hidden_state show
+    status_command i3status -c ~/.config/i3/i3status.conf
+    position top
+    tray_output primary
+    tray_padding 4
+    font pango:Unifont 12
+}
 
 
 # =============================================================================

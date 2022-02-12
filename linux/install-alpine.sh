@@ -13,7 +13,7 @@ install_default_packages () {
 		coreutils tree ranger nodejs \
 		npm yarn curl wget fd fzf openssh \
 		coreutils nodejs grep tar openssl \
-    ca-certificates
+                ca-certificates
 
 	# additional stuff
 	sudo apk add \
@@ -33,17 +33,45 @@ install_default_packages () {
 }
 
 install_desktop_packages () {
+	# add user to relevant groups
+	sudo adduser $USER input
+	sudo adduser $USER video
+
 	# desktop packages
 	sudo apk add \
-		lightdm lightdm-gtk-greeter \
-		alacritty alacritty-zsh-completion \
-		xfce4-screensaver dbus-x11 faenza-icon-theme\
+		greetd mesa-dri-gallium ttf-dejavu \
+		xfce4-screensaver dbus-x11 faenza-icon-theme \
 		xf86-video-vmware xf86-input-mouse \
-		xf86-input-keyboard
+		xf86-input-keyboard unifont nerd-fonts
 
 	# i3 window manager
 	sudo apk add \
 		i3wm i3lock i3status
+
+	# setup seatd for sway window manager
+	sudo apk add seatd
+	sudo rc-update add seatd
+	sudo rc-service seatd start
+  sudo adduser $USER seat
+
+	# setup udev
+  sudo apk add eudev
+  sudo setup-udev
+
+	# sway window manager
+	sudo apk add \
+		sway \
+		foot \
+		dmenu \
+		swaylock \
+		wofi \
+		swaylock \
+		swayidle
+
+	# additional desktop packages
+	sudo apk add \
+		redshift scrot grim slurp blueman \
+		clipit pulseaudio pulseaudio-alsa
 
 	# install vnc service
 	sudo apk add \
@@ -53,11 +81,6 @@ install_desktop_packages () {
   mkdir -p ${HOME}/.scripts
 	printf '#!/bin/sh\nnohup x11vnc -xkb -nopw -noxrecord -noxfixes -noxdamage -display :0 -loop -shared -forever -bg -auth /var/run/lightdm/root/:0 -rfbport 5900 -o /var/log/vnc.log > /dev/null 2>&1 &' > ${HOME}/.scripts/vncserver-start
 	chmod +x ${HOME}/.scripts/vncserver-start
-
-	# enable services
-	#sudo rc-service lightdm start
-	#sudo rc-update add lightdm
-	#sudo rc-update add local default
 }
 
 # user input
