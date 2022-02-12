@@ -18,7 +18,7 @@ exec --no-startup-id blueman
 # =============================================================================
 
 # set default locker
-set $locker dm-tool lock && sleep 1
+set $locker swaylock && sleep 1
 
 # set terminal emulator
 set $term foot
@@ -39,7 +39,7 @@ hide_edge_borders both
 floating_modifier $mod
 
 # set hidpi output scaling
-output * scale 1.25
+output * scale 1.15
 
 # use solid color background
 output * bg #242933 solid_color
@@ -63,7 +63,7 @@ bindsym $mod+Shift+Q kill
 #bindsym $mod+d exec dmenu_run -fn "xos4 Terminus-12" -h 27
 #bindsym $mod+d exec bemenu-run -i -H 28 --fn "Terminus Medium" 13 --tb '#21232b' --tf '#21232b' --nb '#21232b' --fb '#21232b' --hb '#5294e2' --hf '#111111'
 bindsym $mod+Shift+d exec --no-startup-id i3-dmenu-desktop --dmenu='rofi -dmenu -i -theme dmenu'
-bindsym $mod+d exec rofi -show run -theme dmenu
+bindsym $mod+d exec wofi -show run -theme dmenu
 
 # start password manager
 bindsym $mod+Shift+p exec --no-startup-id ~/.scripts/rofi-pass
@@ -241,35 +241,6 @@ client.focused_inactive #333333 #222222 #ffffff #484e50
 client.unfocused        #333333 #222222 #888888 #292d2e
 client.urgent           #2f343a #900000 #ffffff #900000
 
-
-# =============================================================================
-# Configure bar
-# =============================================================================
-
-# Start swaybar to display a workspace bar (plus the system information i3status)
-# finds out, if available)
-bar {
-    colors {
-        background #282A33
-        statusline #00A5FF
-        separator  #282A33
-
-        active_workspace    #004b74 #004b74 #D8DEE9
-        focused_workspace   #3D3F4C #3D3F4C #D8DEE9
-        inactive_workspace  #282A33 #282A33 #888888
-        urgent_workspace    #00A5FF #FFFFFF #333333
-    }
-    height 28px
-    mode dock
-    hidden_state show
-    status_command i3status -c ~/.config/i3/i3status.conf
-    position top
-    tray_output primary
-    tray_padding 4
-    font pango:Unifont 12
-}
-
-
 # =============================================================================
 # Configure workspaces
 # =============================================================================
@@ -336,3 +307,35 @@ assign [class="HipChat"] $ws9
 assign [class="Rocket.Chat"] $ws9
 assign [class="Stride"] $ws10
 assign [class="Skype"] $ws10
+
+# =============================================================================
+# Configure bar
+# =============================================================================
+
+# Start swaybar to display a workspace bar (plus the system information i3status)
+# finds out, if available)
+bar {
+  height 28px
+  mode dock
+  hidden_state show
+  position top
+  tray_padding 50
+  status_padding 50
+  workspace_min_width 45
+  status_padding 40
+
+  status_command i3status -c ~/.config/i3/i3status.conf
+  tray_output primary
+  font pango:Unifont 12
+
+  colors {
+    background #242933
+    statusline #D8DEE9
+    separator  #242933
+
+    active_workspace    #004b74 #004b74 #D8DEE9
+    focused_workspace   #3D3F4C #3D3F4C #D8DEE9
+    inactive_workspace  #242933 #242933 #888888
+    urgent_workspace    #D8DEE9 #FFFFFF #333333
+  }
+}

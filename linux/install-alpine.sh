@@ -42,7 +42,12 @@ install_desktop_packages () {
 		greetd mesa-dri-gallium ttf-dejavu \
 		xfce4-screensaver dbus-x11 faenza-icon-theme \
 		xf86-video-vmware xf86-input-mouse \
-		xf86-input-keyboard unifont nerd-fonts
+		xf86-input-keyboard
+
+	# fonts
+	sudo apk add \
+		unifont nerd-fonts msttcorefonts-installer \
+    fontconfig
 
 	# i3 window manager
 	sudo apk add \
@@ -76,6 +81,15 @@ install_desktop_packages () {
 	# install vnc service
 	sudo apk add \
 		x11vnc xvfb
+
+	# desktop packages
+	sudo apk add \
+		faenza-icon-theme \
+    arc-darker \
+    arc-dark \
+    paper-gtk-theme \
+    paper-icon-theme
+
 
   # create start script
   mkdir -p ${HOME}/.scripts
