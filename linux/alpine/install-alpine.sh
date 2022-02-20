@@ -79,6 +79,12 @@ install_desktop_packages () {
 		redshift scrot grim slurp blueman \
 		clipit
 
+  # add users to additional groups
+  sudo adduser $USER input
+  sudo adduser $USER video
+  sudo adduser $USER polkitd
+  sudo adduser $USER users
+
 	# audio management
   sudo addgroup $USER audio
 	sudo apk add \
@@ -89,13 +95,14 @@ install_desktop_packages () {
     alsa-lib alsa-plugins alsa-utils \
     pulseaudio pulseaudio-alsa \
     pulseaudio-bluez pavucontrol
-    sudo rc-service dbus start
-    sudo rc-update add dbus default
-    sudo mkdir -p /etc/pipewire
-    sudo cp /usr/share/pipewire/pipewire.conf /etc/pipewire/
-    sudo modprobe snd_seq
-    sudo echo snd_seq >> /etc/modules
-
+  sudo addgroup $USER rtkit
+  sudo rc-service dbus start
+  sudo rc-update add dbus default
+  sudo mkdir -p /etc/pipewire
+  sudo cp /usr/share/pipewire/pipewire.conf /etc/pipewire/
+  sudo modprobe snd_seq
+  sudo echo snd_seq >> /etc/modules
+  sudo cp ${PWD}/limits/20-pipewire.conf /etc/security/limits.d/
 
 	# install vnc service
 	sudo apk add \
@@ -142,30 +149,12 @@ EOF
   sudo rc-update del networking boot
   sudo rc-update del wpa_supplicant boot
   # allow user to create new wireless networks
-  sudo tee "/etc/polkit-1/localauthority/50-local.d/10-org-freedesktop-network-manager-settings.pkla" > /dev/null <<'EOF'
-[Allow user awzm to create wireless connections for all users]
-Identity=unix-user:awzm
-Action=org.freedesktop.network-manager-settings.system.modify
-ResultAny=no
-ResultInactive=no
-ResultActive=yes
-
-[Let awzm modify system settings for network]
-Identity=unix-user:awzm
-Action=org.freedesktop.NetworkManager.settings.modify.system
-ResultAny=no
-ResultInactive=no
-ResultActive=yes
-
-[Do not allow awzm to enable/disable networking]
-Identity=unix-user:awzm
-Action=org.freedesktop.NetworkManager.settings.enable-disable-network
-ResultAny=no
-ResultInactive=no
-ResultActive=no
+  sudo cat linux/alpine/policies/10-org-freedesktop-network-manager-settings.pkla | sed "s/USERNAME/$(whoami)/g" > "/etc/polkit-1/localauthority/50-local.d/10-org-freedesktop-network-manager-settings.pkla"
 EOF
   sudo nmtui
+}
 
+install_android_packages () {
   # create start script
   mkdir -p ${HOME}/.scripts
 	printf '#!/bin/sh\nnohup x11vnc -xkb -nopw -noxrecord -noxfixes -noxdamage -display :0 -loop -shared -forever -bg -auth /var/run/lightdm/root/:0 -rfbport 5900 -o /var/log/vnc.log > /dev/null 2>&1 &' > ${HOME}/.scripts/vncserver-start
@@ -194,6 +183,22 @@ install_laptop_packages () {
   sudo rc-update add wpa-supplicant
   sudo rc-update add dhcpcd
   sudo rc-update add networkmanager
+
+  # suspend on lid close
+  sudo mkdir -p /etc/acpi/LID
+  sudo tee "/etc/acpi/LID/00000080" > /dev/null <<'EOF'
+#!/bin/sh
+exec sudo pm-suspend
+EOF
+  sudo chmod +x /etc/acpi/LID/00000080
+
+  # allow pm-suspend and reboot for user
+  sudo tee "/etc/sudoers.d/10-allow-suspend-poweroff-and-reboot" > /dev/null <<'EOF'
+%wheel   ALL = NOPASSWD: /usr/sbin/pm-hibernate
+%wheel   ALL = NOPASSWD: /usr/sbin/pm-suspend
+%wheel   ALL = NOPASSWD: /sbin/poweroff
+%wheel   ALL = NOPASSWD: /sbin/reboot
+EOF
 }
 
 # user input
@@ -221,6 +226,16 @@ while true; do
     read -p "Are you running this on a laptop[y/n] " yn
     case $yn in
         [Yy]* ) install_laptop_packages; exit 0;;
+        [Nn]* ) exit 0;;
+        * ) echo "Please answer yes or no.";;
+    esac
+done
+
+# user input
+while true; do
+    read -p "Are you running alpine on android [y/n] " yn
+    case $yn in
+        [Yy]* ) install_android_packages; exit 0;;
         [Nn]* ) exit 0;;
         * ) echo "Please answer yes or no.";;
     esac

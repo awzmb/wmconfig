@@ -2,16 +2,13 @@
 # Autostart
 # =============================================================================
 
-# set keymap
-exec --no-startup-id setxkbmap us -variant altgr-intl
 # bluetooth manager
 exec --no-startup-id blueman-applet
+exec --no-startup-id blueman-tray
 # clipboard
 exec --no-startup-id clipit
 # filter blue light during nighttime
-exec --no-startup-id redshift-gtk -l 52:13
-# bluetooth applet
-exec --no-startup-id blueman
+exec --no-startup-id redshift -l 52:13
 
 # =============================================================================
 # Basic Setup

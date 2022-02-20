@@ -1,0 +1,20 @@
+[Allow user awzm to create wireless connections for all users]
+Identity=unix-user:USERNAME
+Action=org.freedesktop.network-manager-settings.system.modify
+ResultAny=no
+ResultInactive=no
+ResultActive=yes
+
+[Let awzm modify system settings for network]
+Identity=unix-user:USERNAME
+Action=org.freedesktop.NetworkManager.settings.modify.system
+ResultAny=no
+ResultInactive=no
+ResultActive=yes
+
+[Do not allow awzm to enable/disable networking]
+Identity=unix-user:USERNAME
+Action=org.freedesktop.NetworkManager.settings.enable-disable-network
+ResultAny=no
+ResultInactive=no
+ResultActive=no
