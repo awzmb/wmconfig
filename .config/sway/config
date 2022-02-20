@@ -18,7 +18,7 @@ exec --no-startup-id blueman
 # =============================================================================
 
 # set default locker
-set $locker swaylock && sleep 1
+set $locker swaylock --daemonize --line-uses-inside --indicator-thickness 10 --inside-color EBCB8B --color 242933 --line-color 242933 --line-ver-color 88C0D0 --ring-color EBCB8B --ring-ver-color 88C0D0 --text-ver-color 242933
 
 # set terminal emulator
 set $term foot
@@ -50,6 +50,13 @@ input type:touchpad {
     natural_scroll enabled
 }
 
+# idle settings
+exec swayidle -w \
+  timeout 300 'swaylock --daemonize --color #242933' \
+  timeout 600 'swaymsg "output * dpms off"' \
+  resume 'swaymsg "output * dpms on"' \
+  before-sleep 'swaylock --daemonize --color #242933'
+
 # map escape to capslock
 input * xkb_options caps:escape
 
@@ -60,10 +67,9 @@ bindsym $mod+Shift+Return exec $term
 bindsym $mod+Shift+Q kill
 
 # start dmenu (a program launcher)
-#bindsym $mod+d exec dmenu_run -fn "xos4 Terminus-12" -h 27
-#bindsym $mod+d exec bemenu-run -i -H 28 --fn "Terminus Medium" 13 --tb '#21232b' --tf '#21232b' --nb '#21232b' --fb '#21232b' --hb '#5294e2' --hf '#111111'
 bindsym $mod+Shift+d exec --no-startup-id i3-dmenu-desktop --dmenu='rofi -dmenu -i -theme dmenu'
-bindsym $mod+d exec wofi -show run -theme dmenu
+bindsym $mod+d exec rofi -show run -theme dmenu
+#bindsym $mod+d exec wofi --show run --dmenu
 
 # start password manager
 bindsym $mod+Shift+p exec --no-startup-id ~/.scripts/rofi-pass
@@ -199,7 +205,7 @@ bindsym $mod+Print --release exec --no-startup-id scrot -w
 bindsym $mod+Shift+Print --release exec --no-startup-id scrot -s
 
 # suspend
-bindsym $mod+F11 exec --no-startup-id $locker && systemctl suspend -i
+bindsym $mod+F11 exec --no-startup-id $locker && pm-suspend
 
 # networkmanager dmenu integration
 bindsym $mod+shift+w exec --no-startup-id networkmanager_dmenu \
@@ -218,10 +224,9 @@ set $mode_system System (l) lock, (e) logout, (s) suspend, (m) menu, (r) reboot,
 mode "$mode_system" {
     bindsym l exec --no-startup-id $locker, mode "default"
     bindsym e exec --no-startup-id swaymsg exit, mode "default"
-    bindsym s exec --no-startup-id $locker && systemctl suspend -i, mode "default"
-    bindsym h exec --no-startup-id $locker && systemctl hibernate -i, mode "default"
+    bindsym s exec --no-startup-id $locker && pm-suspend, mode "default"
     bindsym r exec --no-startup-id systemctl reboot, mode "default"
-    bindsym Shift+s exec --no-startup-id systemctl poweroff -i, mode "default"
+    bindsym Shift+s exec --no-startup-id poweroff -i, mode "default"
 
     # back to normal: Enter or Escape
     bindsym Return mode "default"
@@ -321,8 +326,10 @@ bar {
   position top
   tray_padding 50
   status_padding 50
-  workspace_min_width 45
+  workspace_min_width 50
   status_padding 40
+  status_edge_padding 15
+  separator_symbol "  "
 
   status_command i3status -c ~/.config/i3/i3status.conf
   tray_output primary
