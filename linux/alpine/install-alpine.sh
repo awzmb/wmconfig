@@ -19,6 +19,11 @@ install_default_packages () {
 	sudo apk add \
 		terraform ansible aws-cli py3-pip
 
+  # email client
+  sudo apk add \
+    neomutt calcurse gnupg \
+    gnupg-utils pass
+
 	# python packages
 	pip install \
 		markdown \
@@ -65,11 +70,10 @@ install_desktop_packages () {
 
 	# sway window manager
 	sudo apk add \
-		sway \
 		foot \
 		dmenu \
-		swaylock \
 		wofi \
+		sway \
 		swaylock \
 		swayidle \
     xwayland
@@ -174,7 +178,8 @@ install_laptop_packages () {
     macchanger \
     wireless-tools \
     iputils \
-    powertop
+    powertop \
+    light
 
   # add all revlevant services to boot
   sudo rc-update add acpid
