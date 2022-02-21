@@ -42,7 +42,7 @@ if [ "$TERM" = "linux" ]; then
     echo -en "\e]PE88C0D0" #cyan
     echo -en "\e]P7E5E9F0" #lightgrey
     echo -en "\e]PFD8DEE9" #white
-    clear #for background artifacting
+    #clear #for background artifacting
 fi
 
 # aliases

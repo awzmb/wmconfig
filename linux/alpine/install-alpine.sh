@@ -87,7 +87,8 @@ install_desktop_packages () {
 	# additional desktop packages
 	sudo apk add \
 		redshift scrot grim slurp blueman \
-		clipit
+		clipit xdg-utils xdg-desktop-portal \
+    xdg-desktop-portal-gtk
 
   # add users to additional groups
   sudo adduser $USER input
@@ -196,6 +197,9 @@ install_boot_packages () {
 # TODO: add vt.default_red=36,191,163,235,129,180,136,229,191,163,235,129,180,136,229
 # TODO: add vt.default_grn=41,97,190,203,161,142,192,233,97,190,203,161,142,192,233
 # TODO: add vt.default_blu=51,106,140,139,193,173,208,240,106,140,139,193,173,208,240
+  sudo mkdir -p /boot/grub/themes/alpine
+  sudo cp ${PWD}/grub/theme.txt /boot/grub/themes/alpine/theme.txt
+  sudo sed -i "\$aGRUB_THEME=/boot/grub/themes/alpine/theme.txt" /etc/default/grub
   sudo grub-mkconfig -o /boot/grub/grub.cfg
 }
   # add all revlevant services to boot

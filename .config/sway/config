@@ -28,7 +28,7 @@ set $term foot
 set $mod Mod1
 
 # font for window titles. ISO 10646 = Unicode
-font -xos4-terminus-medium-r-normal--14-140-72-72-c-80-iso10646-1
+font pango:unifont 12
 
 # no border / window title bar
 default_border none
@@ -340,7 +340,7 @@ bar {
 
   status_command i3status -c ~/.config/i3/i3status.conf
   tray_output primary
-  font pango:Unifont 12
+  font pango:unifont 12
 
   colors {
     background #242933
