@@ -13,7 +13,7 @@ install_default_packages () {
 		coreutils tree ranger nodejs \
 		npm yarn curl wget fd fzf openssh \
 		coreutils nodejs grep tar openssl \
-    ca-certificates
+    ca-certificates ncurses
 
 	# additional stuff
 	sudo apk add \
@@ -44,7 +44,7 @@ install_desktop_packages () {
 
 	# desktop packages
 	sudo apk add \
-		greetd mesa-dri-gallium ttf-dejavu \
+		mesa-dri-gallium ttf-dejavu \
 		xfce4-screensaver dbus-x11 faenza-icon-theme \
 		xf86-video-vmware xf86-input-mouse \
 		xf86-input-keyboard
@@ -63,6 +63,12 @@ install_desktop_packages () {
 	sudo rc-update add seatd
 	sudo rc-service seatd start
   sudo adduser $USER seat
+
+	# setup seatd for sway window manager
+	sudo apk add \
+    greetd greetd-agreety
+	sudo rc-update add greetd
+  sudo sed -i -e 's/command.*$/command = \"agreety --cmd \/bin\/zsh\"/g'
 
 	# setup udev
   sudo apk add eudev
@@ -93,10 +99,12 @@ install_desktop_packages () {
   sudo addgroup $USER audio
 	sudo apk add \
     dbus dbus-openrc dbus-x11 \
+    alsa-lib alsa-plugins alsa-utils \
     pipewire wireplumber rtkit \
     pipewire-alsa pipewire-pulse \
     pipewire-tools alsa-tools \
-    alsa-lib alsa-plugins alsa-utils \
+    pipewire-spa-bluez pipewire-libs \
+    pipewire-media-session \
     pulseaudio pulseaudio-alsa \
     pulseaudio-bluez pavucontrol
   sudo addgroup $USER rtkit
@@ -181,6 +189,13 @@ install_laptop_packages () {
     powertop \
     light
 
+install_boot_packages () {
+# TODO: add  video=1920x1080-32 to /etc/default/grub
+# TODO: add i915.enable_guc=2 to /etc/default/grub
+# TODO: add i915.fastboot=1 to /etc/default/grub
+  sudo grub-mkconfig -o /boot/grub/grub.cfg
+
+}
   # add all revlevant services to boot
   sudo rc-update add acpid
   sudo rc-update add cpufreqd
@@ -204,6 +219,12 @@ EOF
 %wheel   ALL = NOPASSWD: /sbin/poweroff
 %wheel   ALL = NOPASSWD: /sbin/reboot
 EOF
+
+  # bluetooth
+  sudo apk add \
+    bluez bluez-alsa-openrc bluez-firmware \
+    bluez-zsh-completion bluez-btmgmt
+  sudo rc-update add bluetooth
 }
 
 # user input
@@ -241,6 +262,16 @@ while true; do
     read -p "Are you running alpine on android [y/n] " yn
     case $yn in
         [Yy]* ) install_android_packages; exit 0;;
+        [Nn]* ) exit 0;;
+        * ) echo "Please answer yes or no.";;
+    esac
+done
+
+# boot splash customizations
+while true; do
+    read -p "Do you want to customize the boot screen [y/n] " yn
+    case $yn in
+        [Yy]* ) install_boot_packages; exit 0;;
         [Nn]* ) exit 0;;
         * ) echo "Please answer yes or no.";;
     esac

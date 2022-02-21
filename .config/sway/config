@@ -4,11 +4,12 @@
 
 # bluetooth manager
 exec --no-startup-id blueman-applet
-exec --no-startup-id blueman-tray
 # clipboard
 exec --no-startup-id clipit
 # filter blue light during nighttime
 exec --no-startup-id redshift -l 52:13
+# start sound daemon
+exec --no-startup-id pipewire
 
 # =============================================================================
 # Basic Setup
@@ -16,6 +17,9 @@ exec --no-startup-id redshift -l 52:13
 
 # set default locker
 set $locker swaylock --daemonize --line-uses-inside --indicator-thickness 10 --inside-color EBCB8B --color 242933 --line-color 242933 --line-ver-color 88C0D0 --ring-color EBCB8B --ring-ver-color 88C0D0 --text-ver-color 242933
+
+# set default suspend tool
+set $suspend sudo pm-suspend
 
 # set terminal emulator
 set $term foot
@@ -206,7 +210,7 @@ bindsym $mod+Print --release exec --no-startup-id scrot -w
 bindsym $mod+Shift+Print --release exec --no-startup-id scrot -s
 
 # suspend
-bindsym $mod+F11 exec --no-startup-id $locker && pm-suspend
+bindsym $mod+F11 exec --no-startup-id $locker && $suspend
 
 # networkmanager dmenu integration
 bindsym $mod+shift+w exec --no-startup-id networkmanager_dmenu \
@@ -225,7 +229,7 @@ set $mode_system System (l) lock, (e) logout, (s) suspend, (m) menu, (r) reboot,
 mode "$mode_system" {
     bindsym l exec --no-startup-id $locker, mode "default"
     bindsym e exec --no-startup-id swaymsg exit, mode "default"
-    bindsym s exec --no-startup-id $locker && pm-suspend, mode "default"
+    bindsym s exec --no-startup-id $locker && $suspend, mode "default"
     bindsym r exec --no-startup-id systemctl reboot, mode "default"
     bindsym Shift+s exec --no-startup-id poweroff -i, mode "default"
 
@@ -325,12 +329,14 @@ bar {
   mode dock
   hidden_state show
   position top
-  tray_padding 50
   status_padding 50
   workspace_min_width 50
   status_padding 40
   status_edge_padding 15
   separator_symbol "  "
+
+  #tray_padding 50
+  tray_output *
 
   status_command i3status -c ~/.config/i3/i3status.conf
   tray_output primary
