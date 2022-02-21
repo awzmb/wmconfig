@@ -193,8 +193,10 @@ install_boot_packages () {
 # TODO: add  video=1920x1080-32 to /etc/default/grub
 # TODO: add i915.enable_guc=2 to /etc/default/grub
 # TODO: add i915.fastboot=1 to /etc/default/grub
+# TODO: add vt.default_red=36,191,163,235,129,180,136,229,191,163,235,129,180,136,229
+# TODO: add vt.default_grn=41,97,190,203,161,142,192,233,97,190,203,161,142,192,233
+# TODO: add vt.default_blu=51,106,140,139,193,173,208,240,106,140,139,193,173,208,240
   sudo grub-mkconfig -o /boot/grub/grub.cfg
-
 }
   # add all revlevant services to boot
   sudo rc-update add acpid
