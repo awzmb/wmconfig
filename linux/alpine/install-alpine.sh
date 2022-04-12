@@ -13,7 +13,8 @@ install_default_packages () {
 		coreutils tree ranger nodejs \
 		npm yarn curl wget fd fzf openssh \
 		coreutils nodejs grep tar openssl \
-    ca-certificates ncurses
+    ca-certificates ncurses \
+    gcompat
 
 	# additional stuff
 	sudo apk add \
@@ -189,6 +190,21 @@ install_laptop_packages () {
     iputils \
     powertop \
     light
+
+  # install vpn
+  sudo apk add openvpn
+
+  # create tunnel device
+  sudo mkdir -p /dev/net
+  if [ ! -c /dev/net/tun ]; then
+      sudo mknod /dev/net/tun c 10 200
+  fi
+
+  # download nordvpn servers
+  wget https://downloads.nordcdn.com/configs/archives/servers/ovpn.zip
+  unzip ovpn.zip -d /etc/openvpn
+  # start nordvpn with sudo openvpn /etc/openvpn/ovpn_udp/us2957.nordvpn.com.udp.ovpn
+}
 
 install_boot_packages () {
 # TODO: add  video=1920x1080-32 to /etc/default/grub
