@@ -14,7 +14,7 @@ install_default_packages () {
 		npm yarn curl wget fd fzf openssh \
 		coreutils nodejs grep tar openssl \
     ca-certificates ncurses \
-    gcompat
+    gcompat libuser
 
 	# additional stuff
 	sudo apk add \
@@ -217,7 +217,7 @@ install_boot_packages () {
   sudo cp ${PWD}/grub/theme.txt /boot/grub/themes/alpine/theme.txt
   sudo sed -i "\$aGRUB_THEME=/boot/grub/themes/alpine/theme.txt" /etc/default/grub
   sudo grub-mkconfig -o /boot/grub/grub.cfg
-}
+
   # add all revlevant services to boot
   sudo rc-update add acpid
   sudo rc-update add cpufreqd
