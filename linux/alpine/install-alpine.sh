@@ -249,7 +249,7 @@ EOF
   sudo rc-update add bluetooth
 }
 
-install_boot_packages () {
+install_dev_packages () {
   # minikube premise
   sudo apk add --no-cache \
     conntrack-tools podman
@@ -274,6 +274,12 @@ install_boot_packages () {
 
   # start minikube (--force option if you're running this on wsl2)
   minikube start --force --driver=podman --memory 2048 --disk-size 4g
+
+  # download helm binary
+  curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 && chmod +x get_helm.sh && ./get_helm.sh
+
+  # add stable helm repository
+  helm repo add stable https://charts.helm.sh/stable
 }
 
 
