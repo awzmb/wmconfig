@@ -249,6 +249,36 @@ EOF
   sudo rc-update add bluetooth
 }
 
+install_boot_packages () {
+  # minikube premise
+  sudo apk add --no-cache \
+    conntrack-tools podman
+
+  # download kubectl binary
+  sudo wget "https://storage.googleapis.com/kubernetes-release/release/v1.8.0/bin/linux/amd64/kubectl" -O "/usr/local/bin/kubectl"
+
+  # set architecture
+	ARCHITECTURE=""
+	case $(uname -m) in
+			i386)   ARCHITECTURE="386" ;;
+			i686)   ARCHITECTURE="386" ;;
+			x86_64) ARCHITECTURE="amd64" ;;
+			arm)    ARCHITECTURE="aarch64" ;;
+	esac
+
+  # download minikube binary
+  sudo wget "https://github.com/kubernetes/minikube/releases/download/v1.26.0/minikube-linux-amd64" -O "/usr/local/bin/minikube" && sudo chmod +x /usr/local/bin/minikube
+
+  # create modules directory for minikube
+  sudo mkdir /lib/modules
+
+  # start minikube (--force option if you're running this on wsl2)
+  minikube start --force --driver=podman --memory 2048 --disk-size 4g
+}
+
+
+
+
 # user input
 while true; do
     read -p "Do you want to install the basic packages?[y/n] " yn
@@ -298,3 +328,14 @@ while true; do
         * ) echo "Please answer yes or no.";;
     esac
 done
+
+# install dev tools
+while true; do
+    read -p "Do you want to install dev tools?[y/n] " yn
+    case $yn in
+        [Yy]* ) install_dev_packages; exit 0;;
+        [Nn]* ) exit 0;;
+        * ) echo "Please answer yes or no.";;
+    esac
+done
+
