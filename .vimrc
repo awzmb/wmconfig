@@ -64,6 +64,9 @@ Plugin 'lusis/confluence-vim'
 " automated closing, paranthesis, brackets, quotes
 Plugin 'KaraMCC/vim-gemini'
 
+" edit helm templates
+Plugin 'towolf/vim-helm'
+
 " other stuff
 Plugin 'infoslack/vim-docker'
 Plugin 'pearofducks/ansible-vim'
