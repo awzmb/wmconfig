@@ -8,8 +8,8 @@ export FZF_DEFAULT_COMMAND="fd --type f --hidden --follow --exclude .git --color
 # enable processing of ansi color codes
 export FZF_DEFAULT_OPTS="--ansi"
 
-# change marker prompt and pointer
-export FZF_DEFAULT_OPTS="${FZF_DEFAULT_OPTS} --prompt '»' --pointer '»'"
+# change marker prompt
+export FZF_DEFAULT_OPTS="${FZF_DEFAULT_OPTS} --prompt '»'"
 
 # change number of spaces per tab
 export FZF_DEFAULT_OPTS="${FZF_DEFAULT_OPTS} --tabstop=2"
@@ -19,12 +19,6 @@ export FZF_DEFAULT_OPTS="${FZF_DEFAULT_OPTS} --cycle"
 
 # use base16 colors to match colorscheme
 export FZF_DEFAULT_OPTS="${FZF_DEFAULT_OPTS} --color=16"
-
-# use 256 colors
-#export FZF_DEFAULT_OPTS="${FZF_DEFAULT_OPTS} \
-  #--color='bg:237,bg+:236,info:143,border:240,spinner:108' \
-  #--color='hl:65,fg:252,header:65,fg+:252' \
-  #--color='pointer:161,marker:168,prompt:110,hl+:108'"
 
 # reverse layout (display first entry on top
 export FZF_DEFAULT_OPTS="${FZF_DEFAULT_OPTS} --layout=reverse"
