@@ -11,6 +11,12 @@ sudo dpkg --add-architecture i386
 sudo apt update && sudo apt upgrade
 
 ORIGIN_PATH=${pwd}
+ARCHITECTURE=$(uname -m | sed -e 's/x86_64/amd64/' -e 's/\(arm\)\(64\)\?.*/\1\2/' -e 's/aarch64$/arm64/')
+TMP=$(mktemp -d)
+OS=$(uname | tr '[:upper:]' '[:lower:]')
+(
+)
+
 
 # basic packages
 sudo apt -y install \
@@ -35,13 +41,19 @@ sudo apt -y install \
   ranger \
   gnupg2
 
-# install node and yarn (mainly for coc)
+# install yarn (mainly for coc)
 curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | gpg --dearmor | sudo tee /usr/share/keyrings/yarnkey.gpg >/dev/null
 echo "deb [signed-by=/usr/share/keyrings/yarnkey.gpg] https://dl.yarnpkg.com/debian stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
 sudo apt update
 sudo apt -y install \
-  nodejs \
   yarn
+
+# install yarn (mainly for coc)
+curl -sL https://deb.nodesource.com/setup_16.x -o /tmp/nodesource_setup.sh
+sudo bash /tmp/nodesource_setup.sh
+sudo apt update
+sudo apt -y install \
+  nodejs
 
 # podman (docker replacement)
 VERSION_ID=$(cat /etc/os-release | grep "VERSION_ID" | sed 's/.*=//g' | tr -d \")
@@ -62,15 +74,6 @@ sudo apt -y install \
 # download kubectl binary
 sudo wget "https://storage.googleapis.com/kubernetes-release/release/v1.8.0/bin/linux/amd64/kubectl" -O "/usr/local/bin/kubectl"
 
-# set architecture
-ARCHITECTURE=""
-case $(uname -m) in
-    i386)   ARCHITECTURE="386" ;;
-    i686)   ARCHITECTURE="386" ;;
-    x86_64) ARCHITECTURE="amd64" ;;
-    arm)    ARCHITECTURE="aarch64" ;;
-esac
-
 # download minikube binary
 sudo wget "https://github.com/kubernetes/minikube/releases/download/v1.26.0/minikube-linux-amd64" -O "/usr/local/bin/minikube" && sudo chmod +x /usr/local/bin/minikube
 
@@ -82,6 +85,31 @@ curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scr
 
 # add stable helm repository
 helm repo add stable https://charts.helm.sh/stable
+
+# install kubectl
+sudo curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
+echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+sudo apt update
+sudo apt install -y kubectl
+
+# install krew kubectl package manager
+cd $TMP
+curl -fsSLO "https://github.com/kubernetes-sigs/krew/releases/latest/download/krew-${OS}_${ARCHITECTURE}.tar.gz"
+tar zxvf "${KREW}.tar.gz"
+./"${}"
+export PATH="${PATH}:${HOME}/.krew/bin"
+
+# install krew plugins
+kubectl krew install \
+  auth-proxy \
+  ctx \
+  blame \
+  ktop \
+  ns \
+  pod-shell \
+  popeye \
+  rbac-view \
+  rbac-tool
 
 # additional stuff
 unset $SSH_ASKPASS
