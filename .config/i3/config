@@ -14,10 +14,10 @@ exec --no-startup-id setxkbmap us -variant altgr-intl
 # remap capslock to escape
 exec_always --no-startup-id setxkbmap -option caps:escape
 # compositor and wallpaper
-exec_always --no-startup-id feh --bg-scale ~/.cfg/wallpaper/prism.png; sleep 1; picom -b
-#exec --no-startup-id nitrogen --restore; sleep 1; picom -b
+#exec_always --no-startup-id feh ; sleep 1; picom -b
+exec_always --no-startup-id xsetroot -solid "#242933"; sleep 1; picom -b
 # power management
-#exec --no-startup-id xfce4-power-manager
+exec --no-startup-id xfce4-power-manager
 # bluetooth manager
 #exec --no-startup-id blueman-applet
 # clipboard
@@ -44,7 +44,8 @@ set $mod Mod1
 
 # font for window titles. ISO 10646 = Unicode
 #font -xos4-terminus-bold-r-normal--14-140-72-72-c-80-iso10646-1
-font -xos4-terminus-medium-r-normal--14-140-72-72-c-80-iso10646-1
+#font -xos4-terminus-medium-r-normal--14-140-72-72-c-80-iso10646-1
+font pango:unifont 12
 
 # no border / window title bar
 new_window none

@@ -37,7 +37,7 @@ sudo dnf -y install \
     rofi \
     redshift \
     redshift-gtk \
-    vim neovim \
+    vim \
     xss-lock \
     picom \
     pavucontrol \
@@ -54,12 +54,18 @@ sudo dnf -y install \
     tree \
     ack \
     git \
-    fd-find
+    fd-find \
+    fzf \
+    kitty \
+    xsetroot \
+    xfce4-power-manager
 
 # install fonts
 sudo dnf -y install \
     terminus-fonts \
-    terminus-fonts-console
+    terminus-fonts-console \
+    unifont \
+    unifont-fonts
 
 # podman
 sudo dnf -y install \
@@ -190,10 +196,6 @@ sudo dnf -y install \
     python3-neovim \
     calcurse
 
-# alacritty terminal emulator
-sudo dnf copr enable atim/alacritty -y
-sudo dnf -y install alacritty
-
 # install qogir theme
 sudo dnf -y install gtk-murrine-engine gtk2-engines
 git clone https://github.com/vinceliuice/Qogir-theme.git
@@ -209,29 +211,6 @@ sudo dnf -y install gnupg
 gpg --full-gen-key && \
 pass init bundschuh.dennis@gmail.com \
 pass insert mail/main
-
-# xfce4-i3-wrkspaces plugin build premise
-#sudo dnf install -y \
-    #xorg-x11-server-devel \
-    #gtk+-devel \
-    #gtk2-devel \
-    #libxfce4ui-devel \
-    #xfce4-panel-devel \
-    #json-glib-devel
-#mkdir -p ~/storage/packages
-#cd ~/storage/packages
-#git clone install https://github.com/altdesktop/i3ipc-glib.git
-#cd i3ipc-glib
-#exec ./autogen.sh --prefix=/usr
-#make
-#sudo make install
-#cd ~/storage/packages
-#git clone https://github.com/denesb/xfce4-i3-workspaces-plugin.git
-#cd xfce4-i3-workspaces-plugin
-#exec ./autogen.sh --prefix=/usr
-#make
-#sudo make install
-#cd ~/
 
 # aws tools
 sudo dnf -y install \
@@ -267,6 +246,10 @@ rm ./get_helm.sh
 
 # dwarf fortress
 # sudo dnf -y install dwarffortress
+
+# vim dependencies
+sudo dnf -y install \
+  yarnpkg
 
 # uninstall unnecessary packages
 sudo dnf -y remove \
@@ -328,6 +311,9 @@ snap install \
 git clone https://github.com/asdf-vm/asdf.git ~/.asdf
 cd ~/.asdf
 git checkout "$(git describe --abbrev=0 --tags)"
+
+# change lightdm background
+sed -i 's/^background=.*/background=#242933/g' /etc/lightdm/lightdm-gtk-greeter.conf
 
 # additional stuff
 unset $SSH_ASKPASS
