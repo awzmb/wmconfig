@@ -58,7 +58,8 @@ sudo dnf -y install \
     fzf \
     kitty \
     xsetroot \
-    xfce4-power-manager
+    xfce4-power-manager \
+    xinput
 
 # install fonts
 sudo dnf -y install \
@@ -291,6 +292,10 @@ rm parsec-fedora
     #spotifyd \
     #spt
 
+# install hsetroot for i3wm solid color background
+sudo dnf copr enable skidnik/hsetroot -y
+sudo dnf install hsetroot
+
 # install spotify-tui
 sudo dnf copr enable szpadel/spotifyd -y
 sudo dnf copr enable atim/spotify-tui -y
@@ -314,6 +319,16 @@ git checkout "$(git describe --abbrev=0 --tags)"
 
 # change lightdm background
 sed -i 's/^background=.*/background=#242933/g' /etc/lightdm/lightdm-gtk-greeter.conf
+
+# change timezone to europe/berlin
+sudo rm -rf /etc/localtime
+sudo ln -s /usr/share/zoneinfo/Europe/Berlin /etc/localtime
+
+# change grub theme
+sudo mkdir -p /boot/grub/themes/fedora
+sudo cp ${PWD}/grub/theme.txt /boot/grub/themes/fedora/theme.txt
+sudo sed -i "\$aGRUB_THEME=/boot/grub/themes/fedora/theme.txt" /etc/default/grub
+sudo grub2-mkconfig -o /boot/grub2/grub.cfg
 
 # additional stuff
 unset $SSH_ASKPASS

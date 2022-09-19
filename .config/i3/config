@@ -14,12 +14,15 @@ exec --no-startup-id setxkbmap us -variant altgr-intl
 # remap capslock to escape
 exec_always --no-startup-id setxkbmap -option caps:escape
 # compositor and wallpaper
-#exec_always --no-startup-id feh ; sleep 1; picom -b
-exec_always --no-startup-id xsetroot -solid "#242933"; sleep 1; picom -b
+exec_always --no-startup-id hsetroot -solid "#242933"; sleep 1; picom -b
+# networkmanager applet
+exec_always --no-startup-id nm-applet
 # power management
 exec --no-startup-id xfce4-power-manager
 # bluetooth manager
 #exec --no-startup-id blueman-applet
+# enable natural scrolling
+exec --no-startup-id xinput set-prop $(xinput list --id-only "ELAN1301:00 04F3:3035 Touchpad") 323 1
 # clipboard
 #exec --no-startup-id clipit
 # filter blue light during nighttime
@@ -236,9 +239,9 @@ set $mode_system System (l) lock, (e) logout, (s) suspend, (m) menu, (r) reboot,
 mode "$mode_system" {
     bindsym l exec --no-startup-id $Locker, mode "default"
     bindsym e exec --no-startup-id i3-msg exit, mode "default"
-    bindsym s exec --no-startup-id xfce4-session-logout --halt, mode "default"
-    bindsym m exec --no-startup-id xfce4-session-logout, mode "default"
-    bindsym r exec --no-startup-id xfce4-session-logout --reboot, mode "default"
+    bindsym s exec --no-startup-id $Locker && systemctl suspend -i, mode "default"
+    bindsym h exec --no-startup-id $Locker && systemctl hibernate -i, mode "default"
+    bindsym r exec --no-startup-id systemctl reboot, mode "default"
     bindsym Shift+s exec --no-startup-id systemctl poweroff -i, mode "default"
 
     # back to normal: Enter or Escape
