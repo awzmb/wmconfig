@@ -39,8 +39,8 @@ exec --no-startup-id redshift-gtk -l 52:13
 # =============================================================================
 
 # set terminal emulator
-#set $term alacritty
-set $term kitty
+set $term alacritty
+#set $term kitty
 
 # set mod key (Mod1=<Alt>, Mod4=<Super>)
 set $mod Mod1

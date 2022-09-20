@@ -68,6 +68,10 @@ sudo dnf -y install \
     unifont \
     unifont-fonts
 
+# gtk thme changer
+sudo dnf -y install \
+    lxappearance
+
 # podman
 sudo dnf -y install \
     podman \
