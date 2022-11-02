@@ -258,15 +258,31 @@ sudo dnf -y install \
 
 # uninstall unnecessary packages
 sudo dnf -y remove \
-    xscreensaver \
-    xscreensaver-base \
-    abrt \
-    tumbler \
-    epiphany-runtime \
-    mpv \
-    tracker \
-    tracker-miners \
-    blueberry
+  xscreensaver \
+  xscreensaver-base \
+  abrt \
+  tumbler \
+  epiphany-runtime \
+  mpv \
+  tracker \
+  tracker-miners \
+  blueberry
+
+# install sway wayland wm
+sudo dnf -y install \
+  foot \
+  dmenu \
+  wofi \
+  sway \
+  swaylock \
+  swayidle \
+  xwayland \
+  xorg-x11-server-Xwayland
+
+# install xwayland standalone
+#sudo dnf copr enable ofourdan/Xwayland
+#sudo dnf upgrade xorg-x11-server-Xwayland
+#sudo dnf install xorg-x11-server-Xwayland-devel
 
 # 8bitdo SF30 bluetooth controller settings
 sudo wget https://goo.gl/H2SViY -O /etc/udev/rules.d/99-8bitdo-bluetooth-controllers.rules
@@ -333,6 +349,19 @@ sudo mkdir -p /boot/grub/themes/fedora
 sudo cp ${PWD}/grub/theme.txt /boot/grub/themes/fedora/theme.txt
 sudo sed -i "\$aGRUB_THEME=/boot/grub/themes/fedora/theme.txt" /etc/default/grub
 sudo grub2-mkconfig -o /boot/grub2/grub.cfg
+
+# install shadow cloud gaming premise
+sudo dnf -y install \
+  libva-utils \
+  libva-intel-driver \
+  libva-intel-hybrid-driver \
+  ibvdpau libcurl libva-utils
+
+sudo groupadd shadow-input
+sudo usermod -a -G input $USER
+sudo usermod -a -G shadow-input $USER
+echo "uinput" | sudo tee -a /etc/modules-load.d/uinput.conf
+echo 'KERNEL=="uinput", MODE="0660", GROUP="shadow-input"' | sudo tee -a /etc/udev/rules.d/65-shadow-client.rules
 
 # additional stuff
 unset $SSH_ASKPASS

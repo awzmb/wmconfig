@@ -83,7 +83,10 @@ install_desktop_packages () {
 		sway \
 		swaylock \
 		swayidle \
-    xwayland
+    xwayland \
+    waypipe \
+    waybar \
+    wayland-utils
 
 	# additional desktop packages
 	sudo apk add \
