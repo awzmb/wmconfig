@@ -59,7 +59,8 @@ sudo dnf -y install \
     kitty \
     xsetroot \
     xfce4-power-manager \
-    xinput
+    xinput \
+    clipit
 
 # install fonts
 sudo dnf -y install \
@@ -87,6 +88,7 @@ sudo dnf -y install \
     pipenv \
     python3-autopep8 \
     python3-pands \
+    python3-pip \
     yamllint
 
 # java environment
@@ -315,6 +317,13 @@ rm parsec-fedora
 # install hsetroot for i3wm solid color background
 sudo dnf copr enable skidnik/hsetroot -y
 sudo dnf install hsetroot
+
+# install flashfocus for visual feedback
+# on windows switch
+sudo pip install flashfocus
+
+# unclutter (hides mouse when idle)
+sudo dnf -y install unclutter
 
 # install spotify-tui
 sudo dnf copr enable szpadel/spotifyd -y
