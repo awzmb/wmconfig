@@ -5,27 +5,6 @@ sudo dnf -y update
 
 ORIGIN_PATH=${pwd}
 
-# xfce4 dm
-#sudo dnf -y install \
-#    @xfce-desktop-environment \
-#    xfce4-vala \
-#    xfce4-sensors-plugin
-
-# mate desktop
-sudo dnf -y install \
-    mate-desktop \
-    mate-utils \
-    mate-settings-daemon \
-    mate-session-manager \
-    mate-screenshot \
-    mate-applets \
-    mate-control-center
-
-dconf write /org/mate/desktop/session/required-components/windowmanager "'i3'"
-dconf write /org/mate/desktop/applications/terminal/exec "'alacritty'"
-dconf write /org/mate/desktop/applications/browser/exec "'brave-browser'"
-dconf write /org/mate/desktop/background/show-desktop-icons "false"
-
 # basic packages
 sudo dnf -y install \
     zsh \
@@ -66,6 +45,7 @@ sudo dnf -y install \
 sudo dnf -y install \
     terminus-fonts \
     terminus-fonts-console \
+    terminus-fonts-grub2 \
     unifont \
     unifont-fonts
 
@@ -87,7 +67,7 @@ sudo dnf -y install \
 sudo dnf -y install \
     pipenv \
     python3-autopep8 \
-    python3-pands \
+    python3-pandas \
     python3-pip \
     yamllint
 
@@ -104,7 +84,7 @@ sudo dnf -y install tlp tlp-rdw
 sudo systemctl enable tlp
 
 # autorandr display management
-sudo dnf copr enable macieks/autorandr -y
+sudo dnf -y copr enable macieks/autorandr
 sudo dnf install -y autorandr
 
 # install polybar-reload script
@@ -151,7 +131,7 @@ sudo dnf -y install xfce4-screensaver
 
 # vscodium
 sudo rpm --import https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/raw/master/pub.gpg
-printf "[gitlab.com_paulcarroty_vscodium_repo]\nname=gitlab.com_paulcarroty_vscodium_repo\nbaseurl=https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/raw/repos/rpms/\nenabled=1\ngpgcheck=1\nrepo_gpgcheck=1\ngpgkey=https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/raw/master/pub.gpg" |sudo tee -a /etc/yum.repos.d/vscodium.repo
+printf "[gitlab.com_paulcarroty_vscodium_repo]\nname=download.vscodium.com\nbaseurl=https://download.vscodium.com/rpms/\nenabled=1\ngpgcheck=1\nrepo_gpgcheck=1\ngpgkey=https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/-/raw/master/pub.gpg\nmetadata_expire=1h" | sudo tee -a /etc/yum.repos.d/vscodium.repo
 sudo dnf -y install codium
 
 # vulkan graphics
@@ -176,7 +156,7 @@ sudo dnf -y install \
     sqlite2.x86_64
 
 # email client
-sudo dnf copr enable flatcap/neomutt
+sudo dnf -y copr enable flatcap/neomutt
 sudo dnf -y install \
     neomutt \
     notmuch \
@@ -212,12 +192,6 @@ rm -rf Qogir-theme
 git clone https://github.com/vinceliuice/Qogir-icon-theme.git
 sh ./Qogir-icon-theme/install.sh
 rm -rf Qogir-icon-theme
-
-# password management
-sudo dnf -y install gnupg
-gpg --full-gen-key && \
-pass init bundschuh.dennis@gmail.com \
-pass insert mail/main
 
 # aws tools
 sudo dnf -y install \
@@ -259,16 +233,16 @@ sudo dnf -y install \
   yarnpkg
 
 # uninstall unnecessary packages
-sudo dnf -y remove \
-  xscreensaver \
-  xscreensaver-base \
-  abrt \
-  tumbler \
-  epiphany-runtime \
-  mpv \
-  tracker \
-  tracker-miners \
-  blueberry
+#sudo dnf -y remove \
+  #xscreensaver \
+  #xscreensaver-base \
+  #abrt \
+  #tumbler \
+  #epiphany-runtime \
+  #mpv \
+  #tracker \
+  #tracker-miners \
+  #blueberry
 
 # install sway wayland wm
 sudo dnf -y install \
@@ -280,6 +254,11 @@ sudo dnf -y install \
   swayidle \
   xwayland \
   xorg-x11-server-Xwayland
+
+# install gnome packages
+sudo dnf -y install \
+  gnome-tweak-tools
+
 
 # install xwayland standalone
 #sudo dnf copr enable ofourdan/Xwayland
@@ -294,9 +273,6 @@ sudo wget https://goo.gl/H2SViY -O /etc/udev/rules.d/99-8bitdo-bluetooth-control
 #sudo echo "#!/usr/bin/env sh" >> /etc/netctl/interfaces/wlp2s0
 #sudo echo "/usr/bin/macchanger -r interface" >> /etc/netctl/interfaces/wlp2s0
 #sudo chmod +x /etc/netctl/interfaces/wlp2s0
-
-# oh my zsh
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
 # install steam gaming platform
 sudo dnf -y install steam
@@ -315,7 +291,7 @@ rm parsec-fedora
     #spt
 
 # install hsetroot for i3wm solid color background
-sudo dnf copr enable skidnik/hsetroot -y
+sudo dnf -y copr enable skidnik/hsetroot
 sudo dnf install hsetroot
 
 # install flashfocus for visual feedback
@@ -326,8 +302,8 @@ sudo pip install flashfocus
 sudo dnf -y install unclutter
 
 # install spotify-tui
-sudo dnf copr enable szpadel/spotifyd -y
-sudo dnf copr enable atim/spotify-tui -y
+sudo dnf -y copr enable szpadel/spotifyd
+sudo dnf -y copr enable atim/spotify-tui
 sudo dnf -y install \
     spotifyd \
     spotify-tui
@@ -371,6 +347,12 @@ sudo usermod -a -G input $USER
 sudo usermod -a -G shadow-input $USER
 echo "uinput" | sudo tee -a /etc/modules-load.d/uinput.conf
 echo 'KERNEL=="uinput", MODE="0660", GROUP="shadow-input"' | sudo tee -a /etc/udev/rules.d/65-shadow-client.rules
+
+# password management
+sudo dnf -y install gnupg
+gpg --full-gen-key && \
+pass init bundschuh.dennis@gmail.com \
+pass insert mail/main
 
 # additional stuff
 unset $SSH_ASKPASS
