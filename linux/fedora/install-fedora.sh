@@ -39,7 +39,8 @@ sudo dnf -y install \
     xsetroot \
     xfce4-power-manager \
     xinput \
-    clipit
+    clipit \
+    sqlite
 
 # install fonts
 sudo dnf -y install \
@@ -257,8 +258,10 @@ sudo dnf -y install \
 
 # install gnome packages
 sudo dnf -y install \
-  gnome-tweak-tools
-
+  gnome-tweak-tools \
+  gnome-extensions-app \
+  gnome-shell-extension-pop-shell \
+  xprop
 
 # install xwayland standalone
 #sudo dnf copr enable ofourdan/Xwayland
@@ -347,6 +350,14 @@ sudo usermod -a -G input $USER
 sudo usermod -a -G shadow-input $USER
 echo "uinput" | sudo tee -a /etc/modules-load.d/uinput.conf
 echo 'KERNEL=="uinput", MODE="0660", GROUP="shadow-input"' | sudo tee -a /etc/udev/rules.d/65-shadow-client.rules
+
+# gnome shell settings
+# solid color background
+gsettings set org.gnome.desktop.background picture-options none
+gsettings set org.gnome.desktop.background primary-color '#242933'
+gsettings set org.gnome.desktop.background color-shading-type 'solid'
+# disable extension validation
+gsettings set org.gnome.shell disable-extension-version-validation true
 
 # password management
 sudo dnf -y install gnupg
