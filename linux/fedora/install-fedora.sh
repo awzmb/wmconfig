@@ -258,7 +258,7 @@ sudo dnf -y install \
 
 # install gnome packages
 sudo dnf -y install \
-  gnome-tweak-tools \
+  gnome-tweaks \
   gnome-extensions-app \
   gnome-shell-extension-pop-shell \
   xprop
