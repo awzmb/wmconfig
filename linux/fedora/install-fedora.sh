@@ -358,6 +358,8 @@ gsettings set org.gnome.desktop.background primary-color '#242933'
 gsettings set org.gnome.desktop.background color-shading-type 'solid'
 # disable extension validation
 gsettings set org.gnome.shell disable-extension-version-validation true
+# set pop shell keybinds
+./pop-shell/pop-shell-keybinds.sh
 
 # password management
 sudo dnf -y install gnupg
