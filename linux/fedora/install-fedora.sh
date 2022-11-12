@@ -143,8 +143,7 @@ sudo dnf -y install \
     lutris \
     wine \
     wine-dxvk \
-    wine-dxvk-dxgi \
-    libva-intel-driver
+    wine-dxvk-dxgi
 
 # hearthstone lutris / wine premise
 sudo dnf -y install \
@@ -338,18 +337,27 @@ sudo cp ${PWD}/grub/theme.txt /boot/grub/themes/fedora/theme.txt
 sudo sed -i "\$aGRUB_THEME=/boot/grub/themes/fedora/theme.txt" /etc/default/grub
 sudo grub2-mkconfig -o /boot/grub2/grub.cfg
 
-# install shadow cloud gaming premise
+# install iris drivers and libva
 sudo dnf -y install \
   libva-utils \
   libva-intel-driver \
   libva-intel-hybrid-driver \
-  ibvdpau libcurl libva-utils
+  ibvdpau \
+  libva-utils \
+  libva-vdpau-driver \
+  intel-media-driver \
+  libvdpau-va-gl
 
 sudo groupadd shadow-input
 sudo usermod -a -G input $USER
 sudo usermod -a -G shadow-input $USER
 echo "uinput" | sudo tee -a /etc/modules-load.d/uinput.conf
 echo 'KERNEL=="uinput", MODE="0660", GROUP="shadow-input"' | sudo tee -a /etc/udev/rules.d/65-shadow-client.rules
+
+# provide vulkan and metal support
+sudo dnf -y install \
+  vulkan \
+  vulkan-tools
 
 # gnome shell settings
 # solid color background
