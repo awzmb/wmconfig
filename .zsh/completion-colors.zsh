@@ -1,6 +1,8 @@
 # ls colors
 autoload -U colors
 
+zinit light trapd00r/LS_COLORS
+
 # enable ls colors (uncomment to override .dir_colors
 #export LSCOLORS="Gxfxcxdxbxegedabagacad"
 

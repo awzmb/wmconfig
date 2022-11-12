@@ -78,8 +78,8 @@ dconf write ${KEYS_GNOME_WM}/switch-to-workspace-10 "['<Super>0']"
 # dconf write ${KEYS_GNOME_WM}/switch-to-workspace-left "['<Shift><Super>Tab']"
 # dconf write ${KEYS_GNOME_WM}/switch-to-workspace-right "['<Super>Tab']"
 # Move windows between workspaces
-# dconf write ${KEYS_GNOME_WM}/move-to-workspace-left "['<Shift><Super>Left','<Shift><Super>${left}']"
-#.dconf write ${KEYS_GNOME_WM}/move-to-workspace-right "['<Shift><Super>Right','<Shift><Super>${right}']"
+dconf write ${KEYS_GNOME_WM}/move-to-workspace-left "['<Shift><Super>Left','<Shift><Super>${left}']"
+dconf write ${KEYS_GNOME_WM}/move-to-workspace-right "['<Shift><Super>Right','<Shift><Super>${right}']"
 # Move between monitors
 dconf write ${KEYS_GNOME_WM}/move-to-monitor-left "['<Alt><Super>Left','<Alt><Super>${left}']"
 dconf write ${KEYS_GNOME_WM}/move-to-monitor-right "['<Alt><Super>Right','<Alt><Super>${right}']"
