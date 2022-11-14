@@ -22,7 +22,6 @@ sudo dnf -y install \
     pavucontrol \
     nitrogen \
     feh \
-    paper-icon-theme \
     calc \
     inkscape \
     unrar \
@@ -178,13 +177,21 @@ sudo dnf -y install brave-browser
 
 # terminal tools and software
 sudo dnf -y install \
-    w3m \
-    w3m-img \
-    python3-neovim \
-    calcurse
+  w3m \
+  w3m-img \
+  python3-neovim \
+  calcurse
+
+# install themes from repository
+sudo dnf -y install \
+  gnome-shell-extension-user-theme \
+  paper-icon-theme \
+  arc-theme
 
 # install qogir theme
-sudo dnf -y install gtk-murrine-engine gtk2-engines
+sudo dnf -y install \
+  gtk-murrine-engine \
+  gtk2-engines
 git clone https://github.com/vinceliuice/Qogir-theme.git
 sh ./Qogir-theme/install.sh
 rm -rf Qogir-theme
@@ -359,6 +366,9 @@ sudo dnf -y install \
   vulkan \
   vulkan-tools
 
+# add options to i915 to enable libva / vainfo
+echo "options i915 enable_guc=2" | sudo tee -a /etc/modprobe.d/i915.conf
+
 # gnome shell settings
 # solid color background
 gsettings set org.gnome.desktop.background picture-options none
@@ -368,6 +378,12 @@ gsettings set org.gnome.desktop.background color-shading-type 'solid'
 gsettings set org.gnome.shell disable-extension-version-validation true
 # set pop shell keybinds
 ./pop-shell/pop-shell-keybinds.sh
+
+# firefox configuration
+FIREFOX_PROFILE_DIRECTORY=$(grep 'Path=' ~/.mozilla/firefox/profiles.ini | sed s/^Path=// | grep release)
+for profile in ${FIREFOX_PROFILE_DIRECTORY}; do
+  git clone https://github.com/awzmb/userchrome $profile/chrome
+done
 
 # password management
 sudo dnf -y install gnupg
