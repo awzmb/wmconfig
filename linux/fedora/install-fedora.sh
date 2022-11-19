@@ -53,10 +53,11 @@ sudo dnf -y install \
 sudo dnf -y install \
     lxappearance
 
-# podman
+# podman container
 sudo dnf -y install \
     podman \
-    podman-compose
+    podman-compose \
+    containernetworking-plugins
 
 # password storage
 sudo dnf -y install \
@@ -318,13 +319,13 @@ sudo dnf -y install \
     spotify-tui
 
 # install flatpak packages
-snap install \
-    com.discordapp.Discord \
-    com.spotify.Client \
-    com.teamspeak.TeamSpeak \
-    org.gtk.Gtk3theme.Qogir \
-    org.gtk.Gtk3theme.Qogir-win-dark \
-    net.sourceforge.chromium-bsu
+#snap install \
+    #com.discordapp.Discord \
+    #com.spotify.Client \
+    #com.teamspeak.TeamSpeak \
+    #org.gtk.Gtk3theme.Qogir \
+    #org.gtk.Gtk3theme.Qogir-win-dark \
+    #net.sourceforge.chromium-bsu
 
 # install asdf for tool management
 git clone https://github.com/asdf-vm/asdf.git ~/.asdf
@@ -353,7 +354,13 @@ sudo dnf -y install \
   libva-utils \
   libva-vdpau-driver \
   intel-media-driver \
-  libvdpau-va-gl
+  libvdpau-va-gl \
+  ffmpeg
+
+# set liva driver to iHD for vainfo to work
+if [ ! -n "$(cat /etc/environment | grep LIBVA_DRIVER_NAME)" ]; then
+  echo 'LIBVA_DRIVER_NAME=iHD' | sudo tee -a /etc/environment
+fi
 
 sudo groupadd shadow-input
 sudo usermod -a -G input $USER
@@ -367,7 +374,9 @@ sudo dnf -y install \
   vulkan-tools
 
 # add options to i915 to enable libva / vainfo
-echo "options i915 enable_guc=2" | sudo tee -a /etc/modprobe.d/i915.conf
+if [ ! -f "/etc/modprobe.d/i915.conf" ]; then
+  echo "options i915 enable_guc=2" | sudo tee -a /etc/modprobe.d/i915.conf
+fi
 
 # gnome shell settings
 # solid color background
@@ -384,6 +393,20 @@ FIREFOX_PROFILE_DIRECTORY=$(grep 'Path=' ~/.mozilla/firefox/profiles.ini | sed s
 for profile in ${FIREFOX_PROFILE_DIRECTORY}; do
   git clone https://github.com/awzmb/userchrome $profile/chrome
 done
+
+# flathub repositories and premise
+flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+flatpak install --user flathub org.gnome.Platform//41
+flatpak install --user flathub org.gnome.Sdk//41
+# install citrix workspace
+# git clone https://github.com/dcloud-ca/ca.dcloud.ICAClient ~/workspace/flathub-citrix-reciever
+# cd ~/workspace/flathub-citrix-reciever
+# flatpak-builder --user --install --force-clean icaclient ca.dcloud.ICAClient.yml
+
+# install gaming stuff
+sudo dnf -y install \
+  discord
+
 
 # password management
 sudo dnf -y install gnupg
