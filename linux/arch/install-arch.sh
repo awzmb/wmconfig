@@ -69,6 +69,13 @@ sudo pacman -S --needed \
 #pass init dennis.bundschuh@ancud.de \
 #pass insert mail/main
 
+# install vim-plug plugin manager
+# for vim and neovim
+curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
+       https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+
 # use macchanger with netctl
 sudo touch /etc/netctl/interfaces/wlp2s0
 sudo echo "#!/usr/bin/env sh" >> /etc/netctl/interfaces/wlp2s0

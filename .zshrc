@@ -95,6 +95,9 @@ source ~/.zsh/fzf-tab-completion.zsh
 # several fixes for different systems
 source ~/.zsh/fixes.zsh
 
+# additional tools
+source ~/.zsh/tools.zsh
+
 # asdf completion
 #if [ "$(uname)" = "Darwin" ]; then
 #  source "$( brew --prefix asdf )/asdf.sh"

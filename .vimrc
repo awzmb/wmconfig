@@ -2,82 +2,77 @@
 set nocompatible
 filetype off
 
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin('~/.config/nvim/bundle')
+call plug#begin('~/.vim/plugged')
 
-Plugin 'VundleVim/Vundle.vim'
-
-" easymotion - allows <leader><leader>(b|e) to jump to (b)eginning or (end)
-" of words.
-Plugin 'easymotion/vim-easymotion'
 " neomake build tool (mapped below to <c-b>)
-Plugin 'benekastah/neomake'
+Plug 'benekastah/neomake'
 " autocomplete for python
-Plugin 'davidhalter/jedi-vim'
+"Plug 'davidhalter/jedi-vim'
 " remove extraneous whitespace when edit mode is exited
-Plugin 'thirtythreeforty/lessspace.vim'
+Plug 'thirtythreeforty/lessspace.vim'
 
 " latex editing
 "plugin 'latex-box-team/latex-box'
-"Plugin 'lervag/vimtex'
-"Plugin 'donRaphaco/neotex', { 'for': 'tex' }
+"Plug 'lervag/vimtex'
+"Plug 'donRaphaco/neotex', { 'for': 'tex' }
 
 " terraform and hcl
-Plugin 'hashivim/vim-terraform'
+Plug 'hashivim/vim-terraform'
 
 " status bar mods
-"Plugin 'itchyny/lightline.vim'
-Plugin 'vim-airline/vim-airline'
-"Plugin 'vim-airline/vim-airline-themes'
-Plugin 'airblade/vim-gitgutter'
+"Plug 'itchyny/lightline.vim'
+Plug 'vim-airline/vim-airline'
+"Plug 'vim-airline/vim-airline-themes'
+Plug 'airblade/vim-gitgutter'
 
 " coc language server client
-Plugin 'neoclide/coc.nvim'
+Plug 'neoclide/coc.nvim'
 
 " git commit browser (start with :GV)
-Plugin 'tpope/vim-fugitive'
-Plugin 'junegunn/gv.vim'
+Plug 'tpope/vim-fugitive'
+Plug 'junegunn/gv.vim'
 
 " fzf plugin
-Plugin 'junegunn/fzf'
+Plug 'junegunn/fzf'
 
 " cscope-maps
-Plugin 'joe-skb7/cscope-maps'
+Plug 'joe-skb7/cscope-maps'
 
 " nerdtree navigation and git plugin
-Plugin 'scrooloose/nerdtree'
+Plug 'scrooloose/nerdtree'
 
 " fern tree / project navigation (nerdtree replacement)
-"Plugin 'antoinemadec/FixCursorHold.nvim'
-"Plugin 'lambdalisue/fern.vim'
+"Plug 'antoinemadec/FixCursorHold.nvim'
+"Plug 'lambdalisue/fern.vim'
 
 " commenting plugin
-Plugin 'scrooloose/nerdcommenter'
+Plug 'scrooloose/nerdcommenter'
 
 " show colors (hex, rgb, etc.)
-"Plugin 'RRethy/vim-hexokinase', { 'do': 'make hexokinase' }
-Plugin 'lilydjwg/colorizer'
-
-" edit confluence pages in vim
-Plugin 'lusis/confluence-vim'
+"Plug 'RRethy/vim-hexokinase', { 'do': 'make hexokinase' }
+Plug 'lilydjwg/colorizer'
 
 " automated closing, paranthesis, brackets, quotes
-Plugin 'KaraMCC/vim-gemini'
+Plug 'KaraMCC/vim-gemini'
 
 " edit helm templates
-Plugin 'towolf/vim-helm'
+Plug 'towolf/vim-helm'
+
+" syntax
+Plug 'martinda/Jenkinsfile-vim-syntax'
 
 " other stuff
-Plugin 'infoslack/vim-docker'
-Plugin 'pearofducks/ansible-vim'
+Plug 'infoslack/vim-docker'
+Plug 'pearofducks/ansible-vim'
 
 " colorscheme
-Plugin 'arcticicestudio/nord-vim'
-Plugin 'chriskempson/base16-vim'
+Plug 'arcticicestudio/nord-vim'
+"Plug 'chriskempson/base16-vim'
 
 " finish plugin loading
-call vundle#end()
-filetype plugin indent on
+" Initialize plugin system
+" - Automatically executes `filetype plugin indent on` and `syntax enable`.
+call plug#end()
 
 " coc extensions
 let g:coc_global_extensions = [
@@ -90,6 +85,8 @@ let g:coc_global_extensions = [
             \'coc-docker',
             \'coc-python',
             \'coc-go',
+            \'coc-groovy',
+            \'coc-java',
             \'coc-gitignore'
             \]
 
