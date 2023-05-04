@@ -396,7 +396,11 @@ let mapleader=","
 let maplocalleader="\\"
 
 " neomake and other build commands (ctrl-b)
-nnoremap <C-b> :w<cr>:Neomake<cr>
+"nnoremap <C-b> :w<cr>:Neomake<cr>
+
+" allow ctrl+d to be used for commands while using vim from within a browser
+map <C-D> <C-W>
+map <C-B> <C-N>
 
 autocmd BufNewFile,BufRead *.tex,*.bib noremap <buffer> <C-b> :w<cr>:new<bar>r !make<cr>:setlocal buftype=nofile<cr>:setlocal bufhidden=hide<cr>:setlocal noswapfile<cr>
 autocmd BufNewFile,BufRead *.tex,*.bib imap <buffer> <C-b> <Esc><C-b>

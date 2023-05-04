@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Warning: 'apk add sudo && sudo -lU [name]' before using this script
 
 install_default_packages () {
@@ -17,9 +17,19 @@ install_default_packages () {
     gcompat libuser binutils findutils
 
 	# devops tools
+    ca-certificates ncurses pciutils \
+    gcompat libuser util-linux \
+    usbutils binutils findutils \
+    iproute2
+
+	# deployment
 	sudo apk add \
 		terraform ansible aws-cli py3-pip \
     pre-commit terragrunt
+
+  # building
+	sudo apk add \
+    build-base
 
   # email client
   sudo apk add \
@@ -262,7 +272,7 @@ EOF
 install_dev_packages () {
   # minikube premise
   sudo apk add --no-cache \
-    conntrack-tools podman
+    conntrack-tools podman buildah
 
   # download kubectl binary
   sudo wget "https://storage.googleapis.com/kubernetes-release/release/v1.8.0/bin/linux/amd64/kubectl" -O "/usr/local/bin/kubectl"
@@ -280,10 +290,10 @@ install_dev_packages () {
   sudo wget "https://github.com/kubernetes/minikube/releases/download/v1.26.0/minikube-linux-amd64" -O "/usr/local/bin/minikube" && sudo chmod +x /usr/local/bin/minikube
 
   # create modules directory for minikube
-  sudo mkdir /lib/modules
+  sudo mkdir -p /lib/modules
 
   # start minikube (--force option if you're running this on wsl2)
-  minikube start --force --driver=podman --memory 2048 --disk-size 4g
+  sudo minikube start --force --driver=podman --memory 2048 --disk-size 4g
 
   # download helm binary
   curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 && chmod +x get_helm.sh && ./get_helm.sh
@@ -293,65 +303,20 @@ install_dev_packages () {
 }
 
 
+PS3="Select what to install: "
 
+items=("Basic packages" "Desktop packages" "Laptop packages" "Android packages" "Grub modifications" "Dev packages")
 
-# user input
-while true; do
-    read -p "Do you want to install the basic packages?[y/n] " yn
-    case $yn in
-        [Yy]* ) install_default_packages; exit 0;;
-        [Nn]* ) exit 0;;
-        * ) echo "Please answer yes or no.";;
+select item in "${items[@]}" Quit
+do
+    case $REPLY in
+        1) install_default_packages;;
+        2) install_desktop_packages;;
+        2) install_laptop_packages;;
+        4) install_android_packages;;
+        5) install_boot_packages;;
+        6) install_dev_packages;;
+        $((${#items[@]}+1))) echo "done!"; break;;
+        *) echo "unknown choice $REPLY";;
     esac
 done
-
-# user input
-while true; do
-    read -p "Do you wish to install a desktop?[y/n] " yn
-    case $yn in
-        [Yy]* ) install_desktop_packages; exit 0;;
-        [Nn]* ) exit 0;;
-        * ) echo "Please answer yes or no.";;
-    esac
-done
-
-# user input
-while true; do
-    read -p "Are you running this on a laptop[y/n] " yn
-    case $yn in
-        [Yy]* ) install_laptop_packages; exit 0;;
-        [Nn]* ) exit 0;;
-        * ) echo "Please answer yes or no.";;
-    esac
-done
-
-# user input
-while true; do
-    read -p "Are you running alpine on android [y/n] " yn
-    case $yn in
-        [Yy]* ) install_android_packages; exit 0;;
-        [Nn]* ) exit 0;;
-        * ) echo "Please answer yes or no.";;
-    esac
-done
-
-# boot splash customizations
-while true; do
-    read -p "Do you want to customize the boot screen [y/n] " yn
-    case $yn in
-        [Yy]* ) install_boot_packages; exit 0;;
-        [Nn]* ) exit 0;;
-        * ) echo "Please answer yes or no.";;
-    esac
-done
-
-# install dev tools
-while true; do
-    read -p "Do you want to install dev tools?[y/n] " yn
-    case $yn in
-        [Yy]* ) install_dev_packages; exit 0;;
-        [Nn]* ) exit 0;;
-        * ) echo "Please answer yes or no.";;
-    esac
-done
-
