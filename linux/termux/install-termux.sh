@@ -6,28 +6,30 @@ install_default_packages () {
   sudo apk update && sudo apk upgrade
 
 	# basic packages
-	pkg install \
+	pkg install -y \
 		vim zsh bash neovim tmux pass \
 		openssl curl bat w3m exa zip \
 		ctags python3 p7zip \
 		coreutils tree ranger nodejs \
 		yarn curl wget fd fzf openssh \
 		coreutils nodejs grep tar openssl \
-    ca-certificates ncurses
+    ca-certificates ncurses perl \
+    binutils ruby ldd ctags ncurses-utils
+
+  # awscli
+  #pkg install -y \
+    #git python rust build-essential
 
 	# coc.nvim packages
-  pkg install \
+  pkg install -y \
     nodejs yarn
-	# additional stuff
-	pkg install \
-		terraform
 
   # email client
-  pkg install \
+  pkg install -y \
     neomutt calcurse gnupg pass
 
 	# python packages
-	pip install \
+	pip install -y \
 		markdown \
 		html2text \
 		requests \
@@ -45,24 +47,4 @@ install_default_packages () {
          https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
 }
 
-
-
-# user input
-while true; do
-    read -p "Do you want to install the basic packages?[y/n] " yn
-    case $yn in
-        [Yy]* ) install_default_packages; exit 0;;
-        [Nn]* ) exit 0;;
-        * ) echo "Please answer yes or no.";;
-    esac
-done
-
-# user input
-while true; do
-    read -p "Do you wish to install a desktop?[y/n] " yn
-    case $yn in
-        [Yy]* ) install_desktop_packages; exit 0;;
-        [Nn]* ) exit 0;;
-        * ) echo "Please answer yes or no.";;
-    esac
-done
+install_default_packages
