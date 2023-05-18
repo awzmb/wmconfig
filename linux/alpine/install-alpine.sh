@@ -13,12 +13,13 @@ install_default_packages () {
 		coreutils tree ranger nodejs \
 		npm yarn curl wget fd fzf openssh \
 		coreutils nodejs grep tar openssl \
-    ca-certificates ncurses \
-    gcompat libuser
+    ca-certificates ncurses ruby \
+    gcompat libuser binutils findutils
 
-	# additional stuff
+	# devops tools
 	sudo apk add \
-		terraform ansible aws-cli py3-pip
+		terraform ansible aws-cli py3-pip \
+    pre-commit terragrunt
 
   # email client
   sudo apk add \
