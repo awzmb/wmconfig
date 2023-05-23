@@ -14,18 +14,22 @@ install_default_packages () {
 		npm yarn curl wget fd fzf openssh \
 		coreutils nodejs grep tar openssl \
     ca-certificates ncurses ruby \
-    gcompat libuser binutils findutils
+    gcompat libuser binutils findutils \
+    pciutils util-linux iproute2
 
 	# devops tools
-    ca-certificates ncurses pciutils \
-    gcompat libuser util-linux \
-    usbutils binutils findutils \
-    iproute2
-
-	# deployment
 	sudo apk add \
 		terraform ansible aws-cli py3-pip \
     pre-commit terragrunt
+
+  # development
+	sudo apk add go
+
+  # terraform-docs
+  curl -sSLo ./terraform-docs.tar.gz https://terraform-docs.io/dl/v0.16.0/terraform-docs-v0.16.0-$(uname)-amd64.tar.gz
+  tar -xzf terraform-docs.tar.gz
+  chmod +x terraform-docs
+  mv terraform-docs /usr/local/bin/terraform-docs
 
   # building
 	sudo apk add \
