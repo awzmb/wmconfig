@@ -15,7 +15,8 @@ install_default_packages () {
 		coreutils nodejs grep tar openssl \
     ca-certificates ncurses ruby \
     gcompat libuser binutils findutils \
-    pciutils util-linux iproute2
+    pciutils util-linux iproute2 \
+    pre-commit
 
 	# devops tools
 	sudo apk add \
@@ -24,12 +25,6 @@ install_default_packages () {
 
   # development
 	sudo apk add go
-
-  # terraform-docs
-  curl -sSLo ./terraform-docs.tar.gz https://terraform-docs.io/dl/v0.16.0/terraform-docs-v0.16.0-$(uname)-amd64.tar.gz
-  tar -xzf terraform-docs.tar.gz
-  chmod +x terraform-docs
-  mv terraform-docs /usr/local/bin/terraform-docs
 
   # building
 	sudo apk add \
@@ -57,6 +52,48 @@ install_default_packages () {
       https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
   sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
          https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+}
+
+install_dev_packages () {
+  # minikube premise
+  sudo apk add --no-cache \
+    conntrack-tools podman buildah
+
+  # terraform-docs
+  curl -sSLo ./terraform-docs.tar.gz https://terraform-docs.io/dl/v0.16.0/terraform-docs-v0.16.0-$(uname)-amd64.tar.gz
+  tar -xzf terraform-docs.tar.gz
+  chmod +x terraform-docs
+  mv terraform-docs /usr/local/bin/terraform-docs
+
+  # infracost
+  curl -fsSL https://raw.githubusercontent.com/infracost/infracost/master/scripts/install.sh | sh
+
+  # download kubectl binary
+  sudo wget "https://storage.googleapis.com/kubernetes-release/release/v1.8.0/bin/linux/amd64/kubectl" -O "/usr/local/bin/kubectl"
+
+  # set architecture
+	ARCHITECTURE=""
+	case $(uname -m) in
+			i386)   ARCHITECTURE="386" ;;
+			i686)   ARCHITECTURE="386" ;;
+			x86_64) ARCHITECTURE="amd64" ;;
+			arm)    ARCHITECTURE="aarch64" ;;
+	esac
+
+  # download minikube binary
+  sudo wget "https://github.com/kubernetes/minikube/releases/download/v1.26.0/minikube-linux-amd64" -O "/usr/local/bin/minikube" && sudo chmod +x /usr/local/bin/minikube
+
+  # create modules directory for minikube
+  sudo mkdir -p /lib/modules
+
+  # start minikube (--force option if you're running this on wsl2)
+  sudo minikube start --force --driver=podman --memory 2048 --disk-size 4g
+
+  # download helm binary
+  curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 && chmod +x get_helm.sh && ./get_helm.sh
+
+  # add stable helm repository
+  helm repo add stable https://charts.helm.sh/stable
 }
 
 install_desktop_packages () {
@@ -272,40 +309,6 @@ EOF
     bluez-zsh-completion bluez-btmgmt
   sudo rc-update add bluetooth
 }
-
-install_dev_packages () {
-  # minikube premise
-  sudo apk add --no-cache \
-    conntrack-tools podman buildah
-
-  # download kubectl binary
-  sudo wget "https://storage.googleapis.com/kubernetes-release/release/v1.8.0/bin/linux/amd64/kubectl" -O "/usr/local/bin/kubectl"
-
-  # set architecture
-	ARCHITECTURE=""
-	case $(uname -m) in
-			i386)   ARCHITECTURE="386" ;;
-			i686)   ARCHITECTURE="386" ;;
-			x86_64) ARCHITECTURE="amd64" ;;
-			arm)    ARCHITECTURE="aarch64" ;;
-	esac
-
-  # download minikube binary
-  sudo wget "https://github.com/kubernetes/minikube/releases/download/v1.26.0/minikube-linux-amd64" -O "/usr/local/bin/minikube" && sudo chmod +x /usr/local/bin/minikube
-
-  # create modules directory for minikube
-  sudo mkdir -p /lib/modules
-
-  # start minikube (--force option if you're running this on wsl2)
-  sudo minikube start --force --driver=podman --memory 2048 --disk-size 4g
-
-  # download helm binary
-  curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 && chmod +x get_helm.sh && ./get_helm.sh
-
-  # add stable helm repository
-  helm repo add stable https://charts.helm.sh/stable
-}
-
 
 PS3="Select what to install: "
 
