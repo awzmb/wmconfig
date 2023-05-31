@@ -21,7 +21,7 @@ install_default_packages () {
 	# devops tools
 	sudo apk add \
 		terraform ansible aws-cli py3-pip \
-    pre-commit terragrunt
+    pre-commit terragrunt sops
 
   # development
 	sudo apk add go
