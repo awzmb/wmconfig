@@ -24,14 +24,14 @@ sudo dnf -y install \
     git \
     fd-find \
     fzf \
-    sqlite
+    sqlite \
+    tmux
 
 # podman container
 sudo dnf -y install \
     podman \
     podman-compose \
     containernetworking-plugins
-
 
 # openvpn connections via nmcli
 sudo dnf -y install \

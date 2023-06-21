@@ -16,7 +16,6 @@ sudo dnf -y install \
     rofi \
     redshift \
     redshift-gtk \
-    vim \
     xss-lock \
     picom \
     pavucontrol \
@@ -39,7 +38,8 @@ sudo dnf -y install \
     xfce4-power-manager \
     xinput \
     clipit \
-    sqlite
+    sqlite \
+    tmux
 
 # install fonts
 sudo dnf -y install \
