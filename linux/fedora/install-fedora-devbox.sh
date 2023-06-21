@@ -32,6 +32,11 @@ sudo dnf -y install \
     podman-compose \
     containernetworking-plugins
 
+
+# openvpn connections via nmcli
+sudo dnf -y install \
+  NetworkManager-openvpn
+
 # password storage
 sudo dnf -y install \
     pass
