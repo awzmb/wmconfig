@@ -24,8 +24,6 @@
     ~/.xsessionrc: .xsessionrc
     ~/.vim/coc-settings.json:
       path: .vim/coc-settings.json
-    ~/.vim/bundle:
-      path: .vim/bundle
     ~/.vimrc: .vimrc
     ~/.mbsyncrc: .mbsyncrc
     ~/.msmtprc: .msmtprc
