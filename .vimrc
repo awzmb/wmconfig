@@ -40,6 +40,13 @@ Plug 'joe-skb7/cscope-maps'
 
 " nerdtree navigation and git plugin
 Plug 'scrooloose/nerdtree'
+"Plug 'PhilRunninger/nerdtree-buffer-ops' incompatible with Plug 'Xuyuanp/nerdtree-git-plugin'
+Plug 'Xuyuanp/nerdtree-git-plugin'
+Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
+"Plug 'liuchengxu/nerdtree-dash'
+
+" toggable terminal
+Plug 'wuelnerdotexe/nerdterm'
 
 " fern tree / project navigation (nerdtree replacement)
 "Plug 'antoinemadec/FixCursorHold.nvim'
@@ -140,18 +147,21 @@ let g:NERDTreeDirArrowCollapsible = '-'
 " hide brackets around symbols
 let g:NERDTreeGitStatusConcealBrackets = 1 " default: 0
 " custom symbols
-"let g:NERDTreeGitStatusIndicatorMapCustom = {
-            "\ 'Modified'  :'✹',
-            "\ 'Staged'    :'✚',
-            "\ 'Untracked' :'✭',
-            "\ 'Renamed'   :'➜',
-            "\ 'Unmerged'  :'═',
-            "\ 'Deleted'   :'✖',
-            "\ 'Dirty'     :'✗',
-            "\ 'Ignored'   :'☒',
-            "\ 'Clean'     :'✔︎',
-            "\ 'Unknown'   :'?',
-            "\ }
+let g:NERDTreeGitStatusIndicatorMapCustom = {
+            \ 'Modified'  :'~',
+            \ 'Staged'    :'+',
+            \ 'Untracked' :'?',
+            \ 'Renamed'   :'>',
+            \ 'Unmerged'  :'═',
+            \ 'Deleted'   :'x',
+            \ 'Dirty'     :'#',
+            \ 'Ignored'   :' ',
+            \ 'Clean'     :'+',
+            \ 'Unknown'   :'?',
+            \ }
+
+let g:NERDTreeGitStatusNodeColorization = 1
+let g:NERDTreeGitStatusWithFlags = 1
 
 """"""" coc configuration """""""
 " textedit might fail if hidden is not set.
@@ -398,7 +408,12 @@ let maplocalleader="\\"
 " neomake and other build commands (ctrl-b)
 "nnoremap <C-b> :w<cr>:Neomake<cr>
 
+" toggle terminal
+nnoremap <C-]> <Plug>(NERDTermToggle)
+tnoremap <C-]> <Plug>(NERDTermToggle)
+
 " allow ctrl+d to be used for commands while using vim from within a browser
+" (primarly code-server)
 map <C-D> <C-W>
 map <C-B> <C-N>
 
