@@ -111,7 +111,8 @@ install_desktop_packages () {
 	# fonts
 	sudo apk add \
 		unifont nerd-fonts msttcorefonts-installer \
-    fontconfig
+    fontconfig font-hack font-hack-nerd font-terminus \
+    font-terminus-nerd
 
 	# i3 window manager
 	sudo apk add \
