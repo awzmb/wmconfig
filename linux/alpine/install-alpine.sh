@@ -106,7 +106,7 @@ install_desktop_packages () {
 		mesa-dri-gallium ttf-dejavu \
 		xfce4-screensaver dbus-x11 faenza-icon-theme \
 		xf86-video-vmware xf86-input-mouse \
-		xf86-input-keyboard
+		xf86-input-keyboard hsetroot
 
 	# fonts
 	sudo apk add \
