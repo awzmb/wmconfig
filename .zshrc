@@ -51,6 +51,7 @@ source ~/.aliases
 # add script and appimage to path
 export PATH="$HOME/.scripts:$PATH"
 export PATH="$HOME/.appimage:$PATH"
+export PATH="$HOME/.bin:$PATH"
 
 # add snap to path on linux
 if [ "$(uname)" = "Linux" ]; then
@@ -59,7 +60,7 @@ fi
 
 # add golaang path
 export GOPATH="$HOME/go"
-export GOROOT="/usr/local/opt/go/libexec"
+export GOROOT="${HOME}/.go"
 export PATH="$PATH:$GOPATH/bin"
 export PATH="$PATH:$GOROOT/bin"
 
@@ -127,8 +128,15 @@ fi
 # trigger completion initialization
 compinit
 
-# add krew kubectl plugin manager to path
+# krew kubectl plugin manager
 export PATH="${PATH}:${HOME}/.krew/bin"
+
+# kubectl completion
+source <(kubectl completion zsh)
+
+# openjdk 11
+export PATH="${PATH}:${HOME}/.jdk/openjdk-11/bin"
+export JAVA_HOME="${HOME}/.jdk/openjdk-11"
 
 #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
 export SDKMAN_DIR="$HOME/.sdkman"

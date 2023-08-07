@@ -14,7 +14,8 @@ install_default_packages () {
 		yarn curl wget fd fzf openssh \
 		coreutils nodejs grep tar openssl \
     ca-certificates ncurses perl \
-    binutils ruby ldd ctags ncurses-utils
+    binutils ruby ldd ctags ncurses-utils \
+    jq
 
   # awscli
   #pkg install -y \
@@ -38,7 +39,8 @@ install_default_packages () {
 		pyxdg \
 		pytz \
 		python-dateutil \
-		urwid
+		urwid \
+    jedi
 
   # vim-plug for vim and neovim
   curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
