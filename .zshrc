@@ -146,3 +146,9 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 export PATH=$PATH:/home/awzm/.spicetify
+[[ $commands[kubectl] ]] && source <(kubectl completion zsh)
+
+# add pip local cache to path
+export PATH="${PATH}:${HOME}/.local/bin"
+
+eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"

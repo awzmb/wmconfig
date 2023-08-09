@@ -22,5 +22,5 @@ alias gdc='git diff --cached'
 alias gpl='git pull'
 alias gps='git push'
 
-# kubernetes
+# kubectl
 alias k='kubectl'
