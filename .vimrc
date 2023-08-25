@@ -94,6 +94,7 @@ let g:coc_global_extensions = [
             \'coc-go',
             \'coc-groovy',
             \'coc-java',
+            \'coc-pyright',
             \'coc-gitignore'
             \]
 

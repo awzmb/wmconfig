@@ -8,5 +8,5 @@
       "settings": {}
     }
   },
-  "coc.preferences.formatOnSaveFiletypes": ["css", "markdown", "json"]
+  "coc.preferences.formatOnType": true
 }
