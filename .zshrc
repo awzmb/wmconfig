@@ -151,4 +151,7 @@ export PATH=$PATH:/home/awzm/.spicetify
 # add pip local cache to path
 export PATH="${PATH}:${HOME}/.local/bin"
 
-eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+# add brew to env if installed
+if [[ -d "/home/linuxbrew" ]]; then
+  eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+fi
