@@ -38,12 +38,12 @@ while getopts "$optspec" optchar; do
 
                 password)
                     PASSWORD="${!OPTIND}"; OPTIND=$(( $OPTIND + 1 ))
-                    echo "Parsing option: '--${OPTARG}', value: '${PASSWORD}'" >&2;
+                    echo "Parsing option: '--${OPTARG}', value: xxxxxxx (hidden)" >&2;
                     ;;
                 password=*)
                     val=${OPTARG#*=}
                     opt=${OPTARG%=$PASSWORD}
-                    echo "Parsing option: '--${opt}', value: '${PASSWORD}'" >&2
+                    echo "Parsing option: '--${opt}', value: xxxxxxx (hidden)" >&2
                     ;;
 
                 *)
@@ -69,4 +69,13 @@ done
 
 UPM_TOKEN=$(curl -I --user $USERNAME:$PASSWORD -H 'Accept: application/vnd.atl.plugins.installed+json' $SERVER_URL'/rest/plugins/1.0/?os_authType=basic' 2>/dev/null | grep 'upm-token' | cut -d " " -f 2 | tr -d '\r')
 
-curl --user ${USERNAME}:${PASSWORD} -H 'Accept: application/json' ${SERVER_URL}'/rest/plugins/1.0/?token='${UPM_TOKEN} -F plugin=@${PLUGIN_FILE}
+PLUGIN_INSTALL_TASK_ENDPOINT=$(curl --silent --user ${USERNAME}:${PASSWORD} -H 'Accept: application/json' --url "${SERVER_URL}/rest/plugins/1.0/?token=${UPM_TOKEN}" -F plugin=@${PLUGIN_FILE} | jq --raw-output '.links.self')
+
+PLUGIN_INSTALL_STATUS=$(curl --silent --user ${USERNAME}:${PASSWORD} -H 'Accept: application/json' --url "${SERVER_URL}${PLUGIN_INSTALL_TASK_ENDPOINT}?token=${UPM_TOKEN}" | jq --raw-output '.status.done')
+
+echo "Installing..."
+while [[ "$PLUGIN_INSTALL_STATUS" != "true" ]]; do
+  echo "Still installing..."
+  sleep 3;
+done
+echo "...Installed"
