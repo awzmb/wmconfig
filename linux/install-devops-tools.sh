@@ -30,3 +30,6 @@ tar xf ${CILIUM_ARCHIVE}
 rm ${CILIUM_ARCHIVE}
 chmod +x cilium
 mv cilium /usr/local/bin/cilium
+
+# install fluxcd binary
+curl -s https://fluxcd.io/install.sh | sudo bash

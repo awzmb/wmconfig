@@ -155,3 +155,5 @@ export PATH="${PATH}:${HOME}/.local/bin"
 if [[ -d "/home/linuxbrew" ]]; then
   eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 fi
+
+command -v flux >/dev/null && . <(flux completion zsh)
