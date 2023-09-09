@@ -24,10 +24,15 @@ k9s:
         active: nginx-ingress
         lockFavorites: false
         favorites:
+        - kube-node-lease
+        - kube-system
+        - hello-world
+        - cert-manager
+        - longhorn-system
+        - kube-public
         - nginx-ingress
         - flux-system
         - all
-        - default
       view:
         active: pods
       featureGates:

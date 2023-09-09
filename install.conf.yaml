@@ -18,6 +18,7 @@
     - ~/.config/foot
     - ~/.config/gtk-3.0
     - ~/.terraform.d/cache
+    - ~/.bin
 
 - link:
     ~/.tmux.conf: .tmux.conf
