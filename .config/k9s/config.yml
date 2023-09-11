@@ -3,8 +3,8 @@ k9s:
   maxConnRetry: 5
   enableMouse: false
   headless: false
-  logoless: false
-  crumbsless: false
+  logoless: true
+  crumbsless: true
   readOnly: false
   noExitOnCtrlC: false
   noIcons: false
@@ -21,17 +21,13 @@ k9s:
   clusters:
     default:
       namespace:
-        active: nginx-ingress
+        active: kube-system
         lockFavorites: false
         favorites:
         - kube-node-lease
         - kube-system
-        - hello-world
-        - cert-manager
-        - longhorn-system
         - kube-public
-        - nginx-ingress
-        - flux-system
+        - kube-system
         - all
       view:
         active: pods

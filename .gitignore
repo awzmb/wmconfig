@@ -6,3 +6,6 @@ viminfo
 .vim/undo
 .vim/swp
 node_modules
+
+# k9s config.yml since it is mutable
+.config/k9s/config.yml
