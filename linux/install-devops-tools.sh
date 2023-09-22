@@ -25,9 +25,11 @@ case ${ARCH} in
     ;;
   amd64)
     ARCH=amd64
+    CHECTL_ARCH=x64
     ;;
   x86_64)
     ARCH=amd64
+    CHECTL_ARCH=x64
     ;;
   *)
     fatal "Unsupported architecture ${ARCH}"
@@ -76,6 +78,15 @@ rm ${CMCTL_ARCHIVE}
 chmod +x cmctl
 mv cmctl ${INSTALL_DIR}
 
+# chectl to install eclipse che
+#CHECTL_VERSION=$(curl -s https://api.github.com/repos/che-incubator/chectl/releases/latest | grep tag_name | cut -d: -f2 | tr -d \"\,\v | awk '{$1=$1};1')
+#CHECTL_ARCHIVE="chectl-${OS}-${CHECTL_ARCH}.tar.gz"
+#wget https://github.com/che-incubator/chectl/releases/download/${CHECTL_VERSION}/${CHECTL_ARCHIVE}
+#tar xf ${CHECTL_ARCHIVE}
+#rm ${CHECTL_ARCHIVE}
+#chmod +x chectl
+#mv chectl ${INSTALL_DIR}
+bash <(curl -sL  https://www.eclipse.org/che/chectl/) --channel=next
 
 # install fluxcd binary
 #curl -s https://fluxcd.io/install.sh | sudo bash

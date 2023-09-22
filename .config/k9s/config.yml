@@ -21,14 +21,12 @@ k9s:
   clusters:
     default:
       namespace:
-        active: kube-system
+        active: codebox
         lockFavorites: false
         favorites:
-        - kube-node-lease
-        - kube-system
-        - kube-public
-        - kube-system
-        - all
+        - harbor
+        - codebox
+        - default
       view:
         active: pods
       featureGates:

@@ -157,3 +157,4 @@ if [[ -d "/home/linuxbrew" ]]; then
 fi
 
 command -v flux >/dev/null && . <(flux completion zsh)
+command -v helm >/dev/null && . <(helm completion zsh)
