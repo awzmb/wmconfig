@@ -94,6 +94,18 @@
     ~/.config/VSCodium/User/settings.json:
       if: '[ `uname` = Linux ]'
       path: .config/Code/User/settings.json
+    ~/Library/ApplicationSupport/VSCodium/User/extensions.json:
+      if: '[ `uname` = Darwin ]'
+      path: .config/Code/User/extensions.json
+    ~/.config/VSCodium/User/extensions.json:
+      if: '[ `uname` = Linux ]'
+      path: .config/Code/User/extensions.json
+    ~/Library/ApplicationSupport/VSCodium/User/keybindings.json:
+      if: '[ `uname` = Darwin ]'
+      path: .config/Code/User/keybindings.json
+    ~/.config/VSCodium/User/keybindings.json:
+      if: '[ `uname` = Linux ]'
+      path: .config/Code/User/keybindings.json
     ~/.config/alacritty/alacritty.yml:
       if: '[ `uname` = Darwin ]'
       path: .config/alacritty/alacritty.yml.macos

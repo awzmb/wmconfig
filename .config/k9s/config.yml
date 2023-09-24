@@ -21,10 +21,11 @@ k9s:
   clusters:
     default:
       namespace:
-        active: codebox
+        active: coder
         lockFavorites: false
         favorites:
-        - harbor
+        - coder
+        - all
         - codebox
         - default
       view:
