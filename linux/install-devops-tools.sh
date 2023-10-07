@@ -74,7 +74,7 @@ CMCTL_VERSION=$(curl -s https://api.github.com/repos/cert-manager/cert-manager/r
 CMCTL_ARCHIVE="cmctl-${OS}-${ARCH}.tar.gz"
 wget https://github.com/cert-manager/cert-manager/releases/download/v${CMCTL_VERSION}/${CMCTL_ARCHIVE}
 tar xf ${CMCTL_ARCHIVE}
-rm ${CMCTL_ARCHIVE}
+rm ${CMCTL_ARCHIVE} LICENSE
 chmod +x cmctl
 mv cmctl ${INSTALL_DIR}
 
@@ -87,6 +87,7 @@ mv cmctl ${INSTALL_DIR}
 #chmod +x chectl
 #mv chectl ${INSTALL_DIR}
 bash <(curl -sL  https://www.eclipse.org/che/chectl/) --channel=next
+rm -f chectl-install.log
 
 # install fluxcd binary
 #curl -s https://fluxcd.io/install.sh | sudo bash

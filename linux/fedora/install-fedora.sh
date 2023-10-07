@@ -5,6 +5,16 @@ sudo dnf -y update
 
 ORIGIN_PATH=${pwd}
 
+# enable rpmfusion repositories
+sudo rpm -Uvh http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
+sudo rpm -Uvh http://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+
+# install non-free multimedia codecs
+sudo dnf -y swap ffmpeg-free ffmpeg --allowerasing
+sudo dnf install rpmfusion-nonfree-release-tainted
+sudo dnf --repo=rpmfusion-nonfree-tainted install "*-firmware"
+sudo dnf -y install intel-media-driver
+
 # basic packages
 sudo dnf -y install \
     zsh \
@@ -53,6 +63,10 @@ sudo dnf -y install \
 sudo dnf -y install \
     lxappearance
 
+# networkmanager stuff
+sudo dnf -y install \
+    NetworkManager-tui
+
 # podman container
 sudo dnf -y install \
     podman \
@@ -75,10 +89,6 @@ sudo dnf -y install \
 # java environment
 sudo dnf -y install \
     java-1.8.0-openjdk
-
-# enable rpmfusion repositories
-sudo rpm -Uvh http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
-sudo rpm -Uvh http://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
 
 # enable tlp power management
 sudo dnf -y install tlp tlp-rdw
@@ -268,7 +278,9 @@ sudo dnf -y install \
   swaylock \
   swayidle \
   xwayland \
-  xorg-x11-server-Xwayland
+  xorg-x11-server-Xwayland \
+  i3status \
+  i3status-config-fedora
 
 # install gnome packages
 sudo dnf -y install \
@@ -403,8 +415,8 @@ done
 
 # flathub repositories and premise
 flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-flatpak install --user flathub org.gnome.Platform//41
-flatpak install --user flathub org.gnome.Sdk//41
+flatpak install --user flathub org.gnome.Platform//46
+flatpak install --user flathub org.gnome.Sdk//46
 # install citrix workspace
 # git clone https://github.com/dcloud-ca/ca.dcloud.ICAClient ~/workspace/flathub-citrix-reciever
 # cd ~/workspace/flathub-citrix-reciever
@@ -414,12 +426,11 @@ flatpak install --user flathub org.gnome.Sdk//41
 sudo dnf -y install \
   discord
 
-
 # password management
-sudo dnf -y install gnupg
-gpg --full-gen-key && \
-pass init bundschuh.dennis@gmail.com \
-pass insert mail/main
+#sudo dnf -y install gnupg
+#gpg --full-gen-key && \
+#pass init bundschuh.dennis@gmail.com \
+#pass insert mail/main
 
 # additional stuff
 unset $SSH_ASKPASS

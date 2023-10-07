@@ -9,7 +9,7 @@ exec --no-startup-id clipit
 # filter blue light during nighttime
 exec --no-startup-id redshift -l 52:13
 # start sound daemon
-exec --no-startup-id pipewire
+#exec --no-startup-id pipewire
 
 # =============================================================================
 # Basic Setup
@@ -24,7 +24,7 @@ set $reboot sudo reboot
 set $poweroff sudo poweroff -i
 
 # set terminal emulator
-set $term foot
+set $term alacritty
 
 # set mod key (Mod1=<Alt>, Mod4=<Super>)
 set $mod Mod1
@@ -42,7 +42,7 @@ hide_edge_borders both
 floating_modifier $mod
 
 # set hidpi output scaling
-output * scale 1.15
+output * scale 1
 
 # use solid color background
 output * bg #242933 solid_color
@@ -333,15 +333,15 @@ bar {
   position top
   status_padding 50
   workspace_min_width 50
-  status_padding 40
+  status_padding 35
   status_edge_padding 15
   separator_symbol "  "
 
-  #tray_padding 50
+  tray_padding 50
   tray_output *
 
   status_command i3status -c ~/.config/i3/i3status.conf
-  tray_output primary
+
   font pango:unifont 12
 
   colors {
