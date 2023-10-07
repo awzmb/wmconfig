@@ -1,3 +1,7 @@
 .window-frame {
   box-shadow: none;
 }
+
+decoration {
+  box-shadow: none;
+}

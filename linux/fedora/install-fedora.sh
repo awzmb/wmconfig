@@ -287,6 +287,8 @@ sudo dnf -y install \
   gnome-tweaks \
   gnome-extensions-app \
   gnome-shell-extension-pop-shell \
+  gnome-shell-extension-pop-shell-shortcut-overrides \
+  gnome-shell-extension-unite \
   xprop
 
 # install xwayland standalone
