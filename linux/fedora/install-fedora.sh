@@ -241,8 +241,6 @@ curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scr
 chmod 700 get_helm.sh
 ./get_helm.sh
 rm ./get_helm.sh
-# !!!! fedora 31 workaround systemd.unified_cgroup_hierarchy=0 intel_iommu=on to
-# /etc/default/grub then run grub2-mkconfig -o /boot/efi/EFI/fedora/grub.cfg
 
 # theme hospital foss
 # sudo dnf -y install corsix-th corsix-th-data
@@ -371,7 +369,7 @@ sudo dnf -y install \
   libva-utils \
   libva-intel-driver \
   libva-intel-hybrid-driver \
-  ibvdpau \
+  libvdpau \
   libva-utils \
   libva-vdpau-driver \
   intel-media-driver \

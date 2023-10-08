@@ -1,0 +1,16 @@
+#!/bin/sh
+
+# this goes to /etc/libvirt/hooks/qemu
+# modified script for 12900k based on https://www.reddit.com/r/VFIO/comments/wx855g/working_intel_alder_lake_setup_on_a_12700k
+
+command=$2
+
+if [ "$command" = "started" ]; then
+    systemctl set-property --runtime -- system.slice AllowedCPUs=16-23
+    systemctl set-property --runtime -- user.slice AllowedCPUs=16-23
+    systemctl set-property --runtime -- init.scope AllowedCPUs=16-23
+elif [ "$command" = "release" ]; then
+    systemctl set-property --runtime -- system.slice AllowedCPUs=0-23
+    systemctl set-property --runtime -- user.slice AllowedCPUs=0-23
+    systemctl set-property --runtime -- init.scope AllowedCPUs=0-23
+fi
