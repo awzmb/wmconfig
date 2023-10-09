@@ -3,6 +3,33 @@
 # this goes to /etc/libvirt/hooks/qemu
 # modified script for 12900k based on https://www.reddit.com/r/VFIO/comments/wx855g/working_intel_alder_lake_setup_on_a_12700k
 
+# pin vcpus to your gaming machine with this
+#<vcpu placement='static'>16</vcpu>
+#<iothreads>1</iothreads>
+#<cputune>
+    #<vcpupin vcpu='0' cpuset='0'/>
+    #<vcpupin vcpu='1' cpuset='1'/>
+    #<vcpupin vcpu='2' cpuset='2'/>
+    #<vcpupin vcpu='3' cpuset='3'/>
+    #<vcpupin vcpu='4' cpuset='4'/>
+    #<vcpupin vcpu='5' cpuset='5'/>
+    #<vcpupin vcpu='6' cpuset='6'/>
+    #<vcpupin vcpu='7' cpuset='7'/>
+    #<vcpupin vcpu='8' cpuset='8'/>
+    #<vcpupin vcpu='9' cpuset='9'/>
+    #<vcpupin vcpu='10' cpuset='10'/>
+    #<vcpupin vcpu='11' cpuset='11'/>
+    #<vcpupin vcpu='12' cpuset='12'/>
+    #<vcpupin vcpu='13' cpuset='13'/>
+    #<vcpupin vcpu='14' cpuset='14'/>
+    #<vcpupin vcpu='15' cpuset='15'/>
+    #<emulatorpin cpuset='16-23'/>
+    #<iothreadpin iothread='1' cpuset='16-23'/>
+#</cputune>
+#<cpu mode='host-passthrough'>
+    #<topology sockets='1' cores='8' threads='2'/>
+#</cpu>
+
 command=$2
 
 if [ "$command" = "started" ]; then

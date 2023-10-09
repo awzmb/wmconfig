@@ -1,5 +1,5 @@
 /* UNITE windowDecorations */
-@import url('/home/bawzm/.local/share/gnome-shell/extensions/unite@hardpixel.eu/styles/gtk3/buttons-right/maximized.css');
+@import url('/home/bawzm/.local/share/gnome-shell/extensions/unite@hardpixel.eu/styles/gtk3/buttons-right/tiled.css');
 /* windowDecorations UNITE */
 .window-frame {
   box-shadow: none;

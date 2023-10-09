@@ -8,6 +8,8 @@ exec --no-startup-id blueman-applet
 exec --no-startup-id clipit
 # filter blue light during nighttime
 exec --no-startup-id redshift -l 52:13
+# netowrkmanager applet
+exec --no-startup-id nm-applet
 # start sound daemon
 #exec --no-startup-id pipewire
 
@@ -51,6 +53,14 @@ output * bg #242933 solid_color
 input type:touchpad {
     tap disabled
     natural_scroll enabled
+}
+
+# mouse settings
+input type:pointer {
+    # flat or adaptive
+    accel_profile flat
+    # between -1.0 and 1.0>
+    pointer_accel 0.0
 }
 
 # idle settings
@@ -337,12 +347,16 @@ bar {
   status_edge_padding 15
   separator_symbol "  "
 
-  tray_padding 50
+  icon_theme Paper
+  tray_padding 7
   tray_output *
+  tray_bindsym button1 Activate
+  tray_bindsym button2 SecondaryActivate
+  tray_bindsym button3 ContextMenu
 
   status_command i3status -c ~/.config/i3/i3status.conf
 
-  font pango:unifont 12
+  font pango:terminus 11
 
   colors {
     background #242933
