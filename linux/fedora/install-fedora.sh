@@ -76,7 +76,8 @@ sudo dnf -y install \
 # password storage
 sudo dnf -y install \
     pass \
-    passmenu
+    passmenu \
+    oathtool
 
 # python environment
 sudo dnf -y install \
@@ -272,6 +273,7 @@ sudo dnf -y install \
   foot \
   dmenu \
   wofi \
+  fuzzel \
   sway \
   swaylock \
   swayidle \
