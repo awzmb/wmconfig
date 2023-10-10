@@ -10,6 +10,8 @@ exec --no-startup-id clipit
 exec --no-startup-id redshift -l 52:13
 # netowrkmanager applet
 exec --no-startup-id nm-applet
+# flash focus window indicator
+exec --no-startup-id flashfocus
 # start sound daemon
 #exec --no-startup-id pipewire
 
@@ -80,7 +82,7 @@ bindsym $mod+Shift+Return exec $term
 bindsym $mod+Shift+Q kill
 
 # start dmenu (a program launcher)
-bindsym $mod+Shift+d exec --no-startup-id i3-dmenu-desktop --dmenu='rofi -dmenu -i -theme dmenu'
+bindsym $mod+Shift+d exec fuzzel
 bindsym $mod+d exec rofi -show run -theme dmenu
 #bindsym $mod+d exec wofi --show run --dmenu
 
@@ -250,7 +252,7 @@ mode "$mode_system" {
     bindsym Escape mode "default"
 }
 
-bindsym $mod+Pause mode "$mode_system"
+bindsym $mod+Shift+Escape mode "$mode_system"
 
 # =============================================================================
 # Assign colors
