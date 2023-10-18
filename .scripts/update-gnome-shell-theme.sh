@@ -1,7 +1,7 @@
 #!/bin/sh
 sudo dnf -y reinstall gnome-shell
 sudo dnf -y install glib2-devel
-COLOR="#124578"
+COLOR="#242933"
 GRES="/usr/share/gnome-shell/gnome-shell-theme.gresource"
 gresource list "${GRES}" | while read -r RES
 do mkdir -p "/tmp/${GRES##*/}.d${RES%/*}"

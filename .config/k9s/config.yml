@@ -16,20 +16,17 @@ k9s:
     fullScreenLogs: false
     textWrap: false
     showTime: false
-  currentContext: default
-  currentCluster: default
+  currentContext: ""
+  currentCluster: ""
   clusters:
-    default:
+    "":
       namespace:
-        active: coder
+        active: default
         lockFavorites: false
         favorites:
-        - coder
-        - all
-        - codebox
         - default
       view:
-        active: pods
+        active: po
       featureGates:
         nodeShell: false
       shellPod:
