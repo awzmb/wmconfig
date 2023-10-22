@@ -3,8 +3,8 @@
 * {
     border: none;
     border-radius: 0;
-    font-family: "Unifont", Roboto, Helvetica, Arial, sans-serif;
-    font-size: 16px;
+    font-family: Terminus, Roboto, Helvetica, Arial, sans-serif;
+    font-size: 14px;
     min-height: 0;
 }
 
@@ -15,15 +15,15 @@ window#waybar {
 }
 
 #workspaces button {
-    padding: 0 5px;
+    padding: 0 15px;
     margin: 0 0px;
-    color: white;
+    color: #D8DEE9;
     border-bottom: 0px solid transparent;
 }
 
 #workspaces button.focused {
-    background: #EBCB8B;
-    color: #242933;
+    background: #3D3F4C;
+    color: #D8DEE9;
     border-bottom: 0px solid @color15;
 }
 

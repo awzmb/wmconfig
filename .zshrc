@@ -161,3 +161,5 @@ command -v helm >/dev/null && . <(helm completion zsh)
 
 # spicetify
 export PATH=$PATH:/home/bawzm/.spicetify
+
+if [ -e /home/bawzm/.nix-profile/etc/profile.d/nix.sh ]; then . /home/bawzm/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer

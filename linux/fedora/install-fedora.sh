@@ -282,6 +282,11 @@ sudo dnf -y install \
   i3status \
   i3status-config-fedora
 
+# kde plasma
+sudo dnf -y install \
+  @kde-desktop \
+  bismuth
+
 # install gnome packages
 sudo dnf -y install \
   gnome-tweaks \
@@ -424,15 +429,14 @@ flatpak install --user flathub org.gnome.Sdk//46
 # cd ~/workspace/flathub-citrix-reciever
 # flatpak-builder --user --install --force-clean icaclient ca.dcloud.ICAClient.yml
 
-# install gaming stuff
-sudo dnf -y install \
-  discord
-
 # password management
 #sudo dnf -y install gnupg
 #gpg --full-gen-key && \
 #pass init bundschuh.dennis@gmail.com \
 #pass insert mail/main
+
+# install driverctl for gpu passthrough
+sudo dnf -y install driverctl
 
 # additional stuff
 unset $SSH_ASKPASS

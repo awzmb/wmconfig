@@ -1,4 +1,7 @@
 #!/bin/sh
+INSTALL_DIR=${HOME}/.bin
+TMP_DIR=$(mktemp -d)
+
 if [ -z "${ARCH}" ]; then
   ARCH=$(uname -m)
 fi
@@ -17,8 +20,6 @@ case ${ARCH} in
     exit 1
 esac
 
-INSTALL_DIR=${HOME}/.bin
-TMP_DIR=$(mktemp -d)
 mkdir -p ${INSTALL_DIR}
 
 K9S_VERSION=$(curl -s https://api.github.com/repos/derailed/k9s/releases/latest | grep tag_name | cut -d: -f2 | tr -d \"\,\v | awk '{$1=$1};1')
