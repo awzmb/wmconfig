@@ -13,6 +13,8 @@ nord1: &nord1 "#3B4252" #lighter black
 # Snow Storm
 nord4: &nord4 "#D8DEE9" #white
 
+nord5: &nord5 "#81A1C1" #green
+
 # Frost
 nord8: &nord8 "#88C0D0" #blue
 nord10: &nord10 "#5E81AC" #dark blue
@@ -46,8 +48,8 @@ k9s:
   frame:
     # Borders styles.
     border:
-      fgColor: *nord10
-      focusColor: *nord10
+      fgColor: *nord5
+      focusColor: *nord5
     menu:
       fgColor: *nord4
       keyColor: *nord14

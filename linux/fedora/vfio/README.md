@@ -6,3 +6,8 @@
 
 # Get NVFBC_PRIV_DATA key from local steam installation
 * https://github.com/trevor403/get-priv-data/releases/tag/0.0.3
+
+# Indirect display driver
+https://github.com/roshkins/IddSampleDriver
+
+modprobe nvidia + nvidia-gpu

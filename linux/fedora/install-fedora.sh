@@ -435,8 +435,15 @@ flatpak install --user flathub org.gnome.Sdk//46
 #pass init bundschuh.dennis@gmail.com \
 #pass insert mail/main
 
+# librewolf (custom firefox)
+sudo dnf config-manager --add-repo https://rpm.librewolf.net/librewolf-repo.repo
+sudo dnf -y install librewolf
+
 # install driverctl for gpu passthrough
 sudo dnf -y install driverctl
+
+# wireguard tools
+sudo dnf -y install wireguard-tools
 
 # additional stuff
 unset $SSH_ASKPASS

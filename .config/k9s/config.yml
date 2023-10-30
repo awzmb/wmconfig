@@ -16,17 +16,22 @@ k9s:
     fullScreenLogs: false
     textWrap: false
     showTime: false
-  currentContext: ""
-  currentCluster: ""
+  currentContext: default
+  currentCluster: default
   clusters:
-    "":
+    default:
       namespace:
-        active: default
+        active: ingress-nginx
         lockFavorites: false
         favorites:
+        - longhorn
+        - ingress-nginx
+        - verimi-otip
+        - cert-manager
+        - all
         - default
       view:
-        active: po
+        active: pods
       featureGates:
         nodeShell: false
       shellPod:
