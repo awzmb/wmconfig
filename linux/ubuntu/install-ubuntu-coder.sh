@@ -1,65 +1,56 @@
 #!/bin/bash
 
-# install the docker apt repository
-sudo apt-get update && \
-    DEBIAN_FRONTEND="noninteractive" sudo apt-get upgrade --yes && \
-    DEBIAN_FRONTEND="noninteractive" sudo apt-get install --yes ca-certificates
-
 # install baseline packages
-sudo apt-get update && \
-    DEBIAN_FRONTEND="noninteractive" sudo apt-get install --yes \
-      bash \
-      zsh \
-      build-essential \
-      ca-certificates \
-      curl \
-      htop \
-      locales \
-      man \
-      python3 \
-      python3-pip \
-      software-properties-common \
-      sudo \
-      systemd \
-      systemd-sysv \
-      unzip \
-      vim \
-      neovim \
-      wget \
-      rsync \
-      git
+DEBIAN_FRONTEND="noninteractive" sudo apt-get install --no-install-recommends --yes \
+  bash \
+  zsh \
+  build-essential \
+  ca-certificates \
+  curl \
+  htop \
+  locales \
+  man \
+  python3 \
+  python3-pip \
+  software-properties-common \
+  sudo \
+  systemd \
+  systemd-sysv \
+  unzip \
+  vim \
+  neovim \
+  wget \
+  rsync \
+  git
 
 # install additional shell tools
-sudo apt-get update && \
-    DEBIAN_FRONTEND="noninteractive" sudo apt-get install --yes \
-    vifm \
-    calc \
-    unrar \
-    bat \
-    jq \
-    tree \
-    ack \
-    fd-find \
-    fzf \
-    tmux \
-    ranger \
-    gnupg2 \
-    w3m \
-    exa \
-    w3m-img \
-    python3-neovim \
-    calcurse \
-    newsboat \
-    neofetch \
-    xdg-utils \
-    pass
+DEBIAN_FRONTEND="noninteractive" sudo apt-get install --no-install-recommends --yes \
+  vifm \
+  calc \
+  bat \
+  jq \
+  tree \
+  ack \
+  fd-find \
+  fzf \
+  tmux \
+  ranger \
+  gnupg2 \
+  w3m \
+  exa \
+  w3m-img \
+  python3-neovim \
+  calcurse \
+  newsboat \
+  neofetch \
+  xdg-utils \
+  pass
 
 # install openvpn, wireguard and additional networking tools
-sudo apt-get update && \
-    DEBIAN_FRONTEND="noninteractive" sudo apt-get install --yes \
-    netcat-openbsd \
-    openvpn \
-    wireguard
+DEBIAN_FRONTEND="noninteractive" sudo apt-get install --no-install-recommends --yes \
+  netcat-openbsd \
+  openvpn \
+  wireguard
 
 # install vim-plug for vim and neovim
 sudo curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
@@ -115,28 +106,25 @@ chmod +x cilium && \
 mv cilium ~/.bin/cilium
 
 # install nodejs and yarn (coc.nvim)
-sudo apt-get update && \
-    DEBIAN_FRONTEND="noninteractive" sudo apt-get install --yes \
-    nodejs \
-    yarn
+DEBIAN_FRONTEND="noninteractive" sudo apt-get --no-install-recommends install --yes \
+  nodejs \
+  yarn
 
 # install hcloud and aws cli
-sudo apt-get update && \
-    DEBIAN_FRONTEND="noninteractive" sudo pt-get install --yes \
-    hcloud-cli \
-    awscli
+DEBIAN_FRONTEND="noninteractive" sudo apt-get install --no-install-recommends --yes \
+  hcloud-cli \
+  awscli
 
 # install fluxcd binary
 sudo curl -s https://fluxcd.io/install.sh | bash
 
 # install java development premise
-sudo apt-get update && \
-    DEBIAN_FRONTEND="noninteractive" sudo apt-get install --yes \
-    openjdk-17-jdk \
-    openjdk-11-jdk \
-    maven \
-    gradle \
-    default-jdk
+DEBIAN_FRONTEND="noninteractive" sudo apt-get install --no-install-recommends --yes \
+  openjdk-17-jdk \
+  openjdk-11-jdk \
+  maven \
+  gradle \
+  default-jdk
 
 # install atlassian sdk and set ATLAS_HOME accordingly
 sudo curl -o /tmp/atlassian-plugin-sdk.tar.gz -L "https://marketplace.atlassian.com/download/plugins/atlassian-plugin-sdk-tgz" && \
@@ -152,7 +140,7 @@ echo "export SHELL=/bin/zsh" | sudo tee /etc/profile.d/40zshdefaultshell.sh
 # maven settings.xml for atlassian development
 mkdir -p ${HOME}/.m2
 cp ./maven-settings.xml ${HOME}/.m2/settings.xml
-DEBIAN_FRONTEND="noninteractive" sudo apt-get install --yes \
+DEBIAN_FRONTEND="noninteractive" sudo apt-get install --no-install-recommends --yes \
   maven
 
 # get custom shell setup from github
