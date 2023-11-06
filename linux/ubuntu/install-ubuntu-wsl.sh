@@ -1,5 +1,3 @@
-#!/bin/sh
-
 # NOTE: this installer script has been tested only on the
 # debian testing branch. some packages might not be available
 # on debian stable
@@ -14,9 +12,6 @@ ORIGIN_PATH=${pwd}
 ARCHITECTURE=$(uname -m | sed -e 's/x86_64/amd64/' -e 's/\(arm\)\(64\)\?.*/\1\2/' -e 's/aarch64$/arm64/')
 TMP=$(mktemp -d)
 OS=$(uname | tr '[:upper:]' '[:lower:]')
-(
-)
-
 
 # basic packages
 sudo apt -y install \
@@ -27,7 +22,6 @@ sudo apt -y install \
   vim \
   neovim \
   calc \
-  unrar \
   bat \
   jq \
   tree \
@@ -39,7 +33,8 @@ sudo apt -y install \
   wget \
   tmux \
   ranger \
-  gnupg2
+  gnupg2 \
+  gpg
 
 # vim-plug for vim and neovim
 curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
@@ -48,18 +43,18 @@ sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.
        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
 
 # install node
-curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | gpg --dearmor | sudo tee /usr/share/keyrings/yarnkey.gpg >/dev/null
-echo "deb [signed-by=/usr/share/keyrings/yarnkey.gpg] https://dl.yarnpkg.com/debian stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
-sudo apt update
-sudo apt -y install \
-  yarn
+#curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | gpg --dearmor | sudo tee /usr/share/keyrings/yarnkey.gpg >/dev/null
+#echo "deb [signed-by=/usr/share/keyrings/yarnkey.gpg] https://dl.yarnpkg.com/debian stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+#sudo apt update
+#sudo apt -y install \
+#  yarn
 
 # install yarn
-curl -sL https://deb.nodesource.com/setup_16.x -o /tmp/nodesource_setup.sh
-sudo bash /tmp/nodesource_setup.sh
-sudo apt update
-sudo apt -y install \
-  nodejs
+#curl -sL https://deb.nodesource.com/setup_16.x -o /tmp/nodesource_setup.sh
+#sudo bash /tmp/nodesource_setup.sh
+#sudo apt update
+#sudo apt -y install \
+#  nodejs
 
 # podman (docker replacement)
 VERSION_ID=$(cat /etc/os-release | grep "VERSION_ID" | sed 's/.*=//g' | tr -d \")
@@ -78,13 +73,13 @@ sudo apt -y install \
   neofetch
 
 # download kubectl binary
-sudo wget "https://storage.googleapis.com/kubernetes-release/release/v1.8.0/bin/linux/amd64/kubectl" -O "/usr/local/bin/kubectl"
+#sudo wget "https://storage.googleapis.com/kubernetes-release/release/v1.8.0/bin/linux/amd64/kubectl" -O "/usr/local/bin/kubectl"
 
 # download minikube binary
-sudo wget "https://github.com/kubernetes/minikube/releases/download/v1.26.0/minikube-linux-amd64" -O "/usr/local/bin/minikube" && sudo chmod +x /usr/local/bin/minikube
+#sudo wget "https://github.com/kubernetes/minikube/releases/download/v1.26.0/minikube-linux-amd64" -O "/usr/local/bin/minikube" && sudo chmod +x /usr/local/bin/minikube
 
 # start minikube (--force option if you're running this on wsl2)
-minikube start --force --driver=podman --memory 2048 --disk-size 4g
+#minikube start --force --driver=podman --memory 2048 --disk-size 4g
 
 # download helm binary
 curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 && chmod +x get_helm.sh && ./get_helm.sh
@@ -98,12 +93,16 @@ echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https:/
 sudo apt update
 sudo apt install -y kubectl
 
-# install krew kubectl package manager
-cd $TMP
-curl -fsSLO "https://github.com/kubernetes-sigs/krew/releases/latest/download/krew-${OS}_${ARCHITECTURE}.tar.gz"
-tar zxvf "${KREW}.tar.gz"
-./"${}"
-export PATH="${PATH}:${HOME}/.krew/bin"
+# install krew
+(
+  set -x; cd "$(mktemp -d)" &&
+  OS="$(uname | tr '[:upper:]' '[:lower:]')" &&
+  ARCH="$(uname -m | sed -e 's/x86_64/amd64/' -e 's/\(arm\)\(64\)\?.*/\1\2/' -e 's/aarch64$/arm64/')" &&
+  KREW="krew-${OS}_${ARCH}" &&
+  curl -fsSLO "https://github.com/kubernetes-sigs/krew/releases/latest/download/${KREW}.tar.gz" &&
+  tar zxvf "${KREW}.tar.gz" &&
+  ./"${KREW}" install krew
+)
 
 # install krew plugins
 kubectl krew install \
