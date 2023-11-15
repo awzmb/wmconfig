@@ -49,10 +49,6 @@ sudo dnf -y install \
     python3-pip \
     yamllint
 
-# java environment
-sudo dnf -y install \
-    java-1.8.0-openjdk
-
 # enable rpmfusion repositories
 sudo rpm -Uvh http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
 sudo rpm -Uvh http://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
@@ -88,10 +84,6 @@ sudo mv /tmp/eksctl /usr/local/bin
    #&& sudo install minikube-linux-amd64 /usr/local/bin/minikube
 #minikube config set vm-driver kvm2
 #sudo systemctl enable libvirtd
-
-# install code-server
-sudo dnf -y install \
-  nginx certbot python3-certbot-nginx
 
 # openvpn
 sudo dnf -y install \
