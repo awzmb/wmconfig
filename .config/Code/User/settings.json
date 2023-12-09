@@ -41,7 +41,6 @@
   "redhat.telemetry.enabled": false,
   "workbench.startupEditor": "none",
   "groovy.java.home": "/usr/lib/jvm/default-java",
-  "workbench.activityBar.visible": false,
   "vim.handleKeys": {
     "<C-k>": false,
     "<C-t>": false,
@@ -79,5 +78,6 @@
   "debug.console.fontFamily": "Hack",
   "notebook.output.fontFamily": "Hack",
   "terminal.integrated.fontFamily": "Hack",
-  "chat.editor.fontFamily": "Hack"
+  "chat.editor.fontFamily": "Hack",
+  "workbench.activityBar.location": "hidden"
 }

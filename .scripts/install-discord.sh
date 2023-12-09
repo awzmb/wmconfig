@@ -1,7 +1,17 @@
 #!/bin/sh
-url="https://discord.com/api/download?platform=linux&format=tar.gz"
-wget -O- ${url} | sudo tar -xvz  -C /opt
-sudo ln -sf /opt/Discord/Discord /usr/bin/Discord
+BIN_DIR=${HOME}/.bin
+INSTALL_DIR=${HOME}/.applications
+TMP_DIR=$(mktemp -d)
+
+
+DISCORD_DL_URL="https://discord.com/api/download?platform=linux&format=tar.gz"
+DISCORD_ARCHIVE="discord.tar.gz"
+curl -L --output "${TMP_DIR}/${DISCORD_ARCHIVE}" --url ${DISCORD_DL_URL}
+#tar xvfz ${TMP_DIR}/${DISCORD_ARCHIVE} -C ${TMP_DIR}
+mkdir -p ${INSTALL_DIR}
+sudo tar xvfz ${TMP_DIR}/${DISCORD_ARCHIVE} -C ${INSTALL_DIR}
+chmod +x ${INSTALL_DIR}/Discord/Discord
+ln -s ${INSTALL_DIR}/Discord/Discord ${BIN_DIR}/discord
 
 printf "[Desktop Entry]
 Name=Discord

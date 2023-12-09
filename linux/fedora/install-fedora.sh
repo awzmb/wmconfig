@@ -73,7 +73,7 @@ sudo dnf -y install \
     podman-compose \
     containernetworking-plugins
 
-# password storage
+# password storage and mfa
 sudo dnf -y install \
     pass \
     passmenu \

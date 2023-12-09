@@ -21,13 +21,13 @@ k9s:
   clusters:
     default:
       namespace:
-        active: ingress-nginx
+        active: code
         lockFavorites: false
         favorites:
-        - longhorn
+        - code
         - ingress-nginx
-        - verimi-otip
         - cert-manager
+        - kube-system
         - all
         - default
       view:
