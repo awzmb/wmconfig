@@ -3,7 +3,7 @@ GRUB_DISTRIBUTOR="$(sed 's, release .*$,,g' /etc/system-release)"
 GRUB_DEFAULT=saved
 GRUB_DISABLE_SUBMENU=true
 GRUB_TERMINAL_OUTPUT="console"
-GRUB_CMDLINE_LINUX="rd.driver.blacklist=nvidia,nvidiafb,nvidia-gpu modprobe.blacklist=nvidia,nvidiafb,nvidia-gpu rd.luks.uuid=luks-45058b4f-bd88-448f-9fc5-fbfb16138aa7 vfio-pci.ids=10de:2484,10de:228b rhgb quiet intel_iommu=on iommu=pt rd.driver.pre=vfio-pci video=efifb:off"
+GRUB_CMDLINE_LINUX="rd.driver.blacklist=nvidia,nvidiafb,nvidia-gpu modprobe.blacklist=nvidia,nvidiafb,nvidia-gpu rd.luks.uuid=luks-45058b4f-bd88-448f-9fc5-fbfb16138aa7 vfio-pci.ids=10de:2484,10de:228b rhgb quiet intel_iommu=on iommu=pt rd.driver.pre=vfio-pci video=efifb:off split_lock_detect=off"
 GRUB_DISABLE_RECOVERY="true"
 GRUB_ENABLE_BLSCFG=true
 GRUB_THEME=/boot/grub/themes/fedora/theme.txt

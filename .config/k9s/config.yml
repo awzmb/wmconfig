@@ -1,13 +1,21 @@
 k9s:
+  liveViewAutoRefresh: false
   refreshRate: 2
   maxConnRetry: 5
   enableMouse: false
+  enableImageScan: false
   headless: false
   logoless: true
   crumbsless: true
   readOnly: false
   noExitOnCtrlC: false
   noIcons: false
+  shellPod:
+    image: busybox:1.35.0
+    namespace: default
+    limits:
+      cpu: 100m
+      memory: 100Mi
   skipLatestRevCheck: false
   logger:
     tail: 100
@@ -18,13 +26,15 @@ k9s:
     showTime: false
   currentContext: default
   currentCluster: default
+  keepMissingClusters: false
   clusters:
     default:
       namespace:
-        active: code
+        active: vault
         lockFavorites: false
         favorites:
-        - code
+        - vault
+        - prometheus
         - ingress-nginx
         - cert-manager
         - kube-system
@@ -34,15 +44,6 @@ k9s:
         active: pods
       featureGates:
         nodeShell: false
-      shellPod:
-        image: busybox:1.35.0
-        command: []
-        args: []
-        namespace: default
-        limits:
-          cpu: 100m
-          memory: 100Mi
-        labels: {}
       portForwardAddress: localhost
   thresholds:
     cpu:
@@ -52,3 +53,4 @@ k9s:
       critical: 90
       warn: 70
   screenDumpDir: /tmp/k9s-screens-root
+  disablePodCounting: false

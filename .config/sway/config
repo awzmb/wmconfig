@@ -58,6 +58,9 @@ floating_modifier $mod
 # set hidpi output scaling
 output * scale 1
 
+# set output resolution
+output * pos 0 0 res 1920x1200@120Hz
+
 # use solid color background
 output * bg #242933 solid_color
 
