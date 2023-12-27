@@ -30,7 +30,7 @@ exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DE
 # =============================================================================
 
 # set default locker
-set $locker swaylock --daemonize --line-uses-inside --indicator-thickness 10 --inside-color EBCB8B --color 242933 --line-color 242933 --line-ver-color 88C0D0 --ring-color EBCB8B --ring-ver-color 88C0D0 --text-ver-color 242933
+set $locker swaylock --daemonize --scaling solid_color --line-uses-inside --indicator-thickness 10 --inside-color EBCB8B --color 242933 --line-color 242933 --line-ver-color 88C0D0 --ring-color EBCB8B --ring-ver-color 88C0D0 --text-ver-color 242933
 
 # set default suspend tool
 set $suspend sudo pm-suspend
