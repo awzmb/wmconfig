@@ -30,6 +30,7 @@ k9s:
   clusters:
     default:
       namespace:
+<<<<<<< HEAD
         active: vault
         lockFavorites: false
         favorites:
@@ -37,6 +38,14 @@ k9s:
         - prometheus
         - ingress-nginx
         - cert-manager
+=======
+        active: verimi-otip-production
+        lockFavorites: false
+        favorites:
+        - verimi-otip-production
+        - cert-manager
+        - ingress-nginx
+>>>>>>> 3dc2a0d (feat(scripts): flux installer and mtls cert generator)
         - kube-system
         - all
         - default
