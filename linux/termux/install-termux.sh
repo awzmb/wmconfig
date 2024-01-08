@@ -29,6 +29,10 @@ install_default_packages () {
   pkg install -y \
     neomutt calcurse gnupg pass
 
+  # other cli tools
+  pkg install -y \
+    termshark termux-api proot resolv-conf
+
 	# python packages
 	pip install -y \
 		markdown \
