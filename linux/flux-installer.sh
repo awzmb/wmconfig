@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-DEFAULT_BIN_DIR="#{HOME}/.bin"
+DEFAULT_BIN_DIR="${HOME}/.bin"
 BIN_DIR=${1:-"${DEFAULT_BIN_DIR}"}
 GITHUB_REPO="fluxcd/flux2"
 

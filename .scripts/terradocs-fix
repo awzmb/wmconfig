@@ -1,9 +1,0 @@
-#!/bin/sh
-git checkout origin/${1}
-git fetch
-git rebase origin/master
-rm -rf iam-roles iam-create-user
-#task ci:terraform-docs
-task ci:terraform-docs && git add --all && git rebase --continue
-#git commit -m 'chore(deps): running terraform-docs manually'
-echo "use \'git push origin HEAD:${1}\' after you're done"

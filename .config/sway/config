@@ -24,13 +24,15 @@ exec hash dbus-update-activation-environment 2>/dev/null && \
 dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP
 # import environment variables into dbus (screen sharing)
 exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
+# laptop lid close event manager (disables internal display)
+exec_always sway-lid-state-display-management
 
 # =============================================================================
 # Basic Setup
 # =============================================================================
 
 # set default locker
-set $locker swaylock --daemonize --scaling solid_color --line-uses-inside --indicator-thickness 10 --inside-color EBCB8B --color 242933 --line-color 242933 --line-ver-color 88C0D0 --ring-color EBCB8B --ring-ver-color 88C0D0 --text-ver-color 242933
+set $locker swaylock --daemonize --scaling solid_color --line-uses-inside --indicator-thickness 10 --inside-color 88C0D0 --color 242933 --line-color 242933 --line-ver-color 88C0D0 --ring-color EBCB8B --ring-ver-color 88C0D0 --text-ver-color 242933
 
 # set default suspend tool
 set $suspend sudo pm-suspend
@@ -56,13 +58,22 @@ hide_edge_borders both
 floating_modifier $mod
 
 # set hidpi output scaling
-output * scale 1
+#output * scale 2
+output eDP-1 scale 2
+output DP-1 scale 1.5
 
 # set output resolution
-output * pos 0 0 res 1920x1200@120Hz
+#output * pos 0 0 res 1920x1200@120Hz
+output eDP-1 pos 0 0 res 2880x1800@60Hz
+output DP-1 pos 0 1800 res 2560x1600@144Hz
 
 # use solid color background
 output * bg #242933 solid_color
+
+# clamshell mode (closed display on laptop)
+set $laptop eDP-1
+bindswitch --reload --locked lid:on output $laptop disable
+bindswitch --reload --locked lid:off output $laptop enable
 
 # activate natural scrolling
 input type:touchpad {
@@ -80,7 +91,7 @@ input type:pointer {
 
 # idle settings
 exec swayidle -w \
-  timeout 300 'swaylock --daemonize --color #242933' \
+  timeout 300 $locker --daemonize --color #242933' \
   timeout 600 'swaymsg "output * dpms off"' \
   resume 'swaymsg "output * dpms on"' \
   before-sleep 'swaylock --daemonize --color #242933'
