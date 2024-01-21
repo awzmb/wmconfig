@@ -74,6 +74,8 @@ flatpak install --user flathub org.gnome.Sdk
 flatpak install --user flathub com.spotify.Client
 flatpak install --user flathub com.valvesoftware.Steam
 flatpak install --user flathub com.github.Eloston.UngoogledChromium
+flatpak install -y org.freedesktop.Platform.ffmpeg-full
+flatpak install -y org.freedesktop.Platform.GStreamer.gstreamer-vaapi
 
 # install vim-plug plugin manager
 # for vim and neovim

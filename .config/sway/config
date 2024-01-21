@@ -35,9 +35,9 @@ exec_always sway-lid-state-display-management
 set $locker swaylock --daemonize --scaling solid_color --line-uses-inside --indicator-thickness 10 --inside-color 88C0D0 --color 242933 --line-color 242933 --line-ver-color 88C0D0 --ring-color EBCB8B --ring-ver-color 88C0D0 --text-ver-color 242933
 
 # set default suspend tool
-set $suspend sudo pm-suspend
-set $reboot sudo reboot
-set $poweroff sudo poweroff -i
+set $suspend systemctl suspend
+set $reboot systemctl reboot
+set $poweroff systemctl halt
 
 # set terminal emulator
 set $term alacritty
