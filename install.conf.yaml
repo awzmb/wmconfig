@@ -124,12 +124,9 @@
     ~/.local/share/code-server/User/keybindings.json:
       if: '[ `uname` = Linux ]'
       path: .config/Code/User/keybindings.json
-    ~/.config/alacritty/alacritty.yml:
-      if: '[ `uname` = Darwin ]'
-      path: .config/alacritty/alacritty.yml.macos
-    ~/.config/alacritty/alacritty.yml:
+    ~/.config/alacritty/alacritty.toml:
       if: '[ `uname` = Linux ]'
-      path: .config/alacritty/alacritty.yml.linux
+      path: .config/alacritty/alacritty.toml
 
 - shell:
     - [git submodule update --init --recursive, Installing submodules]
