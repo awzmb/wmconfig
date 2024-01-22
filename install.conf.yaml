@@ -17,6 +17,7 @@
     - ~/.config/nvim
     - ~/.config/foot
     - ~/.config/gtk-3.0
+    - ~/.config/gtk-4.0
     - ~/.terraform.d/cache
     - ~/.bin
 
@@ -58,6 +59,9 @@
     ~/.config/gtk-3.0:
       if: '[ `uname` = Linux ]'
       path: .config/gtk-3.0
+    ~/.config/gtk-4.0:
+      if: '[ `uname` = Linux ]'
+      path: .config/gtk-4.0
     ~/.config/clipit:
       if: '[ `uname` = Linux ]'
       path: .config/clipit

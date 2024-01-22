@@ -1,12 +1,17 @@
-/* UNITE windowDecorations */
-@import url('/home/bawzm/.local/share/gnome-shell/extensions/unite@hardpixel.eu/styles/gtk3/buttons-right/tiled.css');
-/* windowDecorations UNITE */
-
-.window-frame {
-  box-shadow: none;
+/** Some apps use titlebar class and some window */
+.titlebar,
+window {
+	border-radius: 0;
+	box-shadow: none;
 }
 
-.decoration {
-  box-shadow: none;
+/** also remove shaddows */
+decoration {
+	box-shadow: none;
 }
+
+decoration:backdrop {
+	box-shadow: none;
+}
+
 @import 'colors.css';

@@ -64,7 +64,8 @@ sudo rpm-ostree -y --apply-live install \
     wireguard-tools \
     kubernetes-client \
     npm \
-    htop
+    htop \
+    distrobox
 
 
 # flathub repositories and premise

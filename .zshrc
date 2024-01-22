@@ -122,7 +122,7 @@ if [ "$(uname)" = "Linux" ]; then
   #setxkbmap us -variant altgr-intl
   # use caps as escape button
   #setxkbmap -option caps:escape
-  export XDG_RUNTIME_DIR=$HOME/.tmp
+  #export XDG_RUNTIME_DIR=$HOME/.tmp
 fi
 
 # trigger completion initialization
