@@ -65,7 +65,9 @@ sudo rpm-ostree -y --apply-live install \
     kubernetes-client \
     npm \
     htop \
-    distrobox
+    distrobox \
+    gtk-murrine-engine \
+    gtk2-engines
 
 
 # flathub repositories and premise
@@ -77,6 +79,16 @@ flatpak install --user flathub com.valvesoftware.Steam
 flatpak install --user flathub com.github.Eloston.UngoogledChromium
 flatpak install -y org.freedesktop.Platform.ffmpeg-full
 flatpak install -y org.freedesktop.Platform.GStreamer.gstreamer-vaapi
+
+# install qogir theme
+mkdir -p ${HOME}/.themes
+git clone https://github.com/vinceliuice/Qogir-theme.git ${HOME}/.themes/qogir-install
+./${HOME}/.themes/qogir-install/install.sh
+rm -rf ${HOME}/.themes/qogir-install
+
+# give flatpak access to theme directories
+sudo flatpak override --filesystem=$HOME/.themes
+sudo flatpak override --filesystem=$HOME/.icons
 
 # install vim-plug plugin manager
 # for vim and neovim
@@ -164,18 +176,6 @@ rm -rf mutt-wizard
 # install themes from repository
 sudo dnf -y install \
   gnome-shell-extension-user-theme \
-
-# install qogir theme
-sudo dnf -y install \
-  gtk-murrine-engine \
-  gtk2-engines
-git clone https://github.com/vinceliuice/Qogir-theme.git
-sh ./Qogir-theme/install.sh
-rm -rf Qogir-theme
-
-git clone https://github.com/vinceliuice/Qogir-icon-theme.git
-sh ./Qogir-icon-theme/install.sh
-rm -rf Qogir-icon-theme
 
 # aws tools
 sudo dnf -y install \
