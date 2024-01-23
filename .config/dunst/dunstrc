@@ -1,5 +1,5 @@
 [global]
-    font = Unifont Medium 11
+    font = Terminus 12
 
     # allow a small subset of html markup:
     # <b>bold</b>
