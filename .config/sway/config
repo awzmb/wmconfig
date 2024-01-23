@@ -19,8 +19,7 @@ exec --no-startup-id dunst
 # start sound daemon
 #exec --no-startup-id pipewire
 # sway does not set DISPLAY/WAYLAND_DISPLAY in the systemd user environment
-# See FS#63021
-# Adapted from xorg's 50-systemd-user.sh, which achieves a similar goal.
+# adapted from xorg's 50-systemd-user.sh, which achieves a similar goal.
 exec systemctl --user import-environment DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP
 exec hash dbus-update-activation-environment 2>/dev/null && \
 dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP
@@ -33,7 +32,7 @@ exec_always import-gsettings
 
 #set $gnome-schema org.gnome.desktop.interface
 #exec_always {
-    #gsettings set $gnome-schema gtk-theme 'Arc-Dark'
+    #gsettings set $gnome-schema gtk-theme 'Qogir-Dark'
     #gsettings set $gnome-schema icon-theme 'Paper'
     #gsettings set $gnome-schema cursor-theme 'Adwaita'
 #}
@@ -48,7 +47,7 @@ set $locker swaylock --daemonize --scaling solid_color --line-uses-inside --indi
 # set default suspend tool
 set $suspend systemctl suspend
 set $reboot systemctl reboot
-set $poweroff systemctl halt
+set $poweroff systemctl poweroff
 
 # set terminal emulator
 set $term alacritty
@@ -75,8 +74,8 @@ output DP-1 scale 1.5
 
 # set output resolution
 #output * pos 0 0 res 1920x1200@120Hz
-output eDP-1 pos 0 0 res 2880x1800@60Hz
-output DP-1 pos 0 1800 res 2560x1600@144Hz
+output eDP-1 pos 0 1800 res 2880x1800@60Hz
+output DP-1 pos 0 0 res 2560x1600@144Hz
 
 # use solid color background
 output * bg #242933 solid_color
@@ -138,6 +137,9 @@ bindsym $mod+F1 exec $term -e calcurse
 # backlight controls
 bindsym XF86MonBrightnessUp exec light -A 10
 bindsym XF86MonBrightnessDown exec light -U 10
+#bindsym $mod+i exec --no-startup-id brightnessctl s 5%+
+#bindsym $mod+o exec --no-startup-id brightnessctl s 5%-
+
 
 # change focus
 bindsym $mod+h focus left

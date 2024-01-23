@@ -8,20 +8,18 @@ install_default_packages () {
 	# basic packages
 	sudo apk add \
 		vim zsh bash neovim tmux pass \
-		openssl curl bat w3m exa zip \
+		openssl curl bat w3m eza zip \
 		ctags zsh-vcs python3 ack p7zip \
 		coreutils tree ranger nodejs \
 		npm yarn curl wget fd fzf openssh \
 		coreutils nodejs grep tar openssl \
     ca-certificates ncurses ruby \
     gcompat libuser binutils findutils \
-    pciutils util-linux iproute2 \
-    pre-commit
+    pciutils util-linux iproute2
 
 	# devops tools
 	sudo apk add \
-		terraform ansible aws-cli py3-pip \
-    pre-commit terragrunt sops
+		ansible aws-cli py3-pip sops
 
   # development
 	sudo apk add go
