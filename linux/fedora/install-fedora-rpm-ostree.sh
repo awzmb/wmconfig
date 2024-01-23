@@ -77,7 +77,9 @@ sudo rpm-ostree -y --apply-live install \
     libva-intel-driver \
     libva-vdpau-driver \
     vulkan-tools \
-    intel-media-driver
+    intel-media-driver \
+    helm \
+    brightnessctl
 
 # flathub repositories and premise
 flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
