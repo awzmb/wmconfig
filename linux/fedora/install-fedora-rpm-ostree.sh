@@ -79,7 +79,9 @@ sudo rpm-ostree -y --apply-live install \
     vulkan-tools \
     intel-media-driver \
     helm \
-    brightnessctl
+    brightnessctl \
+    intel-undervolt \
+    awscli2
 
 # flathub repositories and premise
 flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
@@ -120,8 +122,11 @@ sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.
 # enable tlp power management
 sudo systemctl enable tlp
 
-# flashfocus
+# install pip packages
 sudo pip install flashfocus
+pip install tt-time-tracker
+pip install parliament
+pip install aws-policy-generator
 
 # vulkan graphics
 sudo dnf -y install vulkan-loader vulkan-headers vulkan-tools
