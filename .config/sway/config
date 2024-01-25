@@ -28,14 +28,15 @@ exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DE
 # laptop lid close event manager (disables internal display)
 exec_always sway-lid-state-display-management
 # import gtk-3.0 settings, icon and cursor theme
-exec_always import-gsettings
+#exec_always import-gsettings
 
-#set $gnome-schema org.gnome.desktop.interface
-#exec_always {
-    #gsettings set $gnome-schema gtk-theme 'Qogir-Dark'
-    #gsettings set $gnome-schema icon-theme 'Paper'
-    #gsettings set $gnome-schema cursor-theme 'Adwaita'
-#}
+set $gnome-schema org.gnome.desktop.interface
+exec_always {
+    gsettings set $gnome-schema gtk-theme 'Qogir-Dark'
+    gsettings set $gnome-schema icon-theme 'Paper'
+    gsettings set $gnome-schema cursor-theme 'Adwaita'
+    gsettings set $gnome-schema font-name 'Terminus 12'
+}
 
 # =============================================================================
 # Basic Setup
@@ -56,7 +57,7 @@ set $term alacritty
 set $mod Mod1
 
 # font for window titles. ISO 10646 = Unicode
-font pango:unifont 12
+font pango:Terminus 12
 
 # no border / window title bar
 default_border none

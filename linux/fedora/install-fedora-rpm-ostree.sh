@@ -81,7 +81,8 @@ sudo rpm-ostree -y --apply-live install \
     helm \
     brightnessctl \
     intel-undervolt \
-    awscli2
+    awscli2 \
+    gdm
 
 # flathub repositories and premise
 flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
