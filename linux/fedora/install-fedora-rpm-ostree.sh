@@ -105,9 +105,14 @@ flatpak install -y --user flathub com.valvesoftware.Steam
 flatpak install -y --user flathub com.github.Eloston.UngoogledChromium
 flatpak install -y --user org.gtk.Gtk3theme.Qogir-dark
 flatpak install -y --user flathub de.shorsh.discord-screenaudio
+flatpak install -y --user flathub org.mozilla.firefox
 flatpak install -y org.freedesktop.Platform.ffmpeg-full
 flatpak install -y org.freedesktop.Platform.GStreamer.gstreamer-vaapi
 flatpak install -y org.freedesktop.Platform.GStreamer.gstreamer-vaapi
+
+# use home .mozilla directory to neatlessly be able to swap
+# between local and flatpak
+flatpak override --user --filesystem=~/.mozilla org.mozilla.firefox
 
 # TODO: disable sddm and use gdm (if sddm set as display manager)
 

@@ -24,3 +24,6 @@ alias gps='git push'
 
 # kubectl
 alias k='kubectl'
+
+# fzf find aliases
+alias fcd='cd $(find * -type d | fzf)'
