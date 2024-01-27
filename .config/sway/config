@@ -50,6 +50,9 @@ set $suspend systemctl suspend
 set $reboot systemctl reboot
 set $poweroff systemctl poweroff
 
+# set launcher command
+set $launcher fuzzel -b 242933ff -t d8dee9ff -s 2e3440ff -S 8fbcbbff -C 88c0d0ff -m b48eadff -w 60 --border-width=0 --border-radius=0 --dpi-aware=auto --show-actions -f "Terminus:weight=thin:size=14"
+
 # set terminal emulator
 set $term alacritty
 
@@ -119,7 +122,7 @@ bindsym $mod+Shift+Return exec $term
 bindsym $mod+Shift+Q kill
 
 # start dmenu (a program launcher)
-bindsym $mod+Shift+d exec fuzzel
+bindsym $mod+Shift+d exec $launcher
 bindsym $mod+d exec rofi -show run -theme dmenu
 #bindsym $mod+d exec wofi --show run --dmenu
 

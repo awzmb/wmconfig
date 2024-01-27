@@ -78,6 +78,7 @@ sudo rpm-ostree -y --apply-live install \
     libheif-tools \
     pipewire-codec-aptx \
     #ffmpeg-free \
+    #tuigreet \
     vulkan-tools \
     helm \
     brightnessctl \
