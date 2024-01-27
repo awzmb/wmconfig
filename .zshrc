@@ -163,3 +163,9 @@ command -v helm >/dev/null && . <(helm completion zsh)
 export PATH=$PATH:/home/bawzm/.spicetify
 
 if [ -e /home/bawzm/.nix-profile/etc/profile.d/nix.sh ]; then . /home/bawzm/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
+
+# use iHD driver if intel iris graphics are present
+IRIS_VGA_PRESENT=$(lspci -nnk | grep -iA2 vga | grep -i 'iris')
+if [[ -n "${IRIS_VGA_PRESENT}" ]]; then
+  export LIBVA_DRIVER_NAME=iHD
+fi

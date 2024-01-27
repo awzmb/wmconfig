@@ -7,12 +7,6 @@ rpm-ostree --apply-live install \
     https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
     https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
 
-# install non-free multimedia codecs
-#sudo dnf -y swap ffmpeg-free ffmpeg --allowerasing
-#sudo dnf install rpmfusion-nonfree-release-tainted
-#sudo dnf --repo=rpmfusion-nonfree-tainted install "*-firmware"
-#sudo dnf -y install intel-media-driver
-
 # layered packages
 sudo rpm-ostree -y --apply-live install \
     zsh \
@@ -70,30 +64,52 @@ sudo rpm-ostree -y --apply-live install \
     distrobox \
     gtk-murrine-engine \
     gtk2-engines \
-    ffmpeg-free \
     gstreamer1-vaapi \
     libvdpau-va-gl \
     libva-utils \
     libva-intel-driver \
     libva-vdpau-driver \
-    vulkan-tools \
+    intel-gpu-tools \
     intel-media-driver \
+    intel-undervolt \
+    intel-opencl \
+    heif-pixbuf-loader \
+    libheif-freeworld \
+    libheif-tools \
+    pipewire-codec-aptx \
+    #ffmpeg-free \
+    vulkan-tools \
     helm \
     brightnessctl \
-    intel-undervolt \
     awscli2 \
-    gdm
+    aws-tools \
+    aws-docs \
+    gdm \
+    mpv \
+    fuzzel
+
+# install non-free ffmpeg
+rpm-ostree override remove libavcodec-free libavfilter-free libavformat-free libavutil-free libpostproc-free libswresample-free libswscale-free --install ffmpeg
+
+# update firmware
+sudo fwupdmgr refresh
+sudo fwupdmgr get-updates
+sudo fwupdmgr update
 
 # flathub repositories and premise
 flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-flatpak install --user flathub org.gnome.Platform
-flatpak install --user flathub org.gnome.Sdk
-flatpak install --user flathub com.spotify.Client
-flatpak install --user flathub com.valvesoftware.Steam
-flatpak install --user flathub com.github.Eloston.UngoogledChromium
-flatpak install --user org.gtk.Gtk3theme.Qogir-dark
+flatpak install -y --user flathub org.gnome.Platform
+flatpak install -y --user flathub org.gnome.Sdk
+flatpak install -y --user flathub com.spotify.Client
+flatpak install -y --user flathub com.valvesoftware.Steam
+flatpak install -y --user flathub com.github.Eloston.UngoogledChromium
+flatpak install -y --user org.gtk.Gtk3theme.Qogir-dark
+flatpak install -y --user flathub de.shorsh.discord-screenaudio
 flatpak install -y org.freedesktop.Platform.ffmpeg-full
 flatpak install -y org.freedesktop.Platform.GStreamer.gstreamer-vaapi
+flatpak install -y org.freedesktop.Platform.GStreamer.gstreamer-vaapi
+
+# TODO: disable sddm and use gdm (if sddm set as display manager)
 
 # install qogir theme
 mkdir -p ${HOME}/.themes
@@ -145,23 +161,6 @@ sudo dnf -y install vulkan-loader vulkan-headers vulkan-tools
 #cd ${ORIGIN_PATH}
 #rm -rf mutt-wizard
 
-# aws tools
-#sudo dnf -y install \
-    #aws-tools \
-    #awscli
-#curl --silent --location "https://github.com/weaveworks/eksctl/releases/download/latest_release/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
-#sudo mv /tmp/eksctl /usr/local/bin
-
-# kubernetes and minikube
-#sudo dnf -y install \
-    #@virtualization \
-    #kubernetes-client \
-    #kubernetes \
-#curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 \
-   #&& sudo install minikube-linux-amd64 /usr/local/bin/minikube
-#minikube config set vm-driver kvm2
-#sudo systemctl enable libvirtd
-
 # helm kubernetes package manager
 curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
 chmod 700 get_helm.sh
@@ -170,20 +169,6 @@ rm ./get_helm.sh
 
 # dwarf fortress
 # sudo dnf -y install dwarffortress
-
-# install sway wayland wm
-#sudo dnf -y install \
-  #foot \
-  #dmenu \
-  #wofi \
-  #fuzzel \
-  #sway \
-  #swaylock \
-  #swayidle \
-  #xwayland \
-  #xorg-x11-server-Xwayland \
-  #i3status \
-  #i3status-config-fedora
 
 # install gnome packages
 #sudo dnf -y install \
