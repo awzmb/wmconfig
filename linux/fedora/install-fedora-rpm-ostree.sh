@@ -87,7 +87,8 @@ sudo rpm-ostree -y --apply-live install \
     aws-docs \
     gdm \
     mpv \
-    fuzzel
+    fuzzel \
+    hyprland
 
 # install non-free ffmpeg
 rpm-ostree override remove libavcodec-free libavfilter-free libavformat-free libavutil-free libpostproc-free libswresample-free libswscale-free --install ffmpeg
@@ -99,6 +100,11 @@ sudo fwupdmgr update
 
 # flathub repositories and premise
 flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+
+flatpak install -y org.freedesktop.Platform.ffmpeg-full
+flatpak install -y org.freedesktop.Platform.GStreamer.gstreamer-vaapi
+flatpak install -y org.freedesktop.Platform.GStreamer.gstreamer-vaapi
+
 flatpak install -y --user flathub org.gnome.Platform
 flatpak install -y --user flathub org.gnome.Sdk
 flatpak install -y --user flathub com.spotify.Client
@@ -107,9 +113,9 @@ flatpak install -y --user flathub com.github.Eloston.UngoogledChromium
 flatpak install -y --user org.gtk.Gtk3theme.Qogir-dark
 flatpak install -y --user flathub de.shorsh.discord-screenaudio
 flatpak install -y --user flathub org.mozilla.firefox
-flatpak install -y org.freedesktop.Platform.ffmpeg-full
-flatpak install -y org.freedesktop.Platform.GStreamer.gstreamer-vaapi
-flatpak install -y org.freedesktop.Platform.GStreamer.gstreamer-vaapi
+flatpak install -y --user org.flameshot.Flameshot
+flatpak install -y --user org.inkscape.Inkscape
+flatpak install -y --user org.gimp.GIMP
 
 # use home .mozilla directory to neatlessly be able to swap
 # between local and flatpak
@@ -117,11 +123,15 @@ flatpak override --user --filesystem=~/.mozilla org.mozilla.firefox
 
 # TODO: disable sddm and use gdm (if sddm set as display manager)
 
-# install qogir theme
+# qogir theme
 mkdir -p ${HOME}/.themes
 git clone https://github.com/vinceliuice/Qogir-theme.git ${HOME}/.themes/qogir-install
 ./${HOME}/.themes/qogir-install/install.sh
 rm -rf ${HOME}/.themes/qogir-install
+
+# flatcolor theme (base16)
+git clone https://github.com/jasperro/FlatColor ${HOME}/.themes/FlatColor
+# TODO: inject nord theme from https://github.com/tinted-theming/base16-gtk-flatcolor/blob/main/gtk-2/base16-nord-gtkrc
 
 # give flatpak access to theme directories and set qogir theme
 sudo flatpak override --filesystem=$HOME/.themes
