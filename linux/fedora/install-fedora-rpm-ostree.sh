@@ -160,6 +160,7 @@ sudo pip install flashfocus
 pip install tt-time-tracker
 pip install parliament
 pip install aws-policy-generator
+pip install pre-commit
 
 # vulkan graphics
 sudo dnf -y install vulkan-loader vulkan-headers vulkan-tools
