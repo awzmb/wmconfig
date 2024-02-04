@@ -113,6 +113,9 @@ flatpak install -y --user flathub com.github.Eloston.UngoogledChromium
 flatpak install -y --user org.gtk.Gtk3theme.Qogir-dark
 flatpak install -y --user flathub de.shorsh.discord-screenaudio
 flatpak install -y --user flathub org.mozilla.firefox
+flatpak install -y --user flathub io.gitlab.librewolf-community
+flatpak install -y --user flathub com.usebottles.bottles
+flatpak install -y --user org.zealdocs.Zeal
 flatpak install -y --user org.flameshot.Flameshot
 flatpak install -y --user org.inkscape.Inkscape
 flatpak install -y --user org.gimp.GIMP
@@ -279,8 +282,14 @@ gsettings set org.gnome.shell disable-extension-version-validation true
 # password management
 #sudo dnf -y install gnupg
 #gpg --full-gen-key && \
-#pass init bundschuh.dennis@gmail.com \
+#pass init "dennis.bundschuh@metamorphant.de" \
 #pass insert mail/main
+
+# global git configration
+ git config --global user.email "dennis.bundschuh@metamorphant.de"
+ git config --global user.name "Dennis Bundschuh"
+ git config --global init.defaultBranch main
+ git config --global push.autoSetupRemote true
 
 # additional stuff
 unset $SSH_ASKPASS

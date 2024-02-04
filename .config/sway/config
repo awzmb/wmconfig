@@ -16,7 +16,7 @@ exec --no-startup-id flashfocus
 exec --no-startup-id clipit
 # dunst desktop notifications
 exec --no-startup-id dunst
-# start sound daemon
+# start sound daemon (use this with openrc)
 #exec --no-startup-id pipewire
 # sway does not set DISPLAY/WAYLAND_DISPLAY in the systemd user environment
 # adapted from xorg's 50-systemd-user.sh, which achieves a similar goal.
