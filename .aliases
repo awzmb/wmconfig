@@ -26,4 +26,4 @@ alias gps='git push'
 alias k='kubectl'
 
 # fzf find aliases
-alias fcd='cd $(find * -type d | fzf)'
+alias fcd='cd $(find . -type d 2>&1 | grep -v "Permission denied" | fzf)'
