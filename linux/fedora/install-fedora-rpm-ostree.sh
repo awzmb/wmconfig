@@ -130,8 +130,10 @@ flatpak install -y --user org.gimp.GIMP
 # allow access to local themes and gtk settings
 sudo flatpak override --filesystem=$HOME/.themes:ro
 sudo flatpak override --filesystem=$HOME/.icons:ro
-flatpak override --user --filesystem=xdg-config/gtk-3.0:ro
-flatpak override --user --filesystem=xdg-config/gtk-4.0:ro
+flatpak override --user --filesystem=$HOME/.themes:ro
+flatpak override --user --filesystem=$HOME/.icons:ro
+#flatpak override --user --filesystem=xdg-config/gtk-3.0:ro
+#flatpak override --user --filesystem=xdg-config/gtk-4.0:ro
 # use home .mozilla directory to neatlessly be able to swap
 # between local and flatpak
 flatpak override --user --filesystem=~/.mozilla org.mozilla.firefox

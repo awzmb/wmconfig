@@ -1,6 +1,6 @@
 #!/bin/sh
 
-SPICETIFY_INSTALL_DIR="~/.spicetify"
+SPICETIFY_INSTALL_DIR="~/.config/spicetify"
 SPICETIFY_THEME="text-nord"
 SPICETIFY_THEME_DIR="${HOME}/.config/spicetify/Themes/${SPICETIFY_THEME}"
 
@@ -19,7 +19,6 @@ sed -i "s|spotify_path.*$|spotify_path = ${SPOTIFY_PATH}|g" ~/.config/spicetify/
 sed -i "s|prefs_path.*$|prefs_path = ${SPOTIFY_PREFS_PATH}|g" ~/.config/spicetify/config-xpui.ini
 
 spicetify update
-spicetify backup
 
 spicetify config inject_css 1
 spicetify config replace_colors 1
@@ -31,6 +30,21 @@ mkdir -p ${SPICETIFY_THEME_DIR}
 curl -L --output "${SPICETIFY_THEME_DIR}/user.css" --url "https://raw.githubusercontent.com/spicetify/spicetify-themes/master/text/user.css"
 curl -L --output "${SPICETIFY_THEME_DIR}/color.ini" --url "https://raw.githubusercontent.com/spicetify/spicetify-themes/master/text/color.ini"
 
+sed -i 's/1db954/4c566a/g' ${SPICETIFY_THEME_DIR}/color.ini
+sed -i 's/1db954/81a1c1/g' ${SPICETIFY_THEME_DIR}/color.ini
+sed -i 's/121212/3b4252/g' ${SPICETIFY_THEME_DIR}/color.ini
+sed -i 's/1ed760/434c5e/g' ${SPICETIFY_THEME_DIR}/color.ini
+sed -i 's/535353/2e3440/g' ${SPICETIFY_THEME_DIR}/color.ini
+sed -i 's/535353/2e3440/g' ${SPICETIFY_THEME_DIR}/color.ini
+sed -i 's/1a1a1a/a3be8c/g' ${SPICETIFY_THEME_DIR}/color.ini
+sed -i 's/FFFFFF/eceff4/g' ${SPICETIFY_THEME_DIR}/color.ini
+sed -i 's/FFFFFF/eceff4/g' ${SPICETIFY_THEME_DIR}/color.ini
+
+sed -i 's/00e089/4c566a/g' ${SPICETIFY_THEME_DIR}/color.ini
+sed -i 's/2E2837/81a1c1/g' ${SPICETIFY_THEME_DIR}/color.ini
+sed -i 's/483b5b/3b4252/g' ${SPICETIFY_THEME_DIR}/color.ini
+
 spicetify config current_theme ${SPICETIFY_THEME}
 
+spicetify backup
 spicetify apply
