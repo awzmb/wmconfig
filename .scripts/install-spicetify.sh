@@ -1,7 +1,8 @@
 #!/bin/sh
 
 SPICETIFY_INSTALL_DIR="~/.spicetify"
-SPICETIFY_THEME_DIR="~/.config/spicetify/Themes/Arc-Dark-Spotify-Theme"
+SPICETIFY_THEME="text-nord"
+SPICETIFY_THEME_DIR="${HOME}/.config/spicetify/Themes/${SPICETIFY_THEME}"
 
 #SPOTIFY_PATH="$(flatpak info --show-location com.spotify.Client)/../active/files/extra/share/spotify"
 SPOTIFY_PATH="$(find ~/.local/share/flatpak/app/com.spotify.Client/x86_64/stable/active/files/extra/share -type d -iname 'spotify')"
@@ -24,8 +25,12 @@ spicetify config inject_css 1
 spicetify config replace_colors 1
 spicetify config custom_apps marketplace
 
-#git clone https://github.com/santoru/Arc-Dark-Spotify-Theme ~/.config/spicetify/Themes/Arc-Dark-Spotify-Theme
+mkdir -p ${SPICETIFY_THEME_DIR}
 
-#spicetify config current_theme Arc-Dark-Spotify-Theme
+# get text theme and modify according to system color scheme
+curl -L --output "${SPICETIFY_THEME_DIR}/user.css" --url "https://raw.githubusercontent.com/spicetify/spicetify-themes/master/text/user.css"
+curl -L --output "${SPICETIFY_THEME_DIR}/color.ini" --url "https://raw.githubusercontent.com/spicetify/spicetify-themes/master/text/color.ini"
+
+spicetify config current_theme ${SPICETIFY_THEME}
 
 spicetify apply
