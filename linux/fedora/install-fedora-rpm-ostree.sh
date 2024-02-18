@@ -59,6 +59,8 @@ sudo rpm-ostree -y --apply-live install \
     wireguard-tools \
     kubernetes-client \
     gnome-shell-extension-user-theme \
+    gnome-tweaks \
+    xdg-desktop-portal-gnome \
     npm \
     htop \
     distrobox \
@@ -88,7 +90,9 @@ sudo rpm-ostree -y --apply-live install \
     gdm \
     mpv \
     fuzzel \
-    hyprland
+    hyprland \
+    strace \
+    openssl
 
 # install non-free ffmpeg
 rpm-ostree override remove libavcodec-free libavfilter-free libavformat-free libavutil-free libpostproc-free libswresample-free libswscale-free --install ffmpeg
@@ -105,21 +109,29 @@ flatpak install -y org.freedesktop.Platform.ffmpeg-full
 flatpak install -y org.freedesktop.Platform.GStreamer.gstreamer-vaapi
 flatpak install -y org.freedesktop.Platform.GStreamer.gstreamer-vaapi
 
+flatpak install -y --user fedora com.github.tchx84.Flatseal
 flatpak install -y --user flathub org.gnome.Platform
 flatpak install -y --user flathub org.gnome.Sdk
 flatpak install -y --user flathub com.spotify.Client
 flatpak install -y --user flathub com.valvesoftware.Steam
 flatpak install -y --user flathub com.github.Eloston.UngoogledChromium
-flatpak install -y --user org.gtk.Gtk3theme.Qogir-dark
+flatpak install -y --user flathub org.gtk.Gtk3theme.Qogir-dark
 flatpak install -y --user flathub de.shorsh.discord-screenaudio
 flatpak install -y --user flathub org.mozilla.firefox
 flatpak install -y --user flathub io.gitlab.librewolf-community
 flatpak install -y --user flathub com.usebottles.bottles
-flatpak install -y --user org.zealdocs.Zeal
-flatpak install -y --user org.flameshot.Flameshot
+flatpak install -y --user flathub org.zealdocs.Zeal
+flatpak install -y --user flathub org.flameshot.Flameshot
+flatpak install -y --user flathub net.lutris.Lutris
+flatpak install -y --user flathub com.google.Chrome
 flatpak install -y --user org.inkscape.Inkscape
 flatpak install -y --user org.gimp.GIMP
 
+# allow access to local themes and gtk settings
+sudo flatpak override --filesystem=$HOME/.themes:ro
+sudo flatpak override --filesystem=$HOME/.icons:ro
+flatpak override --user --filesystem=xdg-config/gtk-3.0:ro
+flatpak override --user --filesystem=xdg-config/gtk-4.0:ro
 # use home .mozilla directory to neatlessly be able to swap
 # between local and flatpak
 flatpak override --user --filesystem=~/.mozilla org.mozilla.firefox
@@ -164,6 +176,7 @@ pip install tt-time-tracker
 pip install parliament
 pip install aws-policy-generator
 pip install pre-commit
+pip install gcalcli
 
 # vulkan graphics
 sudo dnf -y install vulkan-loader vulkan-headers vulkan-tools
