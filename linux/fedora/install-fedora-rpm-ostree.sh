@@ -127,6 +127,10 @@ flatpak install -y --user flathub com.google.Chrome
 flatpak install -y --user org.inkscape.Inkscape
 flatpak install -y --user org.gimp.GIMP
 
+# switch default browser to flatpak firefox and disable the native one
+xdg-settings set default-web-browser org.mozilla.firefox.desktop
+printf '[Desktop Entry]\nNoDisplay=true\n' > ~/.local/share/applications/firefox.desktop
+
 # allow access to local themes and gtk settings
 sudo flatpak override --filesystem=$HOME/.themes:ro
 sudo flatpak override --filesystem=$HOME/.icons:ro
