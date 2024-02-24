@@ -98,6 +98,10 @@ bindswitch --reload --locked lid:off output $laptop enable
 
 # activate natural scrolling
 input type:touchpad {
+    # flat or adaptive
+    accel_profile flat
+    # between -1.0 and 1.0>
+    pointer_accel 0.5
     tap disabled
     natural_scroll enabled
 }

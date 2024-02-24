@@ -31,14 +31,16 @@ curl -L --output "${SPICETIFY_THEME_DIR}/user.css" --url "https://raw.githubuser
 curl -L --output "${SPICETIFY_THEME_DIR}/color.ini" --url "https://raw.githubusercontent.com/spicetify/spicetify-themes/master/text/color.ini"
 
 # add font import at the start of document
-sed -i "1i@import url(\'https://fonts.cdnfonts.com/css/terminus\');" ${SPICETIFY_THEME_DIR}/user.css
-sed -i 's/DM Mono", monospace/Terminus", sans-serif/g' ${SPICETIFY_THEME_DIR}/user.css
+#sed -i "1i@import url(\'https://fonts.cdnfonts.com/css/terminus\');" ${SPICETIFY_THEME_DIR}/user.css
+sed -i 's/DM Mono", monospace/Roboto Mono", monospace/g' ${SPICETIFY_THEME_DIR}/user.css
+sed -i 's/font-size: 14px/font-size\: 12px/g' ${SPICETIFY_THEME_DIR}/user.css
+sed -i 's/font-size-lyrics: 14px/font-size\: 12px/g' ${SPICETIFY_THEME_DIR}/user.css
 
 # color substitution (so we can use the default theme without explicitly
 # defining any color scheme
 sed -i 's/1db954/4c566a/g' ${SPICETIFY_THEME_DIR}/color.ini
 sed -i 's/1db954/81a1c1/g' ${SPICETIFY_THEME_DIR}/color.ini
-sed -i 's/121212/3b4252/g' ${SPICETIFY_THEME_DIR}/color.ini
+sed -i 's/121212/232933/g' ${SPICETIFY_THEME_DIR}/color.ini
 sed -i 's/1ed760/434c5e/g' ${SPICETIFY_THEME_DIR}/color.ini
 sed -i 's/535353/2e3440/g' ${SPICETIFY_THEME_DIR}/color.ini
 sed -i 's/535353/2e3440/g' ${SPICETIFY_THEME_DIR}/color.ini

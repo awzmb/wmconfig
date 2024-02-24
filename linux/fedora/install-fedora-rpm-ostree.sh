@@ -79,10 +79,6 @@ sudo rpm-ostree -y --apply-live install \
     libheif-freeworld \
     libheif-tools \
     pipewire-codec-aptx \
-    #ffmpeg-free \
-    #tuigreet \
-    vulkan-tools \
-    helm \
     brightnessctl \
     awscli2 \
     aws-tools \
@@ -92,7 +88,8 @@ sudo rpm-ostree -y --apply-live install \
     fuzzel \
     hyprland \
     strace \
-    openssl
+    openssl \
+    alacritty
 
 # install non-free ffmpeg
 rpm-ostree override remove libavcodec-free libavfilter-free libavformat-free libavutil-free libpostproc-free libswresample-free libswscale-free --install ffmpeg
@@ -143,6 +140,8 @@ flatpak override --user --filesystem=$HOME/.icons:ro
 flatpak override --user --filesystem=~/.mozilla org.mozilla.firefox
 
 # TODO: disable sddm and use gdm (if sddm set as display manager)
+#sudo systemctl disable sddm.service
+#sudo systemctl enable gdm.service
 
 # qogir theme
 mkdir -p ${HOME}/.themes
