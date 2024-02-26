@@ -104,6 +104,7 @@ input type:touchpad {
     pointer_accel 0.5
     tap disabled
     natural_scroll enabled
+    scroll_factor 0.4
 }
 
 # mouse settings
