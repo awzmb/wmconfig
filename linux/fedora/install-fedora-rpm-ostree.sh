@@ -124,10 +124,6 @@ flatpak install -y --user flathub com.google.Chrome
 flatpak install -y --user org.inkscape.Inkscape
 flatpak install -y --user org.gimp.GIMP
 
-# switch default browser to flatpak firefox and disable the native one
-xdg-settings set default-web-browser org.mozilla.firefox.desktop
-printf '[Desktop Entry]\nNoDisplay=true\n' > ~/.local/share/applications/firefox.desktop
-
 # allow access to local themes and gtk settings
 sudo flatpak override --filesystem=$HOME/.themes:ro
 sudo flatpak override --filesystem=$HOME/.icons:ro
@@ -138,6 +134,10 @@ flatpak override --user --filesystem=$HOME/.icons:ro
 # use home .mozilla directory to neatlessly be able to swap
 # between local and flatpak
 flatpak override --user --filesystem=~/.mozilla org.mozilla.firefox
+
+# switch default browser to flatpak firefox and disable the native one
+printf '[Desktop Entry]\nNoDisplay=true\n' > ~/.local/share/applications/firefox.desktop
+xdg-settings set default-web-browser org.mozilla.firefox.desktop
 
 # TODO: disable sddm and use gdm (if sddm set as display manager)
 #sudo systemctl disable sddm.service
@@ -176,12 +176,12 @@ sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.
 sudo systemctl enable tlp
 
 # install pip packages
-sudo pip install flashfocus
-pip install tt-time-tracker
-pip install parliament
-pip install aws-policy-generator
+pip install flashfocus
 pip install pre-commit
-pip install gcalcli
+pip install --user tt-time-tracker
+pip install --user parliament
+pip install --user aws-policy-generator
+pip install --user gcalcli
 
 # vulkan graphics
 sudo dnf -y install vulkan-loader vulkan-headers vulkan-tools
