@@ -48,6 +48,9 @@ Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
 " toggable terminal
 Plug 'wuelnerdotexe/nerdterm'
 
+" wayland clipboard integration
+Plug 'jasonccox/vim-wayland-clipboard'
+
 " fern tree / project navigation (nerdtree replacement)
 "Plug 'antoinemadec/FixCursorHold.nvim'
 "Plug 'lambdalisue/fern.vim'
