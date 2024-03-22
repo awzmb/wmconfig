@@ -2,7 +2,11 @@
 if grep -q open /proc/acpi/button/lid/LID/state; then
     swaymsg output eDP-1 enable
     swaymsg input type:touchpad events disabled
+    swaymsg input type:touch events disabled
+    #swaymsg input 10182:280:GXTP7386:00_27C6:0118_Keyboard events disabled
 else
     swaymsg output eDP-1 disable
     swaymsg input type:touchpad events enabled
+    swaymsg input type:touch events enabled
+    #swaymsg input 10182:280:GXTP7386:00_27C6:0118_Keyboard events enabled
 fi
