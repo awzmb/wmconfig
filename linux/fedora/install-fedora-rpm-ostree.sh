@@ -89,7 +89,10 @@ sudo rpm-ostree -y --apply-live install \
     hyprland \
     strace \
     openssl \
-    alacritty
+    alacritty \
+    vulkan-loader \
+    vulkan-headers \
+    vulkan-tools
 
 # install non-free ffmpeg
 rpm-ostree override remove libavcodec-free libavfilter-free libavformat-free libavutil-free libpostproc-free libswresample-free libswscale-free --install ffmpeg
@@ -98,6 +101,12 @@ rpm-ostree override remove libavcodec-free libavfilter-free libavformat-free lib
 sudo fwupdmgr refresh
 sudo fwupdmgr get-updates
 sudo fwupdmgr update
+
+# install nvidia drivers for egpu
+#sudo rpm-ostree install akmod-nvidia xorg-x11-drv-nvidia xorg-x11-drv-nvidia-cuda
+
+# disable noveau driver to use egpu
+#sudo rpm-ostree kargs --append=rd.driver.blacklist=nouveau --append=modprobe.blacklist=nouveau --append=nvidia-drm.modeset=1 initcall_blacklist=simpledrm_platform_driver_init
 
 # flathub repositories and premise
 flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
@@ -134,6 +143,8 @@ flatpak override --user --filesystem=$HOME/.icons:ro
 # use home .mozilla directory to neatlessly be able to swap
 # between local and flatpak
 flatpak override --user --filesystem=~/.mozilla org.mozilla.firefox
+# force the usage of nvidia gpu in steam
+flatpak override --user --env="__NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia" com.valvesoftware.Steam
 
 # switch default browser to flatpak firefox and disable the native one
 printf '[Desktop Entry]\nNoDisplay=true\n' > ~/.local/share/applications/firefox.desktop
@@ -182,9 +193,6 @@ pip install --user tt-time-tracker
 pip install --user parliament
 pip install --user aws-policy-generator
 pip install --user gcalcli
-
-# vulkan graphics
-sudo dnf -y install vulkan-loader vulkan-headers vulkan-tools
 
 #sudo dnf -y install \
     #neomutt \
