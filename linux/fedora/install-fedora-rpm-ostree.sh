@@ -3,12 +3,12 @@
 ORIGIN_PATH=${pwd}
 
 # enable rpmfusion repositories
-rpm-ostree --apply-live install \
+rpm-ostree -y --apply-live install \
     https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
     https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
 
 # layered packages
-sudo rpm-ostree -y --apply-live install \
+rpm-ostree -y --apply-live install \
     zsh \
     vim \
     neovim \
@@ -92,10 +92,15 @@ sudo rpm-ostree -y --apply-live install \
     alacritty \
     vulkan-loader \
     vulkan-headers \
-    vulkan-tools
+    vulkan-tools \
+    wondershaper \
+    inxi
 
 # install non-free ffmpeg
 rpm-ostree override remove libavcodec-free libavfilter-free libavformat-free libavutil-free libpostproc-free libswresample-free libswscale-free --install ffmpeg
+
+# install gnome-shell themes
+rpm-ostree -y install rpm-ostree install gnome-shell-extension-unite gnome-shell-theme-flat-remix gnome-shell-extension-common gnome-shell-extension-pop-shell gnome-shell-extension-pop-shell gnome-shell-extension-pop-shell-shortcut-overrides
 
 # update firmware
 sudo fwupdmgr refresh
@@ -103,10 +108,16 @@ sudo fwupdmgr get-updates
 sudo fwupdmgr update
 
 # install nvidia drivers for egpu
-#sudo rpm-ostree install akmod-nvidia xorg-x11-drv-nvidia xorg-x11-drv-nvidia-cuda
+#sudo rpm-ostree install akmod-nvidia xorg-x11-drv-nvidia xorg-x11-drv-nvidia-cuda nvtop
 
 # disable noveau driver to use egpu
 #sudo rpm-ostree kargs --append=rd.driver.blacklist=nouveau --append=modprobe.blacklist=nouveau --append=nvidia-drm.modeset=1 initcall_blacklist=simpledrm_platform_driver_init
+
+# amdgpu tools
+rpm-ostree install radeontop
+
+# activate iommu fgr egpu hotswapping and kvm
+sudo rpm-ostree kargs --append=pcie_ports=native pci=assign-busses,nocrs,realloc iommu=on
 
 # flathub repositories and premise
 flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
@@ -114,6 +125,7 @@ flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flath
 flatpak install -y org.freedesktop.Platform.ffmpeg-full
 flatpak install -y org.freedesktop.Platform.GStreamer.gstreamer-vaapi
 flatpak install -y org.freedesktop.Platform.GStreamer.gstreamer-vaapi
+flatpak install -y org.gnome.Extensions
 
 flatpak install -y --user fedora com.github.tchx84.Flatseal
 flatpak install -y --user flathub org.gnome.Platform
