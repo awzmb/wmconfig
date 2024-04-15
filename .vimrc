@@ -16,8 +16,9 @@ Plug 'thirtythreeforty/lessspace.vim'
 "Plug 'lervag/vimtex'
 "Plug 'donRaphaco/neotex', { 'for': 'tex' }
 
-" terraform and hcl
+" terraform, hcl, checkov
 Plug 'hashivim/vim-terraform'
+Plug 'peteches/checkov.vim'
 
 " status bar mods
 "Plug 'itchyny/lightline.vim'

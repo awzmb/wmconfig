@@ -8,14 +8,13 @@ rpm-ostree -y --apply-live install \
     https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
 
 # layered packages
-rpm-ostree -y --apply-live install \
+rpm-ostree -y --apply-live --allow-inactive install \
     zsh \
     vim \
     neovim \
     vifm \
-    redshift \
-    redshift-gtk \
-    picom \
+    gammastep \
+    gammastep-indicator \
     calc \
     unrar \
     eza \
@@ -94,7 +93,10 @@ rpm-ostree -y --apply-live install \
     vulkan-headers \
     vulkan-tools \
     wondershaper \
-    inxi
+    inxi \
+    msr-tools \
+    smbios-utils \
+    mangohud
 
 # install non-free ffmpeg
 rpm-ostree override remove libavcodec-free libavfilter-free libavformat-free libavutil-free libpostproc-free libswresample-free libswscale-free --install ffmpeg
@@ -106,6 +108,10 @@ rpm-ostree -y install rpm-ostree install gnome-shell-extension-unite gnome-shell
 sudo fwupdmgr refresh
 sudo fwupdmgr get-updates
 sudo fwupdmgr update
+
+# gaming improvements
+# increase maximum number of memory map areas a process may have
+echo 'vm.max_map_count = 2147483642' | sudo tee /etc/sysctl.d/11-max-map-count.conf
 
 # install nvidia drivers for egpu
 #sudo rpm-ostree install akmod-nvidia xorg-x11-drv-nvidia xorg-x11-drv-nvidia-cuda nvtop
@@ -131,7 +137,7 @@ flatpak install -y --user fedora com.github.tchx84.Flatseal
 flatpak install -y --user flathub org.gnome.Platform
 flatpak install -y --user flathub org.gnome.Sdk
 flatpak install -y --user flathub com.spotify.Client
-flatpak install -y --user flathub com.valvesoftware.Steam
+#flatpak install -y --user flathub com.valvesoftware.Steam
 flatpak install -y --user flathub com.github.Eloston.UngoogledChromium
 flatpak install -y --user flathub org.gtk.Gtk3theme.Qogir-dark
 flatpak install -y --user flathub de.shorsh.discord-screenaudio
@@ -142,6 +148,9 @@ flatpak install -y --user flathub org.zealdocs.Zeal
 flatpak install -y --user flathub org.flameshot.Flameshot
 flatpak install -y --user flathub net.lutris.Lutris
 flatpak install -y --user flathub com.google.Chrome
+#flatpak install -y --user com.valvesoftware.Steam.CompatibilityTool.Proton
+#flatpak install -y --user org.freedesktop.Platform.VulkanLayer.gamescope
+#flatpak install -y --user org.freedesktop.Platform.VulkanLayer.MangoHud
 flatpak install -y --user org.inkscape.Inkscape
 flatpak install -y --user org.gimp.GIMP
 
@@ -156,7 +165,7 @@ flatpak override --user --filesystem=$HOME/.icons:ro
 # between local and flatpak
 flatpak override --user --filesystem=~/.mozilla org.mozilla.firefox
 # force the usage of nvidia gpu in steam
-flatpak override --user --env="__NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia" com.valvesoftware.Steam
+#flatpak override --user --env="__NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia" com.valvesoftware.Steam
 
 # switch default browser to flatpak firefox and disable the native one
 printf '[Desktop Entry]\nNoDisplay=true\n' > ~/.local/share/applications/firefox.desktop
@@ -201,6 +210,7 @@ sudo systemctl enable tlp
 # install pip packages
 pip install flashfocus
 pip install pre-commit
+pip install throttlestop
 pip install --user tt-time-tracker
 pip install --user parliament
 pip install --user aws-policy-generator

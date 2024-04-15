@@ -23,7 +23,7 @@ esac
 mkdir -p ${INSTALL_DIR}
 
 OS=$(uname -s | tr '[:upper:]' '[:lower:]')
-TERRAGRUNT_VERSION=$(curl -s https://api.github.com/repos/opentofu/opentofu/releases/latest | grep tag_name | cut -d: -f2 | tr -d \"\,\v | awk '{$1=$1};1')
+TERRAGRUNT_VERSION=$(curl -s https://api.github.com/repos/gruntwork-io/terragrunt/releases/latest | grep tag_name | cut -d: -f2 | tr -d \"\,\v | awk '{$1=$1};1')
 TERRAGRUNT_BINARY="terragrunt_${OS}_${ARCH}"
 curl -L --output "${TMP_DIR}/${TERRAGRUNT_BINARY}" --url "https://github.com/gruntwork-io/terragrunt/releases/download/v${TERRAGRUNT_VERSION}/${TERRAGRUNT_BINARY}"
 mv ${TMP_DIR}/${TERRAGRUNT_BINARY} ${INSTALL_DIR}/terragrunt
