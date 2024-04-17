@@ -42,6 +42,7 @@
     ~/.terraformrc: .terraformrc
     #~/.gitconfig: .gitconfig
     ~/.config/mc: .config/mc
+    ~/.config/MangoHud: .config/MangoHud
     ~/.config/kitty: .config/kitty
     ~/.config/foot: .config/foot
     ~/.config/newsboat: .config/newsboat

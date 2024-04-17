@@ -7,7 +7,7 @@
     // Choose the order of the modules
     "modules-left": ["sway/workspaces", "sway/mode"],
     "modules-center": [],
-    "modules-right": ["network", "pulseaudio", "cpu", "memory", "temperature", "battery", "clock", "tray"],
+    "modules-right": ["pulseaudio", "network", "cpu", "memory", "temperature", "battery", "clock", "tray"],
     // Modules configuration
     "sway/workspaces": {
         "disable-scroll": true,
@@ -98,7 +98,7 @@
         "format": "{volume}% {icon}",
         "format-bluetooth": "{volume}% {icon}",
         "format-bluetooth-muted": " {icon}",
-        "format-muted": "",
+        "format-muted": "Mute ",
         "format-source": "{volume}% ",
         "format-source-muted": "",
         "format-icons": {

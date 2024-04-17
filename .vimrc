@@ -16,9 +16,8 @@ Plug 'thirtythreeforty/lessspace.vim'
 "Plug 'lervag/vimtex'
 "Plug 'donRaphaco/neotex', { 'for': 'tex' }
 
-" terraform, hcl, checkov
+" terraform, hcl
 Plug 'hashivim/vim-terraform'
-Plug 'peteches/checkov.vim'
 
 " status bar mods
 "Plug 'itchyny/lightline.vim'
@@ -28,6 +27,9 @@ Plug 'airblade/vim-gitgutter'
 
 " coc language server client
 Plug 'neoclide/coc.nvim'
+
+" asynchronous linter (ALE)
+Plug 'dense-analysis/ale'
 
 " git commit browser (start with :GV)
 Plug 'tpope/vim-fugitive'

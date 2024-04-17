@@ -83,7 +83,8 @@ output eDP-1 scale 2
 #output DP-1 scale 1
 output DP-2 scale 1
 #output DP-2 scale 1.5
-output DP-6 scale 1.4
+#output DP-5 scale 1.4
+output DP-5 scale 1
 
 # set output resolution
 #output * pos 0 0 res 1920x1200@120Hz
@@ -94,7 +95,8 @@ output HDMI-A-1 pos 0 0 res 3840x1080@120Hz
 #output HDMI-A-1 pos 0 0 res 3840x1080@120Hz
 #output DP-1 pos 0 0 res 1920x1080@60Hz
 #output DP-2 pos 0 0 res 2560x1600@120Hz
-output DP-6 pos 0 0 res 5120x1440@120Hz
+#output DP-5 pos 0 0 res 5120x1440@120Hz
+output DP-5 pos 0 0 res 3840x1080@120Hz
 
 # use solid color background
 output * bg #242933 solid_color
