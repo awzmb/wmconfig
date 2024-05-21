@@ -37,6 +37,7 @@ sudo dnf -y install \
     exa \
     bat \
     jq \
+    yq \
     jd \
     tree \
     ack \
@@ -463,6 +464,10 @@ repo_gpgcheck=0
 gpgkey=https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
 EOM
 sudo dnf -y install google-cloud-cli
+
+# github cli
+sudo dnf config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.repo
+sudo dnf install gh
 
 # additional stuff
 unset $SSH_ASKPASS
