@@ -117,6 +117,13 @@ sudo dnf -y install \
 
 # flatpak container platform
 sudo dnf -y install flatpak
+flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+flatpak install -y --user com.google.Chrome
+#flatpak install -y --user org.mozilla.firefox
+flatpak install -y --user org.mozilla.firefox
+flatpak install -y --user com.spotify.Client
+flatpak install -y --user org.gtk.Gtk3theme.Qogir-dark
+flatpak install -y --user com.github.tchx84.Flatseal
 
 # zathura document viewer
 sudo dnf install -y \
@@ -444,6 +451,18 @@ sudo dnf -y install driverctl
 
 # wireguard tools
 sudo dnf -y install wireguard-tools
+
+# google cloud cli
+sudo tee -a /etc/yum.repos.d/google-cloud-sdk.repo << EOM
+[google-cloud-cli]
+name=Google Cloud CLI
+baseurl=https://packages.cloud.google.com/yum/repos/cloud-sdk-el9-x86_64
+enabled=1
+gpgcheck=1
+repo_gpgcheck=0
+gpgkey=https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+EOM
+sudo dnf -y install google-cloud-cli
 
 # additional stuff
 unset $SSH_ASKPASS

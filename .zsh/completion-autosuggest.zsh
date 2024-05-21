@@ -1,5 +1,6 @@
 ## fzf based autosuggestion
 zinit light marlonrichert/zsh-autocomplete
+zinit light wintermi/zsh-gcloud
 
 # fzf based completion
 zstyle ':completion:*' menu select

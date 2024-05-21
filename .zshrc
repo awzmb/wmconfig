@@ -73,6 +73,9 @@ source ~/.zsh/completion-settings.zsh
 # change ls colors to match system
 source ~/.zsh/completion-colors.zsh
 
+# extra completion plugins
+source ~/.zsh/completion-extra-plugins.zsh
+
 # general settings
 source ~/.zsh/general-settings.zsh
 
@@ -152,12 +155,16 @@ export PATH=$PATH:/home/awzm/.spicetify
 export PATH="${PATH}:${HOME}/.local/bin"
 
 # add brew to env if installed
-if [[ -d "/home/linuxbrew" ]]; then
-  eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+#if [[ -d "/home/linuxbrew" ]]; then
+  #eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+#fi
+
+if type "gcloud" > /dev/null; then
+   source /usr/share/google-cloud-sdk/completion.zsh.inc
 fi
 
-command -v flux >/dev/null && . <(flux completion zsh)
-command -v helm >/dev/null && . <(helm completion zsh)
+command -v flux > /dev/null && . <(flux completion zsh)
+command -v helm > /dev/null && . <(helm completion zsh)
 
 # spicetify
 export PATH=$PATH:/home/bawzm/.spicetify
@@ -171,3 +178,5 @@ if [ -e /home/bawzm/.nix-profile/etc/profile.d/nix.sh ]; then . /home/bawzm/.nix
     #export LIBVA_DRIVER_NAME=iHD
   #fi
 #fi
+
+export PATH=$PATH:/home/dbundschuh/.spicetify
