@@ -10,7 +10,9 @@ curl -L --output "${TMP_DIR}/${DISCORD_ARCHIVE}" --url ${DISCORD_DL_URL}
 #tar xvfz ${TMP_DIR}/${DISCORD_ARCHIVE} -C ${TMP_DIR}
 mkdir -p ${INSTALL_DIR}
 sudo tar xvfz ${TMP_DIR}/${DISCORD_ARCHIVE} -C ${INSTALL_DIR}
-chmod +x ${INSTALL_DIR}/Discord/Discord
+sudo chmod +x ${INSTALL_DIR}/Discord/Discord
+sudo chown $(whoami):$(whoami) ${INSTALL_DIR}/Discord/Discord
+rm ${BIN_DIR}/discord
 ln -s ${INSTALL_DIR}/Discord/Discord ${BIN_DIR}/discord
 
 printf "[Desktop Entry]

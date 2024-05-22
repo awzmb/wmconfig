@@ -1,3 +1,6 @@
+/* UNITE windowDecorations */
+@import url('/home/bawzm/.local/share/gnome-shell/extensions/unite@hardpixel.eu/styles/gtk3/buttons-right/tiled.css');
+/* windowDecorations UNITE */
 /** Some apps use titlebar class and some window */
 .titlebar,
 window {
