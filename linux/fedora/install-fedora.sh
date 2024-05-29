@@ -34,7 +34,7 @@ sudo dnf -y install \
     calc \
     inkscape \
     unrar \
-    exa \
+    eza \
     bat \
     jq \
     yq \

@@ -101,8 +101,12 @@ output DP-2 pos 0 0 res 5120x1440@120Hz
 #output DP-2 pos 0 0 res 2560x1600@120Hz
 #output DP-5 pos 0 0 res 5120x1440@120Hz
 #output DP-5 pos 0 0 res 3840x1080@120Hz
-output DP-3 pos 0 0 res 1920x1080@60Hz
-output DP-4 pos 1920 0 res 1920x1080@60Hz
+#output DP-3 pos 0 0 res 1920x1080@60Hz
+#output DP-4 pos 1920 0 res 1920x1080@60Hz
+output DP-3 pos 1920 0 res 1920x1080@60Hz
+output DP-4 pos 0 0 res 1920x1080@60Hz
+output DP-6 pos 0 0 res 1920x1080@60Hz
+output DP-5 pos 1920 0 res 1920x1080@60Hz
 
 # use solid color background
 output * bg #242933 solid_color
@@ -241,30 +245,30 @@ mode "resize" {
         # when pressing left, the window is resized so that it has
         # more space on its left
 
-        bindsym h resize shrink left 10 px or 10 ppt
-        bindsym Shift+H resize grow   left 10 px or 10 ppt
+        bindsym h resize shrink left 5 px or 5 ppt
+        bindsym Shift+H resize grow   left 5 px or 5 ppt
 
-        bindsym j resize shrink down 10 px or 10 ppt
-        bindsym Shift+J resize grow   down 10 px or 10 ppt
+        bindsym j resize shrink down 5 px or 5 ppt
+        bindsym Shift+J resize grow   down 5 px or 5 ppt
 
-        bindsym k resize shrink up 10 px or 10 ppt
-        bindsym Shift+K resize grow   up 10 px or 10 ppt
+        bindsym k resize shrink up 5 px or 5 ppt
+        bindsym Shift+K resize grow   up 5 px or 5 ppt
 
-        bindsym l resize shrink right 10 px or 10 ppt
-        bindsym Shift+L resize grow   right 10 px or 10 ppt
+        bindsym l resize shrink right 5 px or 5 ppt
+        bindsym Shift+L resize grow   right 5 px or 5 ppt
 
                 # same bindings, but for the arrow keys
-        bindsym Left resize shrink left 10 px or 10 ppt
-        bindsym Shift+Left resize grow   left 10 px or 10 ppt
+        bindsym Left resize shrink left 5 px or 5 ppt
+        bindsym Shift+Left resize grow   left 5 px or 5 ppt
 
-        bindsym Down resize shrink down 10 px or 10 ppt
-        bindsym Shift+Down resize grow   down 10 px or 10 ppt
+        bindsym Down resize shrink down 5 px or 5 ppt
+        bindsym Shift+Down resize grow   down 5 px or 5 ppt
 
-        bindsym Up resize shrink up 10 px or 10 ppt
-        bindsym Shift+Up resize grow   up 10 px or 10 ppt
+        bindsym Up resize shrink up 5 px or 5 ppt
+        bindsym Shift+Up resize grow   up 5 px or 5 ppt
 
-        bindsym Right resize shrink right 10 px or 10 ppt
-        bindsym Shift+Right resize grow   right 10 px or 10 ppt
+        bindsym Right resize shrink right 5 px or 5 ppt
+        bindsym Shift+Right resize grow   right 5 px or 5 ppt
 
         # back to normal: Enter or Escape
         bindsym Return mode "default"
