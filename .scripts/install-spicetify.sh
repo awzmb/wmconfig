@@ -1,16 +1,21 @@
 #!/bin/sh
 
-SPICETIFY_INSTALL_DIR="~/.config/spicetify"
+SPICETIFY_INSTALL_DIR="~/.spicetify"
+SPICETIFY_CONFIG_DIR="~/.config/spicetify"
 SPICETIFY_THEME="text-nord"
 SPICETIFY_THEME_DIR="${HOME}/.config/spicetify/Themes/${SPICETIFY_THEME}"
+
+# clear old config directory
+rm -rf ${SPICETIFY_CONFIG_DIR}
+rm -rf ${SPICETIFY_INSTALL_DIR}
 
 #SPOTIFY_PATH="$(flatpak info --show-location com.spotify.Client)/../active/files/extra/share/spotify"
 SPOTIFY_PATH="$(find ~/.local/share/flatpak/app/com.spotify.Client/x86_64/stable/active/files/extra/share -type d -iname 'spotify')"
 SPOTIFY_PREFS_PATH=$(find ~/.var/app/com.spotify.Client | grep prefs | tail -1)
 
-if [[ ! -d "$SPICETIFY_INSTALL_DIR" ]]; then
-  curl -fsSL https://raw.githubusercontent.com/spicetify/spicetify-cli/master/install.sh | sh
-fi
+#if [[ ! -d "$SPICETIFY_INSTALL_DIR" ]]; then
+curl -fsSL https://raw.githubusercontent.com/spicetify/spicetify-cli/master/install.sh | sh
+#fi
 
 #spicetify config spotify_path ${SPOTIFY_PATH}
 #spicetify config prefs_path ${SPOTIFY_PREFS_PATH}
@@ -40,7 +45,7 @@ sed -i 's/font-size-lyrics: 14px/font-size\: 12px/g' ${SPICETIFY_THEME_DIR}/user
 # defining any color scheme
 sed -i 's/1db954/4c566a/g' ${SPICETIFY_THEME_DIR}/color.ini
 sed -i 's/1db954/81a1c1/g' ${SPICETIFY_THEME_DIR}/color.ini
-sed -i 's/121212/232933/g' ${SPICETIFY_THEME_DIR}/color.ini
+sed -i 's/121212/242933/g' ${SPICETIFY_THEME_DIR}/color.ini
 sed -i 's/1ed760/434c5e/g' ${SPICETIFY_THEME_DIR}/color.ini
 sed -i 's/535353/2e3440/g' ${SPICETIFY_THEME_DIR}/color.ini
 sed -i 's/535353/2e3440/g' ${SPICETIFY_THEME_DIR}/color.ini
@@ -53,6 +58,7 @@ sed -i 's/2E2837/81a1c1/g' ${SPICETIFY_THEME_DIR}/color.ini
 sed -i 's/483b5b/3b4252/g' ${SPICETIFY_THEME_DIR}/color.ini
 
 spicetify config current_theme ${SPICETIFY_THEME}
+spicetify config color_scheme Spotify
 
 spicetify backup
 spicetify apply

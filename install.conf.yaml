@@ -19,6 +19,7 @@
     - ~/.config/gtk-3.0
     - ~/.config/gtk-4.0
     - ~/.terraform.d/cache
+    - ~/.terraform.d/plugin-cache
     - ~/.bin
 
 - link:
@@ -48,6 +49,8 @@
     ~/.config/newsboat: .config/newsboat
     ~/.config/k9s: .config/k9s
     ~/.config/nvim/init.vim: .vimrc
+    ~/.config/vdirsyncer:
+      path: .config/vdirsyncer
     ~/.config/kanshi:
       if: '[ `uname` = Linux ]'
       path: .config/kanshi

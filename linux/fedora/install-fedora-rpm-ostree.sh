@@ -96,7 +96,8 @@ rpm-ostree -y --apply-live --allow-inactive install \
     inxi \
     msr-tools \
     smbios-utils \
-    mangohud
+    mangohud \
+    vdirsyncer
 
 # install non-free ffmpeg
 rpm-ostree override remove libavcodec-free libavfilter-free libavformat-free libavutil-free libpostproc-free libswresample-free libswscale-free --install ffmpeg

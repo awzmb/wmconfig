@@ -50,7 +50,8 @@ sudo dnf -y install \
     xinput \
     clipit \
     sqlite \
-    tmux
+    tmux \
+    vdirsyncer
 
 # install fonts
 sudo dnf -y install \

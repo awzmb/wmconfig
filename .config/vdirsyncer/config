@@ -1,0 +1,20 @@
+[general]
+status_path = "/home/$(whoami)/.vdirsyncer/status"
+
+[storage gmail_local]
+type = "filesystem"
+path.fetch = ["command", "echo", "/home/$(whoami)/.calendars/gmail/"]
+fileext = ".ics"
+
+[storage gmail_remote]
+type = "caldav"
+url = "https://www.google.com/calendar/dav/"
+username.fetch = ["command", "pass", "mail/primary-email-address"]
+password.fetch = ["command", "pass", "mail/primary-email-password"]
+read_only = "true"
+
+[pair gmail_calendar]
+a = "gmail_local"
+b = "gmail_remote"
+collections = [ "from b" ]
+
