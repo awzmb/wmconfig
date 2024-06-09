@@ -6,9 +6,11 @@ call plug#begin('~/.vim/plugged')
 
 " neomake build tool (mapped below to <c-b>)
 Plug 'benekastah/neomake'
-" autocomplete for python
-"Plug 'davidhalter/jedi-vim'
+
 " remove extraneous whitespace when edit mode is exited
+Plug 'xiyaowong/transparent.nvim'
+
+" force transparent background
 Plug 'thirtythreeforty/lessspace.vim'
 
 " latex editing
@@ -22,7 +24,7 @@ Plug 'hashivim/vim-terraform'
 " status bar mods
 "Plug 'itchyny/lightline.vim'
 Plug 'vim-airline/vim-airline'
-"Plug 'vim-airline/vim-airline-themes'
+Plug 'vim-airline/vim-airline-themes'
 Plug 'airblade/vim-gitgutter'
 
 " coc language server client
@@ -31,12 +33,16 @@ Plug 'neoclide/coc.nvim'
 " asynchronous linter (ALE)
 Plug 'dense-analysis/ale'
 
+" devicons"
+Plug 'nvim-tree/nvim-web-devicons'
+
 " git commit browser (start with :GV)
 Plug 'tpope/vim-fugitive'
 Plug 'junegunn/gv.vim'
 
 " fzf plugin
-Plug 'junegunn/fzf'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
 
 " cscope-maps
 Plug 'joe-skb7/cscope-maps'
@@ -80,7 +86,7 @@ Plug 'pearofducks/ansible-vim'
 
 " colorscheme
 Plug 'arcticicestudio/nord-vim'
-"Plug 'chriskempson/base16-vim'
+"Plug 'shaunsingh/nord.nvim'
 
 " finish plugin loading
 " Initialize plugin system
@@ -104,10 +110,26 @@ let g:coc_global_extensions = [
             \'coc-gitignore'
             \]
 
+
 """"""" colorscheme """""""
-"set termguicolors
 syntax on
+
+set background=dark
+set t_Co=256
+
+" you might have to force true color when using regular vim inside tmux as the
+" colorscheme can appear to be grayscale with "termguicolors" option enabled.
+if !has('gui_running') && &term =~ '^\%(screen\|tmux\)'
+  let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+  let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+endif
+
+"let g:nord_disable_background = v:true
+"let g:nord_uniform_diff_background = v:true
+
+"set notermguicolors
 colorscheme nord
+
 
 """"""" jedi-vim """""""
 " Don't mess up undo history
@@ -115,7 +137,7 @@ let g:jedi#show_call_signatures = "0"
 
 """"""" vim-autoformat configuration """""""
 " start formatting with F3
-noremap <F3> :Autoformat<CR>
+"noremap <F3> :Autoformat<CR>
 
 """"""" fern configuration """""""
 " open fern as drawer in current working directory with ctrl+n
@@ -197,16 +219,15 @@ else
   set signcolumn=yes
 endif
 
-" use tab for trigger completion with characters ahead and navigate.
-" NOTE: use command ':verbose imap <tab>' to make sure tab is not mapped by
-" other plugin before putting this into your config.
+" NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
+" other plugin before putting this into your config
 inoremap <silent><expr> <TAB>
-      \ pumvisible() ? "\<C-n>" :
-      \ <SID>check_back_space() ? "\<TAB>" :
+      \ coc#pum#visible() ? coc#pum#next(1) :
+      \ CheckBackspace() ? "\<Tab>" :
       \ coc#refresh()
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
 
-function! s:check_back_space() abort
+function! CheckBackspace() abort
   let col = col('.') - 1
   return !col || getline('.')[col - 1]  =~# '\s'
 endfunction
@@ -352,11 +373,19 @@ set swapfile
 " remove multiple spaces on single backspace
 set shiftwidth=2 tabstop=2 softtabstop=2 expandtab autoindent
 " highlight current line
-function s:SetCursorLine()
-  set cursorline
-  set nocursorcolumn
-  hi CursorLine cterm=none ctermbg=0 ctermfg=none
-endfunction
+if has('nvim')
+  function s:SetCursorLine()
+    set cursorline
+    set nocursorcolumn
+    hi CursorLine gui=none guibg=0 guifg=none
+  endfunction
+else
+  function s:SetCursorLine()
+    set cursorline
+    set nocursorcolumn
+    hi CursorLine cterm=none ctermbg=0 ctermfg=none
+  endfunction
+endif
 autocmd VimEnter * call s:SetCursorLine()
 autocmd BufNew * call s:SetCursorLine()
 

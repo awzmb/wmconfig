@@ -1,5 +1,8 @@
 live_config_reload = true
 
+[env]
+term = "xterm-256color"
+
 [bell]
 animation = "EaseOutExpo"
 color = "0xffffff"

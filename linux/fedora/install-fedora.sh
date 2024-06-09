@@ -22,14 +22,12 @@ sudo dnf -y install \
     neovim \
     vifm \
     util-linux-user \
-    i3 \
     rofi \
-    redshift \
-    redshift-gtk \
+    gammastep \
+    gammastep-indicator \
+    light \
     xss-lock \
-    picom \
     pavucontrol \
-    nitrogen \
     feh \
     calc \
     inkscape \
@@ -41,17 +39,20 @@ sudo dnf -y install \
     jd \
     tree \
     ack \
+    ag \
+    ctags \
     git \
+    git-delta \
+    git-extras \
     fd-find \
     fzf \
     kitty \
     xsetroot \
-    xfce4-power-manager \
-    xinput \
     clipit \
     sqlite \
     tmux \
-    vdirsyncer
+    vdirsyncer \
+    fd-find
 
 # install fonts
 sudo dnf -y install \
@@ -101,9 +102,6 @@ sudo systemctl enable tlp
 sudo dnf -y copr enable macieks/autorandr
 sudo dnf install -y autorandr
 
-# install polybar-reload script
-pip install --user polybar-reload
-
 # spotify terminal
 sudo dnf -y copr enable zeno/spotify-rust
 sudo dnf install -y spotifyd spotify-tui
@@ -121,7 +119,6 @@ sudo dnf -y install \
 sudo dnf -y install flatpak
 flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 flatpak install -y --user com.google.Chrome
-#flatpak install -y --user org.mozilla.firefox
 flatpak install -y --user org.mozilla.firefox
 flatpak install -y --user com.spotify.Client
 flatpak install -y --user org.gtk.Gtk3theme.Qogir-dark
@@ -137,9 +134,8 @@ sudo dnf -y install \
     chromium-browser-privacy \
     firejail surf
 
-# polybar
+# desktop stuff
 sudo dnf -y install \
-    polybar \
     fontawesome-fonts \
     fontawesome-fonts-web
 
@@ -209,6 +205,14 @@ curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+
+# install tmux plugin manager
+TMUX_PLUGIN_MANAGER_DIRECTORY=${HOME}/.tmux/plugins/tpm
+if [ -d "${TMUX_PLUGIN_MANAGER_DIRECTORY}" ]; then
+  cd ${TMUX_PLUGIN_MANAGER_DIRECTORY}; git pull; cd -
+else
+  git clone https://github.com/tmux-plugins/tpm ${TMUX_PLUGIN_MANAGER_DIRECTORY}
+fi
 
 # install themes from repository
 sudo dnf -y install \
@@ -464,7 +468,10 @@ gpgcheck=1
 repo_gpgcheck=0
 gpgkey=https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
 EOM
-sudo dnf -y install google-cloud-cli
+sudo dnf -y install \
+  google-cloud-cli \
+  google-cloud-cli-gke-gcloud-auth-plugin \
+  google-cloud-cli-anthoscli
 
 # github cli
 sudo dnf config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.repo

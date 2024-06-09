@@ -52,6 +52,7 @@ source ~/.aliases
 export PATH="$HOME/.scripts:$PATH"
 export PATH="$HOME/.appimage:$PATH"
 export PATH="$HOME/.bin:$PATH"
+export PATH="$HOME/.local/bin:$PATH"
 
 # add snap to path on linux
 if [ "$(uname)" = "Linux" ]; then
@@ -72,9 +73,6 @@ source ~/.zsh/completion-settings.zsh
 
 # change ls colors to match system
 source ~/.zsh/completion-colors.zsh
-
-# extra completion plugins
-source ~/.zsh/completion-extra-plugins.zsh
 
 # general settings
 source ~/.zsh/general-settings.zsh
@@ -163,6 +161,9 @@ if type "gcloud" > /dev/null; then
    source /usr/share/google-cloud-sdk/completion.zsh.inc
 fi
 
+# extra completions
+command -v gh > /dev/null && . <(gh completion -s zsh)
+command -v timetrace > /dev/null && . <(timetrace completion zsh)
 command -v flux > /dev/null && . <(flux completion zsh)
 command -v helm > /dev/null && . <(helm completion zsh)
 
