@@ -167,6 +167,9 @@ command -v timetrace > /dev/null && . <(timetrace completion zsh)
 command -v flux > /dev/null && . <(flux completion zsh)
 command -v helm > /dev/null && . <(helm completion zsh)
 
+# timesheet file
+command -v helm > /dev/null && export SHEET_FILE="${HOME}/.timesheets/timesheet.json"
+
 # spicetify
 export PATH=$PATH:/home/bawzm/.spicetify
 

@@ -142,6 +142,7 @@ sudo dnf -y install \
 # flashfocus
 sudo dnf -y install python3-xcffib
 sudo pip install flashfocus
+pip install --user tt-time-tracker
 
 # screensaver
 sudo dnf -y install xfce4-screensaver

@@ -21,6 +21,7 @@
     - ~/.terraform.d/cache
     - ~/.terraform.d/plugin-cache
     - ~/.bin
+    - ~/.timesheets
 
 - link:
     ~/.tmux.conf: .tmux.conf
