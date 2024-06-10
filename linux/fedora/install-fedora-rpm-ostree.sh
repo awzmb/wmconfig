@@ -68,20 +68,14 @@ rpm-ostree -y --apply-live --allow-inactive install \
     gstreamer1-vaapi \
     libvdpau-va-gl \
     libva-utils \
-    libva-intel-driver \
     libva-vdpau-driver \
     intel-gpu-tools \
-    intel-media-driver \
     intel-undervolt \
     intel-opencl \
     heif-pixbuf-loader \
-    libheif-freeworld \
-    libheif-tools \
-    pipewire-codec-aptx \
     brightnessctl \
     awscli2 \
     aws-tools \
-    aws-docs \
     gdm \
     mpv \
     fuzzel \
@@ -101,10 +95,10 @@ rpm-ostree -y --apply-live --allow-inactive install \
     light
 
 # install non-free ffmpeg
-rpm-ostree override remove libavcodec-free libavfilter-free libavformat-free libavutil-free libpostproc-free libswresample-free libswscale-free --install ffmpeg
+#rpm-ostree override remove libavcodec-free libavfilter-free libavformat-free libavutil-free libpostproc-free libswresample-free libswscale-free --install ffmpeg
 
 # install gnome-shell themes
-rpm-ostree -y install rpm-ostree install gnome-shell-extension-unite gnome-shell-theme-flat-remix gnome-shell-extension-common gnome-shell-extension-pop-shell gnome-shell-extension-pop-shell gnome-shell-extension-pop-shell-shortcut-overrides
+#rpm-ostree -y install rpm-ostree install gnome-shell-extension-unite gnome-shell-theme-flat-remix gnome-shell-extension-common gnome-shell-extension-pop-shell gnome-shell-extension-pop-shell gnome-shell-extension-pop-shell-shortcut-overrides
 
 # update firmware
 sudo fwupdmgr refresh
