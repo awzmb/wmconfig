@@ -59,7 +59,7 @@ set $poweroff systemctl poweroff
 set $launcher fuzzel -b 242933ff -t d8dee9ff -s 2e3440ff -S 8fbcbbff -C 88c0d0ff -m b48eadff -w 60 --border-width=0 --border-radius=0 --dpi-aware=auto --show-actions -f "Terminus:weight=thin:size=14"
 
 # set terminal emulator
-set $term alacritty
+set $term foot
 
 # set mod key (Mod1=<Alt>, Mod4=<Super>)
 set $mod Mod1
