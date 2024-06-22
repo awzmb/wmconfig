@@ -60,6 +60,7 @@ set $launcher fuzzel -b 242933ff -t d8dee9ff -s 2e3440ff -S 8fbcbbff -C 88c0d0ff
 
 # set terminal emulator
 set $term foot
+#set $term alacritty
 
 # set mod key (Mod1=<Alt>, Mod4=<Super>)
 set $mod Mod1
@@ -81,7 +82,7 @@ floating_modifier $mod
 output eDP-1 scale 1.2
 #output DP-1 scale 1.5
 #output DP-1 scale 1
-output DP-2 scale 1.3
+output DP-2 scale 1
 #output DP-2 scale 1.5
 #output DP-5 scale 1.4
 output DP-5 scale 1
@@ -97,7 +98,8 @@ output HDMI-A-2 pos 0 0 res 3840x1080@120Hz
 #output HDMI-A-1 pos 0 0 res 3840x1080@120Hz
 #output DP-1 pos 0 0 res 1920x1080@60Hz
 #output DP-2 pos 0 0 res 3840x1080@120Hz
-output DP-2 pos 0 0 res 5120x1440@120Hz
+#output DP-2 pos 0 0 res 3840x1080@120Hz
+output DP-2 pos 0 0 res 3840x1080@120Hz
 #output DP-2 pos 0 0 res 2560x1600@120Hz
 #output DP-5 pos 0 0 res 5120x1440@120Hz
 #output DP-5 pos 0 0 res 3840x1080@120Hz
@@ -137,10 +139,10 @@ input type:pointer {
 
 # idle settings
 exec swayidle -w \
-  timeout 300 $locker \
+  timeout 300 "$locker" \
   timeout 600 'swaymsg "output * dpms off"' \
   resume 'swaymsg "output * dpms on"' \
-  before-sleep $locker
+  before-sleep "$locker"
 
 # map escape to capslock
 input * xkb_options caps:escape

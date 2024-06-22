@@ -21,6 +21,9 @@ Plug 'thirtythreeforty/lessspace.vim'
 " terraform, hcl
 Plug 'hashivim/vim-terraform'
 
+" mermaidjs
+Plug 'mracos/mermaid.vim'
+
 " status bar mods
 "Plug 'itchyny/lightline.vim'
 Plug 'vim-airline/vim-airline'
