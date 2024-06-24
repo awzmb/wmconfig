@@ -330,7 +330,7 @@ gsettings set org.gnome.shell disable-extension-version-validation true
 #pass insert mail/main
 
 # global git configration
- git config --global user.email "dennis.bundschuh@gmail.com"
+ git config --global user.email "bundschuh.dennis@gmail.com"
  git config --global user.name "Dennis Bundschuh"
  git config --global init.defaultBranch main
  git config --global push.autoSetupRemote true

@@ -476,7 +476,8 @@ EOM
 sudo dnf -y install \
   google-cloud-cli \
   google-cloud-cli-gke-gcloud-auth-plugin \
-  google-cloud-cli-anthoscli
+  google-cloud-cli-anthoscli \
+  google-cloud-cli-kpt
 
 # github cli
 sudo dnf config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.repo
