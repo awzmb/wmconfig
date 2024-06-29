@@ -8,6 +8,7 @@ ORIGIN_PATH=${pwd}
 # enable rpmfusion repositories
 sudo rpm -Uvh http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
 sudo rpm -Uvh http://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+sudo dnf config-manager --enable fedora-cisco-openh264 -y
 
 # install non-free multimedia codecs
 sudo dnf -y swap ffmpeg-free ffmpeg --allowerasing
@@ -323,6 +324,9 @@ sudo wget https://goo.gl/H2SViY -O /etc/udev/rules.d/99-8bitdo-bluetooth-control
 #sudo echo "#!/usr/bin/env sh" >> /etc/netctl/interfaces/wlp2s0
 #sudo echo "/usr/bin/macchanger -r interface" >> /etc/netctl/interfaces/wlp2s0
 #sudo chmod +x /etc/netctl/interfaces/wlp2s0
+
+# install dependencies
+sudo dnf -y install pipewire gamemode mesa-va-drivers mesa-dri-drivers mesa-vulkan-drivers
 
 # install steam gaming platform
 sudo dnf -y install steam

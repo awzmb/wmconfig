@@ -7,9 +7,6 @@ call plug#begin('~/.vim/plugged')
 " neomake build tool (mapped below to <c-b>)
 Plug 'benekastah/neomake'
 
-" remove extraneous whitespace when edit mode is exited
-Plug 'xiyaowong/transparent.nvim'
-
 " force transparent background
 Plug 'thirtythreeforty/lessspace.vim'
 

@@ -21,10 +21,13 @@ REGULAR_DIRECTORY="${HOME}/.steam/steam"
 
 if [ -d "$FLATPAK_DIRECTORY" ]; then
   ./install.py --color-theme nord --extras login/hide_qr library/hide_whats_new general/no_rounded_corners --target flatpak
-elif [ -d "$REGULAR_DIRECTORY" ]; then
-  ./install.py --color-theme nord --extras login/hide_qr library/hide_whats_new general/no_rounded_corners
 else
   echo "${FLATPAK_DIRECTORY} not found."
+fi
+
+if [ -d "$REGULAR_DIRECTORY" ]; then
+  ./install.py --color-theme nord --extras login/hide_qr library/hide_whats_new general/no_rounded_corners
+else
   echo "${REGULAR_DIRECTORY} not found."
   echo "Install and run steam at least once before using this script."
 fi
