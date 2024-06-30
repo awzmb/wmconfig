@@ -251,11 +251,6 @@ rm ./get_helm.sh
   #gnome-shell-extension-unite \
   #xprop
 
-# install xwayland standalone
-#sudo dnf copr enable ofourdan/Xwayland
-#sudo dnf upgrade xorg-x11-server-Xwayland
-#sudo dnf install xorg-x11-server-Xwayland-devel
-
 # 8bitdo SF30 bluetooth controller settings
 sudo wget https://goo.gl/H2SViY -O /etc/udev/rules.d/99-8bitdo-bluetooth-controllers.rules
 
@@ -264,15 +259,6 @@ sudo wget https://goo.gl/H2SViY -O /etc/udev/rules.d/99-8bitdo-bluetooth-control
 #sudo echo "#!/usr/bin/env sh" >> /etc/netctl/interfaces/wlp2s0
 #sudo echo "/usr/bin/macchanger -r interface" >> /etc/netctl/interfaces/wlp2s0
 #sudo chmod +x /etc/netctl/interfaces/wlp2s0
-
-# install snap packages
-#snap install \
-    #adapta-gtk-snap \
-    #gtk-common-themes \
-    #gtk2-common-themes \
-    #spotify \
-    #spotifyd \
-    #spt
 
 # install flashfocus for visual feedback on windows switch
 sudo pip install flashfocus
@@ -286,18 +272,6 @@ sudo pip install flashfocus
 #sudo dnf -y install \
     #spotifyd \
     #spotify-tui
-
-# install asdf for tool management
-#git clone https://github.com/asdf-vm/asdf.git ~/.asdf
-#cd ~/.asdf
-#git checkout "$(git describe --abbrev=0 --tags)"
-
-# change lightdm background
-#sed -i 's/^background=.*/background=#242933/g' /etc/lightdm/lightdm-gtk-greeter.conf
-
-# change timezone to europe/berlin
-#sudo rm -rf /etc/localtime
-#sudo ln -s /usr/share/zoneinfo/Europe/Berlin /etc/localtime
 
 # change grub theme
 #sudo mkdir -p /boot/grub/themes/fedora
@@ -338,7 +312,7 @@ gsettings set org.gnome.shell disable-extension-version-validation true
 #pass insert mail/main
 
 # global git configration
- git config --global user.email "dennis.bundschuh@metamorphant.de"
+ git config --global user.email "dennis.bundschuh@gmail.com"
  git config --global user.name "Dennis Bundschuh"
  git config --global init.defaultBranch main
  git config --global push.autoSetupRemote true
