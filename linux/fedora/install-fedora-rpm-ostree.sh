@@ -7,6 +7,17 @@ rpm-ostree -y --apply-live install \
     https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
     https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
 
+# enable google-cloud repository
+sudo tee -a /etc/yum.repos.d/google-cloud-sdk.repo << EOM
+[google-cloud-cli]
+name=Google Cloud CLI
+baseurl=https://packages.cloud.google.com/yum/repos/cloud-sdk-el9-x86_64
+enabled=1
+gpgcheck=1
+repo_gpgcheck=0
+gpgkey=https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+EOM
+
 # layered packages
 rpm-ostree -y --apply-live --allow-inactive install \
     zsh \
@@ -92,7 +103,14 @@ rpm-ostree -y --apply-live --allow-inactive install \
     smbios-utils \
     mangohud \
     vdirsyncer \
-    light
+    light \
+    google-cloud-cli \
+    google-cloud-cli-anthos-auth \
+    google-cloud-cli-kpt \
+    google-cloud-cli-kubectl-oidc \
+    google-cloud-cli-skaffold \
+    google-cloud-cli-terraform-validator \
+    google-cloud-cli-gke-gcloud-auth-plugin
 
 # install non-free ffmpeg
 #rpm-ostree override remove libavcodec-free libavfilter-free libavformat-free libavutil-free libpostproc-free libswresample-free libswscale-free --install ffmpeg
