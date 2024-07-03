@@ -53,7 +53,8 @@ sudo dnf -y install \
     sqlite \
     tmux \
     vdirsyncer \
-    fd-find
+    fd-find \
+    miller
 
 # install fonts
 sudo dnf -y install \
@@ -462,6 +463,10 @@ sudo dnf -y install driverctl
 
 # wireguard tools
 sudo dnf -y install wireguard-tools
+
+# drawing architecture diagrams
+sudo dnf -y install plantuml
+sudo npm install -g node-plantuml
 
 # google cloud cli
 sudo tee -a /etc/yum.repos.d/google-cloud-sdk.repo << EOM

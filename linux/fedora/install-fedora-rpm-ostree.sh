@@ -110,7 +110,8 @@ rpm-ostree -y --apply-live --allow-inactive install \
     google-cloud-cli-kubectl-oidc \
     google-cloud-cli-skaffold \
     google-cloud-cli-terraform-validator \
-    google-cloud-cli-gke-gcloud-auth-plugin
+    google-cloud-cli-gke-gcloud-auth-plugin \
+    miller
 
 # install non-free ffmpeg
 #rpm-ostree override remove libavcodec-free libavfilter-free libavformat-free libavutil-free libpostproc-free libswresample-free libswscale-free --install ffmpeg
