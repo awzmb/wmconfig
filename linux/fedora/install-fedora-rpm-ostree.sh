@@ -111,7 +111,11 @@ rpm-ostree -y --apply-live --allow-inactive install \
     google-cloud-cli-skaffold \
     google-cloud-cli-terraform-validator \
     google-cloud-cli-gke-gcloud-auth-plugin \
-    miller
+    miller \
+    python3-certbot \
+    python3-certbot-apache \
+    python3-certbot-dns-google \
+    python3-certbot-dns-route53
 
 # install non-free ffmpeg
 #rpm-ostree override remove libavcodec-free libavfilter-free libavformat-free libavutil-free libpostproc-free libswresample-free libswscale-free --install ffmpeg
