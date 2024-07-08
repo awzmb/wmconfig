@@ -90,6 +90,7 @@ output DP-5 scale 1
 # set output resolution
 #output * pos 0 0 res 1920x1200@120Hz
 #output eDP-1 pos 0 1800 res 2560x1600@60Hz
+output DP-1 pos 0 0 res 1920x1080@119Hz
 #output DP-1 pos 0 0 res 3840x1080@120Hz
 #output DP-5 pos 0 0 res 3840x1080@120Hz
 #output HDMI-A-1 pos 0 0 res 3840x1080@120Hz
@@ -301,6 +302,7 @@ bindsym $mod+Shift+Print --release exec --no-startup-id flameshot gui
 
 # suspend
 bindsym $mod+F11 exec --no-startup-id $locker && $suspend
+bindsym $mod+F10 exec --no-startup-id $locker
 
 # networkmanager dmenu integration
 bindsym $mod+shift+w exec --no-startup-id networkmanager_dmenu \
