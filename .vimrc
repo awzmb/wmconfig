@@ -96,6 +96,12 @@ Plug 'arcticicestudio/nord-vim'
 " - Automatically executes `filetype plugin indent on` and `syntax enable`.
 call plug#end()
 
+" copilot extension
+let g:copilot_assume_mapped = "true"
+let g:copilot_no_tab_map = "true"
+" accept suggestion
+inoremap <silent><expr> <c-i> copilot#Accept("<CR>")
+
 " coc extensions
 let g:coc_global_extensions = [
             \'coc-prettier',
@@ -381,6 +387,8 @@ if has('nvim')
     set cursorline
     set nocursorcolumn
     hi CursorLine gui=none guibg=0 guifg=none
+    " custom separator color since neovim changed their default scheme
+    hi WinSeparator guifg=#3B4252
   endfunction
 else
   function s:SetCursorLine()
@@ -429,8 +437,6 @@ let g:fzf_colors =
   \ 'spinner': ['fg', 'Label'],
   \ 'header':  ['fg', 'Comment'] }
 
-""""""" confluence-vim """""""
-let g:confluence_url = 'https://confluence.dkb.ag/wiki/rest/api/content'
 
 """"""" vim-terraform """""""
 " allow vim-terraform to align settings automatically with tabularize

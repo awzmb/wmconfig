@@ -41,6 +41,7 @@ rpm-ostree -y --apply-live --allow-inactive install \
     sqlite \
     tmux \
     terminus-fonts \
+    ax86-terminus-ttf-fonts \
     terminus-fonts-console \
     terminus-fonts-grub2 \
     unifont \
