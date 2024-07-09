@@ -48,7 +48,7 @@ exec_always {
 # =============================================================================
 
 # set default locker
-set $locker swaylock --daemonize --scaling solid_color --line-uses-inside --indicator-thickness 10 --inside-color 88C0D0 --color 242933 --line-color 242933 --line-ver-color 88C0D0 --ring-color EBCB8B --ring-ver-color 88C0D0 --text-ver-color 242933
+set $locker swaylock --daemonize --scaling solid_color --line-uses-inside --indicator-thickness 10 --inside-color 88C0D0 --color 242933 --line-color 242933 --line-ver-color D8DEE9 --ring-color 3B4252 --ring-ver-color D8DEE9 --text-ver-color 242933
 
 # set default suspend tool
 set $suspend systemctl suspend
