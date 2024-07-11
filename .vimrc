@@ -18,7 +18,7 @@ Plug 'thirtythreeforty/lessspace.vim'
 " terraform, hcl
 Plug 'hashivim/vim-terraform'
 
-" terraform, hcl
+" copilot integration
 Plug 'github/copilot.vim'
 
 " mermaidjs

@@ -136,6 +136,8 @@
     ~/.config/alacritty/alacritty.toml:
       if: '[ `uname` = Linux ]'
       path: .config/alacritty/alacritty.toml
+    ~/.config/chrome/theme/manifest.json:
+      path: .config/chrome/theme/manifest.json
 
 - shell:
     - [git submodule update --init --recursive, Installing submodules]
