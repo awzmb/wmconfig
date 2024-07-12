@@ -27,9 +27,9 @@
 				51
 			],
 			"background_tab": [
-				59,
-				66,
-				82
+				36,
+				41,
+				51
 			],
 			"background_tab_inactive": [
 				36,
@@ -57,9 +57,9 @@
 				233
 			],
 			"tab_background_text_inactive": [
-				216,
-				222,
-				233
+				76,
+				86,
+        106
 			],
 			"tab_background_text_incognito": [
 				216,
