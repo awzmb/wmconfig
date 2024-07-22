@@ -8,5 +8,6 @@
       "settings": {}
     }
   },
-  "coc.preferences.formatOnType": true
+  "coc.preferences.formatOnType": true,
+  "java.compile.nullAnalysis.mode": "automatic"
 }

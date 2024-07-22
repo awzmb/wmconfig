@@ -18,7 +18,6 @@ bindkey -v
 
 # modules (turbo mode)
 zinit ice wait'!0'
-#zinit light marlonrichert/zsh-autocomplete
 
 # colorizes various shell tools (grep, diff, ip, ...)
 # NOTE: currently disabled because alpine busybox does not support certain grep options
@@ -100,16 +99,6 @@ source ~/.zsh/fixes.zsh
 # additional tools
 source ~/.zsh/tools.zsh
 
-# asdf completion
-#if [ "$(uname)" = "Darwin" ]; then
-#  source "$( brew --prefix asdf )/asdf.sh"
-#fi
-
-# asdf terragrunt terraform version fix
-#if [ "$(uname)" = "Darwin" ]; then
-#  export TERRAGRUNT_TFPATH=$(asdf which terraform)
-#fi
-
 # fix for zscaler if .certificates exists in home
 if [ -d "$HOME/.certificates" ]; then
   export AWS_CA_BUNDLE=$HOME/.certificates/Certificates.pem
@@ -137,25 +126,17 @@ source <(kubectl completion zsh)
 
 # openjdk 11
 export PATH="${PATH}:${HOME}/.jdk/openjdk-11/bin"
-export JAVA_HOME="${HOME}/.jdk/openjdk-11"
+#export JAVA_HOME="${HOME}/.jdk/openjdk-11"
+export JAVA_HOME="/usr/lib/jvm/java"
 
-#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
-export SDKMAN_DIR="$HOME/.sdkman"
-[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
-
+#
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 export PATH=$PATH:/home/awzm/.spicetify
-[[ $commands[kubectl] ]] && source <(kubectl completion zsh)
 
 # add pip local cache to path
 export PATH="${PATH}:${HOME}/.local/bin"
-
-# add brew to env if installed
-#if [[ -d "/home/linuxbrew" ]]; then
-  #eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-#fi
 
 if type "gcloud" > /dev/null; then
    source /usr/share/google-cloud-sdk/completion.zsh.inc
@@ -166,9 +147,9 @@ command -v gh > /dev/null && . <(gh completion -s zsh)
 command -v timetrace > /dev/null && . <(timetrace completion zsh)
 command -v flux > /dev/null && . <(flux completion zsh)
 command -v helm > /dev/null && . <(helm completion zsh)
-
+command -v kubectl > /dev/null && . <(kubectl completion zsh)
 # timesheet file
-command -v helm > /dev/null && export SHEET_FILE="${HOME}/.timesheets/timesheet.json"
+command -v tt > /dev/null && export SHEET_FILE="${HOME}/.timesheets/timesheet.json"
 
 # spicetify
 export PATH=$PATH:/home/bawzm/.spicetify
