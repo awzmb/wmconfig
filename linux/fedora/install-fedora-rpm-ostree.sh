@@ -250,6 +250,7 @@ pip install --user tt-time-tracker
 pip install --user parliament
 pip install --user aws-policy-generator
 pip install --user gcalcli
+pip install --user posting
 
 #sudo dnf -y install \
     #neomutt \
