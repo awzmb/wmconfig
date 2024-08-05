@@ -111,7 +111,10 @@ rpm-ostree -y --apply-live --allow-inactive install \
     google-cloud-cli-kubectl-oidc \
     google-cloud-cli-skaffold \
     google-cloud-cli-terraform-validator \
+    google-cloud-cli-terraform-tools \
     google-cloud-cli-gke-gcloud-auth-plugin \
+    google-cloud-sdk-anthos-auth \
+    google-cloud-cli-istioctl \
     miller \
     python3-certbot \
     python3-certbot-apache \
