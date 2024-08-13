@@ -77,6 +77,9 @@ hide_edge_borders both
 # use mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
 
+# enable adaptive sync (freesync)
+output * adaptive_sync on
+
 # set hidpi output scaling
 #output * scale 2
 output eDP-1 scale 2
@@ -90,7 +93,7 @@ output DP-5 scale 1
 # set output resolution
 #output * pos 0 0 res 1920x1200@120Hz
 #output eDP-1 pos 0 1800 res 2560x1600@60Hz
-output DP-1 pos 0 0 res 1920x1080@119Hz
+#output DP-1 pos 0 0 res 1920x1080@119Hz
 #output DP-1 pos 0 0 res 3840x1080@120Hz
 #output DP-5 pos 0 0 res 3840x1080@120Hz
 #output HDMI-A-1 pos 0 0 res 3840x1080@120Hz
@@ -140,8 +143,8 @@ input type:pointer {
 }
 
 # idle settings
-exec swayidle -w \
-  timeout 300 "$locker"
+#exec swayidle -w \
+  #timeout 300 "$locker"
 #timeout 600 'swaymsg "output * dpms off"' \
 #resume 'swaymsg "output * dpms on"' \
 #before-sleep "$locker"

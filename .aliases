@@ -30,3 +30,6 @@ alias fcd='cd $(find . -type d 2>&1 | grep -v "Permission denied" | fzf)'
 
 # get temperature
 alias temps="paste <(cat /sys/class/thermal/thermal_zone*/type) <(cat /sys/class/thermal/thermal_zone*/temp) | column -s $'\t' -t | sed 's/\(.\)..$/.\1°C/'"
+
+# use podman instead of docker
+alias docker='podman'

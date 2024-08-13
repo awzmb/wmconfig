@@ -3,9 +3,9 @@
 ORIGIN_PATH=${pwd}
 
 # enable rpmfusion repositories
-rpm-ostree -y --apply-live install \
-    https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
-    https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+#rpm-ostree -y --apply-live install \
+    #https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
+    #https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
 
 # enable google-cloud repository
 sudo tee -a /etc/yum.repos.d/google-cloud-sdk.repo << EOM
@@ -21,25 +21,20 @@ EOM
 # layered packages
 rpm-ostree -y --apply-live --allow-inactive --idempotent install \
     zsh \
-    vim \
     neovim \
     vifm \
     gammastep \
     gammastep-indicator \
     calc \
-    unrar \
     eza \
     bat \
     jd \
     ack \
     git \
     fd-find \
-    fzf \
     kitty \
     xinput \
     clipit \
-    sqlite \
-    tmux \
     terminus-fonts \
     ax86-terminus-ttf-fonts \
     terminus-fonts-console \
@@ -51,8 +46,6 @@ rpm-ostree -y --apply-live --allow-inactive --idempotent install \
     pass \
     passmenu \
     oathtool \
-    tlp \
-    tlp-rdw \
     fontawesome-fonts \
     fontawesome-fonts-web \
     w3m \
@@ -67,42 +60,23 @@ rpm-ostree -y --apply-live --allow-inactive --idempotent install \
     arc-theme \
     libvirt-daemon-kvm \
     driverctl \
-    wireguard-tools \
-    gnome-shell-extension-user-theme \
-    gnome-tweaks \
-    xdg-desktop-portal-gnome \
     npm \
     htop \
     distrobox \
     gtk-murrine-engine \
     gtk2-engines \
     gstreamer1-vaapi \
-    libvdpau-va-gl \
-    libva-utils \
-    libva-vdpau-driver \
-    intel-gpu-tools \
-    intel-undervolt \
-    intel-opencl \
-    heif-pixbuf-loader \
     brightnessctl \
     awscli2 \
     aws-tools \
-    gdm \
     mpv \
     fuzzel \
-    hyprland \
     strace \
     openssl \
     alacritty \
-    vulkan-loader \
-    vulkan-headers \
-    vulkan-tools \
     wondershaper \
-    inxi \
     msr-tools \
     smbios-utils \
-    mangohud \
-    vdirsyncer \
     light \
     google-cloud-cli \
     google-cloud-cli-anthos-auth \
@@ -110,19 +84,15 @@ rpm-ostree -y --apply-live --allow-inactive --idempotent install \
     google-cloud-cli-kubectl-oidc \
     google-cloud-cli-skaffold \
     google-cloud-cli-terraform-validator \
-    google-cloud-cli-terraform-tools \
     google-cloud-cli-gke-gcloud-auth-plugin \
-    google-cloud-sdk-anthos-auth \
-    google-cloud-cli-istioctl \
     miller \
-    python3-certbot \
-    python3-certbot-apache \
-    python3-certbot-dns-google \
-    python3-certbot-dns-route53
     gh \
     git-delta \
     git-lfs \
-    git-extras
+    git-extras \
+    fedora-release-sway-atomic \
+    sway \
+    swaybg
 
 # install non-free ffmpeg
 #rpm-ostree override remove libavcodec-free libavfilter-free libavformat-free libavutil-free libpostproc-free libswresample-free libswscale-free --install ffmpeg
@@ -134,22 +104,6 @@ rpm-ostree -y --apply-live --allow-inactive --idempotent install \
 sudo fwupdmgr refresh
 sudo fwupdmgr get-updates
 sudo fwupdmgr update
-
-# gaming improvements
-# increase maximum number of memory map areas a process may have
-echo 'vm.max_map_count = 2147483642' | sudo tee /etc/sysctl.d/11-max-map-count.conf
-
-# install nvidia drivers for egpu
-#sudo rpm-ostree install akmod-nvidia xorg-x11-drv-nvidia xorg-x11-drv-nvidia-cuda nvtop
-
-# disable noveau driver to use egpu
-#sudo rpm-ostree kargs --append=rd.driver.blacklist=nouveau --append=modprobe.blacklist=nouveau --append=nvidia-drm.modeset=1 initcall_blacklist=simpledrm_platform_driver_init
-
-# amdgpu tools
-rpm-ostree install radeontop
-
-# activate iommu fgr egpu hotswapping and kvm
-sudo rpm-ostree kargs --append=pcie_ports=native pci=assign-busses,nocrs,realloc iommu=on
 
 # flathub repositories and premise
 flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
@@ -163,7 +117,6 @@ flatpak install -y --user fedora com.github.tchx84.Flatseal
 flatpak install -y --user flathub org.gnome.Platform
 flatpak install -y --user flathub org.gnome.Sdk
 flatpak install -y --user flathub com.spotify.Client
-#flatpak install -y --user flathub com.valvesoftware.Steam
 flatpak install -y --user flathub com.github.Eloston.UngoogledChromium
 flatpak install -y --user flathub org.gtk.Gtk3theme.Qogir-dark
 flatpak install -y --user flathub de.shorsh.discord-screenaudio
@@ -174,9 +127,6 @@ flatpak install -y --user flathub org.zealdocs.Zeal
 flatpak install -y --user flathub org.flameshot.Flameshot
 flatpak install -y --user flathub net.lutris.Lutris
 flatpak install -y --user flathub com.google.Chrome
-#flatpak install -y --user com.valvesoftware.Steam.CompatibilityTool.Proton
-#flatpak install -y --user org.freedesktop.Platform.VulkanLayer.gamescope
-#flatpak install -y --user org.freedesktop.Platform.VulkanLayer.MangoHud
 flatpak install -y --user org.inkscape.Inkscape
 flatpak install -y --user org.gimp.GIMP
 
@@ -201,15 +151,19 @@ xdg-settings set default-web-browser org.mozilla.firefox.desktop
 #sudo systemctl disable sddm.service
 #sudo systemctl enable gdm.service
 
+
 # qogir theme
-mkdir -p ${HOME}/.themes
-git clone https://github.com/vinceliuice/Qogir-theme.git ${HOME}/.themes/qogir-install
-./${HOME}/.themes/qogir-install/install.sh
-rm -rf ${HOME}/.themes/qogir-install
+if [ -d "${HOME}/.themes/Qogir" ]; then
+  mkdir -p ${HOME}/.themes
+  git clone https://github.com/vinceliuice/Qogir-theme.git ${HOME}/.themes/qogir-install
+  ./${HOME}/.themes/qogir-install/install.sh
+  rm -rf ${HOME}/.themes/qogir-install
+fi
 
 # flatcolor theme (base16)
-git clone https://github.com/jasperro/FlatColor ${HOME}/.themes/FlatColor
-# TODO: inject nord theme from https://github.com/tinted-theming/base16-gtk-flatcolor/blob/main/gtk-2/base16-nord-gtkrc
+if [ -d "${HOME}/.themes/FlatColor" ]; then
+  git clone https://github.com/jasperro/FlatColor ${HOME}/.themes/FlatColor
+fi
 
 # give flatpak access to theme directories and set qogir theme
 sudo flatpak override --filesystem=$HOME/.themes
@@ -238,9 +192,6 @@ else
   git clone https://github.com/tmux-plugins/tpm ${TMUX_PLUGIN_MANAGER_DIRECTORY}
 fi
 
-# enable tlp power management
-sudo systemctl enable tlp
-
 # install pip packages
 pip install flashfocus
 pip install pre-commit
@@ -251,80 +202,17 @@ pip install --user aws-policy-generator
 pip install --user gcalcli
 pip install --user posting
 
-#sudo dnf -y install \
-    #neomutt \
-    #notmuch \
-    #isync \
-    #msmtp
-
-# install mutt-wizard
-#git clone https://github.com/LukeSmithxyz/mutt-wizard
-#cd mutt-wizard
-#sudo make install
-#cd ${ORIGIN_PATH}
-#rm -rf mutt-wizard
-
 # helm kubernetes package manager
 curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
 chmod 700 get_helm.sh
 ./get_helm.sh
 rm ./get_helm.sh
 
-# dwarf fortress
-# sudo dnf -y install dwarffortress
-
-# install gnome packages
-#sudo dnf -y install \
-  #gnome-tweaks \
-  #gnome-extensions-app \
-  #gnome-shell-extension-pop-shell \
-  #gnome-shell-extension-pop-shell-shortcut-overrides \
-  #gnome-shell-extension-unite \
-  #xprop
-
 # 8bitdo SF30 bluetooth controller settings
 sudo wget https://goo.gl/H2SViY -O /etc/udev/rules.d/99-8bitdo-bluetooth-controllers.rules
 
-# use macchanger with netctl
-#sudo touch /etc/netctl/interfaces/wlp2s0
-#sudo echo "#!/usr/bin/env sh" >> /etc/netctl/interfaces/wlp2s0
-#sudo echo "/usr/bin/macchanger -r interface" >> /etc/netctl/interfaces/wlp2s0
-#sudo chmod +x /etc/netctl/interfaces/wlp2s0
-
 # install flashfocus for visual feedback on windows switch
 sudo pip install flashfocus
-
-# unclutter (hides mouse when idle)
-#sudo dnf -y install unclutter
-
-# install spotify-tui
-#sudo dnf -y copr enable szpadel/spotifyd
-#sudo dnf -y copr enable atim/spotify-tui
-#sudo dnf -y install \
-    #spotifyd \
-    #spotify-tui
-
-# change grub theme
-#sudo mkdir -p /boot/grub/themes/fedora
-#sudo cp ${PWD}/grub/theme.txt /boot/grub/themes/fedora/theme.txt
-#sudo sed -i "\$aGRUB_THEME=/boot/grub/themes/fedora/theme.txt" /etc/default/grub
-#sudo grub2-mkconfig -o /boot/grub2/grub.cfg
-
-# set liva driver to iHD for vainfo to work
-#if [ ! -n "$(cat /etc/environment | grep LIBVA_DRIVER_NAME)" ]; then
-  #echo 'LIBVA_DRIVER_NAME=iHD' | sudo tee -a /etc/environment
-#fi
-
-#sudo groupadd shadow-input
-#sudo usermod -a -G input $USER
-#sudo usermod -a -G shadow-input $USER
-#echo "uinput" | sudo tee -a /etc/modules-load.d/uinput.conf
-#echo 'KERNEL=="uinput", MODE="0660", GROUP="shadow-input"' | sudo tee -a /etc/udev/rules.d/65-shadow-client.rules
-
-# add options to i915 to enable libva / vainfo
-#if [ ! -f "/etc/modprobe.d/i915.conf" ]; then
-  #echo "options i915 enable_guc=2" | sudo tee -a /etc/modprobe.d/i915.conf
-#fi
 
 # gnome shell settings
 # solid color background
