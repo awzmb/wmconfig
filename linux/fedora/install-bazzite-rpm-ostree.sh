@@ -93,7 +93,11 @@ rpm-ostree -y --apply-live --allow-inactive --idempotent install \
     fedora-release-sway-atomic \
     sway \
     swaybg \
-    waybar
+    waybar \
+    blueman \
+    rofi \
+    dunst \
+    network-manager-applet
 
 # install non-free ffmpeg
 #rpm-ostree override remove libavcodec-free libavfilter-free libavformat-free libavutil-free libpostproc-free libswresample-free libswscale-free --install ffmpeg

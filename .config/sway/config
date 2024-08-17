@@ -78,7 +78,7 @@ hide_edge_borders both
 floating_modifier $mod
 
 # enable adaptive sync (freesync)
-output * adaptive_sync on
+#output * adaptive_sync on
 
 # set hidpi output scaling
 #output * scale 2
