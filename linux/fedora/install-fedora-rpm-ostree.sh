@@ -18,6 +18,16 @@ repo_gpgcheck=0
 gpgkey=https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
 EOM
 
+# install tkg kernel for better gaming performance
+#rpm-ostree override replace \
+  #--experimental \
+  #--from repo='copr:copr.fedorainfracloud.org:whitehara:kernel-tkg' \
+  #kernel \
+  #kernel-core \
+  #kernel-modules \
+  #kernel-modules-core \
+  #kernel-modules-extra
+
 # layered packages
 rpm-ostree -y --apply-live --allow-inactive --idempotent install \
     zsh \
