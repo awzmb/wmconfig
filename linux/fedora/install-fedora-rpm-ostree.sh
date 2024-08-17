@@ -91,6 +91,11 @@ rpm-ostree -y --apply-live --allow-inactive --idempotent install \
     mpv \
     fuzzel \
     hyprland \
+    xdg-desktop-portal-hyprland \
+    nwg-panel \
+    hyprutils \
+    hyprlock \
+    hypridle \
     strace \
     openssl \
     alacritty \
