@@ -55,6 +55,9 @@
     ~/.config/kanshi:
       if: '[ `uname` = Linux ]'
       path: .config/kanshi
+    ~/.config/hypr:
+      if: '[ `uname` = Linux ]'
+      path: .config/hypr
     ~/.config/environment.d:
       if: '[ `uname` = Linux ]'
       path: .config/environment.d

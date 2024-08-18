@@ -226,13 +226,10 @@ bindsym $mod+Shift+space floating toggle
 bindsym $mod+space focus mode_toggle
 
 # focus the parent container
-bindsym $mod+a focus parent
+#bindsym $mod+a focus parent
 
 # focus the child container
 #bindcode $mod+d focus child
-
-# screen layouts
-bindsym $mod+F8 exec work-layout
 
 # reload the configuration file
 bindsym $mod+Shift+C reload

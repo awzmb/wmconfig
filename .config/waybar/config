@@ -5,24 +5,18 @@
     // "width": 1280, // Waybar width
     "spacing": 4, // Gaps between modules (4px)
     // Choose the order of the modules
-    "modules-left": ["sway/workspaces", "sway/mode"],
+    "modules-left": ["sway/workspaces", "sway/mode", "hyprland/workspaces", "hyprland/submap"],
     "modules-center": [],
     "modules-right": ["pulseaudio", "network", "cpu", "memory", "temperature", "battery", "clock", "tray"],
     // Modules configuration
     "sway/workspaces": {
         "disable-scroll": true,
-        "all-outputs": true,
-//        "format": "{name}: {icon}",
-//        "format-icons": {
-//            "1": "",
-//            "2": "",
-//            "3": "",
-//            "4": "",
-//            "5": "",
-//            "urgent": "",
-//            "focused": "",
-//            "default": ""
-//        }
+        "all-outputs": true
+    },
+    "hyprland/workspaces": {
+       "format": "{icon}",
+       "on-scroll-up": "hyprctl dispatch workspace e+1",
+       "on-scroll-down": "hyprctl dispatch workspace e-1"
     },
     "keyboard-state": {
         "numlock": true,
@@ -34,7 +28,10 @@
         }
     },
     "sway/mode": {
-        "format": "<span style=\"italic\">{}</span>"
+        "format": "<span style=\"oblique\">{}</span>"
+    },
+    "hyprland/submap": {
+        "format": "<span style=\"oblique\">{}</span>"
     },
     "idle_inhibitor": {
         "format": "{icon}",
