@@ -98,11 +98,13 @@ rpm-ostree -y --apply-live --allow-inactive --idempotent install \
     rofi \
     dunst \
     network-manager-applet \
-    xdg-desktop-portal-hyprland \
     nwg-panel \
     hyprutils \
+    hyprland \
     hyprlock \
-    hypridle
+    hypridle \
+    xdg-desktop-portal-hyprland \
+    sunshine
 
 # install non-free ffmpeg
 #rpm-ostree override remove libavcodec-free libavfilter-free libavformat-free libavutil-free libpostproc-free libswresample-free libswscale-free --install ffmpeg
