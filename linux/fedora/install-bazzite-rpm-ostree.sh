@@ -213,6 +213,7 @@ pip install --user parliament
 pip install --user aws-policy-generator
 pip install --user gcalcli
 pip install --user posting
+pip install --user protonup
 
 # helm kubernetes package manager
 curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
