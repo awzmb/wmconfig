@@ -1,0 +1,12 @@
+#!/bin/sh
+
+# this script is used to manage the display and touchscreen state based on the lid state.
+HYPRLAND_DEVICE_TOUCHSCREEN=$(hyprctl devices | grep "Touch Device" -A1 | grep -oP '\w+:\w+-\w+:\w+')
+
+if grep -q open /proc/acpi/button/lid/LID0/state; then
+    hyprctl keyword monitor "eDP-1, preferred, auto, auto"
+    hyprctl keyword "device[${HYPRLAND_DEVICE_TOUCHSCREEN}]:enabled" true
+else
+    hyprctl keyword monitor "eDP-1, disable"
+    hyprctl keyword "device[${HYPRLAND_DEVICE_TOUCHSCREEN}]:enabled" false
+fi
