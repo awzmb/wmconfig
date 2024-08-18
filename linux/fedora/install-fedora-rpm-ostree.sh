@@ -364,5 +364,9 @@ gsettings set org.gnome.shell disable-extension-version-validation true
  git config --global init.defaultBranch main
  git config --global push.autoSetupRemote true
 
+# install proton-ge
+protonup -d "~/.steam/root/compatibilitytools.d/"
+protonup
+
 # additional stuff
 unset $SSH_ASKPASS
