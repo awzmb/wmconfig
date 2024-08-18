@@ -138,7 +138,8 @@ rpm-ostree -y --apply-live --allow-inactive --idempotent install \
     git-delta \
     git-lfs \
     git-extras \
-    radeontop
+    radeontop \
+    xwaylandvideobridge
 
 # install non-free ffmpeg
 #rpm-ostree override remove libavcodec-free libavfilter-free libavformat-free libavutil-free libpostproc-free libswresample-free libswscale-free --install ffmpeg
