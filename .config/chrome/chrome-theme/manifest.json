@@ -47,10 +47,10 @@
 				51
 			],
 			"bookmark_text": [
-				36,
-				41,
-				51
-			],
+				76,
+				86,
+        106
+  		],
 			"tab_background_text": [
 				216,
 				222,
@@ -82,9 +82,9 @@
 				51
 			],
 			"toolbar_button_icon": [
-				36,
-				41,
-				51
+				76,
+				86,
+        106
 			],
 			"omnibox_text": [
 				216,
