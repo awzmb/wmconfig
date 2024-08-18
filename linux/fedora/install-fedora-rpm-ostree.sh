@@ -137,7 +137,8 @@ rpm-ostree -y --apply-live --allow-inactive --idempotent install \
     gh \
     git-delta \
     git-lfs \
-    git-extras
+    git-extras \
+    radeontop
 
 # install non-free ffmpeg
 #rpm-ostree override remove libavcodec-free libavfilter-free libavformat-free libavutil-free libpostproc-free libswresample-free libswscale-free --install ffmpeg
@@ -159,9 +160,6 @@ echo 'vm.max_map_count = 2147483642' | sudo tee /etc/sysctl.d/11-max-map-count.c
 
 # disable noveau driver to use egpu
 #sudo rpm-ostree kargs --append=rd.driver.blacklist=nouveau --append=modprobe.blacklist=nouveau --append=nvidia-drm.modeset=1 initcall_blacklist=simpledrm_platform_driver_init
-
-# amdgpu tools
-rpm-ostree install radeontop
 
 # activate iommu fgr egpu hotswapping and kvm
 sudo rpm-ostree kargs --append=pcie_ports=native pci=assign-busses,nocrs,realloc iommu=on
