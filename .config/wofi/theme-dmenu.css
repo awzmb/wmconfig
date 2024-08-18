@@ -1,0 +1,65 @@
+/* Wofi Dmenu-like Theme */
+
+/* Main window style */
+window {
+    background-color: #242933;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    margin: 0;
+}
+
+/* Input field style */
+entry {
+    background-color: #242933;
+    color: #ffffff;
+    border: none;
+    padding: 5px;
+    font-family: monospace;
+    font-size: 12px;
+}
+
+/* List view */
+list {
+    background-color: #242933;
+    color: #ffffff;
+    padding: 0;
+    border: none;
+}
+
+/* List items */
+listview {
+    background-color: #242933;
+    color: #ffffff;
+    padding: 0;
+}
+
+listview button {
+    background-color: #242933;
+    color: #ffffff;
+    padding: 5px 10px;
+    border: none;
+    font-family: monospace;
+    font-size: 12px;
+    text-align: left;
+}
+
+listview button:selected {
+    background-color: #005577;
+    color: #ffffff;
+}
+
+/* Scrollbar (if needed) */
+scrollbar {
+    background-color: #242933;
+    border: none;
+}
+
+scrollbar slider {
+    background-color: #444444;
+    border: none;
+}
+
+scrollbar trough {
+    background-color: #242933;
+}

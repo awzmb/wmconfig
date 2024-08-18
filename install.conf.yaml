@@ -139,6 +139,9 @@
     ~/.config/alacritty/alacritty.toml:
       if: '[ `uname` = Linux ]'
       path: .config/alacritty/alacritty.toml
+    ~/.config/wofi:
+      if: '[ `uname` = Linux ]'
+      path: .config/wofi
     ~/.config/chrome/chrome-theme/manifest.json:
       path: .config/chrome/chrome-theme/manifest.json
 
