@@ -47,7 +47,6 @@ rpm-ostree -y --apply-live --allow-inactive --idempotent install \
     fzf \
     kitty \
     xinput \
-    clipit \
     sqlite \
     tmux \
     terminus-fonts \
@@ -101,6 +100,7 @@ rpm-ostree -y --apply-live --allow-inactive --idempotent install \
     mpv \
     fuzzel \
     hyprland \
+    hyprland-devel \
     xdg-desktop-portal-hyprland \
     nwg-panel \
     hyprutils \
@@ -139,7 +139,8 @@ rpm-ostree -y --apply-live --allow-inactive --idempotent install \
     git-lfs \
     git-extras \
     radeontop \
-    xwaylandvideobridge
+    xwaylandvideobridge \
+    clipman
 
 # install non-free ffmpeg
 #rpm-ostree override remove libavcodec-free libavfilter-free libavformat-free libavutil-free libpostproc-free libswresample-free libswscale-free --install ffmpeg
