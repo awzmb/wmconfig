@@ -14,7 +14,7 @@ white="%F{7}"
 # k8s and aws profile information
 function k8s_info {
   if command -v kubectl &> /dev/null; then
-    k8s_context=$(kubectl config current-context --request-timeout 0.0001)
+    k8s_context=$(kubectl config current-context --request-timeout 0.0001 2>&1 | grep -v 'error: current-context is not set')
     if [ ! -z $k8s_context ]; then
       echo " %F{135}<$k8s_context>"
     fi
