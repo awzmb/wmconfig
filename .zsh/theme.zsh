@@ -29,7 +29,7 @@ function aws_info {
 
 function gcloud_info {
   if command -v gcloud &> /dev/null; then
-    gcloud_context=$(cat ~/.config/gcloud/configurations/config_default | grep "project =" | sed "s/project = //")
+    gcloud_context=$(gcloud config get-value project --quiet 2>/dev/null)
     if [ ! -z $gcloud_context ]; then
       echo " %F{135}<$gcloud_context>"
     fi
