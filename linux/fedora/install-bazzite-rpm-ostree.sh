@@ -105,7 +105,8 @@ rpm-ostree -y --apply-live --allow-inactive --idempotent install \
     hypridle \
     xdg-desktop-portal-hyprland \
     sunshine \
-    xwaylandvideobridge
+    xwaylandvideobridge \
+    pavucontrol
 
 # install non-free ffmpeg
 #rpm-ostree override remove libavcodec-free libavfilter-free libavformat-free libavutil-free libpostproc-free libswresample-free libswscale-free --install ffmpeg
