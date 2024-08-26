@@ -13,8 +13,8 @@ white="%F{7}"
 
 # k8s and aws profile information
 function k8s_info {
-  if [ -f ~/.kube/config ]; then
-    k8s_context=$(cat ~/.kube/config | grep "current-context:" | sed "s/current-context: //")
+  if command -v kubectl &> /dev/null; then
+    k8s_context=$(kubectl config current-context --request-timeout 0.0001)
     if [ ! -z $k8s_context ]; then
       echo " %F{135}<$k8s_context>"
     fi
@@ -28,7 +28,7 @@ function aws_info {
 }
 
 function gcloud_info {
-  if [ -f ~/.config/gcloud/configurations/config_default ]; then
+  if command -v gcloud &> /dev/null; then
     gcloud_context=$(cat ~/.config/gcloud/configurations/config_default | grep "project =" | sed "s/project = //")
     if [ ! -z $gcloud_context ]; then
       echo " %F{135}<$gcloud_context>"

@@ -118,12 +118,6 @@ fi
 # trigger completion initialization
 compinit
 
-# krew kubectl plugin manager
-export PATH="${PATH}:${HOME}/.krew/bin"
-
-# kubectl completion
-source <(kubectl completion zsh)
-
 # openjdk 11
 export PATH="${PATH}:${HOME}/.jdk/openjdk-11/bin"
 #export JAVA_HOME="${HOME}/.jdk/openjdk-11"
@@ -147,7 +141,7 @@ command -v gh > /dev/null && . <(gh completion -s zsh)
 command -v timetrace > /dev/null && . <(timetrace completion zsh)
 command -v flux > /dev/null && . <(flux completion zsh)
 command -v helm > /dev/null && . <(helm completion zsh)
-command -v kubectl > /dev/null && . <(kubectl completion zsh)
+command -v kubectl > /dev/null && . <(kubectl completion zsh --request-timeout 0.0001)
 # timesheet file
 command -v tt > /dev/null && export SHEET_FILE="${HOME}/.timesheets/timesheet.json"
 
