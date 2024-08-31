@@ -18,6 +18,20 @@ repo_gpgcheck=0
 gpgkey=https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
 EOM
 
+# enable heroic launcher repository
+sudo tee -a /etc/yum.repos.d/heroic-launcher-copr.repo << EOM
+[heroic-games-launcher]
+name=Copr repo for heroic-games-launcher owned by atim
+baseurl=https://download.copr.fedorainfracloud.org/results/atim/heroic-games-launcher/fedora-$(rpm -E %fedora)-$(uname -m)/
+type=rpm-md
+skip_if_unavailable=True
+gpgcheck=1
+gpgkey=https://download.copr.fedorainfracloud.org/results/atim/heroic-games-launcher/pubkey.gpg
+repo_gpgcheck=0
+enabled=1
+enabled_metadata=1
+EOM
+
 # layered packages
 rpm-ostree -y --apply-live --allow-inactive --idempotent install \
     zsh \
@@ -106,7 +120,8 @@ rpm-ostree -y --apply-live --allow-inactive --idempotent install \
     xdg-desktop-portal-hyprland \
     sunshine \
     xwaylandvideobridge \
-    pavucontrol
+    pavucontrol \
+    heroic-games-launcher-bin
 
 # install non-free ffmpeg
 #rpm-ostree override remove libavcodec-free libavfilter-free libavformat-free libavutil-free libpostproc-free libswresample-free libswscale-free --install ffmpeg
