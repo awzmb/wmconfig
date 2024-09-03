@@ -55,10 +55,10 @@ Plug 'scrooloose/nerdtree'
 "Plug 'PhilRunninger/nerdtree-buffer-ops' incompatible with Plug 'Xuyuanp/nerdtree-git-plugin'
 Plug 'Xuyuanp/nerdtree-git-plugin'
 Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
-"Plug 'liuchengxu/nerdtree-dash'
+Plug 'liuchengxu/nerdtree-dash'
 
 " toggable terminal
-Plug 'wuelnerdotexe/nerdterm'
+"Plug 'wuelnerdotexe/nerdterm'
 
 " wayland clipboard integration
 Plug 'jasonccox/vim-wayland-clipboard'

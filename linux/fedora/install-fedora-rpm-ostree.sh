@@ -368,5 +368,9 @@ gsettings set org.gnome.shell disable-extension-version-validation true
 protonup -d "~/.steam/root/compatibilitytools.d/"
 protonup
 
+# disable systemd-resolved
+sudo systemctl disable --now systemd-resolved.service
+sudo systemctl restart NetworkManager.service
+
 # additional stuff
 unset $SSH_ASKPASS
