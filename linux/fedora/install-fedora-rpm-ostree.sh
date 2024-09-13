@@ -189,7 +189,7 @@ flatpak install -y --user flathub com.usebottles.bottles
 flatpak install -y --user flathub org.zealdocs.Zeal
 flatpak install -y --user flathub org.flameshot.Flameshot
 flatpak install -y --user flathub net.lutris.Lutris
-flatpak install -y --user flathub com.google.Chrome
+flatpak install -y --user flathub com.brave.Browser
 #flatpak install -y --user com.valvesoftware.Steam.CompatibilityTool.Proton
 #flatpak install -y --user org.freedesktop.Platform.VulkanLayer.gamescope
 #flatpak install -y --user org.freedesktop.Platform.VulkanLayer.MangoHud
@@ -368,6 +368,9 @@ gsettings set org.gnome.shell disable-extension-version-validation true
 # install proton-ge
 protonup -d "~/.steam/root/compatibilitytools.d/"
 protonup
+
+# set default browser
+xdg-settings set default-web-browser com.brave.Browser.desktop
 
 # disable systemd-resolved
 sudo systemctl disable --now systemd-resolved.service
