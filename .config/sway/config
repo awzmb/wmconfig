@@ -100,8 +100,8 @@ output HDMI-A-2 pos 0 0 res 3840x1080@120Hz
 #output DP-1 pos 0 0 res 1920x1080@60Hz
 #output DP-2 pos 0 0 res 3840x1080@120Hz
 #output DP-2 pos 0 0 res 3840x1080@120Hz
-output DP-1 pos 0 0 res 3840x1080@120Hz
-output DP-2 pos 0 0 res 3840x1080@120Hz
+output DP-1 pos 0 0 res 3840x1080@240Hz
+output DP-2 pos 0 0 res 3840x1080@240Hz
 #output DP-2 pos 0 0 res 2560x1600@120Hz
 #output DP-5 pos 0 0 res 5120x1440@120Hz
 #output DP-5 pos 0 0 res 3840x1080@120Hz
@@ -294,8 +294,8 @@ bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ to
 #bindsym XF86AudioMute exec --no-startup-id amixer -q set Master toggle
 
 # start scrot for screenshots
-bindsym $mod+Print --release exec --no-startup-id flameshot screen
-bindsym $mod+Shift+Print --release exec --no-startup-id flameshot gui
+bindsym $mod+Print --release exec --no-startup-id flatpak run org.flameshot.Flameshot screen
+bindsym $mod+Shift+Print --release exec --no-startup-id flatpak run org.flameshot.Flameshot gui
 
 # networkmanager dmenu integration
 bindsym $mod+shift+w exec --no-startup-id networkmanager_dmenu \

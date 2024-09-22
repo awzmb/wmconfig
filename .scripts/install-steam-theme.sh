@@ -13,6 +13,7 @@ sed -i 's/76, 86, 106/36, 41, 51/g' ${TMP_DIR}/theme/adwaita/colorthemes/nord/no
 sed -i 's/53, 60, 74/36, 41, 51/g' ${TMP_DIR}/theme/adwaita/colorthemes/nord/nord.css
 sed -i 's/59, 66, 82/36, 41, 51/g' ${TMP_DIR}/theme/adwaita/colorthemes/nord/nord.css
 sed -i 's/46, 52, 64/36, 41, 51/g' ${TMP_DIR}/theme/adwaita/colorthemes/nord/nord.css
+sed -i 's/0, 0, 0/36, 41, 51/g' ${TMP_DIR}/theme/adwaita/colorthemes/nord/nord.css
 sed -i 's/0.36/0/g' ${TMP_DIR}/theme/adwaita/colorthemes/nord/nord.css
 sed -i 's/Cantarell-VF/Terminus/g' ${TMP_DIR}/theme/adwaita/css/_root/text.css
 
