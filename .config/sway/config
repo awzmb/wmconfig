@@ -63,7 +63,8 @@ set $launcher fuzzel -b 242933ff -t d8dee9ff -s 2e3440ff -S 8fbcbbff -C 88c0d0ff
 set $term alacritty
 
 # set mod key (Mod1=<Alt>, Mod4=<Super>)
-set $mod Mod1
+#set $mod Mod1
+set $mod Mod4
 
 # font for window titles. ISO 10646 = Unicode
 font pango:Terminus 12
@@ -80,7 +81,9 @@ floating_modifier $mod
 # set hidpi output scaling
 #output * scale 2
 output eDP-1 scale 2
-#output DP-1 scale 1.5
+output DP-1 scale 1
+output HDMI-A-1 scale 1
+output HDMI-A-2 scale 1
 #output DP-1 scale 1
 output DP-2 scale 1
 #output DP-2 scale 1.5
@@ -109,8 +112,8 @@ output DP-2 pos 0 0 res 3840x1080@240Hz
 #output DP-4 pos 1920 0 res 1920x1080@60Hz
 output DP-3 pos 1920 0 res 1920x1080@60Hz
 output DP-4 pos 0 0 res 1920x1080@60Hz
-output DP-5 pos 0 0 res 1920x1080@60Hz
-output DP-6 pos 1920 0 res 1920x1080@60Hz
+output DP-5 pos 1920 0 res 1920x1080@60Hz
+output DP-6 pos 0 0 res 1920x1080@60Hz
 
 # use solid color background
 output * bg #242933 solid_color

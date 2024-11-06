@@ -377,5 +377,10 @@ xdg-settings set default-web-browser com.brave.Browser.desktop
 sudo systemctl disable --now systemd-resolved.service
 sudo systemctl restart NetworkManager.service
 
+# change primary gpu for gnome (mutter)
+sudo tee /etc/udev/rules.d/61-mutter-primary-gpu.rules << "EOF" > /dev/null                                                                                                                                                                                                                                                                                                                                    <gke_setup-dev-ec50_europe-west3_gke-setup-dev> <setup-dev-ec50>
+ENV{DEVNAME}=="/dev/dri/card0", TAG+="mutter-device-preferred-primary"
+EOF
+
 # additional stuff
 unset $SSH_ASKPASS
