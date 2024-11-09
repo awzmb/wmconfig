@@ -63,8 +63,8 @@ set $launcher fuzzel -b 242933ff -t d8dee9ff -s 2e3440ff -S 8fbcbbff -C 88c0d0ff
 set $term alacritty
 
 # set mod key (Mod1=<Alt>, Mod4=<Super>)
-#set $mod Mod1
 set $mod Mod4
+#set $mod Mod1
 
 # font for window titles. ISO 10646 = Unicode
 font pango:Terminus 12

@@ -123,7 +123,8 @@ rpm-ostree -y --apply-live --allow-inactive --idempotent install \
     pavucontrol \
     heroic-games-launcher-bin \
     grimshot \
-    duf
+    duf \
+    waydroid
 
 # install non-free ffmpeg
 #rpm-ostree override remove libavcodec-free libavfilter-free libavformat-free libavutil-free libpostproc-free libswresample-free libswscale-free --install ffmpeg
@@ -158,6 +159,7 @@ flatpak install -y --user flathub org.zealdocs.Zeal
 flatpak install -y --user flathub org.flameshot.Flameshot
 flatpak install -y --user flathub net.lutris.Lutris
 flatpak install -y --user flathub com.google.Chrome
+flatpak install -y --user flathub dev.vencord.Vesktop
 flatpak install -y --user org.inkscape.Inkscape
 flatpak install -y --user org.gimp.GIMP
 
@@ -267,6 +269,13 @@ gsettings set org.gnome.shell disable-extension-version-validation true
  git config --global user.name "Dennis Bundschuh"
  git config --global init.defaultBranch main
  git config --global push.autoSetupRemote true
+
+# initialize waydroid
+# sudo waydroid init --system_channel " https://ota.waydro.id/system" --vendor_channel "https://ota.waydro.id/vendor" --system_type "GAPPS"
+# also run
+# sudo waydroid shell
+# inside the shell
+# ANDROID_RUNTIME_ROOT=/apex/com.android.runtime ANDROID_DATA=/data ANDROID_TZDATA_ROOT=/apex/com.android.tzdata ANDROID_I18N_ROOT=/apex/com.android.i18n sqlite3 /data/data/com.google.android.gsf/databases/gservices.db "select * from main where name = \"android_id\";"
 
 # additional stuff
 unset $SSH_ASKPASS
