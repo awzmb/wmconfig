@@ -106,6 +106,11 @@ rpm-ostree -y --apply-live --allow-inactive --idempotent install \
     hyprutils \
     hyprlock \
     hypridle \
+    hyprcusor \
+    hyprland-devel \
+    hyprland-protocols-devel \
+    hyprlang-devel \
+    hyprwayland-scanner-devel \
     strace \
     openssl \
     alacritty \
