@@ -21,12 +21,14 @@ FLATPAK_DIRECTORY="${HOME}/.var/app/com.valvesoftware.Steam/.steam/steam"
 REGULAR_DIRECTORY="${HOME}/.steam/steam"
 
 if [ -d "$FLATPAK_DIRECTORY" ]; then
+  echo "${FLATPAK_DIRECTORY} found."
   ./install.py --color-theme nord --extras login/hide_qr library/hide_whats_new general/no_rounded_corners --target flatpak
 else
   echo "${FLATPAK_DIRECTORY} not found."
 fi
 
 if [ -d "$REGULAR_DIRECTORY" ]; then
+  echo "${REGULAR_DIRECTORY} found."
   ./install.py --color-theme nord --extras login/hide_qr library/hide_whats_new general/no_rounded_corners
 else
   echo "${REGULAR_DIRECTORY} not found."

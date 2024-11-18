@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# this script is used to enable the touchscreen device
+HYPRLAND_DEVICE_TOUCHSCREEN=$(hyprctl devices | grep "Touch Device" -A1 | grep -oP '\w+:\w+-\w+:\w+')
+
+hyprctl keyword "device[${HYPRLAND_DEVICE_TOUCHSCREEN}]:enabled" true
