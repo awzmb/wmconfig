@@ -18,6 +18,20 @@ repo_gpgcheck=0
 gpgkey=https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
 EOM
 
+# enable hyprland copr repository
+sudo tee -a /etc/yum.repos.d/hyprland-copr.repo << EOM
+[hyprland]
+name=Copr repo for hyprland owned by solopasha
+baseurl=https://download.copr.fedorainfracloud.org/results/solopasha/hyprland/fedora-$(rpm -E %fedora)-$(uname -m)/
+type=rpm-md
+skip_if_unavailable=True
+gpgcheck=1
+gpgkey=https://download.copr.fedorainfracloud.org/results/solopasha/hyprland/pubkey.gpg
+repo_gpgcheck=0
+enabled=1
+enabled_metadata=1
+EOM
+
 # install tkg kernel for better gaming performance
 #rpm-ostree override replace \
   #--experimental \
@@ -185,7 +199,6 @@ flatpak install -y --user fedora com.github.tchx84.Flatseal
 flatpak install -y --user flathub org.gnome.Platform
 flatpak install -y --user flathub org.gnome.Sdk
 flatpak install -y --user flathub com.spotify.Client
-#flatpak install -y --user flathub com.valvesoftware.Steam
 flatpak install -y --user flathub com.github.Eloston.UngoogledChromium
 flatpak install -y --user flathub org.gtk.Gtk3theme.Qogir-dark
 flatpak install -y --user flathub de.shorsh.discord-screenaudio
@@ -196,11 +209,15 @@ flatpak install -y --user flathub org.zealdocs.Zeal
 flatpak install -y --user flathub org.flameshot.Flameshot
 flatpak install -y --user flathub net.lutris.Lutris
 flatpak install -y --user flathub com.brave.Browser
+flatpak install -y --user org.inkscape.Inkscape
+flatpak install -y --user org.gimp.GIMP
+
+# install flatpak steam and proton
+# NOTE: flatpak steam has severe performance issues when running cpu-bound games
+#flatpak install -y --user flathub com.valvesoftware.Steam
 #flatpak install -y --user com.valvesoftware.Steam.CompatibilityTool.Proton
 #flatpak install -y --user org.freedesktop.Platform.VulkanLayer.gamescope
 #flatpak install -y --user org.freedesktop.Platform.VulkanLayer.MangoHud
-flatpak install -y --user org.inkscape.Inkscape
-flatpak install -y --user org.gimp.GIMP
 
 # allow access to local themes and gtk settings
 sudo flatpak override --filesystem=$HOME/.themes:ro
@@ -274,36 +291,11 @@ pip install --user gcalcli
 pip install --user posting
 pip install --user protonup
 
-#sudo dnf -y install \
-    #neomutt \
-    #notmuch \
-    #isync \
-    #msmtp
-
-# install mutt-wizard
-#git clone https://github.com/LukeSmithxyz/mutt-wizard
-#cd mutt-wizard
-#sudo make install
-#cd ${ORIGIN_PATH}
-#rm -rf mutt-wizard
-
 # helm kubernetes package manager
 curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
 chmod 700 get_helm.sh
 ./get_helm.sh
 rm ./get_helm.sh
-
-# dwarf fortress
-# sudo dnf -y install dwarffortress
-
-# install gnome packages
-#sudo dnf -y install \
-  #gnome-tweaks \
-  #gnome-extensions-app \
-  #gnome-shell-extension-pop-shell \
-  #gnome-shell-extension-pop-shell-shortcut-overrides \
-  #gnome-shell-extension-unite \
-  #xprop
 
 # 8bitdo SF30 bluetooth controller settings
 sudo wget https://goo.gl/H2SViY -O /etc/udev/rules.d/99-8bitdo-bluetooth-controllers.rules
@@ -316,16 +308,6 @@ sudo wget https://goo.gl/H2SViY -O /etc/udev/rules.d/99-8bitdo-bluetooth-control
 
 # install flashfocus for visual feedback on windows switch
 sudo pip install flashfocus
-
-# unclutter (hides mouse when idle)
-#sudo dnf -y install unclutter
-
-# install spotify-tui
-#sudo dnf -y copr enable szpadel/spotifyd
-#sudo dnf -y copr enable atim/spotify-tui
-#sudo dnf -y install \
-    #spotifyd \
-    #spotify-tui
 
 # change grub theme
 #sudo mkdir -p /boot/grub/themes/fedora
@@ -360,10 +342,8 @@ gsettings set org.gnome.shell disable-extension-version-validation true
 #./pop-shell/pop-shell-keybinds.sh
 
 # password management
-#sudo dnf -y install gnupg
 #gpg --full-gen-key && \
-#pass init "dennis.bundschuh@metamorphant.de" \
-#pass insert mail/main
+#pass init "bundschuh.dennis@gmail.com"
 
 # global git configration
  git config --global user.email "bundschuh.dennis@gmail.com"
@@ -383,9 +363,9 @@ sudo systemctl disable --now systemd-resolved.service
 sudo systemctl restart NetworkManager.service
 
 # change primary gpu for gnome (mutter)
-sudo tee /etc/udev/rules.d/61-mutter-primary-gpu.rules << "EOF" > /dev/null                                                                                                                                                                                                                                                                                                                                    <gke_setup-dev-ec50_europe-west3_gke-setup-dev> <setup-dev-ec50>
-ENV{DEVNAME}=="/dev/dri/card0", TAG+="mutter-device-preferred-primary"
-EOF
+#sudo tee /etc/udev/rules.d/61-mutter-primary-gpu.rules << "EOF" > /dev/null
+#ENV{DEVNAME}=="/dev/dri/card0", TAG+="mutter-device-preferred-primary"
+#EOF
 
 # additional stuff
 unset $SSH_ASKPASS
