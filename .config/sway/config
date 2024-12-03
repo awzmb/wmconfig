@@ -31,6 +31,8 @@ exec_always sway-lid-state-display-management
 #exec_always import-gsettings
 # disable touchscreen on start
 exec_always swaymsg input type:touch events disabled
+# set keyboard layout
+exec_always setxkbmap -layout us -variant altgr-intl
 
 set $gnome-schema org.gnome.desktop.interface
 exec_always {
@@ -41,6 +43,7 @@ exec_always {
     gsettings set $gnome-schema monospace-font-name 'Terminus 12'
     gsettings set $gnome-schema document-font-name 'Terminus 12'
     gsettings set $gnome-schema color-scheme prefer-dark
+    gsettings set $gnome-schema enable-animations false
 }
 
 # =============================================================================
@@ -71,6 +74,7 @@ font pango:Terminus 12
 
 # no border / window title bar
 default_border none
+default_floating_border none
 
 # Hide borders
 hide_edge_borders both
@@ -112,7 +116,9 @@ output DP-2 pos 0 0 res 3840x1080@240Hz
 #output DP-4 pos 1920 0 res 1920x1080@60Hz
 output DP-3 pos 1920 0 res 1920x1080@60Hz
 output DP-4 pos 0 0 res 1920x1080@60Hz
-output DP-5 pos 1920 0 res 1920x1080@60Hz
+#output DP-5 pos 1920 0 res 1920x1080@60Hz
+output DP-5 pos 0 0 res 3840x1080@120Hz
+#output DP-5 pos 1920 0 res 1920x1080@60Hz
 output DP-6 pos 0 0 res 1920x1080@60Hz
 
 # use solid color background
@@ -164,7 +170,7 @@ bindsym $mod+d exec rofi -show run -theme dmenu
 #bindsym $mod+d exec wofi --show run --dmenu
 
 # start password manager
-bindsym $mod+Shift+p exec --no-startup-id ~/.scripts/rofi-pass
+#bindsym $mod+Shift+p exec --no-startup-id ~/.scripts/rofi-pass
 #bindsym $mod+Shift+p exec passmenu
 
 # start filemanager (pcmanfm)
@@ -295,6 +301,10 @@ bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ to
 #bindsym XF86AudioRaiseVolume exec --no-startup-id amixer -q set Master 2dB+ unmute
 #bindsym XF86AudioLowerVolume exec --no-startup-id amixer -q set Master 2dB- unmute
 #bindsym XF86AudioMute exec --no-startup-id amixer -q set Master toggle
+
+# playerctl controls
+bindsym $mod+Shift+n exec --no-startup-id playerctl next
+bindsym $mod+Shift+p exec --no-startup-id playerctl play-pause
 
 # start scrot for screenshots
 bindsym $mod+Print --release exec --no-startup-id flatpak run org.flameshot.Flameshot screen

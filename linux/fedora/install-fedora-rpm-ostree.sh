@@ -125,6 +125,10 @@ rpm-ostree -y --apply-live --allow-inactive --idempotent install \
     hyprland-protocols-devel \
     hyprlang-devel \
     hyprwayland-scanner-devel \
+    hyprsunset \
+    hyprpolkitagent \
+    hyprshot \
+    hyprdim
     strace \
     openssl \
     alacritty \
@@ -209,8 +213,12 @@ flatpak install -y --user flathub org.zealdocs.Zeal
 flatpak install -y --user flathub org.flameshot.Flameshot
 flatpak install -y --user flathub net.lutris.Lutris
 flatpak install -y --user flathub com.brave.Browser
+flatpak install -y --user com.parsecgaming.parsec
 flatpak install -y --user org.inkscape.Inkscape
 flatpak install -y --user org.gimp.GIMP
+
+# use egpu for parsec
+flatpak override --user --device=dri --env="DRI_PRIME=1" com.parsecgaming.parsec
 
 # install flatpak steam and proton
 # NOTE: flatpak steam has severe performance issues when running cpu-bound games
