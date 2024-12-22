@@ -2,6 +2,13 @@
 # Autostart
 # =============================================================================
 
+# sway does not set DISPLAY/WAYLAND_DISPLAY in the systemd user environment
+# adapted from xorg's 50-systemd-user.sh, which achieves a similar goal.
+exec systemctl --user import-environment DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP
+exec hash dbus-update-activation-environment 2>/dev/null && \
+dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP
+# import environment variables into dbus (screen sharing)
+exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
 # bluetooth manager
 exec --no-startup-id blueman-applet
 # clipboard
@@ -18,13 +25,6 @@ exec --no-startup-id clipit
 exec --no-startup-id dunst
 # start sound daemon (use this with openrc)
 #exec --no-startup-id pipewire
-# sway does not set DISPLAY/WAYLAND_DISPLAY in the systemd user environment
-# adapted from xorg's 50-systemd-user.sh, which achieves a similar goal.
-exec systemctl --user import-environment DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP
-exec hash dbus-update-activation-environment 2>/dev/null && \
-dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP
-# import environment variables into dbus (screen sharing)
-exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
 # laptop lid close event manager (disables internal display)
 exec_always sway-lid-state-display-management
 # import gtk-3.0 settings, icon and cursor theme

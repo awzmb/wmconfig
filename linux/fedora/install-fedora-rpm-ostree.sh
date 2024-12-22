@@ -184,6 +184,10 @@ echo 'vm.max_map_count = 2147483642' | sudo tee /etc/sysctl.d/11-max-map-count.c
 
 # install nvidia drivers for egpu
 #sudo rpm-ostree install akmod-nvidia xorg-x11-drv-nvidia xorg-x11-drv-nvidia-cuda nvtop
+#sudo akmods
+# install akmods driver package via rpm-ostree (akmods will fail because of missing
+# dnf and yum package manager, but the driver will be built)
+#sudo rpm-ostree install $(find /var/cache/akmods -type f -name "kmod-*.rpm")
 
 # disable noveau driver to use egpu
 #sudo rpm-ostree kargs --append=rd.driver.blacklist=nouveau --append=modprobe.blacklist=nouveau --append=nvidia-drm.modeset=1 initcall_blacklist=simpledrm_platform_driver_init
