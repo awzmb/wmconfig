@@ -18,20 +18,6 @@ repo_gpgcheck=0
 gpgkey=https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
 EOM
 
-# enable hyprland copr repository
-sudo tee -a /etc/yum.repos.d/hyprland-copr.repo << EOM
-[hyprland]
-name=Copr repo for hyprland owned by solopasha
-baseurl=https://download.copr.fedorainfracloud.org/results/solopasha/hyprland/fedora-$(rpm -E %fedora)-$(uname -m)/
-type=rpm-md
-skip_if_unavailable=True
-gpgcheck=1
-gpgkey=https://download.copr.fedorainfracloud.org/results/solopasha/hyprland/pubkey.gpg
-repo_gpgcheck=0
-enabled=1
-enabled_metadata=1
-EOM
-
 # install tkg kernel for better gaming performance
 #rpm-ostree override replace \
   #--experimental \
@@ -113,22 +99,7 @@ rpm-ostree -y --apply-live --allow-inactive --idempotent install \
     gdm \
     mpv \
     fuzzel \
-    hyprland \
-    hyprland-devel \
-    xdg-desktop-portal-hyprland \
     nwg-panel \
-    hyprutils \
-    hyprlock \
-    hypridle \
-    hyprcusor \
-    hyprland-devel \
-    hyprland-protocols-devel \
-    hyprlang-devel \
-    hyprwayland-scanner-devel \
-    hyprsunset \
-    hyprpolkitagent \
-    hyprshot \
-    hyprdim
     strace \
     openssl \
     alacritty \
@@ -166,6 +137,24 @@ rpm-ostree -y --apply-live --allow-inactive --idempotent install \
     clipman \
     duf \
     grimshot
+
+    # hyprland (fedora repo versions are basically
+    # unusable with plugins)
+    #hyprutils \
+    #hyprlock \
+    #hypridle \
+    #hyprcusor \
+    #hyprland-devel \
+    #hyprland-protocols-devel \
+    #hyprlang-devel \
+    #hyprwayland-scanner-devel \
+    #hyprsunset \
+    #hyprpolkitagent \
+    #hyprshot \
+    #hyprdim \
+    #hyprland \
+    #hyprland-devel \
+    #xdg-desktop-portal-hyprland \
 
 # install non-free ffmpeg
 #rpm-ostree override remove libavcodec-free libavfilter-free libavformat-free libavutil-free libpostproc-free libswresample-free libswscale-free --install ffmpeg

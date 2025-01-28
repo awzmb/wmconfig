@@ -14,7 +14,7 @@ exec --no-startup-id blueman-applet
 # clipboard
 exec --no-startup-id clipit
 # filter blue light during nighttime
-exec --no-startup-id gammastep-indicator -l 52:13
+exec --no-startup-id gammastep -l 52:13
 # netowrkmanager applet
 exec --no-startup-id nm-applet
 # flash focus window indicator
@@ -89,7 +89,7 @@ output DP-1 scale 1
 output HDMI-A-1 scale 1
 output HDMI-A-2 scale 1
 #output DP-1 scale 1
-output DP-2 scale 1
+output DP-2 scale 1.3
 #output DP-2 scale 1.5
 #output DP-5 scale 1.4
 output DP-5 scale 1
@@ -97,7 +97,8 @@ output DP-5 scale 1
 # set output resolution
 #output * pos 0 0 res 1920x1200@120Hz
 output eDP-1 pos 0 1800 res 2560x1600@60Hz
-output DP-1 pos 0 0 res 1920x1080@119Hz
+output DP-1 pos 0 0 res 1920x1200@120Hz
+output DP-2 pos 0 0 res 1920x1200@120Hz
 #output DP-1 pos 0 0 res 3840x1080@120Hz
 #output DP-5 pos 0 0 res 3840x1080@120Hz
 #output HDMI-A-1 pos 0 0 res 3840x1080@120Hz
@@ -158,6 +159,13 @@ exec swayidle -w \
 # map escape to capslock
 input * xkb_options caps:escape
 
+# disable caps
+input type:keyboard {
+  xkb_layout us
+  xkb_variant altgr-intl
+  xkb_options caps:none
+}
+
 # start a terminal
 bindsym $mod+Shift+Return exec $term
 
@@ -189,6 +197,10 @@ bindsym XF86MonBrightnessDown exec light -U 10
 #bindsym $mod+i exec --no-startup-id brightnessctl s 5%+
 #bindsym $mod+o exec --no-startup-id brightnessctl s 5%-
 
+
+# toggle touchscreen
+bindsym $mod+Shift+T exec swaymsg input type:touch events enabled
+bindsym $mod+t exec swaymsg input type:touch events disabled
 
 # change focus
 bindsym $mod+h focus left
