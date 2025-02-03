@@ -123,7 +123,7 @@ let g:coc_global_extensions = [
 """"""" colorscheme """""""
 syntax on
 
-set background=dark
+"set background=dark
 set t_Co=256
 
 " you might have to force true color when using regular vim inside tmux as the
@@ -133,11 +133,17 @@ if !has('gui_running') && &term =~ '^\%(screen\|tmux\)'
   let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
 endif
 
-"let g:nord_disable_background = v:true
-"let g:nord_uniform_diff_background = v:true
-
 "set notermguicolors
 colorscheme nord
+
+"set transparent background
+highlight Normal guibg=none
+highlight NonText guibg=none
+highlight Normal ctermbg=none
+highlight NonText ctermbg=none
+
+"let g:nord_disable_background = v:true
+"let g:nord_uniform_diff_background = v:true
 
 
 """"""" jedi-vim """""""
