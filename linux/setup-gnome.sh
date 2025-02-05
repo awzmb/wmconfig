@@ -41,6 +41,8 @@ gsettings set org.gnome.shell disable-extension-version-validation true
 
 # Set GNOME theme to Adwaita-dark
 gsettings set org.gnome.desktop.interface gtk-theme "Qogir-Dark"
+gsettings set org.gnome.desktop.interface icon-theme "Paper"
+gsettings set org.gnome.desktop.wm.preferences theme 'Qogir-Dark'
 
 # Set GNOME to dark mode
 gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
@@ -53,6 +55,11 @@ gsettings set org.gnome.desktop.interface enable-animations false
 
 # Set GNOME monospace font to Hack Nerd Font Mono 11
 gsettings set org.gnome.desktop.interface monospace-font-name "Terminus 12"
+gsettings set org.gnome.desktop.interface document-font-name "Terminus 12"
+
+# UI tweaks
+gsettings set org.gnome.desktop.interface show-battery-percentage true
+gsettings set org.gnome.desktop.interface clock-format '24h'
 
 # Configure keyboard layouts on GNOME
 gsettings set org.gnome.desktop.input-sources sources "[('xkb', 'us'), ('xkb', 'us+alt-intl')]"
@@ -82,6 +89,9 @@ gsettings set org.gnome.desktop.background color-shading-type 'solid'
 #gsettings set org.gnome.shell.extensions.dynamic-panel-transparency transparency 0
 #gsettings set org.gnome.shell.extensions.dynamic-panel-transparency max-opacity 0
 #gsettings set org.gnome.shell.extensions.dynamic-panel-transparency min-opacity 0
+
+# Set workspaces
+gsettings set org.gnome.desktop.wm.preferences num-workspaces 6
 
 # restart GNOME shell
 #gnome-session-quit --logout --no-prompt
