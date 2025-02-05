@@ -77,8 +77,10 @@ rpm-ostree -y --apply-live --allow-inactive --idempotent install \
     libvirt-daemon-kvm \
     driverctl \
     wireguard-tools \
+    nautilus \
     gnome-shell-extension-user-theme \
     gnome-tweaks \
+    gnome-terminal-nautilus \
     xdg-desktop-portal-gnome \
     npm \
     htop \
@@ -133,11 +135,11 @@ rpm-ostree -y --apply-live --allow-inactive --idempotent install \
     git-lfs \
     git-extras \
     radeontop \
-    xwaylandvideobridge \
     clipman \
     duf \
     grimshot
 
+    #xwaylandvideobridge \
     # hyprland (fedora repo versions are basically
     # unusable with plugins)
     #hyprutils \
@@ -160,7 +162,13 @@ rpm-ostree -y --apply-live --allow-inactive --idempotent install \
 #rpm-ostree override remove libavcodec-free libavfilter-free libavformat-free libavutil-free libpostproc-free libswresample-free libswscale-free --install ffmpeg
 
 # install gnome-shell themes
-#rpm-ostree -y install rpm-ostree install gnome-shell-extension-unite gnome-shell-theme-flat-remix gnome-shell-extension-common gnome-shell-extension-pop-shell gnome-shell-extension-pop-shell gnome-shell-extension-pop-shell-shortcut-overrides
+rpm-ostree -y install \
+  gnome-shell-theme-flat-remix \
+  gnome-shell-extension-common \
+  gnome-shell-extension-pop-shell \
+  gnome-shell-extension-pop-shell \
+  gnome-shell-extension-pop-shell-shortcut-overrides \
+  gnome-shell-extension-launch-new-instance
 
 # update firmware
 sudo fwupdmgr refresh
