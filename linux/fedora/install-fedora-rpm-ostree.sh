@@ -126,10 +126,6 @@ rpm-ostree -y --apply-live --allow-inactive --idempotent install \
     google-cloud-sdk-anthos-auth \
     google-cloud-cli-istioctl \
     miller \
-    python3-certbot \
-    python3-certbot-apache \
-    python3-certbot-dns-google \
-    python3-certbot-dns-route53
     gh \
     git-delta \
     git-lfs \
@@ -137,7 +133,14 @@ rpm-ostree -y --apply-live --allow-inactive --idempotent install \
     radeontop \
     clipman \
     duf \
-    grimshot
+    grimshot \
+    swaybg \
+    swayidle \
+    swaylock \
+    waybar \
+    blueman \
+    network-manager-applet
+
 
     #xwaylandvideobridge \
     # hyprland (fedora repo versions are basically
@@ -157,6 +160,10 @@ rpm-ostree -y --apply-live --allow-inactive --idempotent install \
     #hyprland \
     #hyprland-devel \
     #xdg-desktop-portal-hyprland \
+    #python3-certbot \
+    #python3-certbot-apache \
+    #python3-certbot-dns-google \
+    #python3-certbot-dns-route53 \
 
 # install non-free ffmpeg
 #rpm-ostree override remove libavcodec-free libavfilter-free libavformat-free libavutil-free libpostproc-free libswresample-free libswscale-free --install ffmpeg
