@@ -190,29 +190,29 @@ echo 'vm.max_map_count = 2147483642' | sudo tee /etc/sysctl.d/11-max-map-count.c
 #sudo rpm-ostree kargs --append=rd.driver.blacklist=nouveau --append=modprobe.blacklist=nouveau --append=nvidia-drm.modeset=1 initcall_blacklist=simpledrm_platform_driver_init
 
 # activate iommu fgr egpu hotswapping and kvm
-sudo rpm-ostree kargs --append=pcie_ports=native pci=assign-busses,nocrs,realloc iommu=on
+#sudo rpm-ostree kargs --append=pcie_ports=native pci=assign-busses,nocrs,realloc iommu=on
 
 # flathub repositories and premise
 flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 
-flatpak install -y org.freedesktop.Platform.ffmpeg-full
-flatpak install -y org.freedesktop.Platform.GStreamer.gstreamer-vaapi
-flatpak install -y org.freedesktop.Platform.GStreamer.gstreamer-vaapi
-flatpak install -y org.gnome.Extensions
+#flatpak install -y --system org.freedesktop.Platform.ffmpeg-full
+#flatpak install -y --system org.freedesktop.Platform.GStreamer.gstreamer-vaapi
+#flatpak install -y --system org.freedesktop.Platform.GStreamer.gstreamer-vaapi
+#flatpak install -y --system org.gnome.Extensions
 
 flatpak install -y --user fedora com.github.tchx84.Flatseal
-flatpak install -y --user flathub org.gnome.Platform
-flatpak install -y --user flathub org.gnome.Sdk
+#flatpak install -y --user flathub org.gnome.Platform
+#flatpak install -y --user flathub org.gnome.Sdk
 flatpak install -y --user flathub com.spotify.Client
-flatpak install -y --user flathub com.github.Eloston.UngoogledChromium
+#flatpak install -y --user flathub com.github.Eloston.UngoogledChromium
 flatpak install -y --user flathub org.gtk.Gtk3theme.Qogir-dark
 flatpak install -y --user flathub de.shorsh.discord-screenaudio
-flatpak install -y --user flathub org.mozilla.firefox
-flatpak install -y --user flathub io.gitlab.librewolf-community
-flatpak install -y --user flathub com.usebottles.bottles
+#flatpak install -y --user flathub org.mozilla.firefox
+#flatpak install -y --user flathub io.gitlab.librewolf-community
+#flatpak install -y --user flathub com.usebottles.bottles
 flatpak install -y --user flathub org.zealdocs.Zeal
 flatpak install -y --user flathub org.flameshot.Flameshot
-flatpak install -y --user flathub net.lutris.Lutris
+#flatpak install -y --user flathub net.lutris.Lutris
 flatpak install -y --user flathub com.brave.Browser
 flatpak install -y --user com.parsecgaming.parsec
 flatpak install -y --user org.inkscape.Inkscape
@@ -242,8 +242,8 @@ flatpak override --user --filesystem=~/.mozilla org.mozilla.firefox
 #flatpak override --user --env="__NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia" com.valvesoftware.Steam
 
 # switch default browser to flatpak firefox and disable the native one
-printf '[Desktop Entry]\nNoDisplay=true\n' > ~/.local/share/applications/firefox.desktop
-xdg-settings set default-web-browser org.mozilla.firefox.desktop
+#printf '[Desktop Entry]\nNoDisplay=true\n' > ~/.local/share/applications/firefox.desktop
+#xdg-settings set default-web-browser org.mozilla.firefox.desktop
 
 # TODO: disable sddm and use gdm (if sddm set as display manager)
 #sudo systemctl disable sddm.service
@@ -290,9 +290,8 @@ fi
 sudo systemctl enable tlp
 
 # install pip packages
-pip install flashfocus
-pip install pre-commit
-pip install throttlestop
+pip install --user pre-commit
+#pip install --user throttlestop
 pip install --user tt-time-tracker
 pip install --user parliament
 pip install --user aws-policy-generator
@@ -368,8 +367,8 @@ protonup
 xdg-settings set default-web-browser com.brave.Browser.desktop
 
 # disable systemd-resolved
-sudo systemctl disable --now systemd-resolved.service
-sudo systemctl restart NetworkManager.service
+#sudo systemctl disable --now systemd-resolved.service
+#sudo systemctl restart NetworkManager.service
 
 # change primary gpu for gnome (mutter)
 #sudo tee /etc/udev/rules.d/61-mutter-primary-gpu.rules << "EOF" > /dev/null

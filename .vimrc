@@ -137,10 +137,10 @@ endif
 colorscheme nord
 
 "set transparent background
-highlight Normal guibg=none
-highlight NonText guibg=none
-highlight Normal ctermbg=none
-highlight NonText ctermbg=none
+"highlight Normal guibg=None
+"highlight NonText guibg=None
+"highlight Normal ctermbg=None
+"highlight NonText ctermbg=None
 
 "let g:nord_disable_background = v:true
 "let g:nord_uniform_diff_background = v:true
