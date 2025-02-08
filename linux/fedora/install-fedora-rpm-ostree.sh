@@ -139,7 +139,8 @@ rpm-ostree -y --apply-live --allow-inactive --idempotent install \
     swaylock \
     waybar \
     blueman \
-    network-manager-applet
+    network-manager-applet \
+    wl-clipboard
 
 
     #xwaylandvideobridge \
@@ -381,6 +382,9 @@ xdg-settings set default-web-browser com.brave.Browser.desktop
 #sudo tee /etc/udev/rules.d/61-mutter-primary-gpu.rules << "EOF" > /dev/null
 #ENV{DEVNAME}=="/dev/dri/card0", TAG+="mutter-device-preferred-primary"
 #EOF
+
+# change default shell to zsh
+sudo usermod --shell /bin/zsh $(whoami)
 
 # additional stuff
 unset $SSH_ASKPASS
