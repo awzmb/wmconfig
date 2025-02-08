@@ -65,7 +65,7 @@ gsettings set org.gnome.desktop.interface clock-format '24h'
 gsettings set org.gnome.desktop.input-sources sources "[('xkb', 'us'), ('xkb', 'us+alt-intl')]"
 
 # Deactivate Caps Lock key
-gsettings set org.gnome.desktop.input-sources xkb-options "['caps:none']"
+gsettings set org.gnome.desktop.input-sources xkb-options "['caps:escape']"
 
 # Remove default switch to application shortcuts
 for number in {1..9}; do gsettings set org.gnome.shell.keybindings switch-to-application-"${number}" '[]'; done

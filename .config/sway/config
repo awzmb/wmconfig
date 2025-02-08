@@ -108,18 +108,11 @@ output HDMI-A-2 pos 0 0 res 3840x1080@120Hz
 #output DP-1 pos 0 0 res 1920x1080@60Hz
 #output DP-2 pos 0 0 res 3840x1080@120Hz
 #output DP-2 pos 0 0 res 3840x1080@120Hz
-output DP-1 pos 0 0 res 3840x1080@240Hz
-output DP-2 pos 0 0 res 3840x1080@240Hz
-#output DP-2 pos 0 0 res 2560x1600@120Hz
-#output DP-5 pos 0 0 res 5120x1440@120Hz
-#output DP-5 pos 0 0 res 3840x1080@120Hz
-#output DP-3 pos 0 0 res 1920x1080@60Hz
-#output DP-4 pos 1920 0 res 1920x1080@60Hz
-output DP-3 pos 1920 0 res 1920x1080@60Hz
-output DP-4 pos 0 0 res 1920x1080@60Hz
-#output DP-5 pos 1920 0 res 1920x1080@60Hz
+output DP-1 pos 0 0 res 3840x1080@120Hz
+output DP-2 pos 0 0 res 3840x1080@120Hz
+#output DP-3 pos 1920 0 res 1920x1080@60Hz
+output DP-4 pos 0 0 res 3840x1080@120Hz
 output DP-5 pos 0 0 res 3840x1080@120Hz
-#output DP-5 pos 1920 0 res 1920x1080@60Hz
 output DP-6 pos 0 0 res 1920x1080@60Hz
 
 # use solid color background

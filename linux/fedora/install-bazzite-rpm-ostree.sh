@@ -2,11 +2,6 @@
 
 ORIGIN_PATH=${pwd}
 
-# enable rpmfusion repositories
-#rpm-ostree -y --apply-live install \
-    #https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
-    #https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
-
 # enable google-cloud repository
 sudo tee -a /etc/yum.repos.d/google-cloud-sdk.repo << EOM
 [google-cloud-cli]
@@ -18,22 +13,8 @@ repo_gpgcheck=0
 gpgkey=https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
 EOM
 
-# enable heroic launcher repository
-sudo tee -a /etc/yum.repos.d/heroic-launcher-copr.repo << EOM
-[heroic-games-launcher]
-name=Copr repo for heroic-games-launcher owned by atim
-baseurl=https://download.copr.fedorainfracloud.org/results/atim/heroic-games-launcher/fedora-$(rpm -E %fedora)-$(uname -m)/
-type=rpm-md
-skip_if_unavailable=True
-gpgcheck=1
-gpgkey=https://download.copr.fedorainfracloud.org/results/atim/heroic-games-launcher/pubkey.gpg
-repo_gpgcheck=0
-enabled=1
-enabled_metadata=1
-EOM
-
 # layered packages
-rpm-ostree -y --apply-live --allow-inactive --idempotent install \
+rpm-ostree -y --idempotent install \
     zsh \
     neovim \
     vifm \
@@ -55,7 +36,6 @@ rpm-ostree -y --apply-live --allow-inactive --idempotent install \
     terminus-fonts-grub2 \
     unifont \
     unifont-fonts \
-    podman-compose \
     containernetworking-plugins \
     pass \
     passmenu \
@@ -67,30 +47,22 @@ rpm-ostree -y --apply-live --allow-inactive --idempotent install \
     python3-neovim \
     calcurse \
     NetworkManager-tui \
-    python3-pip \
     python3-xcffib \
     yamllint \
     paper-icon-theme \
     arc-theme \
     libvirt-daemon-kvm \
-    driverctl \
     npm \
     htop \
-    distrobox \
     gtk-murrine-engine \
     gtk2-engines \
-    gstreamer1-vaapi \
     brightnessctl \
     awscli2 \
     aws-tools \
     mpv \
     fuzzel \
-    strace \
-    openssl \
     alacritty \
     wondershaper \
-    msr-tools \
-    smbios-utils \
     light \
     google-cloud-cli \
     google-cloud-cli-anthos-auth \
@@ -104,33 +76,29 @@ rpm-ostree -y --apply-live --allow-inactive --idempotent install \
     git-delta \
     git-lfs \
     git-extras \
-    fedora-release-sway-atomic \
     sway \
     swaybg \
     waybar \
     blueman \
     rofi \
     dunst \
+    clipman \
     network-manager-applet \
-    nwg-panel \
     hyprutils \
     hyprland \
     hyprlock \
     hypridle \
+    hyprutils \
     xdg-desktop-portal-hyprland \
-    sunshine \
-    xwaylandvideobridge \
     pavucontrol \
-    heroic-games-launcher-bin \
-    grimshot \
-    duf \
-    waydroid
-
-# install non-free ffmpeg
-#rpm-ostree override remove libavcodec-free libavfilter-free libavformat-free libavutil-free libpostproc-free libswresample-free libswscale-free --install ffmpeg
+    grimshot
 
 # install gnome-shell themes
-#rpm-ostree -y install rpm-ostree install gnome-shell-extension-unite gnome-shell-theme-flat-remix gnome-shell-extension-common gnome-shell-extension-pop-shell gnome-shell-extension-pop-shell gnome-shell-extension-pop-shell-shortcut-overrides
+rpm-ostree -y install \
+    gnome-shell-extension-unite \
+    gnome-shell-theme-flat-remix \
+    gnome-shell-extension-pop-shell \
+    gnome-shell-extension-pop-shell-shortcut-overrides
 
 # update firmware
 sudo fwupdmgr refresh
@@ -140,56 +108,23 @@ sudo fwupdmgr update
 # flathub repositories and premise
 flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 
-flatpak install -y org.freedesktop.Platform.ffmpeg-full
-flatpak install -y org.freedesktop.Platform.GStreamer.gstreamer-vaapi
-flatpak install -y org.freedesktop.Platform.GStreamer.gstreamer-vaapi
-flatpak install -y org.gnome.Extensions
-
+flatpak install -y --system org.gnome.Extensions
 flatpak install -y --user fedora com.github.tchx84.Flatseal
-flatpak install -y --user flathub org.gnome.Platform
-flatpak install -y --user flathub org.gnome.Sdk
 flatpak install -y --user flathub com.spotify.Client
-flatpak install -y --user flathub com.github.Eloston.UngoogledChromium
 flatpak install -y --user flathub org.gtk.Gtk3theme.Qogir-dark
-flatpak install -y --user flathub de.shorsh.discord-screenaudio
-flatpak install -y --user flathub org.mozilla.firefox
-flatpak install -y --user flathub io.gitlab.librewolf-community
-flatpak install -y --user flathub com.usebottles.bottles
 flatpak install -y --user flathub org.zealdocs.Zeal
 flatpak install -y --user flathub org.flameshot.Flameshot
-flatpak install -y --user flathub net.lutris.Lutris
 flatpak install -y --user flathub com.google.Chrome
+flatpak install -y --user flathub com.brave.Browser
 flatpak install -y --user flathub dev.vencord.Vesktop
-flatpak install -y --user org.inkscape.Inkscape
-flatpak install -y --user org.gimp.GIMP
-
-# allow access to local themes and gtk settings
-sudo flatpak override --filesystem=$HOME/.themes:ro
-sudo flatpak override --filesystem=$HOME/.icons:ro
-flatpak override --user --filesystem=$HOME/.themes:ro
-flatpak override --user --filesystem=$HOME/.icons:ro
-#flatpak override --user --filesystem=xdg-config/gtk-3.0:ro
-#flatpak override --user --filesystem=xdg-config/gtk-4.0:ro
-# use home .mozilla directory to neatlessly be able to swap
-# between local and flatpak
-flatpak override --user --filesystem=~/.mozilla org.mozilla.firefox
-# force the usage of nvidia gpu in steam
-#flatpak override --user --env="__NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia" com.valvesoftware.Steam
-
-# switch default browser to flatpak firefox and disable the native one
-printf '[Desktop Entry]\nNoDisplay=true\n' > ~/.local/share/applications/firefox.desktop
-xdg-settings set default-web-browser org.mozilla.firefox.desktop
-
-# TODO: disable sddm and use gdm (if sddm set as display manager)
-#sudo systemctl disable sddm.service
-#sudo systemctl enable gdm.service
-
+flatpak install -y --user fedora org.inkscape.Inkscape
+flatpak install -y --user fedora org.gimp.GIMP
 
 # qogir theme
 if [ -d "${HOME}/.themes/Qogir" ]; then
   mkdir -p ${HOME}/.themes
   git clone https://github.com/vinceliuice/Qogir-theme.git ${HOME}/.themes/qogir-install
-  ./${HOME}/.themes/qogir-install/install.sh
+  ${HOME}/.themes/qogir-install/install.sh
   rm -rf ${HOME}/.themes/qogir-install
 fi
 
@@ -226,9 +161,7 @@ else
 fi
 
 # install pip packages
-pip install flashfocus
 pip install pre-commit
-pip install throttlestop
 pip install --user tt-time-tracker
 pip install --user parliament
 pip install --user aws-policy-generator
@@ -270,12 +203,11 @@ gsettings set org.gnome.shell disable-extension-version-validation true
  git config --global init.defaultBranch main
  git config --global push.autoSetupRemote true
 
-# initialize waydroid
-# sudo waydroid init --system_channel " https://ota.waydro.id/system" --vendor_channel "https://ota.waydro.id/vendor" --system_type "GAPPS"
-# also run
-# sudo waydroid shell
-# inside the shell
-# ANDROID_RUNTIME_ROOT=/apex/com.android.runtime ANDROID_DATA=/data ANDROID_TZDATA_ROOT=/apex/com.android.tzdata ANDROID_I18N_ROOT=/apex/com.android.i18n sqlite3 /data/data/com.google.android.gsf/databases/gservices.db "select * from main where name = \"android_id\";"
+# change default shell to zsh
+sudo usermod --shell /bin/zsh $(whoami)
+
+# set default browser
+xdg-settings set default-web-browser com.brave.Browser.desktop
 
 # additional stuff
 unset $SSH_ASKPASS
