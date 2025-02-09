@@ -8,13 +8,13 @@ SWAY_ENVIRONMENT_FILE=/etc/environment.d/10-sway.conf
 
 function setup() {
   if [[ ! -d /etc/environment.d ]]; then
-    mkdir /etc/environment.d
+    sudo mkdir -p /etc/environment.d
   fi
 
   if [[ ! -d ${USER_IDS_DIR} ]]; then
     mkdir -p ${USER_IDS_DIR}
   fi
-  echo "Warning: This will overwrite /etc/environment.d/10sway.conf if it already exists."
+  echo "Warning: This will overwrite ${SWAY_ENVIRONMENT_FILE} if it already exists."
   echo "Which of these cards is your eGPU?"
   lspci -d ::0300 && lspci -d ::0302
   echo "Please type in the eGPU BusID (in hex!), e.g: 0a:00.0"
@@ -29,10 +29,10 @@ function setup() {
 }
 
 # check if the script is run as root
-if [[ $EUID -ne 0 ]]; then
-    echo "You need to run the script with root privileges"
-    exit
-fi
+#if [[ $EUID -ne 0 ]]; then
+    #echo "You need to run the script with root privileges"
+    #exit
+#fi
 
 if [[ $1 = "setup" ]]; then
   setup
@@ -60,9 +60,9 @@ else
 
   if [[ -n $EGPU_VAL ]]; then
     if [[ -n $IGPU_VAL ]]; then
-      echo WLR_DRM_DEVICES=/dev/dri/card"$EGPU_VAL":/dev/dri/card"$IGPU_VAL" > ${SWAY_ENVIRONMENT_FILE}
+      echo WLR_DRM_DEVICES=/dev/dri/card"$EGPU_VAL":/dev/dri/card"$IGPU_VAL" | sudo tee ${SWAY_ENVIRONMENT_FILE}
     else
-      echo WLR_DRM_DEVICES=/dev/dri/card"$EGPU_VAL" > ${SWAY_ENVIRONMENT_FILE}
+      echo WLR_DRM_DEVICES=/dev/dri/card"$EGPU_VAL" | sudo tee ${SWAY_ENVIRONMENT_FILE}
     fi
   else
     if [[ -e ${SWAY_ENVIRONMENT_FILE} ]]; then
