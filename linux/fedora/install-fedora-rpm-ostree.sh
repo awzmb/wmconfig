@@ -388,7 +388,7 @@ sudo usermod --shell /bin/zsh $(whoami)
 
 # set bredr bluetooth controller mode to make bluetooth
 # headsets work properly
-sudo sed -i 's/.*ControllerMode.*/ControllerMode=bredr/g' /etc/bluetooth/main.conf
+sudo sed -i 's/.*ControllerMode.*/ControllerMode=dual/g' /etc/bluetooth/main.conf
 sudo systemctl restart bluetooth.service
 
 # additional stuff
