@@ -214,5 +214,17 @@ xdg-settings set default-web-browser com.brave.Browser.desktop
 sudo sed -i 's/.*ControllerMode.*/ControllerMode=dual/g' /etc/bluetooth/main.conf
 sudo systemctl restart bluetooth.service
 
+# disable those nasty bluetooth headset hfp modes
+sudo tee -a /etc/wireplumber/wireplumber.conf.d/80-bluetooth-properties.conf << EOM
+wireplumber.settings = {
+  bluetooth.autoswitch-to-headset-profile = false
+}
+
+monitor.bluez.properties = {
+  bluez5.roles = [ a2dp_sink a2dp_sink_sbc_xq a2dp_sink_sbc a2dp_source ]
+}
+EOM
+systemctl --user restart wireplumber
+
 # additional stuff
 unset $SSH_ASKPASS
