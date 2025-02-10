@@ -494,7 +494,9 @@ sudo sed -i 's/.*ControllerMode.*/ControllerMode=dual/g' /etc/bluetooth/main.con
 sudo systemctl restart bluetooth.service
 
 # disable those nasty bluetooth headset hfp modes
-sudo tee -a /etc/wireplumber/wireplumber.conf.d/80-bluetooth-properties.conf << EOM
+WIREPLUMBER_CONFIG_DIR=${HOME}/.config/wireplumber/wireplumber.conf.d/
+mkdir -p ${WIREPLUMBER_CONFIG_DIR}
+tee -a ${WIREPLUMBER_CONFIG_DIR}/80-bluetooth-properties.conf << EOM
 wireplumber.settings = {
   bluetooth.autoswitch-to-headset-profile = false
 }
