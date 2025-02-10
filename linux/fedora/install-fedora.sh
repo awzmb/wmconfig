@@ -488,5 +488,10 @@ sudo dnf -y install \
 sudo dnf config-manager --add-repo https://cli.github.com/packages/rpm/gh-cli.repo
 sudo dnf install gh
 
+# set bredr bluetooth controller mode to make bluetooth
+# headsets work properly
+sudo sed -i 's/.*ControllerMode.*/ControllerMode=bredr/g' /etc/bluetooth/main.conf
+sudo systemctl restart bluetooth.service
+
 # additional stuff
 unset $SSH_ASKPASS

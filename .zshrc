@@ -159,3 +159,5 @@ if [ -e /home/bawzm/.nix-profile/etc/profile.d/nix.sh ]; then . /home/bawzm/.nix
 #fi
 
 export PATH=$PATH:/home/dbundschuh/.spicetify
+
+export PATH=$PATH:/var/home/awzm/.spicetify

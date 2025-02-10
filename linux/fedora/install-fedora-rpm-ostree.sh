@@ -386,5 +386,10 @@ xdg-settings set default-web-browser com.brave.Browser.desktop
 # change default shell to zsh
 sudo usermod --shell /bin/zsh $(whoami)
 
+# set bredr bluetooth controller mode to make bluetooth
+# headsets work properly
+sudo sed -i 's/.*ControllerMode.*/ControllerMode=bredr/g' /etc/bluetooth/main.conf
+sudo systemctl restart bluetooth.service
+
 # additional stuff
 unset $SSH_ASKPASS

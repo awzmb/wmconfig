@@ -59,11 +59,13 @@ set $reboot systemctl reboot
 set $poweroff systemctl poweroff
 
 # set launcher command
-set $launcher fuzzel -b 242933ff -t d8dee9ff -s 2e3440ff -S 8fbcbbff -C 88c0d0ff -m b48eadff -w 60 --border-width=0 --border-radius=0 --dpi-aware=auto --show-actions -f "Terminus:weight=thin:size=14"
+#set $launcher-desktop fuzzel -b 242933ff -t d8dee9ff -s 2e3440ff -S 8fbcbbff -C 88c0d0ff -m b48eadff -w 60 --border-width=0 --border-radius=0 --dpi-aware=auto --show-actions -f "Terminus:weight=thin:size=14"
+set $launcher-desktop rofi -show drun -theme dmenu
+set $launcher-terminal rofi -show run -theme dmenu
 
 # set terminal emulator
-#set $term foot
-set $term alacritty
+set $term foot
+#set $term alacritty
 
 # set mod key (Mod1=<Alt>, Mod4=<Super>)
 set $mod Mod4
@@ -92,8 +94,9 @@ output DP-1 scale 1.4
 output HDMI-A-1 scale 1
 output HDMI-A-2 scale 1
 output DP-2 scale 1.3
+output DP-4 scale 1.4
 output DP-5 scale 1
-output DP-6 scale 1.333333
+output DP-6 scale 1.3
 
 # set output resolution
 #output * pos 0 0 res 1920x1200@120Hz
@@ -102,8 +105,7 @@ output HDMI-A-1 pos 0 0 res 3840x1080@120Hz
 output HDMI-A-2 pos 0 0 res 3840x1080@120Hz
 output DP-1 pos 0 0 res 5120x1440@120Hz
 output DP-2 pos 0 0 res 3840x1080@120Hz
-#output DP-3 pos 1920 0 res 1920x1080@60Hz
-output DP-4 pos 0 0 res 3840x1080@120Hz
+output DP-4 pos 0 0 res 5120x1440@120Hz
 output DP-5 pos 0 0 res 3840x1080@120Hz
 output DP-6 pos 0 0 res 5120x1440@120Hz
 
@@ -157,8 +159,9 @@ bindsym $mod+Shift+Return exec $term
 bindsym $mod+Shift+Q kill
 
 # start dmenu (a program launcher)
-bindsym $mod+Shift+d exec $launcher
-bindsym $mod+d exec rofi -show run -theme dmenu
+#bindsym $mod+Shift+d exec $launcher
+bindsym $mod+Shift+d exec $launcher-desktop
+bindsym $mod+d exec $launcher-terminal
 #bindsym $mod+d exec wofi --show run --dmenu
 
 # start password manager
