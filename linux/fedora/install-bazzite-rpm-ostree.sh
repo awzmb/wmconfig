@@ -227,6 +227,7 @@ monitor.bluez.properties = {
 }
 EOM
 systemctl --user restart wireplumber
+systemctl --user restart pipewire
 
 # additional stuff
 unset $SSH_ASKPASS

@@ -27,15 +27,6 @@ function aws_info {
   fi
 }
 
-function gcloud_info {
-  if command -v gcloud &> /dev/null; then
-    gcloud_context=$(gcloud config get-value project --quiet 2>/dev/null)
-    if [ ! -z $gcloud_context ]; then
-      echo " %F{135}<$gcloud_context>"
-    fi
-  fi
-}
-
 setopt prompt_subst
 
 # load vcs module
@@ -99,7 +90,7 @@ function left_prompt {
 
 function right_prompt {
 	echo -n "$vcs_info_msg_0_" # git branch
-  echo -n "$(k8s_info)$(aws_info)$(gcloud_info)%{$reset_color%}" # kubectl config
+  echo -n "$(k8s_info)$(aws_info)%{$reset_color%}" # kubectl config
 }
 
 PROMPT='$(left_prompt)'

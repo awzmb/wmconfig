@@ -3,7 +3,7 @@
     "position": "top", // Waybar position (top|bottom|left|right)
     "height": 28, // Waybar height (to be removed for auto height)
     // "width": 1280, // Waybar width
-    "spacing": 4, // Gaps between modules (4px)
+    "spacing": 3, // Gaps between modules (px)
     // Choose the order of the modules
     "modules-left": ["sway/workspaces", "sway/mode", "hyprland/workspaces", "hyprland/submap"],
     "modules-center": [],
@@ -17,21 +17,22 @@
         "tray",
         "clock"
     ],
+    // Nerd fonts: https://www.nerdfonts.com/cheat-sheet
     // Modules configuration
     "sway/workspaces": {
         "disable-scroll": true,
         "all-outputs": true,
-        "format": "{name}",
+        "format": "{icon}",
         "format-icons": {
-            "1": "",
-            "2": "",
-            "3": "",
-            "4": "",
-            "5": "",
-            "6": "",
-            "urgent": "",
-            "focused": "",
-            "default": ""
+            "1": "󰒅",
+            "2": "󰒅",
+            "3": "󰒅",
+            "4": "󰒅",
+            "5": "󰒅",
+            "6": "󰒅",
+            "urgent": "",
+            "focused": "",
+            "default": "󰹟"
         },
         "persistent-workspaces": {
             "1": [],
@@ -104,8 +105,8 @@
             "critical": 15
         },
         "format": "{capacity}% {icon}",
-        "format-charging": "{capacity}% ",
-        "format-plugged": "{capacity}% ",
+        "format-charging": "{capacity}% 󱐥",
+        "format-plugged": "{capacity}% 󰚥",
         // "format-good": "", // An empty format will hide the module
         // "format-full": "",
         "format-icons": ["", "", "", "", ""]
