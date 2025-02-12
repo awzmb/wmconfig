@@ -19,3 +19,5 @@ zstyle ':fzf-tab:complete:_zlua:*' query-string input
 # give a preview of commandline arguments when completing `kill`
 zstyle ':completion:*:*:*:*:processes' command "ps -u $USER -o pid,user,comm,cmd -w -w"
 zstyle ':fzf-tab:complete:kill:argument-rest' extra-opts --preview=$extract'ps --pid=$in[(w)1] -o cmd --no-headers -w -w' --preview-window=down:3:wrap
+# tmux popup
+zstyle ':fzf-tab:*' fzf-command ftb-tmux-popup

@@ -89,36 +89,20 @@ floating_modifier $mod
 
 # set hidpi output scaling
 #output * scale 2
-output $laptop scale 2
-output DP-1 scale 1.4
-output HDMI-A-1 scale 1
-output HDMI-A-2 scale 1
-output DP-2 scale 1.3
-#output DP-4 scale 1.4
-output DP-4 scale 1
-output DP-5 scale 1
-output DP-6 scale 1.3
-
-# set output resolution
-#output * pos 0 0 res 1920x1200@120Hz
-output $laptop pos 0 0 res 2560x1600@120Hz
-output HDMI-A-1 pos 0 0 res 3840x1080@120Hz
-output HDMI-A-2 pos 0 0 res 3840x1080@120Hz
-output DP-1 pos 0 0 res 5120x1440@120Hz
-output DP-2 pos 0 0 res 3840x1080@120Hz
-#output DP-4 pos 0 0 res 5120x1440@120Hz
-output DP-5 pos 0 0 res 3840x1080@120Hz
-output DP-6 pos 0 0 res 5120x1440@120Hz
-# external
-output DP-4 pos 2560 0 res 1920x1080@120Hz
-output DP-5 pos -2560 0 res 1920x1080@120Hz
+output $laptop scale 2 pos 0 0 res 2560x1600@120Hz
+output DP-1 scale 1.4 pos 2560 0 res 5120x1440@120Hz
+#output DP-4 scale 1 pos 19200 0 res 5120x1440@120Hz
+#output DP-5 scale 1 pos 24320 0 res 3840x1080@120Hz
+#output DP-6 scale 1.3 pos 28160 0 res 5120x1440@120Hz
 
 # use solid color background
 output * bg #242933 solid_color
 
 # clamshell mode (closed display on laptop)
-bindswitch --reload --locked lid:on output $laptop disable
-bindswitch --reload --locked lid:off output $laptop enable
+bindswitch --locked lid:off exec ~/.scripts/sway-lid-state-display-management
+bindswitch --locked lid:on exec ~/.scripts/sway-lid-state-display-management
+#bindswitch --reload --locked lid:on output $laptop disable
+#bindswitch --reload --locked lid:off output $laptop enable
 
 # activate natural scrolling
 input type:touchpad {
