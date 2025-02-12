@@ -59,10 +59,12 @@ if [ "$(uname)" = "Linux" ]; then
 fi
 
 # add golaang path
-export GOPATH="$HOME/go"
-export GOROOT="${HOME}/.go"
+export GOPATH="$HOME/.go/go"
+export GOROOT="${HOME}/.go/go"
 export PATH="$PATH:$GOPATH/bin"
 export PATH="$PATH:$GOROOT/bin"
+export GOSUMDB=sum.golang.org
+export GOPROXY=direct
 
 # source theme
 source ~/.zsh/theme.zsh
