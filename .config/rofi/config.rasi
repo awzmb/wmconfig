@@ -25,7 +25,7 @@ configuration {
 /*	drun-display-format: "{name} [<span weight='light' size='small'><i>({generic})</i></span>]";*/
 /*	disable-history: false;*/
 /*	ignored-prefixes: "";*/
-/*	sort: false;*/
+	sort: false;
 /*	sorting-method: ;*/
 /*	case-sensitive: false;*/
 /*	cycle: true;*/

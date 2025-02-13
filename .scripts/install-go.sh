@@ -25,6 +25,7 @@ mkdir -p ${INSTALL_DIR}
 
 # Install Go
 mkdir -p ${INSTALL_DIR}
+mkdir -p ${INSTALL_DIR}/root
 GO_VERSION=$(curl -L -s --url 'https://go.dev/VERSION?m=text' | grep go)
 GO_ARCHIVE="${GO_VERSION}.linux-${ARCH}.tar.gz"
 curl -L --output "${TMP_DIR}/${GO_ARCHIVE}" --url "https://go.dev/dl/${GO_ARCHIVE}"

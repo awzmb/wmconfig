@@ -59,7 +59,7 @@ if [ "$(uname)" = "Linux" ]; then
 fi
 
 # add golaang path
-export GOPATH="$HOME/.go/go"
+export GOPATH="$HOME/.go"
 export GOROOT="${HOME}/.go/go"
 export PATH="$PATH:$GOPATH/bin"
 export PATH="$PATH:$GOROOT/bin"
