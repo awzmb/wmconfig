@@ -1,12 +1,11 @@
 #!/bin/sh
-if grep -q open /proc/acpi/button/lid/LID0/state; then
-    swaymsg output eDP-1 enable
-    swaymsg input type:touchpad events disabled
-    swaymsg input type:touch events disabled
-    #swaymsg input 10182:280:GXTP7386:00_27C6:0118_Keyboard events disabled
-else
-    swaymsg output eDP-1 disable
-    swaymsg input type:touchpad events enabled
-    swaymsg input type:touch events enabled
-    #swaymsg input 10182:280:GXTP7386:00_27C6:0118_Keyboard events enabled
-fi
+LAPTOP_OUTPUT="eDP-1"
+LID_STATE_FILE="/proc/acpi/button/lid/LID0/state"
+
+read -r LS < "$LID_STATE_FILE"
+
+case "$LS" in
+*open)   swaymsg output "$LAPTOP_OUTPUT" enable && swaymsg input type:touchpad events enabled && swaymsg input type:touch events enabled ;;
+*closed) swaymsg output "$LAPTOP_OUTPUT" disable && swaymsg input type:touchpad events disabled && swaymsg input type:touch events disabled ;;
+*)       echo "Could not get lid state" >&2 ; exit 1 ;;
+esac

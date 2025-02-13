@@ -26,7 +26,7 @@ exec --no-startup-id dunst
 # start sound daemon (use this with openrc)
 #exec --no-startup-id pipewire
 # laptop lid close event manager (disables internal display)
-exec_always sway-lid-state-display-management
+exec_always ~/.scripts/sway-lid-state-display-management
 # import gtk-3.0 settings, icon and cursor theme
 #exec_always import-gsettings
 # disable touchscreen on start
@@ -99,8 +99,8 @@ output DP-1 scale 1.4 pos 2560 0 res 5120x1440@120Hz
 output * bg #242933 solid_color
 
 # clamshell mode (closed display on laptop)
-bindswitch --locked lid:off exec ~/.scripts/sway-lid-state-display-management
-bindswitch --locked lid:on exec ~/.scripts/sway-lid-state-display-management
+#bindswitch --locked lid:off exec ~/.scripts/sway-lid-state-display-management
+#bindswitch --locked lid:on exec ~/.scripts/sway-lid-state-display-management
 #bindswitch --reload --locked lid:on output $laptop disable
 #bindswitch --reload --locked lid:off output $laptop enable
 
