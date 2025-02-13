@@ -99,8 +99,8 @@ output DP-1 scale 1.4 pos 2560 0 res 5120x1440@120Hz
 output * bg #242933 solid_color
 
 # clamshell mode (closed display on laptop)
-#bindswitch --locked lid:off exec ~/.scripts/sway-lid-state-display-management
-#bindswitch --locked lid:on exec ~/.scripts/sway-lid-state-display-management
+bindswitch --locked lid:off exec ~/.scripts/sway-lid-state-display-management
+bindswitch --locked lid:on exec ~/.scripts/sway-lid-state-display-management
 #bindswitch --reload --locked lid:on output $laptop disable
 #bindswitch --reload --locked lid:off output $laptop enable
 
