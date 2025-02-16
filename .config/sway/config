@@ -89,8 +89,10 @@ floating_modifier $mod
 
 # set hidpi output scaling
 #output * scale 2
-output $laptop scale 2 pos 0 0 res 2560x1600@120Hz
-output DP-1 scale 1.4 pos 2560 0 res 5120x1440@120Hz
+#output $laptop scale 2 pos 0 0 res 2560x1600@120Hz
+#output DP-1 scale 1.4 pos 0 0 res 5120x1440@120Hz
+output $laptop scale 2 res 2560x1600@120Hz
+output DP-1 scale 1.4 res 5120x1440@119.988Hz
 #output DP-4 scale 1 pos 19200 0 res 5120x1440@120Hz
 #output DP-5 scale 1 pos 24320 0 res 3840x1080@120Hz
 #output DP-6 scale 1.3 pos 28160 0 res 5120x1440@120Hz

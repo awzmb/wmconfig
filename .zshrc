@@ -122,8 +122,8 @@ compinit
 
 # openjdk 11
 export PATH="${PATH}:${HOME}/.jdk/openjdk-11/bin"
-#export JAVA_HOME="${HOME}/.jdk/openjdk-11"
-export JAVA_HOME="/usr/lib/jvm/java"
+export JAVA_HOME="${HOME}/.jdk/openjdk-11"
+#export JAVA_HOME="/usr/lib/jvm/java"
 
 #
 export NVM_DIR="$HOME/.nvm"
