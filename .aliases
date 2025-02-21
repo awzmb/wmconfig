@@ -1,9 +1,9 @@
 #!/bin/sh
 
 # basic stuff
-alias l='eza -lh --icons'
-alias ll='eza -lAh --icons'
-alias ls='eza -F --icons'
+alias l='eza --icons -lh'
+alias ll='eza --icons -lAh'
+alias ls='eza --icons -F'
 
 # python pip upgrades
 alias pip-upgrade='python3 -m pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U'
