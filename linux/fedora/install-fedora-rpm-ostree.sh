@@ -140,8 +140,8 @@ rpm-ostree -y --apply-live --allow-inactive --idempotent install \
     waybar \
     blueman \
     network-manager-applet \
-    wl-clipboard
-
+    wl-clipboard \
+    v4l-utils
 
     #xwaylandvideobridge \
     # hyprland (fedora repo versions are basically
@@ -195,10 +195,10 @@ echo 'vm.max_map_count = 2147483642' | sudo tee /etc/sysctl.d/11-max-map-count.c
 #sudo rpm-ostree install $(find /var/cache/akmods -type f -name "kmod-*.rpm")
 
 # disable noveau driver to use egpu
-#sudo rpm-ostree kargs --append=rd.driver.blacklist=nouveau --append=modprobe.blacklist=nouveau --append=nvidia-drm.modeset=1 initcall_blacklist=simpledrm_platform_driver_init
+#sudo rpm-ostree kargs --append-if-missing=rd.driver.blacklist=nouveau --append-if-missing=modprobe.blacklist=nouveau --append-if-missing=nvidia-drm.modeset=1 initcall_blacklist=simpledrm_platform_driver_init
 
 # activate iommu fgr egpu hotswapping and kvm
-#sudo rpm-ostree kargs --append=pcie_ports=native pci=assign-busses,nocrs,realloc iommu=on
+#sudo rpm-ostree kargs --append-if-missing=pcie_ports=native pci=assign-busses,nocrs,realloc iommu=on
 
 # flathub repositories and premise
 flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo

@@ -9,3 +9,33 @@ case "$LS" in
 *closed) swaymsg output "$LAPTOP_OUTPUT" disable && swaymsg input type:touchpad events disabled && swaymsg input type:touch events disabled ;;
 *)       echo "Could not get lid state" >&2 ; exit 1 ;;
 esac
+
+
+#LAPTOP_OUTPUT="eDP-1"
+#LID_STATE_FILE="/proc/acpi/button/lid/LID0/state"
+
+#read -r LS < "$LID_STATE_FILE"
+
+## Check if eDP-1 is the only connected display
+#CONNECTED_OUTPUTS=$(swaymsg -t get_outputs --raw | grep -c '"active": true')
+#ONLY_LAPTOP_OUTPUT=$(swaymsg -t get_outputs | grep -c '"name": "'"$LAPTOP_OUTPUT"'"')
+
+#case "$LS" in
+#*open)
+  #swaymsg output "$LAPTOP_OUTPUT" enable
+  #swaymsg input type:touchpad events enabled
+  #swaymsg input type:touch events enabled
+  #;;
+#*closed)
+  #if [ "$CONNECTED_OUTPUTS" -eq 1 ] && [ "$ONLY_LAPTOP_OUTPUT" -eq 1 ]; then
+  #swaymsg output "$LAPTOP_OUTPUT" disable
+  #swaymsg input type:touchpad events disabled
+  #swaymsg input type:touch events disabled
+  #swaylock
+  #systemctl suspend
+  #;;
+#*)
+  #echo "Could not get lid state" >&2
+  #exit 1
+  #;;
+#esac

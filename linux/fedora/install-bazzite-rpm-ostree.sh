@@ -91,7 +91,8 @@ rpm-ostree -y --idempotent install \
     hyprutils \
     xdg-desktop-portal-hyprland \
     pavucontrol \
-    grimshot
+    grimshot \
+    v4l-utils
 
 # install gnome-shell themes
 rpm-ostree -y install \

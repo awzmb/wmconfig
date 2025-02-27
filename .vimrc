@@ -20,6 +20,8 @@ Plug 'hashivim/vim-terraform'
 
 " copilot integration
 Plug 'github/copilot.vim'
+Plug 'nvim-lua/plenary.nvim'
+Plug 'CopilotC-Nvim/CopilotChat.nvim'
 
 " mermaidjs
 Plug 'mracos/mermaid.vim'
@@ -96,7 +98,15 @@ Plug 'arcticicestudio/nord-vim'
 " - Automatically executes `filetype plugin indent on` and `syntax enable`.
 call plug#end()
 
+
 " copilot extension
+"
+lua << EOF
+require("CopilotChat").setup {
+  -- See Configuration section for options
+}
+EOF
+
 let g:copilot_assume_mapped = "true"
 let g:copilot_no_tab_map = "true"
 " accept suggestion
