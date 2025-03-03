@@ -5,15 +5,10 @@ filetype off
 call plug#begin('~/.vim/plugged')
 
 " neomake build tool (mapped below to <c-b>)
-Plug 'benekastah/neomake'
+"Plug 'benekastah/neomake'
 
 " force transparent background
 Plug 'thirtythreeforty/lessspace.vim'
-
-" latex editing
-"plugin 'latex-box-team/latex-box'
-"Plug 'lervag/vimtex'
-"Plug 'donRaphaco/neotex', { 'for': 'tex' }
 
 " terraform, hcl
 Plug 'hashivim/vim-terraform'
@@ -25,6 +20,9 @@ Plug 'CopilotC-Nvim/CopilotChat.nvim'
 
 " mermaidjs
 Plug 'mracos/mermaid.vim'
+
+" telescope finder
+Plug 'nvim-telescope/telescope.nvim'
 
 " status bar mods
 "Plug 'itchyny/lightline.vim'
@@ -54,20 +52,18 @@ Plug 'joe-skb7/cscope-maps'
 
 " nerdtree navigation and git plugin
 Plug 'scrooloose/nerdtree'
-"Plug 'PhilRunninger/nerdtree-buffer-ops' incompatible with Plug 'Xuyuanp/nerdtree-git-plugin'
 Plug 'Xuyuanp/nerdtree-git-plugin'
+Plug 'PhilRunninger/nerdtree-visual-selection'
 Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
 Plug 'liuchengxu/nerdtree-dash'
+Plug 'ryanoasis/vim-devicons'
 
-" toggable terminal
-"Plug 'wuelnerdotexe/nerdterm'
+" neo-tree
+Plug 'nvim-neo-tree/neo-tree.nvim'
+Plug 'MunifTanjim/nui.nvim'
 
 " wayland clipboard integration
 Plug 'jasonccox/vim-wayland-clipboard'
-
-" fern tree / project navigation (nerdtree replacement)
-"Plug 'antoinemadec/FixCursorHold.nvim'
-"Plug 'lambdalisue/fern.vim'
 
 " commenting plugin
 Plug 'scrooloose/nerdcommenter'
@@ -82,16 +78,12 @@ Plug 'KaraMCC/vim-gemini'
 " edit helm templates
 Plug 'towolf/vim-helm'
 
-" syntax
-Plug 'martinda/Jenkinsfile-vim-syntax'
-
 " other stuff
 Plug 'infoslack/vim-docker'
 Plug 'pearofducks/ansible-vim'
 
 " colorscheme
 Plug 'arcticicestudio/nord-vim'
-"Plug 'shaunsingh/nord.nvim'
 
 " finish plugin loading
 " Initialize plugin system
@@ -160,28 +152,17 @@ colorscheme nord
 " Don't mess up undo history
 let g:jedi#show_call_signatures = "0"
 
+
 """"""" vim-autoformat configuration """""""
 " start formatting with F3
 "noremap <F3> :Autoformat<CR>
 
-""""""" fern configuration """""""
-" open fern as drawer in current working directory with ctrl+n
-"map <C-n> :Fern . -drawer -toggle -reveal=%<CR>
-"" initialize options for fern (options visible by hitting ? in fern buffer)
-"function! s:init_fern() abort
-  "" Use 'select' instead of 'edit' for default 'open' action
-  "nmap <buffer> <Plug>(fern-action-open) <Plug>(fern-action-open:select)
-  "nmap <buffer> <Plug>(fern-action-hidden) <Plug>(fern-action-hidden:set)
-"endfunction
-
-"augroup fern-custom
-  "autocmd! *
-  "autocmd FileType fern call s:init_fern()
-"augroup END
 
 """"""" nerdtree configuration """""""
 " open nerdtree with ctrl+n
-map <C-n> :NERDTreeToggle<CR>
+"nnoremap <C-t> :NERDTree<CR>
+nnoremap <C-n> :NERDTreeToggle<CR>
+"nnoremap <C-f> :NERDTreeFind<CR>
 " open nerdtree if no file was specified
 autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
@@ -196,6 +177,7 @@ let NERDTreeShowHidden=1
 " change default arrows
 let g:NERDTreeDirArrowExpandable = '+'
 let g:NERDTreeDirArrowCollapsible = '-'
+
 
 """"""" nerdtree git configuration """""""
 " hide brackets around symbols
@@ -216,6 +198,7 @@ let g:NERDTreeGitStatusIndicatorMapCustom = {
 
 let g:NERDTreeGitStatusNodeColorization = 1
 let g:NERDTreeGitStatusWithFlags = 1
+
 
 """"""" coc configuration """""""
 " textedit might fail if hidden is not set.
@@ -416,10 +399,12 @@ endif
 autocmd VimEnter * call s:SetCursorLine()
 autocmd BufNew * call s:SetCursorLine()
 
+
 """"""" python stuff """""""
 syntax enable
 set number showmatch
 let python_highlight_all = 1
+
 
 """"""" fzf options """""""
 " open fzf with ctrl+o
@@ -461,17 +446,18 @@ let g:terraform_align=1
 " terraform fmt. you can also do this manually with the :terraformfmt command
 let g:terraform_fmt_on_save=1
 
+
+""""""" telescope """""""
+nnoremap <C-f> <cmd>Telescope find_files<CR>
+"nnoremap <leader>fg <cmd>Telescope live_grep<CR>
+nnoremap <C-g> <cmd>Telescope buffers<CR>
+"nnoremap <leader>fh <cmd>Telescope help_tags<CR>
+
+
 """"""" keybindings """""""
 " set up leaders
 let mapleader=","
 let maplocalleader="\\"
-
-" neomake and other build commands (ctrl-b)
-"nnoremap <C-b> :w<cr>:Neomake<cr>
-
-" toggle terminal
-nnoremap <C-]> <Plug>(NERDTermToggle)
-tnoremap <C-]> <Plug>(NERDTermToggle)
 
 " allow ctrl+d to be used for commands while using vim from within a browser
 " (primarly code-server)
