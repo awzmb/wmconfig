@@ -45,9 +45,21 @@
         }
     },
     "hyprland/workspaces": {
-       "format": "{icon}",
-       "on-scroll-up": "hyprctl dispatch workspace e+1",
-       "on-scroll-down": "hyprctl dispatch workspace e-1"
+      "on-scroll-up": "hyprctl dispatch workspace e+1",
+      "on-scroll-down": "hyprctl dispatch workspace e-1",
+      "active-only":false,
+      "on-click": "activate",
+      "disable-scroll": true,
+      "all-outputs": true,
+      "format": "{name}",
+      "persistent-workspaces": {
+        "1": [],
+        "2": [],
+        "3": [],
+        "4": [],
+        "5": [],
+        "6": []
+      }
     },
     "keyboard-state": {
         "numlock": true,
