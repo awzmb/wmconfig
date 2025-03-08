@@ -37,7 +37,7 @@ exec_always setxkbmap -layout us -variant altgr-intl
 set $gnome-schema org.gnome.desktop.interface
 exec_always {
     gsettings set $gnome-schema gtk-theme 'Qogir-Dark'
-    gsettings set $gnome-schema icon-theme 'Paper'
+    gsettings set $gnome-schema icon-theme 'Papirus'
     gsettings set $gnome-schema cursor-theme 'Adwaita'
     gsettings set $gnome-schema font-name 'Terminus 12'
     gsettings set $gnome-schema monospace-font-name 'Terminus 12'
