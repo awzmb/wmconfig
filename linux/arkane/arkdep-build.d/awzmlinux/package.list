@@ -65,8 +65,11 @@ libnss-extrausers
 # Shell and tools
 fzf
 tmux
-zsh-completions
 neovim
+vim
+vim-runtime
+python-pynvim
+foot
 vifm
 hub
 github-cli
@@ -175,6 +178,7 @@ arc-solid-gtk-theme
 
 # Gaming
 steam
+gamemode
 
 # Disabled for now
 #google-cloud-cli

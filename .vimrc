@@ -99,6 +99,11 @@ require("CopilotChat").setup {
 }
 EOF
 
+
+" encoding
+set encoding=UTF-8
+
+" copilot
 let g:copilot_assume_mapped = "true"
 let g:copilot_no_tab_map = "true"
 " accept suggestion

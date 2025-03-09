@@ -1,8 +1,0 @@
-[14:09:56 2025-02-04] FETCHING Version 2.38.9
-[14:09:56 2025-02-04] DOWNLOADING https://github.com/spicetify/cli/releases/download/v2.38.9/spicetify-2.38.9-linux-amd64.tar.gz
-[14:09:58 2025-02-04] EXTRACTING /home/awzm/.spicetify/spicetify.tar.gz
-[14:09:58 2025-02-04] SETTING EXECUTABLE PERMISSIONS TO /home/awzm/.spicetify/spicetify
-[14:09:58 2025-02-04] REMOVING /home/awzm/.spicetify/spicetify.tar.gz
-[14:09:58 2025-02-04] spicetify path already set in /home/awzm/.zshrc, continuing...
-[14:09:58 2025-02-04] spicetify v2.38.9 was installed successfully to /home/awzm/.spicetify
-[14:09:58 2025-02-04] Run 'spicetify --help' to get started

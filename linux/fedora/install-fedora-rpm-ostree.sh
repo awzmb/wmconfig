@@ -208,23 +208,16 @@ flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flath
 #flatpak install -y --system org.freedesktop.Platform.GStreamer.gstreamer-vaapi
 #flatpak install -y --system org.gnome.Extensions
 
-flatpak install -y --user fedora com.github.tchx84.Flatseal
-#flatpak install -y --user flathub org.gnome.Platform
-#flatpak install -y --user flathub org.gnome.Sdk
+flatpak install -y --user flathub com.github.tchx84.Flatseal
 flatpak install -y --user flathub com.spotify.Client
-#flatpak install -y --user flathub com.github.Eloston.UngoogledChromium
 flatpak install -y --user flathub org.gtk.Gtk3theme.Qogir-dark
 flatpak install -y --user flathub de.shorsh.discord-screenaudio
-#flatpak install -y --user flathub org.mozilla.firefox
-#flatpak install -y --user flathub io.gitlab.librewolf-community
-#flatpak install -y --user flathub com.usebottles.bottles
 flatpak install -y --user flathub org.zealdocs.Zeal
 flatpak install -y --user flathub org.flameshot.Flameshot
-#flatpak install -y --user flathub net.lutris.Lutris
 flatpak install -y --user flathub com.brave.Browser
-flatpak install -y --user com.parsecgaming.parsec
-flatpak install -y --user org.inkscape.Inkscape
-flatpak install -y --user org.gimp.GIMP
+flatpak install -y --user flathub com.parsecgaming.parsec
+flatpak install -y --user flathub org.inkscape.Inkscape
+flatpak install -y --user flathub org.gimp.GIMP
 
 # use egpu for parsec
 flatpak override --user --device=dri --env="DRI_PRIME=1" com.parsecgaming.parsec
