@@ -9,3 +9,6 @@ node_modules
 
 # k9s config.yml since it is mutable
 .config/k9s/config.yml
+
+# chrome-theme cache
+.config/chrome/chrome-theme/Cached Theme.pak
