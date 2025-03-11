@@ -33,3 +33,6 @@ alias temps="paste <(cat /sys/class/thermal/thermal_zone*/type) <(cat /sys/class
 
 # use podman instead of docker
 alias docker='podman'
+
+# gcloud
+#alias gcloud="docker run --rm -ti -v $HOME/.config/gcloud:/root/.config/gcloud gcr.io/google.com/cloudsdktool/google-cloud-cli:stable gcloud"

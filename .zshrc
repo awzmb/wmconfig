@@ -134,8 +134,13 @@ export PATH=$PATH:/home/awzm/.spicetify
 # add pip local cache to path
 export PATH="${PATH}:${HOME}/.local/bin"
 
-if type "gcloud" > /dev/null; then
-   source /usr/share/google-cloud-sdk/completion.zsh.inc
+#if type "gcloud" > /dev/null; then
+   #source /usr/share/google-cloud-sdk/completion.zsh.inc
+#fi
+
+# gcloud completion
+if [ -f "${HOME}/.completion/gcloud/completion.zsh.inc" ]; then
+   source ${HOME}/.completion/gcloud/completion.zsh.inc
 fi
 
 # extra completions
@@ -163,3 +168,6 @@ if [ -e /home/bawzm/.nix-profile/etc/profile.d/nix.sh ]; then . /home/bawzm/.nix
 export PATH=$PATH:/home/dbundschuh/.spicetify
 
 export PATH=$PATH:/var/home/awzm/.spicetify
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/home/awzm/extract/google-cloud-sdk/path.zsh.inc' ]; then . '/home/awzm/extract/google-cloud-sdk/path.zsh.inc'; fi

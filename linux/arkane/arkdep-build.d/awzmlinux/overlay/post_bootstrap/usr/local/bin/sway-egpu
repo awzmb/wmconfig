@@ -4,11 +4,11 @@
 if [ -e "/dev/dri/card1" ]; then
   echo "Probable eGPU detected"
   if [ ! -z "$(udevadm info -a -n /dev/dri/card1 | grep -E 'i915|xe')" ]; then
-    intel="/dev/dri/card0"
-    admgpu="/dev/dri/card1"
-  else
     intel="/dev/dri/card1"
     admgpu="/dev/dri/card0"
+  else
+    intel="/dev/dri/card0"
+    admgpu="/dev/dri/card1"
   fi
   # set amdgpu as the primary drm device if present
   WLR_NO_HARDWARE_CURSORS=1 WLR_DRM_DEVICES="${admgpu}:${intel}" sway

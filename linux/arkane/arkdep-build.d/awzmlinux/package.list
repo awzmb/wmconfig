@@ -39,9 +39,9 @@ gvfs-wsdd
 ibus-typing-booster
 networkmanager-openconnect
 networkmanager-openvpn
-noto-fonts
-noto-fonts-cjk
-noto-fonts-emoji
+#noto-fonts
+#noto-fonts-cjk
+#noto-fonts-emoji
 pipewire
 pipewire-alsa
 pipewire-audio
@@ -112,6 +112,7 @@ intel-graphics-compiler
 intel-gmmlib
 vulkan-tools
 radeontop
+nvtop
 
 # General desktop packages
 terminus-font
@@ -128,6 +129,7 @@ wl-clip-persist
 wl-clipboard
 yank
 rofi
+wofi
 dunst
 network-manager-applet
 pavucontrol
@@ -141,6 +143,8 @@ kitty
 # Sway packages
 nwg-panel
 nwg-displays
+nwg-look
+nwg-menu
 sway
 sway-contrib
 swayidle
@@ -148,6 +152,9 @@ swayimg
 swaylock
 swaybg
 waybar
+wlr-randr
+wlr-protocols
+xdg-desktop-portal-wlr
 
 # Hyprland
 hyprutils
@@ -166,15 +173,9 @@ hypridle
 xdg-desktop-portal-hyprland
 
 # Themes and icons
-arc-icon-theme
-obsidian-icon-theme
 papirus-icon-theme
-pop-icon-theme
-deepin-icon-theme
 gtk-engines
 gnome-themes-extra
-arc-gtk-theme
-arc-solid-gtk-theme
 
 # Gaming
 steam
