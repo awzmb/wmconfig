@@ -39,9 +39,9 @@ exec_always {
     gsettings set $gnome-schema gtk-theme 'Qogir-Dark'
     gsettings set $gnome-schema icon-theme 'Papirus'
     gsettings set $gnome-schema cursor-theme 'Adwaita'
-    gsettings set $gnome-schema font-name 'Terminus 12'
-    gsettings set $gnome-schema monospace-font-name 'Terminus 12'
-    gsettings set $gnome-schema document-font-name 'Terminus 12'
+    gsettings set $gnome-schema font-name 'TerminessNerdFont 12'
+    gsettings set $gnome-schema monospace-font-name 'TerminessNerdFont 12'
+    gsettings set $gnome-schema document-font-name 'TerminessNerdFont 12'
     gsettings set $gnome-schema color-scheme prefer-dark
     gsettings set $gnome-schema enable-animations false
 }
@@ -59,7 +59,7 @@ set $reboot systemctl reboot
 set $poweroff systemctl poweroff
 
 # set launcher command
-#set $launcher-desktop fuzzel -b 242933ff -t d8dee9ff -s 2e3440ff -S 8fbcbbff -C 88c0d0ff -m b48eadff -w 60 --border-width=0 --border-radius=0 --dpi-aware=auto --show-actions -f "Terminus:weight=thin:size=14"
+#set $launcher-desktop fuzzel -b 242933ff -t d8dee9ff -s 2e3440ff -S 8fbcbbff -C 88c0d0ff -m b48eadff -w 60 --border-width=0 --border-radius=0 --dpi-aware=auto --show-actions -f "TerminessNerdFont:weight=thin:size=14"
 set $launcher-desktop rofi -show drun -theme dmenu
 set $launcher-terminal rofi -show run -theme dmenu
 
@@ -75,7 +75,7 @@ set $mod Mod4
 set $laptop eDP-1
 
 # font for window titles. ISO 10646 = Unicode
-font pango:Terminus 12
+font pango:TerminessNerdFont 12
 
 # no border / window title bar
 default_border none
@@ -96,6 +96,7 @@ output DP-1 scale 1.333333 res 5120x1440@119.988Hz
 #output DP-1 scale 1 res 5120x1440@119.988Hz
 output DP-2 scale 1.4 res 5120x1440@119.988Hz
 #output DP-4 scale 1 pos 19200 0 res 5120x1440@120Hz
+#output DP-5 scale 1.4 res 5120x1440@120Hz
 output DP-5 scale 1.4 res 5120x1440@120Hz
 #output DP-6 scale 1.3 pos 28160 0 res 5120x1440@120Hz
 
@@ -303,7 +304,7 @@ bindsym $mod+Shift+Print --release exec --no-startup-id flatpak run org.flamesho
 
 # networkmanager dmenu integration
 bindsym $mod+shift+w exec --no-startup-id networkmanager_dmenu \
-    -fn "Terminus-12" \
+    -fn "TerminessNerdFont-12" \
     -nb $(xrdb -query | awk '/^\*.background:/  {print $2}') \
     -nf $(xrdb -query | awk '/^\*.foreground:/  {print $2}') \
     -sf $(xrdb -query | awk '/^\*.color12:/  {print $2}') \

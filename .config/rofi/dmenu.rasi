@@ -20,10 +20,10 @@
     nord15: #b48ead;
 
     foreground:  @nord9;
-    backlight:   #ccffeedd;
+    backlight:   @nord7;
     background-color:  transparent;
 
-    highlight: bold #88c0d0;
+    highlight: @nord8;
 
     background-color:      @nord0;
     border-color:          @nord0;
@@ -61,5 +61,5 @@
 }
 
 #element selected {
-    text-color:  #88C0D0;
+    text-color:  @nord8;
 }

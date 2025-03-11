@@ -48,10 +48,10 @@ style = "Block"
 unfocused_hollow = true
 
 [font]
-size = 11
+size = 10.5
 
 [font.bold]
-family = "Terminus"
+family = "TerminessNerdFont"
 style = "Bold"
 
 [font.glyph_offset]
@@ -59,11 +59,11 @@ x = 0
 y = 0
 
 [font.italic]
-family = "Terminus"
+family = "TerminessNerdFont"
 style = "Italic"
 
 [font.normal]
-family = "Terminus"
+family = "TerminessNerdFont"
 style = "Regular"
 
 [font.offset]
