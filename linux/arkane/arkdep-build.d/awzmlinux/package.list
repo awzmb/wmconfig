@@ -101,6 +101,8 @@ openssl
 unrar
 wireguard-tools
 python-pip
+netcat
+termshark
 
 # Media drivers and extensions
 intel-media-driver
@@ -171,6 +173,7 @@ hyprland
 hyprlock
 hypridle
 xdg-desktop-portal-hyprland
+grim
 
 # Themes and icons
 papirus-icon-theme
