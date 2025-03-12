@@ -12,3 +12,6 @@ node_modules
 
 # chrome-theme cache
 .config/chrome/chrome-theme/Cached Theme.pak
+
+# ignore arkdep-build target directory
+linux/arkane/target
