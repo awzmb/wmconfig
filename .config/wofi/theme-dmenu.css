@@ -41,7 +41,6 @@ listview button {
     border: none;
     font-family: monospace;
     font-size: 12px;
-    text-align: left;
 }
 
 listview button:selected {

@@ -1,11 +1,11 @@
 #!/bin/sh
 
 # install pip packages
-pip install --user pre-commit
-pip install --user tt-time-tracker
-pip install --user parliament
-pip install --user aws-policy-generator
-pip install --user gcalcli
-pip install --user posting
-pip install --user protonup
-sudo pip install flashfocus
+pip install --user pre-commit --break-system-packages
+pip install --user tt-time-tracker --break-system-packages
+pip install --user parliament --break-system-packages
+pip install --user aws-policy-generator --break-system-packages
+pip install --user gcalcli --break-system-packages
+pip install --user posting --break-system-packages
+pip install --user protonup --break-system-packages
+sudo pip install flashfocus --break-system-packages

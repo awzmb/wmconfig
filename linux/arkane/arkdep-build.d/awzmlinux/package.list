@@ -26,6 +26,7 @@ fwupd
 gst-plugin-pipewire
 gst-plugins-base
 gst-plugins-good
+gst-plugins-ugly
 gvfs
 gvfs-afc
 gvfs-dnssd
@@ -131,7 +132,7 @@ blueman
 wl-clip-persist
 wl-clipboard
 yank
-rofi
+rofi-wayland
 wofi
 dunst
 network-manager-applet
@@ -139,8 +140,8 @@ pavucontrol
 pass
 pass-otp
 ttf-font-awesome
-awesome-terminal-fonts
 otf-font-awesome
+awesome-terminal-fonts
 kitty
 
 # Sway packages
