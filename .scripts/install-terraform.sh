@@ -31,3 +31,6 @@ unzip ${TMP_DIR}/${TERRAFORM_ARCHIVE} -d ${TMP_DIR}
 mv ${TMP_DIR}/terraform ${INSTALL_DIR}
 chmod +x ${INSTALL_DIR}/terraform
 which terraform
+
+# install zsh autocomplete
+terraform -install-autocomplete

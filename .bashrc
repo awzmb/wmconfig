@@ -161,3 +161,5 @@ unset __conda_setup
 
 export PATH=$PATH:/home/awzm/.spicetify
 export PATH="$HOME/bin:$PATH"
+
+complete -C /home/awzm/.bin/terraform terraform

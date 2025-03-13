@@ -87,6 +87,9 @@ source ~/.zsh/vi-mode.zsh
 # tab completion generator
 source ~/.zsh/completion-generator.zsh
 
+# docker aliases completion
+source ~/.zsh/completion-aliases-docker.zsh
+
 # fzf integration
 source ~/.zsh/fzf-settings.zsh
 source ~/.zsh/fzf-completion.zsh
@@ -171,3 +174,6 @@ export PATH=$PATH:/var/home/awzm/.spicetify
 
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/home/awzm/extract/google-cloud-sdk/path.zsh.inc' ]; then . '/home/awzm/extract/google-cloud-sdk/path.zsh.inc'; fi
+
+autoload -U +X bashcompinit && bashcompinit
+complete -o nospace -C /home/awzm/.bin/terraform terraform
