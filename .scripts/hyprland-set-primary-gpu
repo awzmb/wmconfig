@@ -1,0 +1,20 @@
+#!/bin/sh
+
+# probe for intel i915 or xe driver
+if [ -e "/dev/dri/card1" ]; then
+  echo "Probable eGPU detected"
+  if [ ! -z "$(udevadm info -a -n /dev/dri/card1 | grep -E 'i915|xe')" ]; then
+    intel="/dev/dri/card1"
+    admgpu="/dev/dri/card0"
+  else
+    intel="/dev/dri/card0"
+    admgpu="/dev/dri/card1"
+  fi
+  # set amdgpu as the primary drm device if present
+  DRI_DEVICES="${admgpu}:${intel}"
+else
+  echo "No eGPU detected"
+fi
+
+# set amdgpu as the primary drm device in hyprland.conf
+sed -i 's|AQ_DRM_DEVICES,.*|AQ_DRM_DEVICES,'${DRI_DEVICES}'|' ${HOME}/.config/hypr/hyprland.conf
