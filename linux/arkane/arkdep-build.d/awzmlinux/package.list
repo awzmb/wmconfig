@@ -68,7 +68,6 @@ tmux
 neovim
 vim
 vim-runtime
-python-pynvim
 foot
 vifm
 hub
@@ -101,6 +100,8 @@ openssl
 unrar
 wireguard-tools
 python-pip
+python-pipx
+python-pynvim
 netcat
 termshark
 
@@ -183,23 +184,4 @@ gnome-themes-extra
 # Gaming
 steam
 gamemode
-
-# Disabled for now
-#google-cloud-cli
-#google-cloud-cli-anthos-auth
-#google-cloud-cli-kpt
-#google-cloud-cli-kubectl-oidc
-#google-cloud-cli-skaffold
-#google-cloud-cli-terraform-validator
-#google-cloud-cli-gke-gcloud-auth-plugin
-#containernetworking-plugins
-#xinput
-#python3-neovim
-#python3-xcffib
-#paper-icon-theme
-#arc-theme
-#libvirt-daemon-kvm
-#gtk-murrine-engine
-#gtk2-engines
-#awscli2
-#aws-tools
+lutris
