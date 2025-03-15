@@ -1,3 +1,51 @@
+# Arkane Linux packages
+apparmor
+arch-install-scripts
+archiso
+arkdep
+bind
+binutils
+btrfs-progs
+debugedit
+diffutils
+distrobox
+dosfstools
+efibootmgr
+f2fs-tools
+fakeroot
+git
+glibc-locales
+libnss-extrausers
+libva-mesa-driver
+linux-headers
+man-db
+mesa
+mesa-vdpau
+neovim
+networkmanager
+openssh
+pacman-contrib
+plymouth
+podman
+podman-compose
+pv
+qemu-guest-agent
+skel-arkane
+sof-firmware
+sudo
+terminus-font
+tpm2-tools
+tpm2-tss
+tpm2-tss-engine
+vulkan-intel
+vulkan-mesa-layers
+vulkan-nouveau
+vulkan-radeon
+wget
+zsh
+zsh-completions
+#zsh-syntax-highlighting
+
 # GNOME
 evolution-data-server
 gdm
@@ -17,9 +65,9 @@ nautilus
 
 # GNOME extra
 bluez
-bluez-cups
 bluez-plugins
 bluez-utils
+bluez-tools
 flatpak
 fuse
 fwupd
@@ -103,7 +151,7 @@ wireguard-tools
 python-pip
 python-pipx
 python-pynvim
-netcat
+gnu-netcat
 termshark
 
 # Media drivers and extensions
@@ -114,6 +162,19 @@ intel-compute-runtime
 intel-gpu-tools
 intel-graphics-compiler
 intel-gmmlib
+lib32-libva-intel-driver
+lib32-vulkan-intel
+lib32-vulkan-mesa-layers
+lib32-vulkan-radeon
+lib32-vulkan-validation-layers
+lib32-vulkan-virtio
+vpl-gpu-rt
+openpgl
+libva-utils
+libmfx
+igsc
+amdvlk
+vulkan-virtio
 vulkan-tools
 radeontop
 nvtop
@@ -127,8 +188,8 @@ alacritty
 brightnessctl
 cliphist
 gammastep
-v4l-utils
 blueman
+blueberry
 wl-clip-persist
 wl-clipboard
 yank
@@ -186,3 +247,9 @@ gnome-themes-extra
 steam
 gamemode
 lutris
+mangohud
+
+# Camera
+v4l-utils
+v4l2loopback-dkms
+v4l2loopback-utils

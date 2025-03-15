@@ -1,0 +1,8 @@
+#!/bin/sh
+
+cd ${HOME}/.cfg/linux/arkane
+sudo arkdep-build awmzlinux
+
+MOST_RECENT_BUILD=$(find "$(pwd)" -type f -name "*.tar.zst" -printf "%T@ %p\n" | sort -n | tail -1 | cut -d' ' -f2-)
+sudo cp ${MOST_RECENT_BUILD} /arkdep/cache
+sudo arkdep deploy cache awzmlinux
