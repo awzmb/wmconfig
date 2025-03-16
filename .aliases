@@ -38,7 +38,7 @@ alias ggcloud="docker run --rm -ti -v $HOME/.config/gcloud:/root/.config/gcloud 
 alias pip-upgrade='python3 -m pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U'
 
 # terminal-ai
-alias ai='docker run --rm -it terminal-ai:latest'
+alias ai='docker run --rm -it localhost/terminal-ai:latest'
 
 # ai-chat
-alias aichat='docker run --rm -v ${HOME}/.config/aichat:/root/.config/aichat -it delete-test:latest'
+alias aichat='docker run --rm -v ${HOME}/.config/aichat:/root/.config/aichat -it localhost/aichat:latest'
