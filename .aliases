@@ -5,9 +5,6 @@ alias l='eza --icons -lh'
 alias ll='eza --icons -lAh'
 alias ls='eza --icons -F'
 
-# python pip upgrades
-alias pip-upgrade='python3 -m pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U'
-
 # neomutt + maildir sync
 alias mutt='mbsync -a && neomutt'
 
@@ -36,3 +33,9 @@ alias docker='podman'
 
 # gcloud
 alias ggcloud="docker run --rm -ti -v $HOME/.config/gcloud:/root/.config/gcloud gcr.io/google.com/cloudsdktool/google-cloud-cli:stable gcloud"
+
+# python pip upgrades
+alias pip-upgrade='python3 -m pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U'
+
+# terminal-ai
+alias ai='docker run --rm -it terminal-ai:latest'

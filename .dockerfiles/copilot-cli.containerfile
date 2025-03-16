@@ -1,0 +1,14 @@
+FROM node:23-alpine as build
+
+WORKDIR /app
+
+RUN apk add --no-cache curl bash
+RUN npm cache clean --force
+RUN npm i playwright playwright-extra puppeteer-extra-plugin-stealth
+RUN npx -y playwright install chromium
+RUN curl -L -s --url "https://raw.githubusercontent.com/KevCui/copilot-cli/refs/heads/main/copilot.js" --output /app/copilot.js
+
+#FROM gcr.io/distroless/nodejs22-debian12
+
+#COPY --from=build /app /app
+#CMD ["/app/node_modules/.bin/ai"]
