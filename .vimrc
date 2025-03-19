@@ -99,6 +99,7 @@ require("CopilotChat").setup {
 }
 EOF
 
+""""""" general settings """""""
 
 " encoding
 set encoding=UTF-8
@@ -125,6 +126,13 @@ let g:coc_global_extensions = [
             \'coc-pyright',
             \'coc-gitignore'
             \]
+
+""""""" clipboard """""""
+" enable clipboard for wayland
+" TODO: make this work for macos and X11
+set clipboard=unnamedplus
+
+""""""" general settings """""""
 
 
 """"""" colorscheme """""""
