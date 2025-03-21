@@ -13,11 +13,11 @@
     - ~/.vim/swp
     - ~/.zshcache
     - ~/.config/alacritty
-    - ~/.config/karabiner
     - ~/.config/nvim
     - ~/.config/foot
     - ~/.config/gtk-3.0
     - ~/.config/gtk-4.0
+    - ~/.config/aichat
     - ~/.terraform.d/cache
     - ~/.terraform.d/plugin-cache
     - ~/.bin
@@ -95,9 +95,6 @@
     ~/.config/yabai:
       if: '[ `uname` = Darwin ]'
       path: .config/yabai
-    ~/.config/karabiner/karabiner.json:
-      if: '[ `uname` = Darwin ]'
-      path: .config/karabiner/karabiner.json
     ~/.config/skhd:
       if: '[ `uname` = Darwin ]'
       path: .config/skhd
