@@ -1,9 +1,9 @@
-_ggcloud() {
-  # Use the vendor completion function
-  _python_argcomplete "$@"
-}
+#ggcloud() {
+  #podman run --rm \
+    #-v $HOME/.config/gcloud:/root/.config/gcloud \
+    #-it gcr.io/google.com/cloudsdktool/google-cloud-cli:latest \
+    #gcloud "$@"
+#}
 
-compdef _ggcloud ggcloud
-
-#alias ggcloud="docker run --rm -ti -v $HOME/.config/gcloud:/root/.config/gcloud gcr.io/google.com/cloudsdktool/google-cloud-cli:stable gcloud"
 #complete -o nospace -C ggcloud gcloud
+#compdef gcloud ggcloud

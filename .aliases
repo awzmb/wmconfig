@@ -18,6 +18,7 @@ alias gd='git diff'
 alias gdc='git diff --cached'
 alias gpl='git pull'
 alias gps='git push'
+alias gct='git shortlog -s -n --all --no-merges'
 
 # kubectl
 alias k='kubectl'
@@ -44,6 +45,5 @@ alias ai='docker run --rm -it localhost/terminal-ai:latest'
 alias aichat='docker run --rm -v ${HOME}/.config/aichat:/root/.config/aichat -it localhost/aichat:latest'
 
 # k9s
-#alias k9sc='docker run --rm -v ${HOME}/.config/k9s:/root/.config/k9s -v ${HOME}/.kube:/root/.kube:ro -v ${HOME}/.config/gcloud:/root/.config/gcloud:ro -it localhost/k9s:latest'
 #alias k9s='docker run --rm -v ${HOME}/.config/k9s:/root/.config/k9s -v ${HOME}/.kube:/root/.kube:ro -v ${HOME}/.config/gcloud:/root/.config/gcloud:ro -it localhost/k9s:latest'
 alias k9s='docker run --rm -v ${HOME}/.config/k9s:/root/.config/k9s -v ${HOME}/.kube/config:/root/.kube/config -v ${HOME}/.config/gcloud:/root/.config/gcloud --env=TERM=$(echo ${TERM}) -it localhost/gcloud-k9s:latest k9s --headless'
