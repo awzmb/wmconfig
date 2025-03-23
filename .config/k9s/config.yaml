@@ -1,6 +1,5 @@
 k9s:
   liveViewAutoRefresh: false
-  screenDumpDir: /data/data/com.termux/files/home/.local/state/k9s/screen-dumps
   refreshRate: 2
   maxConnRetry: 5
   readOnly: false
@@ -29,7 +28,6 @@ k9s:
     tail: 100
     buffer: 5000
     sinceSeconds: -1
-    fullScreenLogs: false
     textWrap: false
     showTime: false
   thresholds:

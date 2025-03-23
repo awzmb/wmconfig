@@ -8,11 +8,10 @@ RUN go clean --testcache && go test
 
 RUN CGO_ENABLED=0 GOOS=$(uname | tr '[A-Z]' '[a-z]') go build -a -o /go/bin/k9s main.go
 
-FROM cgr.dev/chainguard/kubectl as kubectl
+FROM gcr.io/google.com/cloudsdktool/google-cloud-cli:latest
 
-FROM gcr.io/distroless/static-debian12
+RUN apt-get install google-cloud-sdk-gke-gcloud-auth-plugin
 
 COPY --from=build /go/bin/k9s /usr/local/bin
-COPY --from=kubectl /usr/bin/kubectl /usr/bin
 
-CMD ["k9s"]
+CMD ["/usr/local/bin/k9s"]

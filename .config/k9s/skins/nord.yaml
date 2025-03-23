@@ -12,7 +12,6 @@ nord1: &nord1 "#3B4252" #lighter black
 
 # Snow Storm
 nord4: &nord4 "#D8DEE9" #white
-
 nord5: &nord5 "#81A1C1" #green
 
 # Frost

@@ -32,7 +32,7 @@ alias temps="paste <(cat /sys/class/thermal/thermal_zone*/type) <(cat /sys/class
 alias docker='podman'
 
 # gcloud
-alias ggcloud="docker run --rm -ti -v $HOME/.config/gcloud:/root/.config/gcloud gcr.io/google.com/cloudsdktool/google-cloud-cli:stable gcloud"
+alias ggcloud="docker run --rm -ti -v $HOME/.config/gcloud:/root/.config/gcloud gcr.io/google.com/cloudsdktool/google-cloud-cli:latest gcloud"
 
 # python pip upgrades
 alias pip-upgrade='python3 -m pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U'
@@ -42,3 +42,8 @@ alias ai='docker run --rm -it localhost/terminal-ai:latest'
 
 # ai-chat
 alias aichat='docker run --rm -v ${HOME}/.config/aichat:/root/.config/aichat -it localhost/aichat:latest'
+
+# k9s
+#alias k9sc='docker run --rm -v ${HOME}/.config/k9s:/root/.config/k9s -v ${HOME}/.kube:/root/.kube:ro -v ${HOME}/.config/gcloud:/root/.config/gcloud:ro -it localhost/k9s:latest'
+#alias k9s='docker run --rm -v ${HOME}/.config/k9s:/root/.config/k9s -v ${HOME}/.kube:/root/.kube:ro -v ${HOME}/.config/gcloud:/root/.config/gcloud:ro -it localhost/k9s:latest'
+alias k9s='docker run --rm -v ${HOME}/.config/k9s:/root/.config/k9s -v ${HOME}/.kube/config:/root/.kube/config -v ${HOME}/.config/gcloud:/root/.config/gcloud --env=TERM=$(echo ${TERM}) -it localhost/gcloud-k9s:latest k9s --headless'
