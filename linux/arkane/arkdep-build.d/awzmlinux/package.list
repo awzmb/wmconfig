@@ -44,7 +44,6 @@ vulkan-radeon
 wget
 zsh
 zsh-completions
-#zsh-syntax-highlighting
 
 # GNOME
 evolution-data-server
@@ -139,6 +138,7 @@ ack
 git
 fd
 npm
+yarn
 htop
 mpv
 calcurse
@@ -153,6 +153,7 @@ python-pipx
 python-pynvim
 gnu-netcat
 termshark
+jwt-cli
 
 # Media drivers and extensions
 intel-media-driver

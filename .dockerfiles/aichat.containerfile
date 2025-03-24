@@ -1,5 +1,5 @@
 # builder
-FROM docker.io/library/rust as build
+FROM cgr.dev/chainguard/rust as build
 
 RUN cargo install aichat
 
