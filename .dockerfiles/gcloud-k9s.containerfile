@@ -1,4 +1,4 @@
-FROM docker.io/golang:latest as build
+FROM cgr.dev/chainguard/go:latest as build
 
 RUN git clone https://github.com/derailed/k9s /go/src/k9s
 
