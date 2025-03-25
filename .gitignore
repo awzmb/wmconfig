@@ -11,7 +11,7 @@ node_modules
 .config/k9s/config.yml
 
 # chrome-theme cache
-.config/chrome/chrome-theme/Cached Theme.pak
+".config/chrome/chrome-theme/Cached Theme.pak"
 
 # ignore arkdep-build target directory
 linux/arkane/target
