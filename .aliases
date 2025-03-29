@@ -32,6 +32,8 @@ alias temps="paste <(cat /sys/class/thermal/thermal_zone*/type) <(cat /sys/class
 # python pip upgrades
 alias pip-upgrade='python3 -m pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U'
 
+alias notes='cd ~/notes && nvim ~/notes'
+
 # docker aliases
 alias docker='podman'
 alias ai='docker run --rm -it localhost/terminal-ai:latest'
