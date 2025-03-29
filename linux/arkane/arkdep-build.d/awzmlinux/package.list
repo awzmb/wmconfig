@@ -154,6 +154,7 @@ python-pynvim
 gnu-netcat
 termshark
 jwt-cli
+zip
 
 # Media drivers and extensions
 intel-media-driver
@@ -249,6 +250,7 @@ steam
 gamemode
 lutris
 mangohud
+moonlight-qt
 
 # Camera
 v4l-utils

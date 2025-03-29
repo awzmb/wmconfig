@@ -39,4 +39,4 @@ alias aichat='docker run --rm -v ${HOME}/.config/aichat:/root/.config/aichat -it
 alias dive="docker run -ti --rm  -v /var/run/docker.sock:/var/run/docker.sock docker.io/wagoodman/dive"
 alias ggcloud="docker run --rm -ti -v $HOME/.config/gcloud:/root/.config/gcloud gcr.io/google.com/cloudsdktool/google-cloud-cli:latest gcloud"
 #alias k9s='docker run --rm -v ${HOME}/.config/k9s:/root/.config/k9s -v ${HOME}/.kube:/root/.kube:ro -v ${HOME}/.config/gcloud:/root/.config/gcloud:ro -it localhost/k9s:latest'
-alias k9s='docker run --rm -v ${HOME}/.config/k9s:/root/.config/k9s -v ${HOME}/.kube/config:/root/.kube/config -v ${HOME}/.config/gcloud:/root/.config/gcloud --env=KUBECONFIG=/root/.kube/config --env=TERM=$(echo ${TERM}) -it localhost/gcloud-k9s:latest k9s --headless'
+#alias k9s='docker run --rm -v ${HOME}/.config/k9s:/root/.config/k9s -v ${HOME}/.kube/config:/root/.kube/config -v ${HOME}/.config/gcloud:/root/.config/gcloud --env=KUBECONFIG=/root/.kube/config --env=TERM=$(echo ${TERM}) -it localhost/gcloud-k9s:latest k9s --headless'
