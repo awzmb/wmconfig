@@ -155,6 +155,8 @@ gnu-netcat
 termshark
 jwt-cli
 zip
+ctags
+cscope
 
 # Media drivers and extensions
 intel-media-driver

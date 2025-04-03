@@ -37,8 +37,9 @@ if ! command -v go &> /dev/null; then
   exit 1
 fi
 
-# Install gopls
+# Install gopls and godocdown
 GOSUMDB=sum.golang.org GOPROXY=direct go install golang.org/x/tools/gopls@latest
+GOPROXY=direct go install github.com/robertkrimen/godocdown/godocdown@latest
 
 # Verify gopls installation
 if ! command -v gopls &> /dev/null; then
