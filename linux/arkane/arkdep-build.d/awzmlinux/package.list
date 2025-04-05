@@ -134,7 +134,6 @@ eza
 bat
 bat-extras
 jdk-openjdk
-ack
 git
 fd
 npm
@@ -145,7 +144,6 @@ calcurse
 yamllint
 glow
 distrobox
-openssl
 unrar
 wireguard-tools
 python-pip
