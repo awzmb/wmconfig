@@ -175,5 +175,8 @@ if [ -f '/home/awzm/extract/google-cloud-sdk/path.zsh.inc' ]; then . '/home/awzm
 # docker aliases completion
 source ~/.zsh/completion-aliases-docker.zsh
 
+# tool versions
+export TERRAFORM_VERSION="1.7.5"
+
 autoload -U +X bashcompinit && bashcompinit
 complete -o nospace -C /home/awzm/.bin/terraform terraform

@@ -12,3 +12,6 @@ sudo pip install flashfocus --break-system-packages
 
 # flatpak
 flatpak install --system -y org.freedesktop.Platform.VAAPI.Intel
+
+# enable user podman.socket
+systemctl --user enable --now podman.socket

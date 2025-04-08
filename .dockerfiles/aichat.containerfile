@@ -3,7 +3,7 @@
 
 #RUN cargo install aichat --version 0.28.0
 
-FROM alpine:latest as build
+FROM alpine:latest AS build
 
 RUN apk add --no-cache curl tar
 
