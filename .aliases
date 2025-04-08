@@ -43,5 +43,5 @@ alias ggcloud="podman run --rm -it -v $HOME/.config/gcloud:/root/.config/gcloud 
 alias pre-commit="${HOME}/.scripts/container-pre-commit.sh"
 #alias k9s='podman run --rm -v ${HOME}/.config/k9s:/root/.config/k9s -v ${HOME}/.kube:/root/.kube:ro -v ${HOME}/.config/gcloud:/root/.config/gcloud:ro -it localhost/k9s:latest'
 #alias k9s='podman run --rm -v ${HOME}/.config/k9s:/root/.config/k9s -v ${HOME}/.kube/config:/root/.kube/config -v ${HOME}/.config/gcloud:/root/.config/gcloud --env=KUBECONFIG=/root/.kube/config --env=TERM=$(echo ${TERM}) -it localhost/gcloud-k9s:latest k9s --headless'
-alias terraform="podman run --rm -it -v ${HOME}/.terraform.d:/root/.terraform.d -v ${HOME}/.terraformrc:/root/.terraformrc -v $(pwd):/app -w /app docker.io/hashicorp/terraform:${TERRAFORM_VERSION}"
+alias terraform="podman run --rm -it -v ${HOME}/.terraform.d:/root/.terraform.d -v ${HOME}/.terraformrc:/root/.terraformrc -v $(pwd):/app -w /app docker.io/hashicorp/terraform:${TERRAFORM_VERSION:-1.7.5}"
 alias terraform-docs="podman run --rm -it -v ${HOME}/.terraform.d:/root/.terraform.d -v ${HOME}/.terraformrc:/root/.terraformrc -v $(pwd):/app -w /app docker.io/cytopia/terraform-docs:0.16.0"
