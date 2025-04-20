@@ -15,4 +15,4 @@ FROM gcr.io/distroless/static-debian12
 COPY --from=build /go/bin/k9s /usr/local/bin
 COPY --from=kubectl /usr/bin/kubectl /usr/bin
 
-CMD ["k9s"]
+ENTRYPOINT ["k9s"]

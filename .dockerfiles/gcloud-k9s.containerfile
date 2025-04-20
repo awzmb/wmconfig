@@ -14,4 +14,4 @@ RUN apt-get install google-cloud-sdk-gke-gcloud-auth-plugin
 
 COPY --from=build /go/bin/k9s /usr/local/bin
 
-CMD ["/usr/local/bin/k9s"]
+ENTRYPOINT ["/usr/local/bin/k9s"]
