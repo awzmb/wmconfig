@@ -16,46 +16,48 @@
 @define-color nord15 #b48ead;
 
 * {
-    border: none;
-    border-radius: 0;
-    font-family: TerminessNerdFont, Terminus, Roboto, Helvetica, Arial, sans-serif;
-    font-size: 12px;
-    min-height: 0;
+  border: none;
+  border-radius: 0;
+  font-family:
+    TerminessNerdFont, Terminus, Roboto, Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  min-height: 0;
 }
 
 window#waybar {
-    background: @nord0;
-    border-bottom: 1px solid transparent;
-    color: @nord5;
+  background: @nord0;
+  border-bottom: 1px solid transparent;
+  color: @nord5;
 }
 
-#workspaces button{
-    color: @nord4;
-    border-radius: 3px;
-    margin-top: 3px;
-    margin-bottom: 3px;
-    margin-left: 10px;
-    padding: 1px 10px;
-    font-weight: normal;
-    background-color: @nord1;
+#workspaces button {
+  color: @nord4;
+  border-radius: 3px;
+  margin-top: 3px;
+  margin-bottom: 3px;
+  margin-left: 10px;
+  padding: 1px 10px;
+  font-weight: normal;
+  background-color: @nord1;
 }
 
-#workspaces button.active, #workspaces button.focused {
-    color: @nord1;
-    padding: 0 22px;
-    background: @nord9;
+#workspaces button.active,
+#workspaces button.focused {
+  color: @nord1;
+  padding: 0 22px;
+  background: @nord9;
 }
 
 #workspaces button:hover {
-	border: none;
-	background: @nord2;
+  border: none;
+  background: @nord2;
 }
 
 #mode {
-    background: transparent;
-    margin-left: 10px;
-    margin-right: 10px;
-    border-bottom: 0px solid @nord2;
+  background: transparent;
+  margin-left: 10px;
+  margin-right: 10px;
+  border-bottom: 0px solid @nord2;
 }
 
 #clock,
@@ -68,38 +70,37 @@ window#waybar {
 #backlight,
 #idle_inhibitor,
 #tray {
-    background: @nord1;
-    border-radius: 3px;
-    padding: 0 6px;
-    margin-top: 3px;
-    margin-bottom: 3px;
-    margin-left: 3px;
-    margin-right: 3px;
-    color: @nord5;
+  background: @nord1;
+  border-radius: 3px;
+  padding: 0 6px;
+  margin-top: 3px;
+  margin-bottom: 3px;
+  margin-left: 3px;
+  margin-right: 3px;
+  color: @nord5;
 }
 
 #clock {
-    background-color: transparent;
-    margin-right: 5px;
+  background-color: transparent;
+  margin-right: 5px;
 }
 
 #battery.warning:not(.charging) {
-    background: #BF616A;
-    color: @nord5;
-    animation-name: blink;
-    animation-duration: 0.5s;
-    animation-timing-function: linear;
-    animation-iteration-count: infinite;
-    animation-direction: alternate;
+  background: #bf616a;
+  color: @nord5;
+  animation-name: blink;
+  animation-duration: 0.5s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
 }
 
 #network.disconnected {
-    color: @nord11;
+  color: @nord11;
 }
 
 @keyframes blink {
-    to {
-        background-color: @nord11;
-    }
+  to {
+    background-color: @nord11;
+  }
 }
-
