@@ -1,5 +1,5 @@
 [global]
-    font = Terminus 12
+    font = TerminessNerdFont 12
 
     # allow a small subset of html markup:
     # <b>bold</b>

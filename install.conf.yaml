@@ -140,6 +140,9 @@
     ~/.config/wofi:
       if: '[ `uname` = Linux ]'
       path: .config/wofi
+    ~/.config/nixpkgs:
+      if: '[ `uname` = Linux ]'
+      path: .config/nixpkgs
     ~/.config/chrome/chrome-theme/manifest.json:
       path: .config/chrome/chrome-theme/manifest.json
 
