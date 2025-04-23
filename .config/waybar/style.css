@@ -45,7 +45,7 @@ window#waybar {
 #workspaces button.focused {
   color: @nord1;
   padding: 0 22px;
-  background: @nord9;
+  background: @nord3;
 }
 
 #workspaces button:hover {
