@@ -15,3 +15,7 @@ node_modules
 
 # ignore arkdep-build target directory
 linux/arkane/target
+
+# ignore display configuration
+.config/hypr/monitors.conf
+.config/sway/monitors.conf

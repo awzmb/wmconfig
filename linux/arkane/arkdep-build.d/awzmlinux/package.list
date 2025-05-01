@@ -155,6 +155,7 @@ jwt-cli
 zip
 ctags
 cscope
+tabview
 
 # Media drivers and extensions
 intel-media-driver
