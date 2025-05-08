@@ -16,11 +16,9 @@ node_modules
 # ignore arkdep-build target directory
 linux/arkane/target
 
-<<<<<<< HEAD
 # ignore display configuration
 .config/hypr/monitors.conf
 .config/sway/monitors.conf
-=======
+
 # ignore current hardware configuration file in nixos setup
 .config/nixpkgs/nixos/hardware-configuration.nix
->>>>>>> f2a5948 (feat(nixos): nixos configuration)
