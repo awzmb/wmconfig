@@ -6,6 +6,8 @@
       ./hardware-configuration.nix
     ];
 
+  # allow broken packages due to running unstable
+  nixpkgs.config.allowBroken = true;
   nix.settings.experimental-features = [ "flakes" "nix-command" ];
 
   # set the default editor to neovim
@@ -67,6 +69,12 @@
     desktopManager.gnome.enable = true;
   };
 
+
+  # cache hyprland so it does not need to be compiled each time
+  nix.settings = {
+    substituters = ["https://hyprland.cachix.org"];
+    trusted-public-keys = ["hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="];
+  };
   # configure console keymap
   #console.keyMap = "dvorak";
 
@@ -74,7 +82,7 @@
   services.printing.enable = false;
 
   # enable sound with pipewire.
-  hardware.pulseaudio.enable = false;
+  services.pulseaudio.enable = false;
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
@@ -94,31 +102,10 @@
     isNormalUser = true;
     description = "awzm";
     extraGroups = [ "networkmanager" "wheel" "tss" ];
+    shell = pkgs.zsh;
     packages = with pkgs; [
     #  thunderbird
     ];
-#    gtk = {
-#      enable = true;
-#      font.name = "Terminess Nerd Font 12";
-#      theme = {
-#        name = "Qogir-Dark";
-#        package = pkgs.qogir-theme;
-#      };
-#
-#      gtk3.extraConfig = {
-#        Settings = ''
-#         gtk-application-prefer-dark-theme=1
-#         gtk-font-name=Terminess Nerd Font
-#       '';
-#      };
-#
-#      gtk4.extraConfig = {
-#        Settings = ''
-#         gtk-application-prefer-dark-theme=1
-#         gtk-font-name=Terminess Nerd Font
-#       '';
-#      };
-#    };
   };
 
   # allow unfree packages
@@ -167,9 +154,10 @@
     pass
     pass-git-helper
     openssl
+    gnumake
 
     # languages
-    python313
+    python312
     pylint
     go
     gopls
@@ -190,9 +178,9 @@
     libapparmor
 
     # fonts
-    terminus_font
-    terminus_font_ttf
-    terminus-nerdfont
+    #terminus_font
+    #terminus_font_ttf
+    #terminus-nerdfont
 
     # plymouth
     plymouth
@@ -200,6 +188,7 @@
     nixos-bgrt-plymouth
 
     # desktop
+    playerctl
     wl-clipboard
     wl-clip-persist
     brightnessctl
@@ -244,7 +233,13 @@
     hyprland-protocols
     hyprlandPlugins.hy3
     hyprlandPlugins.hyprgrass
-    hyprlandPlugins.hyprfocus
+    #hyprlandPlugins.hyprfocus
+
+    # containers
+    dive
+    podman-tui
+    docker-compose
+    podman-compose
 
     # gaming
     steam
@@ -252,6 +247,7 @@
     gamescope
     gamemode
     mangohud
+    moonlight
 
     # camera
     v4l-utils
@@ -262,6 +258,23 @@
     google-cloud-sql-proxy
     google-cloud-bigtable-tool
   ];
+
+  fonts = {
+    enableDefaultPackages = true;
+    packages = with pkgs; [
+      nerd-fonts.fira-code
+      nerd-fonts.droid-sans-mono
+      nerd-fonts.terminess-ttf
+    ];
+
+    #fontconfig = {
+      #defaultFonts = {
+        #serif = [  "Liberation Serif" "Vazirmatn" ];
+        #sansSerif = [ "Ubuntu" "Vazirmatn" ];
+        #monospace = [ "Ubuntu Mono" ];
+      #};
+    #};
+  };
 
   #hardware.enableRedistributableFirmware = true
 
@@ -290,12 +303,16 @@
   programs.sway.enable = true;
   programs.hyprland.enable = true;
 
-
-  # git configuration
-  programs.git = {
-    enable = true;
-    userEmail = "bundschuh.dennis@gmail.com";
-    userName = "awzmb";
+  # enable common container config files in /etc/containers
+  virtualisation.containers.enable = true;
+  virtualisation = {
+    podman = {
+      enable = true;
+      # create a `docker` alias for podman, to use it as a drop-in replacement
+      dockerCompat = true;
+      # required for containers under podman-compose to be able to talk to each other.
+      defaultNetwork.settings.dns_enabled = true;
+    };
   };
 
   #hardware.intelgpu = {
@@ -332,5 +349,5 @@
   # this value at the release version of the first install of this system.
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "24.11"; # Did you read the comment?
+  system.stateVersion = "24.11";
 }

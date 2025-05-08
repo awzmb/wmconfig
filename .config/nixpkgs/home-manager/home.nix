@@ -10,58 +10,89 @@
 }: {
   # You can import other home-manager modules here
   imports = [
-    # If you want to use modules your own flake exports (from modules/home-manager):
+    # if you want to use modules your own flake exports (from modules/home-manager):
     # outputs.homeManagerModules.example
 
-    # Or modules exported from other flakes (such as nix-colors):
+    # or modules exported from other flakes (such as nix-colors):
     # inputs.nix-colors.homeManagerModules.default
 
-    # You can also split up your configuration and import pieces of it here:
+    # you can also split up your configuration and import pieces of it here:
     # ./nvim.nix
   ];
 
   nixpkgs = {
-    # You can add overlays here
+    # you can add overlays here
     overlays = [
-      # Add overlays your own flake exports (from overlays and pkgs dir):
+      # add overlays your own flake exports (from overlays and pkgs dir):
       outputs.overlays.additions
       outputs.overlays.modifications
       outputs.overlays.unstable-packages
 
-      # You can also add overlays exported from other flakes:
+      # you can also add overlays exported from other flakes:
       # neovim-nightly-overlay.overlays.default
 
-      # Or define it inline, for example:
+      # or define it inline, for example:
       # (final: prev: {
       #   hi = final.hello.overrideAttrs (oldAttrs: {
       #     patches = [ ./change-hello-to-hi.patch ];
       #   });
       # })
     ];
-    # Configure your nixpkgs instance
+    # configure your nixpkgs instance
     config = {
-      # Disable if you don't want unfree packages
       allowUnfree = true;
     };
   };
 
-  # TODO: Set your username
   home = {
-    username = "your-username";
-    homeDirectory = "/home/your-username";
+    username = "awzm";
+    homeDirectory = "/home/awzm";
+  };
+
+  gtk = {
+    enable = true;
+    font.name = "Terminess Nerd Font 12";
+    theme = {
+      name = "Qogir-Dark";
+      package = pkgs.qogir-theme;
+    };
+
+    gtk3.extraConfig = {
+      Settings = ''
+       gtk-application-prefer-dark-theme=1
+       gtk-font-name=Terminess Nerd Font
+     '';
+    };
+
+    gtk4.extraConfig = {
+      Settings = ''
+       gtk-application-prefer-dark-theme=1
+       gtk-font-name=Terminess Nerd Font
+     '';
+    };
   };
 
   # Add stuff for your user as you see fit:
-  # programs.neovim.enable = true;
   # home.packages = with pkgs; [ steam ];
+
+  programs.neovim.enable = true;
 
   # Enable home-manager and git
   programs.home-manager.enable = true;
-  programs.git.enable = true;
 
-  # Nicely reload system units when changing configs
+  # git configuration
+  programs.git = {
+    enable = true;
+    extraConfig = {
+      user.name = "awzmb";
+      user.email = "bundschuh.dennis@gmail.com";
+      init.defaultBranch = "main";
+    };
+  };
+
+  # nicely reload system units when changing configs
   systemd.user.startServices = "sd-switch";
 
-  # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
-  home.stateVersion = "23.05";
+  # https://nixos.wiki/wiki/faq/when_do_i_update_stateversion
+  home.stateVersion = "24.11";
 }
