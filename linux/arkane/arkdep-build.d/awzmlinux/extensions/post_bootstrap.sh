@@ -13,4 +13,4 @@ rm -f /usr/share/hypr/hyprland.conf
 #rm -rf $TMP_DIR
 
 # set hostname
-sudo hostnamectl set-hostname 'L0223-1024'
+hostnamectl set-hostname 'L0223-1024'

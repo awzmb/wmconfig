@@ -111,6 +111,9 @@ arkane-flatpak-init
 arkane-wallpapers
 libnss-extrausers
 
+# Hardware
+intel-ucode
+
 # Shell and tools
 fzf
 tmux
@@ -156,9 +159,10 @@ jwt-cli
 zip
 ctags
 cscope
-tabview
+python-tabview
 
 # Media drivers and extensions
+seatd
 intel-media-driver
 libva-intel-driver
 libva-intel-driver
@@ -210,6 +214,7 @@ awesome-terminal-fonts
 kitty
 
 # Sway packages
+kanshi
 nwg-panel
 nwg-displays
 nwg-look

@@ -27,10 +27,8 @@ RUN ARCH=$(uname -m) && \
     mv /download/aichat /usr/local/bin && \
     chmod +x /usr/local/bin/aichat
 
-# runtime
 FROM gcr.io/distroless/cc
 
-#COPY --from=build /usr/local/cargo/bin/aichat /bin/aichat
 COPY --from=build /usr/local/bin/aichat /bin/aichat
 
 ENTRYPOINT ["aichat"]
