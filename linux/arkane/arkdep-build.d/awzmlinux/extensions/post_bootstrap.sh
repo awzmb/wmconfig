@@ -14,3 +14,7 @@ rm -f /usr/share/hypr/hyprland.conf
 
 # set hostname
 hostnamectl set-hostname 'L0223-1024'
+
+# enable seatd and keyd
+systemctl enable seatd
+systemctl enable keyd
