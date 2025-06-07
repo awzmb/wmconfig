@@ -45,6 +45,7 @@ wget
 zsh
 zsh-completions
 keyd
+sshuttle
 
 # GNOME
 evolution-data-server
@@ -244,6 +245,7 @@ hyprwayland-scanner
 hyprland
 hyprlock
 hypridle
+hyprpicker
 xdg-desktop-portal-hyprland
 grim
 
@@ -263,3 +265,6 @@ moonlight-qt
 v4l-utils
 v4l2loopback-dkms
 v4l2loopback-utils
+gst-plugin-libcamera
+libcamera
+pipewire-libcamera

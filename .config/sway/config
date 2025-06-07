@@ -65,7 +65,7 @@ set $launcher-terminal rofi -show run -theme dmenu
 
 # set terminal emulator
 #set $term foot
-set $term alacritty
+set $term kitty
 
 # set mod key (Mod1=<Alt>, Mod4=<Super>)
 set $mod Mod4
@@ -88,16 +88,17 @@ hide_edge_borders both
 floating_modifier $mod
 
 # set hidpi output scaling
+include ~/.config/sway/outputs
 #output * scale 2
 #output $laptop scale 2 pos 0 0 res 2560x1600@120Hz
 #output DP-1 scale 1.4 pos 0 0 res 5120x1440@120Hz
-output $laptop scale 2 res 2560x1600@120Hz
-output DP-1 scale 1.333333 res 5120x1440@119.988Hz
+#output $laptop scale 2 res 2560x1600@120Hz
+#output DP-1 scale 1.333333 res 5120x1440@119.988Hz
 #output DP-1 scale 1 res 5120x1440@119.988Hz
-output DP-2 scale 1.4 res 5120x1440@119.988Hz
-output DP-4 scale 1.333333 res 5120x1440@119.988Hz
+#output DP-2 scale 1.4 res 5120x1440@119.988Hz
+#output DP-4 scale 1.333333 res 5120x1440@119.988Hz
 #output DP-5 scale 1.4 res 5120x1440@120Hz
-output DP-5 scale 1.4 res 5120x1440@120Hz
+#output DP-5 scale 1.4 res 5120x1440@120Hz
 #output DP-6 scale 1.3 pos 28160 0 res 5120x1440@120Hz
 
 # use solid color background
