@@ -1,4 +1,4 @@
-# Arkane Linux packages
+# Basic packages
 apparmor
 arch-install-scripts
 archiso
@@ -44,8 +44,6 @@ vulkan-radeon
 wget
 zsh
 zsh-completions
-keyd
-sshuttle
 
 # GNOME
 evolution-data-server
@@ -116,6 +114,8 @@ libnss-extrausers
 intel-ucode
 
 # Shell and tools
+keyd
+sshuttle
 fzf
 tmux
 neovim
@@ -161,6 +161,7 @@ zip
 ctags
 cscope
 python-tabview
+ttyd
 
 # Media drivers and extensions
 seatd
@@ -267,4 +268,11 @@ v4l2loopback-dkms
 v4l2loopback-utils
 gst-plugin-libcamera
 libcamera
+libcamera-ipa
+libcamera-tools
 pipewire-libcamera
+pipewire-session-manager
+pipewire-v4l2
+pipewire-session-manager
+pipewire-ffado
+obs-studio
