@@ -23,7 +23,7 @@ esac
 mkdir -p ${INSTALL_DIR}
 
 #TERRAFORM_VERSION=$(curl -s https://releases.hashicorp.com/terraform/ | grep terraform/ | sed 's/<[^>]*>//g' | sed 's/terraform_//g' | tr -s \\t " " | sort -r | head -n 1 | cut -c 2-)
-TERRAFORM_VERSION="1.7.5"
+TERRAFORM_VERSION="1.10.5"
 TERRAFORM_ARCHIVE="terraform_${TERRAFORM_VERSION}_$(uname -s | tr '[:upper:]' '[:lower:]')_${ARCH}.zip"
 wget ""
 curl -L --output "${TMP_DIR}/${TERRAFORM_ARCHIVE}" --url "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/${TERRAFORM_ARCHIVE}"

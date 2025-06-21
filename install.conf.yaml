@@ -4,7 +4,7 @@
       force: true
       create: true
 
-- clean: ['~']
+- clean: ["~"]
 
 - create:
     - ~/.vim
@@ -54,98 +54,104 @@
     ~/.config/vdirsyncer:
       path: .config/vdirsyncer
     ~/.config/kanshi:
-      if: '[ `uname` = Linux ]'
+      if: "[ `uname` = Linux ]"
       path: .config/kanshi
     ~/.config/hypr:
-      if: '[ `uname` = Linux ]'
+      if: "[ `uname` = Linux ]"
       path: .config/hypr
     ~/.config/environment.d:
-      if: '[ `uname` = Linux ]'
+      if: "[ `uname` = Linux ]"
       path: .config/environment.d
     ~/.gtkrc-2.0:
-      if: '[ `uname` = Linux ]'
+      if: "[ `uname` = Linux ]"
       path: .gtkrc-2.0
     ~/.config/gtk-3.0:
-      if: '[ `uname` = Linux ]'
+      if: "[ `uname` = Linux ]"
       path: .config/gtk-3.0
     ~/.config/gtk-4.0:
-      if: '[ `uname` = Linux ]'
+      if: "[ `uname` = Linux ]"
       path: .config/gtk-4.0
     ~/.config/clipit:
-      if: '[ `uname` = Linux ]'
+      if: "[ `uname` = Linux ]"
       path: .config/clipit
     ~/.config/dunst:
-      if: '[ `uname` = Linux ]'
+      if: "[ `uname` = Linux ]"
       path: .config/dunst
     ~/.config/i3:
-      if: '[ `uname` = Linux ]'
+      if: "[ `uname` = Linux ]"
       path: .config/i3
     ~/.config/sway:
-      if: '[ `uname` = Linux ]'
+      if: "[ `uname` = Linux ]"
       path: .config/sway
     ~/.config/polybar:
-      if: '[ `uname` = Linux ]'
+      if: "[ `uname` = Linux ]"
       path: .config/polybar
     ~/.config/waybar:
-      if: '[ `uname` = Linux ]'
+      if: "[ `uname` = Linux ]"
       path: .config/waybar
     ~/.config/rofi:
-      if: '[ `uname` = Linux ]'
+      if: "[ `uname` = Linux ]"
       path: .config/rofi
     ~/.config/yabai:
-      if: '[ `uname` = Darwin ]'
+      if: "[ `uname` = Darwin ]"
       path: .config/yabai
     ~/.config/skhd:
-      if: '[ `uname` = Darwin ]'
+      if: "[ `uname` = Darwin ]"
       path: .config/skhd
     ~/Library/ApplicationSupport/VSCodium/User/settings.json:
-      if: '[ `uname` = Darwin ]'
+      if: "[ `uname` = Darwin ]"
       path: .config/Code/User/settings.json
     ~/.config/VSCodium/User/settings.json:
-      if: '[ `uname` = Linux ]'
+      if: "[ `uname` = Linux ]"
       path: .config/Code/User/settings.json
     ~/.config/Code/User/settings.json:
-      if: '[ `uname` = Linux ]'
+      if: "[ `uname` = Linux ]"
       path: .config/Code/User/settings.json
     ~/.local/share/code-server/User/settings.json:
-      if: '[ `uname` = Linux ]'
+      if: "[ `uname` = Linux ]"
       path: .config/Code/User/settings.json
     ~/Library/ApplicationSupport/VSCodium/User/extensions.json:
-      if: '[ `uname` = Darwin ]'
+      if: "[ `uname` = Darwin ]"
       path: .config/Code/User/extensions.json
     ~/.config/VSCodium/User/extensions.json:
-      if: '[ `uname` = Linux ]'
+      if: "[ `uname` = Linux ]"
       path: .config/Code/User/extensions.json
     ~/.config/Code/User/extensions.json:
-      if: '[ `uname` = Linux ]'
+      if: "[ `uname` = Linux ]"
       path: .config/Code/User/extensions.json
     ~/.local/share/code-server/User/extensions.json:
-      if: '[ `uname` = Linux ]'
+      if: "[ `uname` = Linux ]"
       path: .config/Code/User/extensions.json
     ~/Library/ApplicationSupport/VSCodium/User/keybindings.json:
-      if: '[ `uname` = Darwin ]'
+      if: "[ `uname` = Darwin ]"
       path: .config/Code/User/keybindings.json
     ~/.config/VSCodium/User/keybindings.json:
-      if: '[ `uname` = Linux ]'
+      if: "[ `uname` = Linux ]"
       path: .config/Code/User/keybindings.json
     ~/.config/Code/User/keybindings.json:
-      if: '[ `uname` = Linux ]'
+      if: "[ `uname` = Linux ]"
       path: .config/Code/User/keybindings.json
     ~/.local/share/code-server/User/keybindings.json:
-      if: '[ `uname` = Linux ]'
+      if: "[ `uname` = Linux ]"
       path: .config/Code/User/keybindings.json
     ~/.config/alacritty/alacritty.toml:
-      if: '[ `uname` = Linux ]'
+      if: "[ `uname` = Linux ]"
       path: .config/alacritty/alacritty.toml
     ~/.config/wofi:
-      if: '[ `uname` = Linux ]'
+      if: "[ `uname` = Linux ]"
       path: .config/wofi
     ~/.config/nixpkgs:
-      if: '[ `uname` = Linux ]'
+      if: "[ `uname` = Linux ]"
       path: .config/nixpkgs
+    ~/.config/nwg-panel:
+      if: "[ `uname` = Linux ]"
+      path: .config/nwg-panel
     ~/.config/chrome/chrome-theme/manifest.json:
       path: .config/chrome/chrome-theme/manifest.json
 
 - shell:
     - [git submodule update --init --recursive, Installing submodules]
-    - [sh -c "$(curl -fsSL https://raw.githubusercontent.com/zdharma-continuum/zinit/master/doc/install.sh)", Installing zinit]
+    - [
+        sh -c "$(curl -fsSL https://raw.githubusercontent.com/zdharma-continuum/zinit/master/doc/install.sh)",
+        Installing zinit,
+      ]
