@@ -20,116 +20,126 @@
 * {
   border: none;
   border-radius: 0;
-  font-family: TerminessNerdFont, Terminus, Roboto, Helvetica, Arial, sans-serif;
+  font-family:
+    TerminessNerdFont, Terminus, Roboto, Helvetica, Arial, sans-serif;
   font-size: 14px;
   min-height: 0;
 }
 
 /* Recommended if panel "height" unset or smaller then your theme default button height */
 button {
-    margin: 2px;
+  margin: 2px;
 }
 
 /* SwayTaskBar and SwayWorkspaces use custom widgets, that need this and the next name
    to highlight currently focused task / workspace. */
 #task-box {
-    padding-left: 4px;
-    padding-right: 4px;
+  padding-left: 4px;
+  padding-right: 4px;
 }
 
 #task-box-focused {
-    background-color: rgba(255, 255, 255, 0.12);
-    padding-left: 4px;
-    padding-right: 4px;
+  background-color: rgba(255, 255, 255, 0.12);
+  padding-left: 4px;
+  padding-right: 4px;
 }
 
 /***** MODIFY TO YOUR TASTE *****/
 
 /* Sample button in sample config w/ no background nor border */
 #button-custom {
-    background: rgba(0, 0, 0, 0.0);
-    border: 0;
+  background: rgba(0, 0, 0, 0);
+  border: 0;
 }
 
 /* Top panel in sample config uses this name */
 #panel-top {
-    background: @nord0;
-    color: @nord4;
+  background: @nord0;
+  color: @nord4;
 }
 
 /* Bottom panel in sample config uses this name */
 #panel-bottom {
-    background: @nord0;
-    color: @nord4;
+  background: @nord0;
+  color: @nord4;
 }
 
 /* Controls window in sample config uses this name */
 #controls-window {
-    border-radius: 15px;
-    background: @nord2;
-    color: @nord4;
+  border-radius: 15px;
+  background: @nord2;
+  color: @nord4;
 }
 #controls-window scale value {
-    color: @nord4;
+  color: @nord4;
 }
 
 /* Brightness slider popup window in sample config uses this name */
 #brightness-popup {
-    border-radius: 15px;
-    background: @nord2;
-    color: @nord4;
+  border-radius: 15px;
+  background: @nord2;
+  color: @nord4;
 }
 #brightness-popup box {
-    padding: 15px;
+  padding: 15px;
 }
 
 /* Executors usually behave better in TerminessNerdFont fonts */
 #executor-label {
-    font-family: TerminessNerdFont;
+  font-family: TerminessNerdFont;
 }
 
 /* and so does the Clock */
 #clock {
-    font-family: TerminessNerdFont;
-    font-size: 16px;
+  font-family: TerminessNerdFont;
+  font-size: 16px;
 }
 
 /* Sample executor-weather uses "css-name": "weather" */
 #weather {
-    font-size: 16px;
+  font-size: 16px;
 }
 
 /* dwl-tags module */
 #dwl-tag-box {
-    padding-top: 4px;
-    padding-bottom: 4px;
+  padding-top: 4px;
+  padding-bottom: 4px;
 }
 
 #dwl-tag-occupied {
-    font-family: TerminessNerdFont;
-    color: @nord4;
-    background-color: @nord10;
-    padding-left: 3px;
-    padding-right: 3px;
+  font-family: TerminessNerdFont;
+  color: @nord4;
+  background-color: @nord10;
+  padding-left: 3px;
+  padding-right: 3px;
 }
 
 #dwl-tag-free {
-    font-family: TerminessNerdFont;
-    color: @nord4;
-    background-color: rgba(32, 50, 90, 1.0);
-    padding-left: 3px;
-    padding-right: 3px;
+  font-family: TerminessNerdFont;
+  color: @nord4;
+  background-color: rgba(32, 50, 90, 1);
+  padding-left: 3px;
+  padding-right: 3px;
 }
 
 #dwl-tag-urgent {
-    font-family: TerminessNerdFont;
-    color: @nord4;
-    background-color: @nord11;
-    padding-left: 3px;
-    padding-right: 3px;
+  font-family: TerminessNerdFont;
+  color: @nord4;
+  background-color: @nord11;
+  padding-left: 3px;
+  padding-right: 3px;
 }
 
 #dwl-tag-selected {
-    border: solid 2px;
-    border-color: @nord9;
+  border: solid 2px;
+  border-color: @nord9;
+}
+
+#hyprland-workspaces-item,
+#sway-workspaces-item {
+  padding: 0 18px;
+}
+
+#clock {
+  font-size: 14px;
 }
