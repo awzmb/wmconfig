@@ -28,7 +28,8 @@
     background-color:      @nord0;
     border-color:          @nord0;
     text-color:            @nord4;
-    font:                  "Terminus Medium 12";
+    //font:                  "Terminus Medium 12";
+    font:                  "TerminessNerdFont 12";
     height:                28;
 }
 
