@@ -68,7 +68,7 @@ true_colors: true
 # (see https://dystroy.org/broot/icons for installation and
 # troubleshooting)
 #
-icon_theme: nerdfonts
+icon_theme: nerdfont
 
 # Special paths
 # If some paths must be handled specially, uncomment (and change
