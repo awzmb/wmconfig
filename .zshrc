@@ -180,3 +180,5 @@ export TERRAFORM_VERSION="1.7.5"
 
 autoload -U +X bashcompinit && bashcompinit
 complete -o nospace -C /home/awzm/.bin/terraform terraform
+
+source /home/awzm/.config/broot/launcher/bash/br

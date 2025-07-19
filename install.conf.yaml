@@ -49,6 +49,7 @@
     ~/.config/foot: .config/foot
     ~/.config/newsboat: .config/newsboat
     ~/.config/k9s: .config/k9s
+    ~/.config/broot: .config/broot
     ~/.config/nvim/init.vim: .vimrc
     ~/.dockerfiles: .dockerfiles
     ~/.config/vdirsyncer:

@@ -112,10 +112,19 @@
         "3",
         "4",
         "5",
-        "6",
-        "7",
-        "8"
-      ]
+        "6"
+      ],
+      "custom-labels": [],
+      "focused-labels": [],
+      "show-icon": false,
+      "image-size": 16,
+      "show-name": false,
+      "name-length": 40,
+      "mark-autotiling": true,
+      "mark-content": true,
+      "hide-empty": false,
+      "show-layout": true,
+      "angle": 0.0
     },
     "clock": {
       "format": "%d. %b  %H:%M",

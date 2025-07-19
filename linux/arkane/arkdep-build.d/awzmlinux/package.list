@@ -162,6 +162,10 @@ ctags
 cscope
 python-tabview
 ttyd
+broot
+glances
+procs
+curlie
 
 # Media drivers and extensions
 seatd
