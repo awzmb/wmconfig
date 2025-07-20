@@ -34,6 +34,9 @@ alias pip-upgrade='python3 -m pip freeze --local | grep -v '^\-e' | cut -d = -f 
 
 alias notes='cd ~/notes && nvim ~/notes'
 
+# gh-fzf aliases
+alias ghf='gh-fzf'
+
 # podman aliases
 alias docker='podman'
 alias ai='podman run --rm -it localhost/terminal-ai:latest'

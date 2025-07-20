@@ -1,0 +1,33 @@
+#compdef gcloud
+
+# zsh completions for 'gcloud'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  '--account[google Cloud user account to use for invocation. Overrides the default]'
+  '--billing-project[the Google Cloud project that will be charged quota for operations]'
+  '--configuration[file name of the configuration to use for this command invocation. For]'
+  '--flags-file[A YAML or JSON file that specifies a --flag:value dictionary. Useful]'
+  '--flatten[...\]]'
+  '--flatten[.def flattens abc.def\[\].ghi references to abc.def.ghi. A]'
+  '--limit[.]'
+  '--format[sets the format for printing command output resources. The default is a]'
+  '--format[specified, --format takes precedence. --format and]'
+  '--help[display detailed help.]'
+  '--project[the Google Cloud project ID to use for this invocation. If omitted]'
+  '--project[its fallback core/project property play two roles in the]'
+  '--billing-project[billing/quota_project property.]'
+  {--quiet,-q}'[disable all interactive prompts when running gcloud commands. If input]'
+  '--verbosity[; default="warning"]'
+  {--version,-v}'[print version information and exit. This flag is only available at the]'
+  '-h[print a summary help and exit.]'
+  '--access-token-file[A file path to read the access token. Use this flag to authenticate]'
+  '--impersonate-service-account[for this gcloud invocation, all API requests will be made as the given]'
+  '--log-http[log all HTTP server requests and responses to stderr. Overrides the]'
+  '--trace-token[token used to route traces of service requests for investigation of]'
+  '--user-output-enabled[print user intended output to the console. Overrides the default]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

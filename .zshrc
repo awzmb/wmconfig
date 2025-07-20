@@ -95,6 +95,9 @@ source ~/.zsh/fzf-keybindings.zsh
 # fzf tab completion
 source ~/.zsh/fzf-tab-completion.zsh
 
+# tab completion github cli
+source ~/.zsh/completion-github-cli.zsh
+
 # several fixes for different systems
 source ~/.zsh/fixes.zsh
 

@@ -1,0 +1,1368 @@
+#!/usr/bin/env bash
+# vim:foldmethod=marker:
+# shellcheck disable=2086,2015,2016
+#
+# An fzf wrapper around the GitHub CLI - https://github.com/benelan/gh-fzf
+#
+# MIT License
+#
+# Copyright (c) 2024 Ben Elan <https://benelan.dev>
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+set -e
+
+GH_FZF_VERSION="v0.15.0" # x-release-please-version
+
+FZF_USER_VERSION="$(fzf --version | awk '{print $1}')"
+
+# USAGE INFO AND INTERNAL FUNCTIONS                                     {{{1
+
+has() { command -v "$1" >/dev/null 2>&1; }
+
+github_status() {
+    GH_PAGER="cat" gh api https://www.githubstatus.com/api/v2/status.json \
+        --cache '10m' --jq '.status.description'
+    # 'def colors: {
+    #     "green":      "'"$(tput setaf 2)"'",
+    #     "magenta":    "'"$(tput setaf 5)"'",
+    #     "yellow":     "'"$(tput setaf 3)"'",
+    #     "red":        "'"$(tput setaf 1)"'",
+    #     "reset":      "'"$(tput sgr0)"'"
+    # };
+    # def colored(text; color): colors[color] + text + colors.reset;
+    # .status | (
+    #     if .indicator == "none" then colored(.description; "green")
+    #     elif .indicator == "minor" then colored(.description; "magenta")
+    #     elif .indicator == "major" then colored(.description; "yellow")
+    #     elif .indicator == "critical" then colored(.description; "red") end
+    # )'
+}
+
+# https://apple.stackexchange.com/a/123408
+version_number() {
+    echo "$@" | awk -F. '{ printf("%d%03d%03d%03d\n", $1,$2,$3,$4); }'
+}
+
+requires_fzf_version() {
+    if [ "$(version_number "$1")" -gt "$(version_number "$FZF_USER_VERSION")" ]; then
+        error "${2:-"gh-fzf"} requires fzf version >= $1 (found $FZF_USER_VERSION)"
+    fi
+}
+
+error() {
+    if [ -n "$1" ]; then
+        printf "Error: " >&2
+        printf "%s\n" "$@" >&2
+    fi
+    printf "\n%s\n" "See -h for usage info" >&2
+    exit 1
+}
+
+help_cmd() {
+    printf "
+An fzf wrapper around the GitHub CLI.
+
+Homepage: https://github.com/benelan/gh-fzf
+
+Usage:
+    gh fzf [<command>] [flags]
+    gh fzf search [<subcommand>] [flags]
+
+Core Commands:
+    issue       Search for and interact with GitHub issues.
+    pr          Search for and interact with GitHub pull requests.
+    run         Search for and interact with GitHub Action runs.
+    workflow    Search for and interact with GitHub Action workflows.
+    release     Search for and interact with GitHub releases.
+    label       Search for and interact with GitHub labels.
+    milestone   Search for and interact with GitHub milestones via \`gh api\`.
+    repo        Search for and interact with GitHub repos.
+    gist        Search for and interact with GitHub gists.
+    search      Search globally for GitHub issues, prs, commits, and code.
+
+All arguments are passed directly to gh. For flag options see:
+    gh <command> list --help
+    gh search <subcommand> --help
+
+Other Commands:
+    help        Print this help message.
+    status      Print GitHub's service status from https://githubstatus.com/
+    version     Print the version of gh-fzf.
+    changelog   View gh-fzf's changelog via the release command.
+    upgrade     Upgrade to the latest version of gh-fzf.
+    util        Functions used internally that may be useful for scripting.
+
+Check out the project homepage for more information, such as keybindings,
+configuration, and examples.
+" >&2
+    exit 0
+}
+
+# ----------------------------------------------------------------------1}}}
+# CONFIGURATION                                                         {{{1
+
+GH_FZF_DEFAULT_LIMIT="${GH_FZF_DEFAULT_LIMIT:-75}"
+
+if [ -z "$GH_FZF_COPY_CMD" ]; then
+    if has /mnt/c/Windows/System32/clip.exe; then
+        GH_FZF_COPY_CMD="/mnt/c/Windows/System32/clip.exe" # Windows (WSL)
+    elif has wl-copy && [ "$XDG_SESSION_TYPE" = "wayland" ]; then
+        GH_FZF_COPY_CMD="wl-copy" # Linux (Wayland)
+    elif has xsel; then
+        GH_FZF_COPY_CMD="xsel -bi" # Linux (X11)
+    elif has xclip; then
+        GH_FZF_COPY_CMD="xclip -selection clipboard" # Linux (X11)
+    elif has pbcopy; then
+        GH_FZF_COPY_CMD="pbcopy" # OSX
+    fi
+fi
+
+if [ -z "$GH_FZF_OPEN_CMD" ]; then
+    if [ -n "$BROWSER" ]; then
+        GH_FZF_OPEN_CMD="$BROWSER"
+    elif has wslview; then
+        GH_FZF_OPEN_CMD="wslview"
+    elif has cygstart; then
+        GH_FZF_OPEN_CMD="cygstart"
+    elif has start; then
+        GH_FZF_OPEN_CMD="start"
+    elif has xdg-open; then
+        GH_FZF_OPEN_CMD="xdg-open"
+    elif has open; then
+        GH_FZF_OPEN_CMD="open"
+    fi
+fi
+
+if [ -n "$GH_FZF_TRUNCATE_FIELDS" ]; then
+    GH_COLUMNS='100%'
+else
+    GH_COLUMNS='9999999'
+fi
+
+# export SHELL so bash features can be used in subshells created by fzf
+SHELL="$(which bash)"
+export SHELL
+
+GH_STATUS="$(github_status || true)"
+if [ -n "$GH_STATUS" ] && [ "$GH_STATUS" != "All Systems Operational" ]; then
+    GH_STATUS_INDICATOR=" $GH_STATUS - githubstatus.com "
+fi
+
+export GH_FZF_RELOAD_KEY="${GH_FZF_RELOAD_KEY:-ctrl-r}"
+export GH_FZF_OPEN_KEY="${GH_FZF_OPEN_KEY:-ctrl-o}"
+export GH_FZF_COPY_KEY="${GH_FZF_COPY_KEY:-ctrl-y}"
+export GH_FZF_HELP_KEY="${GH_FZF_HELP_KEY:-alt-?}"
+export GH_FZF_TOGGLE_HINTS_KEY="${GH_FZF_TOGGLE_HINTS_KEY:-alt-H}"
+export GH_FZF_TOGGLE_PREVIEW_KEY="${GH_FZF_TOGGLE_PREVIEW_KEY:-alt-P}"
+
+global_binds="Globals > ($GH_FZF_OPEN_KEY: open url) ($GH_FZF_COPY_KEY: copy url) ($GH_FZF_RELOAD_KEY: reload) ($GH_FZF_HELP_KEY: help) ($GH_FZF_TOGGLE_PREVIEW_KEY: toggle preview) ($GH_FZF_TOGGLE_HINTS_KEY: toggle hints) (alt-1: 100 items) (alt-2: 200 items) (...) (alt-9: 900 items)"
+
+# The following fzf options are shared by all commands. They are prepended to
+# the FZF_DEFAULT_OPTS environment variable so they can be overridden by users.
+export FZF_DEFAULT_OPTS='
+--no-hscroll --no-exit-0 --header-lines=1 --cycle --reverse --info=right
+--color="fg:#ebdbb2,fg+:#ebdbb2,bg:#282828,bg+:#3c3836,hl:#d3869b:bold,hl+:#d3869b"
+--color="info:#83a598,prompt:#bdae93,spinner:#fabd2f,pointer:#83a598,marker:#fe8019,header:#928374,label:#83a598"
+'${GH_STATUS_INDICATOR:+--preview-label=\"$GH_STATUS_INDICATOR\" --color=\"preview-label:#b57614,preview-border:#b57614\"}'
+--preview-window="right,wrap,<75(down,wrap)"
+--bind="'$GH_FZF_TOGGLE_PREVIEW_KEY':change-preview-window(down,70%,<75(down,70%,wrap)|hidden,<75(hidden)|)"
+--bind="'$GH_FZF_TOGGLE_HINTS_KEY':toggle-header"
+--bind="'$GH_FZF_RELOAD_KEY':reload(eval \"$FZF_DEFAULT_COMMAND\")"
+--bind="alt-1:reload(eval \"$FZF_DEFAULT_COMMAND -L100\")"
+--bind="alt-2:reload(eval \"$FZF_DEFAULT_COMMAND -L200\")"
+--bind="alt-3:reload(eval \"$FZF_DEFAULT_COMMAND -L300\")"
+--bind="alt-4:reload(eval \"$FZF_DEFAULT_COMMAND -L400\")"
+--bind="alt-5:reload(eval \"$FZF_DEFAULT_COMMAND -L500\")"
+--bind="alt-6:reload(eval \"$FZF_DEFAULT_COMMAND -L600\")"
+--bind="alt-6:reload(eval \"$FZF_DEFAULT_COMMAND -L600\")"
+--bind="alt-7:reload(eval \"$FZF_DEFAULT_COMMAND -L700\")"
+--bind="alt-8:reload(eval \"$FZF_DEFAULT_COMMAND -L800\")"
+--bind="alt-9:reload(eval \"$FZF_DEFAULT_COMMAND -L900\")"
+'"$FZF_DEFAULT_OPTS"' --no-select-1 --ansi --no-multi --delimiter="\\s\\s+"'
+# Overriding the four options above breaks gh-fzf, so append them instead.
+
+# ----------------------------------------------------------------------1}}}
+# COMMAND > DEFAULT                                                     {{{1
+
+default_cmd() {
+    FZF_DEFAULT_COMMAND="printf '%s\n' COMMAND \
+        issue pr run workflow release label milestone repo gist search" \
+        fzf \
+        --preview='
+            cmd={};
+            if [ $cmd = "milestone" ]; then
+                cmd="api"
+                printf "%s\n\n" "There is no \`gh milestone\` command so \`gh api\` is used:"
+            fi
+            GH_FORCE_TTY=$((FZF_PREVIEW_COLUMNS-3)) gh help $cmd
+        ' \
+        --preview-window='right:75%,wrap' \
+        --bind="enter:execute(gh fzf {})" \
+        --bind="$GH_FZF_HELP_KEY:execute(GH_PAGER='less -p \"^  ### .{}\"' gh repo view benelan/gh-fzf)"
+}
+
+# ----------------------------------------------------------------------1}}}
+# COMMAND > ISSUE                                                       {{{1
+
+issue_cmd() {
+    # GO TEMPLATE      {{{2
+    issue_template='\
+        --json "number,title,author,assignees,state,milestone,labels,updatedAt" \
+        --template '\''
+            {{- $headerColor := "blue+b" -}}
+            {{- tablerow
+                ("ISSUE" | autocolor $headerColor)
+                ("LAST UPDATE" | autocolor $headerColor)
+                ("TITLE" | autocolor $headerColor)
+                ("AUTHOR" | autocolor $headerColor)
+                ("MILESTONE" | autocolor $headerColor)
+                ("LABELS" | autocolor $headerColor)
+            -}}
+
+            {{- range . -}}
+                {{- $milestoneTitle := "" -}}
+                {{- if ne .milestone nil -}}
+                    {{- $milestoneTitle = .milestone.title -}}
+                {{- end -}}
+
+                {{- $stateColor := "green" -}}
+                {{- if eq .state "CLOSED" -}}
+                    {{- $stateColor = "red" -}}
+                {{- end -}}
+
+                {{- tablerow
+                    (printf "#%v" .number | autocolor $stateColor)
+                    ((timeago .updatedAt) | autocolor "white+d")
+                    (truncate 100 (.title | autocolor "white+h"))
+                    (.author.login | autocolor "white+d")
+                    ($milestoneTitle | autocolor "white+h")
+                    (pluck "name" .labels | join ", " | autocolor "white+d")
+                -}}
+            {{- end -}}
+    '\'''
+
+    # KEYBINDINGS      {{{2
+
+    export GH_FZF_ISSUE_EDIT_KEY="${GH_FZF_ISSUE_EDIT_KEY:-enter}"
+    export GH_FZF_ISSUE_COMMENT_KEY="${GH_FZF_ISSUE_COMMENT_KEY:-alt-c}"
+    export GH_FZF_ISSUE_CHECKOUT_KEY="${GH_FZF_ISSUE_CHECKOUT_KEY:-alt-o}"
+    export GH_FZF_ISSUE_CLOSE_KEY="${GH_FZF_ISSUE_CLOSE_KEY:-alt-X}"
+    export GH_FZF_ISSUE_REOPEN_KEY="${GH_FZF_ISSUE_REOPEN_KEY:-alt-O}"
+    export GH_FZF_ISSUE_ADD_LABEL_KEY="${GH_FZF_ISSUE_ADD_LABEL_KEY:-alt-l}"
+    export GH_FZF_ISSUE_REMOVE_LABEL_KEY="${GH_FZF_ISSUE_REMOVE_LABEL_KEY:-alt-L}"
+
+    export GH_FZF_ISSUE_ASSIGNED_FILTER_KEY="${GH_FZF_ISSUE_ASSIGNED_FILTER_KEY:-alt-a}"
+    export GH_FZF_ISSUE_AUTHOR_FILTER_KEY="${GH_FZF_ISSUE_AUTHOR_FILTER_KEY:-alt-A}"
+    export GH_FZF_ISSUE_MENTIONED_FILTER_KEY="${GH_FZF_ISSUE_MENTIONED_FILTER_KEY:-alt-m}"
+    export GH_FZF_ISSUE_MILESTONE_FILTER_KEY="${GH_FZF_ISSUE_MILESTONE_FILTER_KEY:-alt-M}"
+    export GH_FZF_ISSUE_STATE_FILTER_KEY="${GH_FZF_ISSUE_STATE_FILTER_KEY:-alt-s}"
+
+    issue_header="Actions > ($GH_FZF_ISSUE_EDIT_KEY: edit) ($GH_FZF_ISSUE_COMMENT_KEY: comment) ($GH_FZF_ISSUE_CHECKOUT_KEY: develop) ($GH_FZF_ISSUE_ADD_LABEL_KEY: add labels) ($GH_FZF_ISSUE_REMOVE_LABEL_KEY: remove labels) ($GH_FZF_ISSUE_CLOSE_KEY: close) ($GH_FZF_ISSUE_REOPEN_KEY: reopen)
+Filters > ($GH_FZF_ISSUE_ASSIGNED_FILTER_KEY: assignee) ($GH_FZF_ISSUE_AUTHOR_FILTER_KEY: author) ($GH_FZF_ISSUE_MENTIONED_FILTER_KEY: mention) ($GH_FZF_ISSUE_MILESTONE_FILTER_KEY: milestone) ($GH_FZF_ISSUE_STATE_FILTER_KEY: state=all)
+$global_binds
+
+"
+
+    # FZF COMMAND      {{{2
+    FZF_DEFAULT_COMMAND="GH_FORCE_TTY=$GH_COLUMNS gh issue list $issue_template -L $GH_FZF_DEFAULT_LIMIT $*" \
+        fzf \
+        --preview='GH_FORCE_TTY=$((FZF_PREVIEW_COLUMNS-3)) gh issue view {1} --comments' \
+        --prompt="issue ❱ " \
+        --header="$issue_header" \
+        --bind="start:${GH_FZF_HIDE_HINTS:+"toggle-header"}" \
+        --bind="$GH_FZF_OPEN_KEY:execute-silent(gh issue view --web {1} &)+refresh-preview" \
+        --bind="$GH_FZF_COPY_KEY:execute-silent(gh fzf util copy-url issue {1})+refresh-preview" \
+        --bind="$GH_FZF_HELP_KEY:execute(GH_PAGER='less -p \"^  ### .issue\"' gh repo view benelan/gh-fzf)" \
+        --bind="$GH_FZF_ISSUE_EDIT_KEY:execute(gh issue edit {1})+refresh-preview" \
+        --bind="$GH_FZF_ISSUE_COMMENT_KEY:execute(gh issue comment {1})+refresh-preview" \
+        --bind="$GH_FZF_ISSUE_CHECKOUT_KEY:become(gh fzf util develop-issue {1})" \
+        --bind="$GH_FZF_ISSUE_ADD_LABEL_KEY:execute(gh fzf util select-labels add issue {1})+refresh-preview" \
+        --bind="$GH_FZF_ISSUE_REMOVE_LABEL_KEY:execute(gh fzf util select-labels remove issue {1})+refresh-preview" \
+        --bind="$GH_FZF_ISSUE_CLOSE_KEY:execute(gh issue close {1})+refresh-preview" \
+        --bind="$GH_FZF_ISSUE_REOPEN_KEY:execute(gh issue reopen {1})+refresh-preview" \
+        --bind="$GH_FZF_ISSUE_ASSIGNED_FILTER_KEY"':reload(eval "$FZF_DEFAULT_COMMAND --assignee @me")' \
+        --bind="$GH_FZF_ISSUE_AUTHOR_FILTER_KEY"':reload(eval "$FZF_DEFAULT_COMMAND --author @me")' \
+        --bind="$GH_FZF_ISSUE_MENTIONED_FILTER_KEY"':reload(eval "$FZF_DEFAULT_COMMAND --mention @me")' \
+        --bind="$GH_FZF_ISSUE_MILESTONE_FILTER_KEY"':execute(gh fzf milestone > /tmp/gh-fzf-milestone)+reload(
+            m="$(cat /tmp/gh-fzf-milestone)"
+            rm -f /tmp/gh-fzf-milestone;
+            eval "$FZF_DEFAULT_COMMAND${m:+ --milestone \"$m\"}"
+        )' \
+        --bind="$GH_FZF_ISSUE_STATE_FILTER_KEY"':reload(eval "$FZF_DEFAULT_COMMAND --state all")'
+
+    #2}}}
+}
+
+# ----------------------------------------------------------------------1}}}
+# COMMAND > PR                                                          {{{1
+
+pr_cmd() {
+    # GO TEMPLATE      {{{2
+    pr_template='\
+        --json "number,title,state,headRefName,milestone,updatedAt,labels,additions,deletions,changedFiles,isDraft" \
+        --template '\''
+            {{- $headerColor := "blue+b" -}}
+            {{- tablerow
+                ("PR" | autocolor $headerColor)
+                ("LAST UPDATE" | autocolor $headerColor)
+                ("TITLE" | autocolor $headerColor)
+                ("DIFF STAT" | autocolor $headerColor)
+                ("BRANCH" | autocolor $headerColor)
+                ("LABELS" | autocolor $headerColor)
+                ("MILESTONE" | autocolor $headerColor)
+            -}}
+
+            {{- range . -}}
+                {{- $milestoneTitle := "" -}}
+                {{- if ne .milestone nil -}}
+                    {{- $milestoneTitle = .milestone.title -}}
+                {{- end -}}
+
+                {{- $stateColor := "green" -}}
+                {{- if eq .isDraft true -}}
+                    {{- $stateColor = "white+dh" -}}
+                {{- else if eq .state "CLOSED" -}}
+                    {{- $stateColor = "red" -}}
+                {{- else if eq .state "MERGED" -}}
+                    {{- $stateColor = "magenta" -}}
+                {{- end -}}
+
+                {{- tablerow
+                    (printf "#%v" .number | autocolor $stateColor)
+                    ((timeago .updatedAt) | autocolor "white+d")
+                    (truncate 90 (.title | autocolor "white+h"))
+                    (printf "%s %s %s"
+                    (printf "+%v" .additions | autocolor "green+d")
+                    (printf "-%v" .deletions | autocolor "red+d")
+                    (printf "(%v files)" .changedFiles | autocolor "white+d")
+                )
+                    (truncate 60 (.headRefName | autocolor "white+h"))
+                    (pluck "name" .labels | join ", " | autocolor "white+d")
+                    ($milestoneTitle | autocolor "white+h")
+                -}}
+            {{- end -}}
+    '\'''
+
+    # KEYBINDINGS      {{{2
+    export GH_FZF_PR_EDIT_KEY="${GH_FZF_PR_EDIT_KEY:-enter}"
+    export GH_FZF_PR_CHECKOUT_KEY="${GH_FZF_PR_CHECKOUT_KEY:-alt-o}"
+    export GH_FZF_PR_COMMENT_KEY="${GH_FZF_PR_COMMENT_KEY:-alt-c}"
+    export GH_FZF_PR_DIFF_KEY="${GH_FZF_PR_DIFF_KEY:-alt-d}"
+    export GH_FZF_PR_REVIEW_KEY="${GH_FZF_PR_REVIEW_KEY:-alt-r}"
+    export GH_FZF_PR_COPY_BRANCH_KEY="${GH_FZF_PR_COPY_BRANCH_KEY:-alt-y}"
+    export GH_FZF_PR_READY_KEY="${GH_FZF_PR_READY_KEY:-alt-R}"
+    export GH_FZF_PR_MERGE_KEY="${GH_FZF_PR_MERGE_KEY:-alt-M}"
+    export GH_FZF_PR_CLOSE_KEY="${GH_FZF_PR_CLOSE_KEY:-alt-X}"
+    export GH_FZF_PR_REOPEN_KEY="${GH_FZF_PR_REOPEN_KEY:-alt-O}"
+    export GH_FZF_PR_CHECKS_KEY="${GH_FZF_PR_CHECKS_KEY:-alt-C}"
+    export GH_FZF_PR_ADD_LABEL_KEY="${GH_FZF_PR_ADD_LABEL_KEY:-alt-l}"
+    export GH_FZF_PR_REMOVE_LABEL_KEY="${GH_FZF_PR_REMOVE_LABEL_KEY:-alt-L}"
+
+    export GH_FZF_PR_ASSIGNED_FILTER_KEY="${GH_FZF_PR_ASSIGNED_FILTER_KEY:-alt-a}"
+    export GH_FZF_PR_AUTHOR_FILTER_KEY="${GH_FZF_PR_AUTHOR_FILTER_KEY:-alt-A}"
+    export GH_FZF_PR_BRANCH_FILTER_KEY="${GH_FZF_PR_BRANCH_FILTER_KEY:-alt-b}"
+    export GH_FZF_PR_STATE_FILTER_KEY="${GH_FZF_PR_STATE_FILTER_KEY:-alt-s}"
+
+    pr_header="Actions > ($GH_FZF_PR_EDIT_KEY: edit) ($GH_FZF_PR_CHECKOUT_KEY: checkout) ($GH_FZF_PR_DIFF_KEY: diff) ($GH_FZF_PR_COMMENT_KEY: comment) ($GH_FZF_PR_REVIEW_KEY: review) ($GH_FZF_PR_ADD_LABEL_KEY: add labels)
+        > ($GH_FZF_PR_CHECKS_KEY: checks) ($GH_FZF_PR_MERGE_KEY: merge) ($GH_FZF_PR_READY_KEY: ready) ($GH_FZF_PR_COPY_BRANCH_KEY: copy branch) ($GH_FZF_PR_CLOSE_KEY: close) ($GH_FZF_PR_REOPEN_KEY: reopen) ($GH_FZF_PR_REMOVE_LABEL_KEY: remove labels)
+Filters > ($GH_FZF_PR_ASSIGNED_FILTER_KEY: assignee) ($GH_FZF_PR_AUTHOR_FILTER_KEY: author) ($GH_FZF_PR_BRANCH_FILTER_KEY: branch) ($GH_FZF_PR_STATE_FILTER_KEY: state=all)
+$global_binds
+
+"
+    # FZF COMMAND      {{{2
+    FZF_DEFAULT_COMMAND="GH_FORCE_TTY=$GH_COLUMNS gh pr list $pr_template -L $GH_FZF_DEFAULT_LIMIT $*" \
+        fzf \
+        --preview='GH_FORCE_TTY=$((FZF_PREVIEW_COLUMNS-3)) gh pr view {1} --comments' \
+        --prompt="pr ❱ " \
+        --header="$pr_header" \
+        --bind="start:${GH_FZF_HIDE_HINTS:+"toggle-header"}" \
+        --bind="$GH_FZF_OPEN_KEY:execute-silent(gh pr view --web {1} &)+refresh-preview" \
+        --bind="$GH_FZF_COPY_KEY:execute-silent(gh fzf util copy-url pr {1})+refresh-preview" \
+        --bind="$GH_FZF_HELP_KEY:execute(GH_PAGER='less -p \"^  ### .pr\"' gh repo view benelan/gh-fzf)" \
+        --bind="$GH_FZF_PR_COPY_BRANCH_KEY:execute-silent(
+            gh pr view --json 'headRefName' -q '.headRefName' {1} | $GH_FZF_COPY_CMD
+        )+refresh-preview" \
+        --bind="$GH_FZF_PR_EDIT_KEY:execute(gh pr edit {1})+refresh-preview" \
+        --bind="$GH_FZF_PR_CHECKOUT_KEY:become(gh pr checkout {1})" \
+        --bind="$GH_FZF_PR_COMMENT_KEY:execute(gh pr comment {1})+refresh-preview" \
+        --bind="$GH_FZF_PR_DIFF_KEY:execute(gh pr diff {1})+refresh-preview" \
+        --bind="$GH_FZF_PR_REVIEW_KEY:execute(gh pr review {1})+refresh-preview" \
+        --bind="$GH_FZF_PR_READY_KEY:execute(gh pr ready {1})+refresh-preview" \
+        --bind="$GH_FZF_PR_MERGE_KEY:execute(gh pr merge {1})+refresh-preview" \
+        --bind="$GH_FZF_PR_CLOSE_KEY:execute(gh pr close {1})+refresh-preview" \
+        --bind="$GH_FZF_PR_REOPEN_KEY:execute(gh pr reopen {1})+refresh-preview" \
+        --bind="$GH_FZF_PR_CHECKS_KEY:execute<gh fzf run -b \$(
+            gh pr view {1} --json headRefName --jq .headRefName
+        )>+refresh-preview" \
+        --bind="$GH_FZF_PR_ADD_LABEL_KEY:execute(gh fzf util select-labels add pr {1})+refresh-preview" \
+        --bind="$GH_FZF_PR_REMOVE_LABEL_KEY:execute(gh fzf util select-labels remove pr {1})+refresh-preview" \
+        --bind="$GH_FZF_PR_ASSIGNED_FILTER_KEY"':reload(eval "$FZF_DEFAULT_COMMAND --assignee @me")' \
+        --bind="$GH_FZF_PR_AUTHOR_FILTER_KEY"':reload(eval "$FZF_DEFAULT_COMMAND --author @me")' \
+        --bind="$GH_FZF_PR_BRANCH_FILTER_KEY"':reload(eval "$FZF_DEFAULT_COMMAND --head \
+            $(git symbolic-ref --short HEAD)")' \
+        --bind="$GH_FZF_PR_STATE_FILTER_KEY"':reload(eval "$FZF_DEFAULT_COMMAND --state all")'
+
+    #2}}}
+}
+
+# ----------------------------------------------------------------------1}}}
+# COMMAND > RUN                                                         {{{1
+
+run_cmd() {
+    # GO TEMPLATE      {{{2
+    run_template='\
+        --json "updatedAt,event,displayTitle,headBranch,databaseId,conclusion,status,name" \
+        --template '\''
+            {{- $headerColor := "blue+b" -}}
+            {{- tablerow
+                ("STATUS" | autocolor $headerColor)
+                ("LAST UPDATE" | autocolor $headerColor)
+                ("WORKFLOW" | autocolor $headerColor)
+                ("BRANCH" | autocolor $headerColor)
+                ("TITLE" | autocolor $headerColor)
+                ("EVENT" | autocolor $headerColor)
+                ("ID" | autocolor $headerColor)
+            -}}
+
+            {{- range . -}}
+                {{- $statusColor := "yellow" -}}
+                {{- $statusText := .status -}}
+                {{- if ne (len .conclusion) 0 -}}
+                    {{- $statusText = .conclusion -}}
+                    {{- if eq .conclusion "failure" "startup_failure" -}}
+                        {{- $statusColor = "red" -}}
+                    {{- else if eq .conclusion "cancelled" "timed_out" -}}
+                        {{- $statusColor = "red+d" -}}
+                    {{- else if eq .conclusion "action_required" -}}
+                        {{- $statusColor = "magenta+h" -}}
+                    {{- else if eq .conclusion "stale" -}}
+                        {{- $statusColor = "yellow+d" -}}
+                    {{- else if eq .conclusion "success" -}}
+                        {{- $statusColor = "green" -}}
+                    {{- else if eq .conclusion "skipped" -}}
+                        {{- $statusColor = "white+d" -}}
+                    {{- end -}}
+                {{- end -}}
+
+                {{- tablerow
+                    ($statusText | autocolor $statusColor)
+                    ((timeago .updatedAt) | autocolor "white+d")
+                    (.name | autocolor "white+h")
+                    (truncate 60 (.headBranch | autocolor "white+d"))
+                    (truncate 100 (.displayTitle | autocolor "white+h"))
+                    (.event | autocolor "white+d")
+                    (.databaseId | autocolor "white+h")
+                -}}
+            {{- end -}}
+    '\'''
+
+    # KEYBINDINGS      {{{2
+    export GH_FZF_RUN_VIEW_KEY="${GH_FZF_RUN_VIEW_KEY:-enter}"
+    export GH_FZF_RUN_RERUN_KEY="${GH_FZF_RUN_RERUN_KEY:-alt-r}"
+    export GH_FZF_RUN_RERUN_FAILED_KEY="${GH_FZF_RUN_RERUN_FAILED_KEY:-alt-R}"
+    export GH_FZF_RUN_CANCEL_KEY="${GH_FZF_RUN_CANCEL_KEY:-alt-x}"
+    export GH_FZF_RUN_DOWNLOAD_KEY="${GH_FZF_RUN_DOWNLOAD_KEY:-alt-d}"
+    export GH_FZF_RUN_PR_KEY="${GH_FZF_RUN_PR_KEY:-alt-p}"
+    export GH_FZF_RUN_NOTIFY_KEY="${GH_FZF_RUN_NOTIFY_KEY:-alt-n}"
+
+    export GH_FZF_RUN_USER_FILTER_KEY="${GH_FZF_RUN_USER_FILTER_KEY:-alt-u}"
+    export GH_FZF_RUN_FAILED_FILTER_KEY="${GH_FZF_RUN_FAILED_FILTER_KEY:-alt-f}"
+    export GH_FZF_RUN_IN_PROGRESS_FILTER_KEY="${GH_FZF_RUN_IN_PROGRESS_FILTER_KEY:-alt-i}"
+    export GH_FZF_RUN_BRANCH_FILTER_KEY="${GH_FZF_RUN_BRANCH_FILTER_KEY:-alt-b}"
+    export GH_FZF_RUN_WORKFLOW_FILTER_KEY="${GH_FZF_RUN_WORKFLOW_FILTER_KEY:-alt-w}"
+
+    run_header="Actions > ($GH_FZF_RUN_VIEW_KEY: watch/logs) ($GH_FZF_RUN_RERUN_KEY: rerun) ($GH_FZF_RUN_RERUN_FAILED_KEY: rerun failed) ($GH_FZF_RUN_CANCEL_KEY: cancel) ($GH_FZF_RUN_NOTIFY_KEY: notify) ($GH_FZF_RUN_PR_KEY: pr) ($GH_FZF_RUN_DOWNLOAD_KEY: download)
+Filters > ($GH_FZF_RUN_FAILED_FILTER_KEY: failed) ($GH_FZF_RUN_IN_PROGRESS_FILTER_KEY: in_progress) ($GH_FZF_RUN_BRANCH_FILTER_KEY: current branch) ($GH_FZF_RUN_USER_FILTER_KEY: current user) ($GH_FZF_RUN_WORKFLOW_FILTER_KEY: workflow)
+$global_binds
+
+"
+
+    # FZF COMMAND      {{{2
+    FZF_DEFAULT_COMMAND="GH_FORCE_TTY=$GH_COLUMNS gh run list $run_template -L $GH_FZF_DEFAULT_LIMIT $*" \
+        fzf \
+        --preview='GH_FORCE_TTY=$((FZF_PREVIEW_COLUMNS-3)) gh run view {-1}' \
+        --prompt="run ❱ " \
+        --header="$run_header" \
+        --bind="alt-l:execute(gh run view --log {-1})+refresh-preview" \
+        --bind="start:${GH_FZF_HIDE_HINTS:+"toggle-header"}" \
+        --bind="$GH_FZF_OPEN_KEY:execute-silent(gh run view --web {-1} &)+refresh-preview" \
+        --bind="$GH_FZF_COPY_KEY:execute-silent(gh fzf util copy-url run {-1})+refresh-preview" \
+        --bind="$GH_FZF_HELP_KEY:execute(GH_PAGER='less -p \"^  ### .run\"' gh repo view benelan/gh-fzf)" \
+        --bind="$GH_FZF_RUN_VIEW_KEY:execute(
+            case {1} in
+                in_progress | queued | requested | waiting) gh run watch {-1} ;;
+                *) gh run view --log {-1} ;;
+            esac
+        )+refresh-preview" \
+        --bind="$GH_FZF_RUN_RERUN_KEY:execute(gh run rerun {-1})+refresh-preview" \
+        --bind="$GH_FZF_RUN_RERUN_FAILED_KEY:execute(gh run rerun --failed {-1})+refresh-preview" \
+        --bind="$GH_FZF_RUN_CANCEL_KEY:execute(gh run cancel {-1})+refresh-preview" \
+        --bind="$GH_FZF_RUN_DOWNLOAD_KEY:execute(gh run download {-1})+refresh-preview" \
+        --bind="$GH_FZF_RUN_NOTIFY_KEY:execute-silent(
+            gh fzf util notify-run-completed {-1} &
+        )+refresh-preview" \
+        --bind="$GH_FZF_RUN_PR_KEY:execute<gh fzf pr --head \$(
+            gh run view {-1} --json headBranch --jq .headBranch
+        )>+refresh-preview" \
+        --bind="$GH_FZF_RUN_FAILED_FILTER_KEY"':reload(eval "$FZF_DEFAULT_COMMAND --status failure")' \
+        --bind="$GH_FZF_RUN_IN_PROGRESS_FILTER_KEY"':reload(eval "$FZF_DEFAULT_COMMAND --status in_progress")' \
+        --bind="$GH_FZF_RUN_WORKFLOW_FILTER_KEY:execute(gh fzf workflow)" \
+        --bind="$GH_FZF_RUN_BRANCH_FILTER_KEY"':reload(
+            eval "$FZF_DEFAULT_COMMAND --branch $(git symbolic-ref --short HEAD)"
+        )' \
+        --bind="$GH_FZF_RUN_USER_FILTER_KEY"':reload(
+            eval "$FZF_DEFAULT_COMMAND --user $(gh api user -q .login)"
+        )'
+
+    #2}}}
+}
+
+# ----------------------------------------------------------------------1}}}
+# COMMAND > WORKFLOW                                                    {{{1
+
+workflow_cmd() {
+    # GO TEMPLATE      {{{2
+    workflow_template='\
+        --json "id,name,path,state" \
+        --template '\''
+            {{- $headerColor := "blue+b" -}}
+            {{- tablerow
+                ("NAME" | autocolor $headerColor)
+                ("PATH" | autocolor $headerColor)
+                ("ID" | autocolor $headerColor)
+            -}}
+
+            {{- range . -}}
+                {{- $stateColor := "green" }}
+                {{- if ne .state "active" -}}
+                    {{- $stateColor = "red" -}}
+                {{- end -}}
+                {{- tablerow
+                    (.name | autocolor "white+h")
+                    (.path | autocolor "white+d")
+                    (.id | autocolor $stateColor)
+                -}}
+            {{- end -}}
+    '\'''
+
+    # KEYBINDINGS      {{{2
+    export GH_FZF_WORKFLOW_VIEW_RUNS_KEY="${GH_FZF_WORKFLOW_VIEW_RUNS_KEY:-enter}"
+    export GH_FZF_WORKFLOW_DISPATCH_KEY="${GH_FZF_WORKFLOW_DISPATCH_KEY:-alt-d}"
+    export GH_FZF_WORKFLOW_DISABLE_KEY="${GH_FZF_WORKFLOW_DISABLE_KEY:-alt-X}"
+    export GH_FZF_WORKFLOW_ENABLE_KEY="${GH_FZF_WORKFLOW_ENABLE_KEY:-alt-E}"
+
+    export GH_FZF_WORKFLOW_SHOW_ALL_FILTER_KEY="${GH_FZF_WORKFLOW_SHOW_ALL_FILTER_KEY:-alt-a}"
+
+    workflow_header="Actions > ($GH_FZF_WORKFLOW_VIEW_RUNS_KEY: runs) ($GH_FZF_WORKFLOW_DISPATCH_KEY: dispatch) ($GH_FZF_WORKFLOW_DISABLE_KEY: disable) ($GH_FZF_WORKFLOW_ENABLE_KEY: enable)
+Filters > ($GH_FZF_WORKFLOW_SHOW_ALL_FILTER_KEY: all)
+$global_binds
+
+"
+
+    # FZF COMMAND      {{{2
+    FZF_DEFAULT_COMMAND="GH_FORCE_TTY=$GH_COLUMNS gh workflow list $workflow_template -L $GH_FZF_DEFAULT_LIMIT $*" \
+        fzf \
+        --prompt="workflow ❱ " \
+        --preview='GH_FORCE_TTY=$((FZF_PREVIEW_COLUMNS-3)) gh workflow view --yaml {-1}' \
+        --header="$workflow_header" \
+        --bind="start:${GH_FZF_HIDE_HINTS:+"toggle-header"}" \
+        --bind="$GH_FZF_OPEN_KEY:execute-silent(gh workflow view --web {-1} &)+refresh-preview" \
+        --bind="$GH_FZF_COPY_KEY:execute-silent(gh browse --no-browser {-2} | $GH_FZF_COPY_CMD)+refresh-preview" \
+        --bind="$GH_FZF_HELP_KEY:execute(GH_PAGER='less -p \"^  ### .workflow\"' gh repo view benelan/gh-fzf)" \
+        --bind="$GH_FZF_WORKFLOW_VIEW_RUNS_KEY:execute(gh fzf run --workflow {-1})+refresh-preview" \
+        --bind="$GH_FZF_WORKFLOW_DISPATCH_KEY:execute(gh workflow run {-1})+refresh-preview" \
+        --bind="$GH_FZF_WORKFLOW_ENABLE_KEY:execute(gh workflow enable {-1})+refresh-preview" \
+        --bind="$GH_FZF_WORKFLOW_DISABLE_KEY:execute(gh workflow disable {-1})+refresh-preview" \
+        --bind="$GH_FZF_WORKFLOW_SHOW_ALL_FILTER_KEY"':reload(eval "$FZF_DEFAULT_COMMAND --all")'
+
+    #2}}}
+}
+
+# ----------------------------------------------------------------------1}}}
+# COMMAND > RELEASE                                                     {{{1
+
+release_cmd() {
+    # GO TEMPLATE      {{{2
+    release_template='\
+        --json "publishedAt,isDraft,isLatest,isPrerelease,name,tagName" \
+        --template '\''
+            {{- $headerColor := "blue+b" -}}
+            {{- tablerow
+                ("TAG" | autocolor $headerColor)
+                ("PUBLISHED" | autocolor $headerColor)
+                ("TITLE" | autocolor $headerColor)
+                ("TYPE" | autocolor $headerColor)
+            -}}
+
+            {{- range . -}}
+                {{- $type := "" -}}
+                {{- $typeColor := "white+d" -}}
+                {{- if eq .isLatest true -}}
+                    {{- $type = "Latest" -}}
+                    {{- $typeColor = "green" -}}
+                {{- else if eq .isPrerelease true -}}
+                    {{- $type = "Pre-release" -}}
+                    {{- $typeColor = "yellow" -}}
+                {{- else if eq .isDraft true -}}
+                    {{- $type = "Draft" -}}
+                {{- end -}}
+                {{- tablerow
+                    (.tagName | autocolor "white+h")
+                    (printf "%s (%s)"
+                        (timefmt "2006-01-02" .publishedAt)
+                        (timeago .publishedAt)
+                    | autocolor "white+d")
+                    (.name | autocolor "white+h")
+                    ($type | autocolor $typeColor)
+                -}}
+            {{- end -}}
+    '\'''
+
+    # KEYBINDINGS      {{{2
+    export GH_FZF_RELEASE_DOWNLOAD_KEY="${GH_FZF_RELEASE_DOWNLOAD_KEY:-alt-enter}"
+    export GH_FZF_RELEASE_DELETE_KEY="${GH_FZF_RELEASE_DELETE_KEY:-alt-X}"
+
+    export GH_FZF_RELEASE_STABLE_FILTER_KEY="${GH_FZF_RELEASE_STABLE_FILTER_KEY:-alt-s}"
+    export GH_FZF_RELEASE_PUBLISHED_FILTER_KEY="${GH_FZF_RELEASE_PUBLISHED_FILTER_KEY:-alt-p}"
+    export GH_FZF_RELEASE_ASCENDING_SORT_KEY="${GH_FZF_RELEASE_ASCENDING_SORT_KEY:-alt-a}"
+
+    release_header="Actions > ($GH_FZF_RELEASE_DOWNLOAD_KEY: download) ($GH_FZF_RELEASE_DELETE_KEY: delete)
+Filters > ($GH_FZF_RELEASE_STABLE_FILTER_KEY: stable) ($GH_FZF_RELEASE_PUBLISHED_FILTER_KEY: published) ($GH_FZF_RELEASE_ASCENDING_SORT_KEY: ascending order)
+$global_binds
+
+"
+
+    # FZF COMMAND      {{{2
+    FZF_DEFAULT_COMMAND="GH_FORCE_TTY=$GH_COLUMNS gh release list $release_template -L $GH_FZF_DEFAULT_LIMIT $*" \
+        fzf \
+        --preview='GH_FORCE_TTY=$((FZF_PREVIEW_COLUMNS-3)) gh release view {1}' \
+        --prompt="release ❱ " \
+        --header="$release_header" \
+        --bind="start:${GH_FZF_HIDE_HINTS:+"toggle-header"}" \
+        --bind="$GH_FZF_OPEN_KEY:execute-silent(gh release view --web {1} &)+refresh-preview" \
+        --bind="$GH_FZF_COPY_KEY:execute-silent(gh fzf util copy-url release {1})+refresh-preview" \
+        --bind="$GH_FZF_HELP_KEY:execute(GH_PAGER='less -p \"^  ### .release\"' gh repo view benelan/gh-fzf)" \
+        --bind="$GH_FZF_RELEASE_DOWNLOAD_KEY:execute(gh release download {1})+refresh-preview" \
+        --bind="$GH_FZF_RELEASE_DELETE_KEY:execute(gh release delete {1})+refresh-preview" \
+        --bind="$GH_FZF_RELEASE_STABLE_FILTER_KEY"':reload(eval "$FZF_DEFAULT_COMMAND --exclude-pre-releases")' \
+        --bind="$GH_FZF_RELEASE_PUBLISHED_FILTER_KEY"':reload(eval "$FZF_DEFAULT_COMMAND --exclude-drafts")' \
+        --bind="$GH_FZF_RELEASE_ASCENDING_SORT_KEY"':reload(eval "$FZF_DEFAULT_COMMAND --order asc")'
+
+    #2}}}
+}
+
+# ----------------------------------------------------------------------1}}}
+# COMMAND > LABEL                                                       {{{1
+
+label_cmd() {
+    # KEYBINDINGS      {{{2
+    export GH_FZF_LABEL_PRINT_KEY="${GH_FZF_LABEL_PRINT_KEY:-enter}"
+    export GH_FZF_LABEL_EDIT_NAME_KEY="${GH_FZF_LABEL_EDIT_NAME_KEY:-alt-n}"
+    export GH_FZF_LABEL_EDIT_DESCRIPTION_KEY="${GH_FZF_LABEL_EDIT_DESCRIPTION_KEY:-alt-d}"
+    export GH_FZF_LABEL_EDIT_COLOR_KEY="${GH_FZF_LABEL_EDIT_COLOR_KEY:-alt-c}"
+    export GH_FZF_LABEL_DELETE_KEY="${GH_FZF_LABEL_DELETE_KEY:-alt-X}"
+
+    export GH_FZF_LABEL_NAME_SORT_KEY="${GH_FZF_LABEL_NAME_SORT_KEY:-alt-N}"
+    export GH_FZF_LABEL_DESCENDING_ORDER_KEY="${GH_FZF_LABEL_DESCENDING_ORDER_KEY:-alt-D}"
+
+    label_header="Actions > ($GH_FZF_LABEL_PRINT_KEY: print) ($GH_FZF_LABEL_EDIT_NAME_KEY: edit name) ($GH_FZF_LABEL_EDIT_DESCRIPTION_KEY: edit description) ($GH_FZF_LABEL_EDIT_COLOR_KEY: edit color) ($GH_FZF_LABEL_DELETE_KEY: delete)
+Filters > ($GH_FZF_LABEL_NAME_SORT_KEY: sort by name) ($GH_FZF_LABEL_DESCENDING_ORDER_KEY: descending order)
+$global_binds
+"
+
+    # FZF COMMAND      {{{2
+    FZF_DEFAULT_COMMAND="GH_FORCE_TTY=$GH_COLUMNS gh label list -L $GH_FZF_DEFAULT_LIMIT $*" \
+        fzf \
+        --multi \
+        --no-preview \
+        --prompt="label ❱ " \
+        --header-lines=4 \
+        --header="$label_header" \
+        --bind="start:${GH_FZF_HIDE_HINTS:+"toggle-header"}" \
+        --bind="$GH_FZF_OPEN_KEY:execute-silent(gh label list --web &)" \
+        --bind="$GH_FZF_HELP_KEY:execute(GH_PAGER='less -p \"^  ### .label\"' gh repo view benelan/gh-fzf)" \
+        --bind="$GH_FZF_LABEL_PRINT_KEY:become(printf '%s\n' {+} | awk -F'  ' '{print \$1}')" \
+        --bind="$GH_FZF_LABEL_EDIT_NAME_KEY"':execute(
+            read -rp "Enter new name for {1} label: " name </dev/tty >/dev/tty 2>&1;
+            [ -n "$name" ] && gh label edit {1} --name "$name"
+        )+reload(eval "$FZF_DEFAULT_COMMAND")' \
+        --bind="$GH_FZF_LABEL_EDIT_DESCRIPTION_KEY"':execute(
+            read -rp "Enter new description for {1} label: " description </dev/tty >/dev/tty 2>&1;
+            [ -n "$description" ] &&
+                gh label edit {1} --description "$description"
+        )+reload(eval "$FZF_DEFAULT_COMMAND")' \
+        --bind="$GH_FZF_LABEL_EDIT_COLOR_KEY"':execute(
+            read -rp "Enter new color for {1} label: " color </dev/tty >/dev/tty 2>&1;
+            [ -n "$color" ] && gh label edit {1} --color "$color"
+        )+reload(eval "$FZF_DEFAULT_COMMAND")' \
+        --bind="$GH_FZF_LABEL_DELETE_KEY:execute(gh label delete {1})" \
+        --bind="$GH_FZF_LABEL_NAME_SORT_KEY"':reload(eval "$FZF_DEFAULT_COMMAND --sort name")' \
+        --bind="$GH_FZF_LABEL_DESCENDING_ORDER_KEY"':reload(eval "$FZF_DEFAULT_COMMAND --order desc")' || true
+
+    #2}}}
+}
+
+# --------------------------------------------------------------------- 1}}}
+# COMMAND > MILESTONE                                                   {{{1
+
+milestone_cmd() {
+    # GO TEMPLATE      {{{2
+    milestone_template='\
+        --template '\''
+            {{- $headerColor := "blue+b" -}}
+            {{- tablerow
+                ("TITLE" | autocolor $headerColor)
+                ("DUE" | autocolor $headerColor)
+                ("OPEN" | autocolor $headerColor)
+                ("CLOSED" | autocolor $headerColor)
+                ("DESCRIPTION" | autocolor $headerColor)
+                ("NUMBER" | autocolor $headerColor)
+            -}}
+
+            {{- range . -}}
+                {{- $due := .due_on }}
+                {{- if ne .due_on nil -}}
+                    {{- $due = (timefmt "2006-01-02" .due_on) -}}
+                {{- end -}}
+                {{- $stateColor := "white+d" -}}
+                {{- if eq .state "open" -}}
+                    {{- $stateColor = "green" -}}
+                {{- else -}}
+                    {{- $stateColor = "red" -}}
+                {{- end -}}
+                {{- tablerow
+                    (.title | autocolor "white+h")
+                    ($due | autocolor "white+d")
+                    (.open_issues | autocolor "white+h")
+                    (.closed_issues | autocolor "white+d")
+                    (.description | autocolor "white+h")
+                    (.number | autocolor $stateColor)
+                -}}
+            {{- end -}}
+    '\'''
+
+    # KEYBINDINGS      {{{2
+    export GH_FZF_MILESTONE_PRINT_KEY="${GH_FZF_MILESTONE_PRINT_KEY:-enter}"
+    export GH_FZF_MILESTONE_VIEW_ISSUES_KEY="${GH_FZF_MILESTONE_ISSUES_KEY:-alt-i}"
+    export GH_FZF_MILESTONE_CLOSE_KEY="${GH_FZF_MILESTONE_CLOSE_KEY:-alt-X}"
+    export GH_FZF_MILESTONE_REOPEN_KEY="${GH_FZF_MILESTONE_REOPEN_KEY:-alt-O}"
+    export GH_FZF_MILESTONE_EDIT_TITLE_KEY="${GH_FZF_MILESTONE_EDIT_TITLE_KEY:-alt-t}"
+    export GH_FZF_MILESTONE_EDIT_DESCRIPTION_KEY="${GH_FZF_MILESTONE_EDIT_DESCRIPTION_KEY:-alt-d}"
+
+    export GH_FZF_MILESTONE_STATE_FILTER_KEY="${GH_FZF_MILESTONE_STATE_FILTER_KEY:-alt-s}"
+    export GH_FZF_MILESTONE_COMPLETENESS_SORT_KEY="${GH_FZF_MILESTONE_COMPLETENESS_SORT_KEY:-alt-c}"
+    export GH_FZF_MILESTONE_DESCENDING_ORDER_KEY="${GH_FZF_MILESTONE_DESCENDING_ORDER_KEY:-alt-D}"
+
+    milestone_header="Actions > ($GH_FZF_MILESTONE_PRINT_KEY: print) ($GH_FZF_MILESTONE_VIEW_ISSUES_KEY: issues) ($GH_FZF_MILESTONE_CLOSE_KEY: close) ($GH_FZF_MILESTONE_REOPEN_KEY: reopen) ($GH_FZF_MILESTONE_EDIT_TITLE_KEY: edit title) ($GH_FZF_MILESTONE_EDIT_DESCRIPTION_KEY: edit description)
+Filters > ($GH_FZF_MILESTONE_STATE_FILTER_KEY: state=all) ($GH_FZF_MILESTONE_COMPLETENESS_SORT_KEY: sort by completeness) ($GH_FZF_MILESTONE_DESCENDING_ORDER_KEY: descending order)
+Globals > ($GH_FZF_OPEN_KEY: open url) ($GH_FZF_COPY_KEY: copy url) ($GH_FZF_RELOAD_KEY: reload)
+"
+
+    # FZF COMMAND      {{{2
+    FZF_DEFAULT_COMMAND="GH_FORCE_TTY=$GH_COLUMNS gh api --paginate $milestone_template \
+    -H 'Accept: application/vnd.github+json' \
+    -H 'X-GitHub-Api-Version: 2022-11-28' \
+    '/repos/{owner}/{repo}/milestones'" \
+        fzf \
+        --no-preview \
+        --prompt="milestone ❱ " \
+        --header="$milestone_header" \
+        --bind="start:${GH_FZF_HIDE_HINTS:+"toggle-header"}" \
+        --bind="$GH_FZF_COPY_KEY:execute-silent(
+            gh api --jq '.html_url' \
+                -H 'Accept: application/vnd.github+json' \
+                -H 'X-GitHub-Api-Version: 2022-11-28' \
+                /repos/{owner}/{repo}/milestones/{-1} | $GH_FZF_COPY_CMD
+        )" \
+        --bind="$GH_FZF_OPEN_KEY:execute-silent(
+            url=\"\$(gh api --jq '.html_url' \
+                -H 'Accept: application/vnd.github+json' \
+                -H 'X-GitHub-Api-Version: 2022-11-28' \
+                /repos/{owner}/{repo}/milestones/{-1})\"
+            [ -n \"\$url\" ] && $GH_FZF_OPEN_CMD \"\$url\" &
+        )" \
+        --bind="$GH_FZF_HELP_KEY:execute(GH_PAGER='less -p \"^  ### .milestone\"' gh repo view benelan/gh-fzf)" \
+        --bind="$GH_FZF_MILESTONE_PRINT_KEY:become(echo {1})" \
+        --bind="$GH_FZF_MILESTONE_VIEW_ISSUES_KEY:execute(gh fzf issue --milestone {-1})" \
+        --bind="$GH_FZF_MILESTONE_CLOSE_KEY"':execute(
+            gh api --silent --method PATCH -f "state=closed" \
+                -H "Accept: application/vnd.github+json" \
+                -H "X-GitHub-Api-Version: 2022-11-28" \
+                /repos/{owner}/{repo}/milestones/{-1}
+        )+reload(eval "$FZF_DEFAULT_COMMAND")' \
+        --bind="$GH_FZF_MILESTONE_REOPEN_KEY"':execute(
+            gh api --silent --method PATCH -f "state=open" \
+                -H "Accept: application/vnd.github+json" \
+                -H "X-GitHub-Api-Version: 2022-11-28" \
+                /repos/{owner}/{repo}/milestones/{-1}
+        )+reload(eval "$FZF_DEFAULT_COMMAND")' \
+        --bind="$GH_FZF_MILESTONE_EDIT_TITLE_KEY"':execute(
+            read -rp "Enter new milestone title: " t </dev/tty >/dev/tty 2>&1;
+            [ -n "$t" ] && gh api --silent --method PATCH -f "title=$t" \
+                -H "Accept: application/vnd.github+json" \
+                -H "X-GitHub-Api-Version: 2022-11-28" \
+                /repos/{owner}/{repo}/milestones/{-1}
+        )+reload(eval "$FZF_DEFAULT_COMMAND")' \
+        --bind="$GH_FZF_MILESTONE_EDIT_DESCRIPTION_KEY"':execute(
+            read -rp "Enter new milestone description: " d </dev/tty >/dev/tty 2>&1;
+            [ -n "$d" ] && gh api --silent --method PATCH -f "description=$d" \
+                -H "Accept: application/vnd.github+json" \
+                -H "X-GitHub-Api-Version: 2022-11-28" \
+                /repos/{owner}/{repo}/milestones/{-1}
+        )+reload(eval "$FZF_DEFAULT_COMMAND")' \
+        --bind="$GH_FZF_MILESTONE_STATE_FILTER_KEY"':reload(eval "${FZF_DEFAULT_COMMAND}?state=all")' \
+        --bind="$GH_FZF_MILESTONE_COMPLETENESS_SORT_KEY"':reload(eval "${FZF_DEFAULT_COMMAND}?sort=completeness")' \
+        --bind="$GH_FZF_MILESTONE_DESCENDING_ORDER_KEY"':reload(eval "${FZF_DEFAULT_COMMAND}?direction=desc")' \
+        --bind='alt-1:reload(eval "$FZF_DEFAULT_COMMAND")' \
+        --bind='alt-2:reload(eval "$FZF_DEFAULT_COMMAND")' \
+        --bind='alt-3:reload(eval "$FZF_DEFAULT_COMMAND")' \
+        --bind='alt-4:reload(eval "$FZF_DEFAULT_COMMAND")' \
+        --bind='alt-5:reload(eval "$FZF_DEFAULT_COMMAND")' \
+        --bind='alt-6:reload(eval "$FZF_DEFAULT_COMMAND")' \
+        --bind='alt-6:reload(eval "$FZF_DEFAULT_COMMAND")' \
+        --bind='alt-7:reload(eval "$FZF_DEFAULT_COMMAND")' \
+        --bind='alt-8:reload(eval "$FZF_DEFAULT_COMMAND")' \
+        --bind='alt-9:reload(eval "$FZF_DEFAULT_COMMAND")'
+
+    #2}}}
+}
+
+# --------------------------------------------------------------------- 1}}}
+# COMMAND > REPO                                                        {{{1
+
+repo_cmd() {
+    # GO TEMPLATE      {{{2
+    # repo_template='\
+    #     --json "nameWithOwner,description,stargazerCount,forkCount,updatedAt,viewerPermission,visibility" \
+    #     --template '\''
+    #         {{- $headerColor := "blue+b" -}}
+    #         {{- tablerow
+    #             ("REPO" | autocolor $headerColor)
+    #             ("VISIBILITY" | autocolor $headerColor)
+    #             ("PERMISSIONS" | autocolor $headerColor)
+    #             ("LAST UPDATE" | autocolor $headerColor)
+    #             ("DESCRIPTION" | autocolor $headerColor)
+    #             ("STARS" | autocolor $headerColor)
+    #             ("FORKS" | autocolor $headerColor)
+    #         -}}
+
+    #         {{- range . -}}
+    #             {{- tablerow
+    #                 (.nameWithOwner | autocolor "white+h")
+    #                 (.visibility | autocolor "white+d")
+    #                 (.viewerPermission | autocolor "white+h")
+    #                 ((timeago .updatedAt) | autocolor "white+d")
+    #                 (truncate 100 (.description | autocolor "white+h"))
+    #                 (.stargazerCount | autocolor "white+d")
+    #                 (.forkCount | autocolor "white+h")
+    #             -}}
+    #         {{- end -}}
+    # '\'''
+
+    # KEYBINDINGS      {{{2
+    export GH_FZF_REPO_EDIT_KEY="${GH_FZF_REPO_EDIT_KEY:-enter}"
+    export GH_FZF_REPO_VIEW_ISSUES_KEY="${GH_FZF_REPO_ISSUES_KEY:-alt-i}"
+    export GH_FZF_REPO_VIEW_PRS_KEY="${GH_FZF_REPO_VIEW_PRS_KEY:-alt-p}"
+    export GH_FZF_REPO_VIEW_RUNS_KEY="${GH_FZF_REPO_VIEW_RUNS_KEY:-alt-r}"
+    export GH_FZF_REPO_CLONE_KEY="${GH_FZF_REPO_CLONE_KEY:-alt-C}"
+    export GH_FZF_REPO_FORK_KEY="${GH_FZF_REPO_FORK_KEY:-alt-F}"
+
+    export GH_FZF_REPO_PRIVATE_FILTER_KEY="${GH_FZF_REPO_CLOSED_SOURCE_FILTER_KEY:-alt-c}"
+    export GH_FZF_REPO_PUBLIC_FILTER_KEY="${GH_FZF_REPO_OPEN_SOURCE_FILTER_KEY:-alt-o}"
+    export GH_FZF_REPO_SOURCE_FILTER_KEY="${GH_FZF_REPO_SOURCE_FILTER_KEY:-alt-s}"
+    export GH_FZF_REPO_FORK_FILTER_KEY="${GH_FZF_REPO_FORK_FILTER_KEY:-alt-f}"
+
+    repo_header="Actions > ($GH_FZF_REPO_EDIT_KEY: edit) ($GH_FZF_REPO_VIEW_ISSUES_KEY: issues) ($GH_FZF_REPO_VIEW_PRS_KEY: prs) ($GH_FZF_REPO_VIEW_RUNS_KEY: runs) ($GH_FZF_REPO_CLONE_KEY: clone) ($GH_FZF_REPO_FORK_KEY: fork)
+Filters > ($GH_FZF_REPO_PRIVATE_FILTER_KEY: private) ($GH_FZF_REPO_PUBLIC_FILTER_KEY: public) ($GH_FZF_REPO_SOURCE_FILTER_KEY: source) ($GH_FZF_REPO_FORK_FILTER_KEY: forks)
+$global_binds
+"
+
+    # FZF COMMAND      {{{2
+    FZF_DEFAULT_COMMAND="GH_FORCE_TTY=$GH_COLUMNS gh repo list -L $GH_FZF_DEFAULT_LIMIT $*" \
+        fzf \
+        --preview='GH_FORCE_TTY=$((FZF_PREVIEW_COLUMNS-3)) gh repo view {1}' \
+        --prompt="repo ❱ " \
+        --header="$repo_header" \
+        --header-lines=4 \
+        --bind="start:${GH_FZF_HIDE_HINTS:+"toggle-header"}" \
+        --bind="$GH_FZF_OPEN_KEY:execute-silent(gh repo view --web {1} &)+refresh-preview" \
+        --bind="$GH_FZF_COPY_KEY:execute-silent(gh fzf util copy-url repo {1})+refresh-preview" \
+        --bind="$GH_FZF_HELP_KEY:execute(GH_PAGER='less -p \"^  ### .repo\"' gh repo view benelan/gh-fzf)" \
+        --bind="$GH_FZF_REPO_EDIT_KEY:execute(gh repo edit {1})+refresh-preview" \
+        --bind="$GH_FZF_REPO_VIEW_ISSUES_KEY:execute(gh fzf issue --repo {1})+refresh-preview" \
+        --bind="$GH_FZF_REPO_VIEW_PRS_KEY:execute(gh fzf pr --repo {1})+refresh-preview" \
+        --bind="$GH_FZF_REPO_VIEW_RUNS_KEY:execute(gh fzf run --repo {1})+refresh-preview" \
+        --bind="$GH_FZF_REPO_CLONE_KEY:execute(gh repo clone {1})+refresh-preview" \
+        --bind="$GH_FZF_REPO_FORK_KEY:execute(gh repo fork {1})+refresh-preview" \
+        --bind="$GH_FZF_REPO_PRIVATE_FILTER_KEY"':reload(eval "$FZF_DEFAULT_COMMAND --visibility private")' \
+        --bind="$GH_FZF_REPO_PUBLIC_FILTER_KEY"':reload(eval "$FZF_DEFAULT_COMMAND --visibility public")' \
+        --bind="$GH_FZF_REPO_SOURCE_FILTER_KEY"':reload(eval "$FZF_DEFAULT_COMMAND --source")' \
+        --bind="$GH_FZF_REPO_FORK_FILTER_KEY"':reload(eval "$FZF_DEFAULT_COMMAND --fork")'
+
+    #2}}}
+}
+
+# ----------------------------------------------------------------------1}}}
+# COMMAND > GIST                                                        {{{1
+
+gist_cmd() {
+    # KEYBINDINGS      {{{2
+    export GH_FZF_GIST_EDIT_KEY="${GH_FZF_GIST_EDIT_KEY:-enter}"
+    export GH_FZF_GIST_CLONE_KEY="${GH_FZF_GIST_CLONE_KEY:-alt-c}"
+    export GH_FZF_GIST_DELETE_KEY="${GH_FZF_GIST_DELETE_KEY:-alt-X}"
+
+    export GH_FZF_GIST_PUBLIC_FILTER_KEY="${GH_FZF_GIST_PUBLIC_FILTER_KEY:-alt-p}"
+    export GH_FZF_GIST_SECRET_FILTER_KEY="${GH_FZF_GIST_SECRET_FILTER_KEY:-alt-s}"
+
+    gist_header="Actions > ($GH_FZF_GIST_EDIT_KEY: edit) ($GH_FZF_GIST_CLONE_KEY: clone) ($GH_FZF_GIST_DELETE_KEY: delete)
+        > ($GH_FZF_OPEN_KEY: open url) ($GH_FZF_COPY_KEY: copy url) ($GH_FZF_RELOAD_KEY: reload)
+Filters > ($GH_FZF_GIST_PUBLIC_FILTER_KEY: public) ($GH_FZF_GIST_SECRET_FILTER_KEY: secret)
+
+"
+
+    # FZF COMMAND      {{{2
+    FZF_DEFAULT_COMMAND="GH_FORCE_TTY=$GH_COLUMNS gh gist list -L $GH_FZF_DEFAULT_LIMIT $*" \
+        fzf \
+        --preview='GH_FORCE_TTY=$((FZF_PREVIEW_COLUMNS-3)) gh gist view {1}' \
+        --prompt="gist ❱ " \
+        --header="$gist_header" \
+        --bind="start:${GH_FZF_HIDE_HINTS:+"toggle-header"}" \
+        --bind="$GH_FZF_OPEN_KEY:execute-silent(gh gist view --web {1} &)+refresh-preview" \
+        --bind="$GH_FZF_COPY_KEY:execute-silent(
+            echo https://gist.github.com/$(gh api user -q .login)/{1} | $GH_FZF_COPY_CMD
+        )+refresh-preview" \
+        --bind="$GH_FZF_HELP_KEY:execute(GH_PAGER='less -p \"^  ### .gist\"' gh repo view benelan/gh-fzf)" \
+        --bind="$GH_FZF_GIST_EDIT_KEY:execute(gh gist edit {1})+refresh-preview" \
+        --bind="$GH_FZF_GIST_CLONE_KEY:execute(gh gist clone {1})+refresh-preview" \
+        --bind="$GH_FZF_GIST_DELETE_KEY:execute(gh gist delete {1})+refresh-preview" \
+        --bind="$GH_FZF_GIST_PUBLIC_FILTER_KEY"':reload(eval "$FZF_DEFAULT_COMMAND --public")' \
+        --bind="$GH_FZF_GIST_SECRET_FILTER_KEY"':reload(eval "$FZF_DEFAULT_COMMAND --secret")'
+
+    #2}}}
+}
+
+# COMMAND > SEARCH                                                      {{{1
+search_cmd() {
+    rm -rf ${TMPDIR:-/tmp}/gh-fzf-search-*
+
+    if [ -n "$1" ]; then
+        search_subcmd="$1"
+        case $search_subcmd in
+            issues | prs | commits)
+                search_open_cmd="gh browse --repo {1} {2}"
+                search_copy_cmd="gh browse --no-browser --repo {1} {2} | $GH_FZF_COPY_CMD"
+                ;;
+            repos)
+                search_open_cmd="gh browse --repo {1}"
+                search_copy_cmd="gh browse --no-browser --repo {1} | $GH_FZF_COPY_CMD"
+                ;;
+            code)
+                # NOTE: requires fzf >= v0.53.0 for multiline support
+                # https://github.com/junegunn/fzf/releases/tag/0.53.0
+                requires_fzf_version "0.53.0" "code search"
+
+                multiline_chunker="| perl -0 -pe 's/^\n/\n\0/gm'"
+                search_subcmd_opts="--header-lines=2 --read0 --highlight-line"
+
+                search_open_cmd="gh browse --repo \$(echo {1})"
+                search_copy_cmd="gh browse --no-browser --repo \$(echo {1}) | $GH_FZF_COPY_CMD"
+                ;;
+            *)
+                error "invalid search subcommand: \"$search_subcmd\"" \
+                    "Valid subcommands: issues, prs, repos, commits, code"
+                ;;
+        esac
+        shift
+    else
+        FZF_DEFAULT_COMMAND="printf '%s\n' issues prs repos commits code" \
+            fzf --ansi --header="COMMAND" --header-lines=0 \
+            --bind="resize:refresh-preview" \
+            --preview='GH_FORCE_TTY=$FZF_PREVIEW_COLUMNS gh help search {}' \
+            --preview-window='right,75%,wrap,<75(down,border-top,75%,wrap)' \
+            --bind="enter:execute(gh fzf search {})"
+        exit "$?"
+    fi
+
+    echo "$GH_FZF_DEFAULT_LIMIT" >"${TMPDIR:-/tmp}/gh-fzf-search-limit"
+
+    # KEYBINDINGS      {{{2
+    export GH_FZF_SEARCH_TOGGLE_MODE_KEY="${GH_FZF_SEARCH_TOGGLE_MODE_KEY:-alt-/}"
+
+    search_header="Actions > ($GH_FZF_SEARCH_TOGGLE_MODE_KEY: toggle mode)
+$global_binds
+"
+
+    # FZF COMMAND      {{{2
+    search_cmd="GH_FORCE_TTY=$GH_COLUMNS gh search $search_subcmd -L \$(cat "${TMPDIR:-/tmp}/gh-fzf-search-limit")"
+
+    fzf \
+        --header="$search_header" \
+        --header-lines=4 \
+        --disabled \
+        --query="$*" \
+        $search_subcmd_opts \
+        --border="bottom" \
+        --border-label="[mode: gh] " \
+        --border-label-pos=-99999 \
+        --prompt="search $search_subcmd ❱ " \
+        --bind="start:${GH_FZF_HIDE_HINTS:+"toggle-header+"}reload-sync(
+            $search_cmd \$FZF_QUERY $multiline_chunker || true
+        )" \
+        --bind "change:reload-sync:sleep 0.5; $search_cmd \$FZF_QUERY $multiline_chunker || true" \
+        --bind "$GH_FZF_SEARCH_TOGGLE_MODE_KEY"':transform:[[ ! $FZF_BORDER_LABEL =~ gh ]] &&
+            echo "change-border-label([mode:  gh] )+transform-query(
+                    echo \{q} > ${TMPDIR:-/tmp}/gh-fzf-search-query-fzf;
+                    cat ${TMPDIR:-/tmp}/gh-fzf-search-query-gh
+                )+rebind(change)+disable-search+reload-sync(
+                    '"$search_cmd"' $FZF_QUERY '"$multiline_chunker"' || true
+                )" ||
+            echo "change-border-label([mode: fzf] )+transform-query(
+                    echo \{q} > ${TMPDIR:-/tmp}/gh-fzf-search-query-gh;
+                    cat ${TMPDIR:-/tmp}/gh-fzf-search-query-fzf
+                )+unbind(change)+enable-search"
+        ' \
+        --bind="$GH_FZF_RELOAD_KEY:execute-silent(
+            rm -f  \${TMPDIR:-/tmp}/gh-fzf-search-query-{gh,fzf}
+        )+transform-query(echo \"$*\")+first+reload-sync:$search_cmd \"$*\"" \
+        --bind="$GH_FZF_OPEN_KEY:execute-silent:$search_open_cmd &" \
+        --bind="$GH_FZF_COPY_KEY:execute-silent:$search_copy_cmd" \
+        --bind="$GH_FZF_HELP_KEY:execute(GH_PAGER='less -p \"^  ### .search\"' gh repo view benelan/gh-fzf)" \
+        --bind="alt-1:execute-silent(
+            echo 100 > ${TMPDIR:-/tmp}/gh-fzf-search-limit
+        )+reload-sync($search_cmd \$FZF_QUERY $multiline_chunker || true)" \
+        --bind="alt-2:execute-silent(
+            echo 200 > ${TMPDIR:-/tmp}/gh-fzf-search-limit
+        )+reload-sync($search_cmd \$FZF_QUERY $multiline_chunker || true)" \
+        --bind="alt-3:execute-silent(
+            echo 300 > ${TMPDIR:-/tmp}/gh-fzf-search-limit
+        )+reload-sync($search_cmd \$FZF_QUERY $multiline_chunker || true)" \
+        --bind="alt-4:execute-silent(
+            echo 400 > ${TMPDIR:-/tmp}/gh-fzf-search-limit
+        )+reload-sync($search_cmd \$FZF_QUERY $multiline_chunker || true)" \
+        --bind="alt-5:execute-silent(
+            echo 500 > ${TMPDIR:-/tmp}/gh-fzf-search-limit
+        )+reload-sync($search_cmd \$FZF_QUERY $multiline_chunker || true)" \
+        --bind="alt-6:execute-silent(
+            echo 600 > ${TMPDIR:-/tmp}/gh-fzf-search-limit
+        )+reload-sync($search_cmd \$FZF_QUERY $multiline_chunker || true)" \
+        --bind="alt-7:execute-silent(
+            echo 700 > ${TMPDIR:-/tmp}/gh-fzf-search-limit
+        )+reload-sync($search_cmd \$FZF_QUERY $multiline_chunker || true)" \
+        --bind="alt-8:execute-silent(
+            echo 800 > ${TMPDIR:-/tmp}/gh-fzf-search-limit
+        )+reload-sync($search_cmd \$FZF_QUERY $multiline_chunker || true)" \
+        --bind="alt-9:execute-silent(
+            echo 900 > ${TMPDIR:-/tmp}/gh-fzf-search-limit
+        )+reload-sync($search_cmd \$FZF_QUERY $multiline_chunker || true)" \
+        </dev/null
+
+    #2}}}
+
+    rm -f ${TMPDIR:-/tmp}/gh-fzf-search-*
+}
+
+# ----------------------------------------------------------------------1}}}
+# COMMAND > UTIL                                                        {{{1
+
+# APPEND A GIVEN FLAG TO EACH ARGUMENT {{{2
+# arg1: the flag to append to the each of the following arguments
+# arg2...n: the values for the flag
+# example: $ flagify --add-label "foo" "bar baz" "etc., etc."
+#          => --add-label="foo" --add-label="bar baz" --add-label="etc., etc."
+flagify() {
+    flag="$1"
+    [ -n "$flag" ] && shift || error "missing argument(s)." \
+        "Usage: gh fzf util flagify <flag> [<value>...]"
+
+    awk -F"  " '{str = sprintf("'"${flag}"'=\"%s\"", $1)}; {print str}' |
+        tr -t '\n' ' '
+}
+
+# SELECT LABELS TO ADD/REMOVE FROM AN ISSUE OR PR {{{2
+# arg1: the type of edit, either "add" or "remove"
+# arg2: the gh command, either "issue" or "pr"
+# arg3: the issue or pr <number>
+select_labels() {
+    [ -n "$3" ] && { [ "$1" = "add" ] || [ "$1" = "remove" ]; } &&
+        { [ "$2" = "pr" ] || [ "$2" = "issue" ]; } ||
+        error "missing argument(s)." \
+            "Usage: gh fzf util modify-labels (add | remove) (issue | pr) <identifer>"
+
+    # increase the limit when selecting labels
+    [ "$GH_FZF_DEFAULT_LIMIT" -lt 500 ] && label_limit="-L 500"
+
+    label_flags="$(
+        gh fzf label $label_limit | flagify "--$1-label"
+    )"
+
+    [ -n "$label_flags" ] && eval "gh $2 edit \"$3\" $label_flags"
+}
+
+# PROMPT FOR A BRANCH NAME {{{2
+# arg1: issue number
+branch_prompt() {
+    [ -z "$1" ] && error "missing argument." \
+        "Usage: gh fzf util branch-prompt <issue-number>"
+
+    issue="${GH_FZF_BRANCH_ADD_ISSUE_NUMBER:+${1}$GH_FZF_BRANCH_ADD_ISSUE_NUMBER}"
+    sanitized_issue=$(tr -d "#'\''" <<<"${issue// /}")
+
+    read -rp "Enter branch name for ${1}: ${GH_FZF_BRANCH_PREFIX}${sanitized_issue}" name </dev/tty >/dev/tty 2>&1
+    echo "${GH_FZF_BRANCH_PREFIX}${sanitized_issue}${name// /-}"
+}
+
+# CREATE/CHECKOUT A BRANCH LINKED TO THE ISSUE {{{2
+# arg1: issue number
+develop_issue() {
+    [ -z "$1" ] && error "missing argument." \
+        "Usage: gh fzf util develop-issue <issue-number>"
+
+    branch="$(gh issue develop --list $1 | tail | cut -f1)"
+
+    if git show-ref --quiet "refs/heads/$branch"; then
+        git checkout "$branch"
+    else
+        name="$(gh fzf util branch-prompt $1)"
+        gh issue develop --checkout ${name:+--name "$name"} $1
+    fi
+}
+
+# COPY URL TO CLIPBOARD {{{2
+# arg1: github command, supports: "issue", "pr", "run", "release", "repo"
+# arg2: item identifier for the command (<number>, <run-id>, etc.)
+copy_url() {
+    [ -z "$2" ] && error "missing argument(s)." \
+        "Usage: gh fzf util copy_url (issue | pr | run | release | repo) <identifier>"
+
+    case $1 in
+        issue | pr | run | release | repo)
+            gh $1 view --json 'url' -q '.url' $2 | $GH_FZF_COPY_CMD
+            ;;
+        *)
+            error "invalid command: \"$1\"" \
+                "Valid commands: issue, pr, run, release, repo"
+            ;;
+    esac
+}
+
+# DESKTOP NOTIFICATION WHEN RUN HAS COMPLETED {{{2
+# arg1: run id
+notify_run_completed() {
+    run_id="$1"
+
+    [ -n "$run_id" ] && shift || error "missing argument." \
+        "Usage: gh fzf util notify-run-completed <run-id>"
+
+    gh run watch --exit-status $run_id || urgency="critical"
+
+    OLDIFS=$IFS
+    IFS=$'\n'
+
+    run_info="$(
+        gh run view $run_id \
+            --json name,headBranch,conclusion,url \
+            --jq .name,.headBranch,.conclusion,.url
+    )"
+
+    set -- $run_info
+    workflow="$1"
+    branch="$2"
+    conclusion="$3"
+    url="$4"
+
+    IFS=$OLDIFS
+
+    title="${workflow:-GitHub Action run concluded}"
+
+    # The `conclusion` field is the run's URL if it is still in progress. This
+    # causes weird notification formatting in an edge case where the watch
+    # process gets killed (e.g., by `killall gh`.)
+    case $conclusion in https://*) conclusion="notification cancelled for run" ;; esac
+
+    body="${conclusion}${branch:+" on '$branch' branch"}"
+
+    if has dunstify; then
+        [ -n "$urgency" ] &&
+            conditional_action="rerun,rerun failed jobs" ||
+            conditional_action="download,download artifacts"
+
+        action_response=$(
+            dunstify "$title" "$body" ${urgency:+-u "$urgency"} \
+                ${GH_FZF_NOTIFY_ICON:+-i "$GH_FZF_NOTIFY_ICON"} -a "gh-fzf" \
+                -A "web,open in browser" -A "log,view logs" -A "$conditional_action"
+        )
+
+        case $action_response in
+            web) gh run view --web $run_id & ;;
+            download) gh run download $run_id ;;
+            rerun)
+                gh run rerun --failed $run_id
+                gh fzf util notify-run-completed $run_id &
+                ;;
+            log)
+                case $TERMINAL in
+                    x-terminal-emulator | xterm | wezterm | kitty | alacritty | \
+                        gnome-terminal | konsole | foot | eterm | st)
+                        $TERMINAL -e sh -c "gh run view --log $run_id"
+                        ;;
+                    *)
+                        tmpfile="$(
+                            mktemp gh-fzf-run-${run_id}_XXX --tmpdir --suffix .log
+                        )"
+                        gh run view --log $run_id >"$tmpfile"
+                        xdg-open "$tmpfile"
+                        ;;
+                esac
+
+                if [ -n "$urgency" ]; then
+                    if has rofi; then
+                        rerun_response="$(
+                            printf "%s\n%s" "yes" "no" | rofi -dmenu -l 2 -i -p \
+                                "Rerun${workflow:+ \"$workflow\"}${branch:+ on \"$branch\" branch}?"
+                        )"
+                    elif has dmenu; then
+                        rerun_response="$(
+                            printf "%s\n%s" "yes" "no" | dmenu -i -p \
+                                "Rerun${workflow:+ \"$workflow\"}${branch:+ on \"$branch\" branch}?"
+                        )"
+                    fi
+
+                    if [ "$rerun_response" = "yes" ]; then
+                        gh run rerun --failed $run_id
+                        gh fzf util notify-run-completed $run_id &
+                    fi
+                fi
+                ;;
+        esac
+    elif has notify-send; then
+        notify-send "$title" "$body${url:+: \n$url}" ${urgency:+-u "$urgency"} \
+            ${GH_FZF_NOTIFY_ICON:+-i "$GH_FZF_NOTIFY_ICON"} -a "gh-fzf"
+    elif has osascript; then
+        osascript -e "display notification \"$body${url:+: \n$url}\" with title \"$title\""
+    else
+        error "notification support not found." \
+            "Supports: dunstify, notify-send, osascript"
+    fi
+}
+
+# PARSE AND CALL UTIL SUBCOMMAND {{{2
+util_cmd() {
+    util="$1"
+    [ -n "$util" ] && shift || error "missing util name"
+
+    case $util in
+        copy-url) copy_url "$@" ;;
+        notify-run-completed) notify_run_completed "$@" >/dev/null 2>&1 </dev/null & ;;
+        branch-prompt) branch_prompt "$@" ;;
+        develop-issue) develop_issue "$@" ;;
+        select-labels) select_labels "$@" ;;
+        *) error "invalid util: \"$util\"" ;;
+    esac
+}
+#2}}}
+
+# ----------------------------------------------------------------------1}}}
+# PARSE ARGUMENTS                                                       {{{1
+
+# PARSE ARGS TO FIND A REPO FLAG {{{2
+find_repo_flag() {
+    args=("$@")
+    for i in $(seq 0 ${#args[@]}); do
+        val=${args[$i]}
+        case $val in
+            -R | --repo)
+                export GH_REPO="${args[$((i + 1))]}"
+                ;;
+            -R=* | --repo=*)
+                export GH_REPO="${val#*=}"
+                ;;
+        esac
+    done
+}
+
+# ENTRY FUNCTION {{{2
+main() {
+    command="$1"
+    [ -n "$command" ] && shift || default_cmd
+
+    find_repo_flag "$@"
+
+    case $command in
+        h | -h | help | --help)
+            help_cmd "$@"
+            ;;
+        i | -i | issue | issues | --issue | --issues)
+            issue_cmd "$@"
+            ;;
+        p | -p | pr | prs | --pr | --prs)
+            pr_cmd "$@"
+            ;;
+        s | -s | search | --search)
+            search_cmd "$@"
+            ;;
+        r | -r | run | runs | --run | --runs)
+            run_cmd "$@"
+            ;;
+        repo | repos | --repo | --repos)
+            repo_cmd "$@"
+            ;;
+        release | releases | --release | --releases)
+            release_cmd "$@"
+            ;;
+        gist | gists | --gist | --gists)
+            gist_cmd "$@"
+            ;;
+        workflow | workflows | --workflow | --workflows)
+            workflow_cmd "$@"
+            ;;
+        label | labels | --label | --labels)
+            label_cmd "$@"
+            ;;
+        milestone | milestones | --milestone | --milestones)
+            milestone_cmd "$@"
+            ;;
+        util | utils | --util | --utils)
+            util_cmd "$@"
+            ;;
+        status)
+            echo "$GH_STATUS"
+            ;;
+        changelog)
+            gh fzf release --repo benelan/gh-fzf
+            ;;
+        upgrade)
+            latest_version=$(gh release view --json tagName --jq .tagName --repo benelan/gh-fzf)
+            if [ "$(version_number "$latest_version")" -gt "$(version_number "$GH_FZF_VERSION")" ]; then
+                gh extension remove benelan/gh-fzf >/dev/null 2>&1 &&
+                    gh extension install benelan/gh-fzf --pin "$latest_version"
+            else
+                echo "You are up to date!"
+            fi
+            ;;
+        v | V | -v | -V | version | --version)
+            printf "%s\n" "$GH_FZF_VERSION"
+            ;;
+        *)
+            error "invalid command: \"$command\""
+            ;;
+    esac
+} #2}}}
+
+main "$@"
