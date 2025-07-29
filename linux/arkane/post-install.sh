@@ -13,6 +13,8 @@ sudo pip install flashfocus --break-system-packages
 # flatpak
 flatpak install --system -y org.freedesktop.Platform.VAAPI.Intel
 
+# install gh extensions
+
 # enable user podman.socket
 systemctl --user enable --now podman.socket
 systemctl enable --now seatd.service

@@ -33,7 +33,7 @@ exec_always ~/.scripts/sway-lid-state-display-management
 exec_always swaymsg input type:touch events disabled
 # set keyboard layout
 exec_always setxkbmap -layout us -variant altgr-intl
-# nwgpanel top bar
+# nwg-panel integration
 exec_always nwg-panel
 
 set $gnome-schema org.gnome.desktop.interface
@@ -253,7 +253,7 @@ mode "resize" {
         bindsym h resize shrink left 5 px or 5 ppt
         bindsym Shift+H resize grow   left 5 px or 5 ppt
 
-        bindsym j resize shrink down 5 px or 5 ppt
+        bindsym j resize shrink down 6 px or 5 ppt
         bindsym Shift+J resize grow   down 5 px or 5 ppt
 
         bindsym k resize shrink up 5 px or 5 ppt
