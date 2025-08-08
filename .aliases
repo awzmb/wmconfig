@@ -52,3 +52,6 @@ alias tfupdate="${HOME}/.scripts/container-tfupdate.sh"
 #alias k9s='podman run --rm -v ${HOME}/.config/k9s:/root/.config/k9s -v ${HOME}/.kube/config:/root/.kube/config -v ${HOME}/.config/gcloud:/root/.config/gcloud --env=KUBECONFIG=/root/.kube/config --env=TERM=$(echo ${TERM}) -it localhost/gcloud-k9s:latest k9s --headless'
 #alias terraform="${HOME}/.scripts/container-terraform.sh"
 #alias terraform-docs="${HOME}/.scripts/container-terraform-docs.sh"
+alias hcloud='podman run --rm -e HCLOUD_TOKEN="$(pass private/heztner-api-key)" docker.io/hetznercloud/cli:latest'
+alias hcloud-upload-image='podman run --rm -e HCLOUD_TOKEN="$(pass private/heztner-api-key)" ghcr.io/apricote/hcloud-upload-image:latest'
+alias butane='podman run --rm --interactive --security-opt label=disable --volume "${PWD}":/workspace --workdir /workspace quay.io/coreos/butane:release'
