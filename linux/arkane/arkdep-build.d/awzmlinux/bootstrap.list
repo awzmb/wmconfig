@@ -1,6 +1,6 @@
 # Arkane Linux generic
 base
-linux
+linux-cachyos
 linux-firmware
 arkane-keyring
 dracut
