@@ -104,11 +104,6 @@ source ~/.zsh/fixes.zsh
 # additional tools
 source ~/.zsh/tools.zsh
 
-# fix for zscaler if .certificates exists in home
-if [ -d "$HOME/.certificates" ]; then
-  export AWS_CA_BUNDLE=$HOME/.certificates/Certificates.pem
-fi
-
 # additional stuff
 if [ "$(uname)" = "Linux" ]; then
   # dont use gui to enter git credentials
