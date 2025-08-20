@@ -1,4 +1,5 @@
 # Basic packages
+linux-cachyos-headers
 apparmor
 arch-install-scripts
 archiso

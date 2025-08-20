@@ -3,7 +3,7 @@ base
 linux-cachyos
 linux-firmware
 arkane-keyring
-dracut
+dracut-cachyos
 
 # Custom image
 amd-ucode
