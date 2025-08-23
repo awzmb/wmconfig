@@ -1,9 +1,11 @@
 # Arkane Linux generic
 base
-linux-cachyos
+#linux-cachyos
 linux-firmware
+linux-zen
 arkane-keyring
-dracut-cachyos
+#dracut-cachyos
+dracut
 
 # Custom image
 amd-ucode

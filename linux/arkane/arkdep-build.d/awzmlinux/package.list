@@ -1,5 +1,4 @@
 # Basic packages
-linux-cachyos-headers
 apparmor
 arch-install-scripts
 archiso
@@ -44,6 +43,8 @@ vulkan-radeon
 wget
 zsh
 zsh-completions
+#linux-cachyos-headers
+linux-zen-headers
 
 # GNOME
 evolution-data-server
@@ -87,9 +88,6 @@ gvfs-wsdd
 ibus-typing-booster
 networkmanager-openconnect
 networkmanager-openvpn
-#noto-fonts
-#noto-fonts-cjk
-#noto-fonts-emoji
 pipewire
 pipewire-alsa
 pipewire-audio
@@ -208,7 +206,6 @@ wl-clip-persist
 wl-clipboard
 yank
 rofi-wayland
-wofi
 dunst
 network-manager-applet
 pavucontrol
@@ -221,10 +218,8 @@ kitty
 
 # Sway packages
 kanshi
-nwg-panel
 nwg-displays
 nwg-look
-nwg-menu
 sway
 sway-contrib
 swayidle
@@ -280,3 +275,7 @@ pipewire-v4l2
 pipewire-session-manager
 pipewire-ffado
 obs-studio
+
+# Networking
+opensnitch
+netowrkmanager-vpnc

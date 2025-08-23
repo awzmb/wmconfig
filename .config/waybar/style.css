@@ -18,8 +18,7 @@
 * {
   border: none;
   border-radius: 0;
-  font-family:
-    TerminessNerdFont, Terminus, Roboto, Helvetica, Arial, sans-serif;
+  font-family: TerminessNerdFont, Terminus, Roboto, sans-serif;
   font-size: 14px;
   min-height: 0;
 }
@@ -32,25 +31,21 @@ window#waybar {
 
 #workspaces button {
   color: @nord4;
-  border-radius: 3px;
-  margin-top: 3px;
-  margin-bottom: 3px;
-  margin-left: 10px;
-  padding: 1px 10px;
+  border-radius: 0px;
+  padding: 0 18px;
   font-weight: normal;
-  background-color: @nord1;
+  background-color: @nord0;
 }
 
 #workspaces button.active,
 #workspaces button.focused {
   color: @nord4;
-  padding: 0 22px;
-  background: @nord3;
+  background: @nord1;
 }
 
 #workspaces button:hover {
   border: none;
-  background: @nord2;
+  background: @nord1;
 }
 
 #mode {
@@ -69,7 +64,8 @@ window#waybar {
 #temperature,
 #backlight,
 #idle_inhibitor,
-#tray {
+#tray,
+#clock {
   background: @nord1;
   border-radius: 3px;
   padding: 0 6px;
@@ -80,10 +76,10 @@ window#waybar {
   color: @nord5;
 }
 
-#clock {
-  background-color: transparent;
-  margin-right: 5px;
-}
+/*#clock {*/
+/*background-color: transparent;*/
+/*margin-right: 5px;*/
+/*}*/
 
 #battery.warning:not(.charging) {
   background: #bf616a;
