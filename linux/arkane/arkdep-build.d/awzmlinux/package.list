@@ -86,8 +86,6 @@ gvfs-nfs
 gvfs-smb
 gvfs-wsdd
 ibus-typing-booster
-networkmanager-openconnect
-networkmanager-openvpn
 pipewire
 pipewire-alsa
 pipewire-audio
@@ -278,4 +276,6 @@ obs-studio
 
 # Networking
 opensnitch
-netowrkmanager-vpnc
+networkmanager-vpnc
+networkmanager-openconnect
+networkmanager-openvpn
