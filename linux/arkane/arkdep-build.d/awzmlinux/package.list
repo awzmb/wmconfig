@@ -162,6 +162,7 @@ broot
 glances
 procs
 curlie
+yq
 
 # Media drivers and extensions
 seatd
