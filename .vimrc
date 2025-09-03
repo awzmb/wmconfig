@@ -124,6 +124,7 @@ let g:coc_global_extensions = [
             \'coc-groovy',
             \'coc-java',
             \'coc-pyright',
+            \'coc-rust-analyzer',
             \'coc-gitignore'
             \]
 

@@ -14,11 +14,9 @@ exec --no-startup-id blueman-applet
 # clipboard
 exec --no-startup-id clipit
 # filter blue light during nighttime
-exec --no-startup-id gammastep -l 52:13
+exec --no-startup-id gammastep-indicator -l 52:13
 # netowrkmanager applet
 exec --no-startup-id nm-applet
-# flash focus window indicator
-exec --no-startup-id flashfocus
 # clipboard
 exec --no-startup-id clipit
 # dunst desktop notifications
@@ -33,6 +31,8 @@ exec_always ~/.scripts/sway-lid-state-display-management
 exec_always swaymsg input type:touch events disabled
 # set keyboard layout
 exec_always setxkbmap -layout us -variant altgr-intl
+# flash focus window indicator
+exec_always --no-startup-id flashfocus
 # nwg-panel integration
 #exec_always nwg-panel
 
@@ -175,8 +175,8 @@ bindsym $mod+F4 exec $term -e neomutt
 bindsym $mod+F1 exec $term -e calcurse
 
 # backlight controls
-bindsym XF86MonBrightnessUp exec light -A 10
-bindsym XF86MonBrightnessDown exec light -U 10
+bindsym XF86MonBrightnessUp exec brightnessctl s 10%+
+bindsym XF86MonBrightnessDown exec brightnessctl s 10%-
 #bindsym $mod+i exec --no-startup-id brightnessctl s 5%+
 #bindsym $mod+o exec --no-startup-id brightnessctl s 5%-
 
@@ -288,9 +288,10 @@ bindsym $mod+r mode "resize"
 # =============================================================================
 
 # volume control (pulseaudio)
-bindsym XF86AudioRaiseVolume exec --no-startup-id pactl -- set-sink-volume @DEFAULT_SINK@ +5%
-bindsym XF86AudioLowerVolume exec --no-startup-id pactl -- set-sink-volume @DEFAULT_SINK@ -5%
-bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle
+bindsym XF86AudioRaiseVolume exec --no-startup-id wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+
+bindsym XF86AudioLowerVolume exec --no-startup-id wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-
+bindsym XF86AudioMute exec --no-startup-id wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
+bindsym XF86AudioMicMute exec --no-startup-id wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle
 
 # volume control (alsa)
 #bindsym XF86AudioRaiseVolume exec --no-startup-id amixer -q set Master 2dB+ unmute
@@ -298,8 +299,12 @@ bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ to
 #bindsym XF86AudioMute exec --no-startup-id amixer -q set Master toggle
 
 # playerctl controls
-bindsym $mod+Shift+n exec --no-startup-id playerctl next
+bindsym XF86AudioNext exec --no-startup-id playerctl next
+bindsym XF86AudioPrev exec --no-startup-id playerctl previous
+bindsym XF86AudioPlay exec --no-startup-id playerctl play-pause
+bindsym XF86AudioPause exec --no-startup-id playerctl pause
 bindsym $mod+Shift+p exec --no-startup-id playerctl play-pause
+bindsym $mod+Shift+n exec --no-startup-id playerctl next
 
 # start scrot for screenshots
 bindsym $mod+Print --release exec --no-startup-id flatpak run org.flameshot.Flameshot screen
