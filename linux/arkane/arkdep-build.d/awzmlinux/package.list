@@ -163,6 +163,7 @@ glances
 procs
 curlie
 yq
+luacheck
 
 # Media drivers and extensions
 seatd
