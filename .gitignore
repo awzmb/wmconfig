@@ -22,3 +22,6 @@ linux/arkane/target
 
 # ignore current hardware configuration file in nixos setup
 .config/nixpkgs/nixos/hardware-configuration.nix
+
+# ignore lazuvim cache
+.config/nvim/lazy-lock.json

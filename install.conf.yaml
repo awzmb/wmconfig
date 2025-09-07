@@ -50,7 +50,7 @@
     ~/.config/newsboat: .config/newsboat
     ~/.config/k9s: .config/k9s
     ~/.config/broot: .config/broot
-    ~/.config/nvim/init.vim: .vimrc
+    ~/.config/nvim: .config/nvim
     ~/.dockerfiles: .dockerfiles
     ~/.config/vdirsyncer:
       path: .config/vdirsyncer
