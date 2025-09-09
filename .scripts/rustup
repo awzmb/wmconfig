@@ -1,0 +1,9 @@
+#!/bin/bash
+podman run --rm --interactive \
+  --env CARGO_HOME=/cargo \
+  --env RUSTUP_HOME=/rustup \
+  --volume $HOME/.cargo:/cargo \
+  --volume $HOME/.rustup:/rustup \
+  --volume "${PWD}":/workspace \
+  --workdir /workspace \
+  docker.io/library/rust rustup $@

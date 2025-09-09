@@ -55,5 +55,3 @@ alias tfupdate="${HOME}/.scripts/container-tfupdate.sh"
 alias hcloud='podman run --rm -e HCLOUD_TOKEN="$(pass private/heztner-api-key)" docker.io/hetznercloud/cli:latest'
 alias hcloud-upload-image='podman run --rm -e HCLOUD_TOKEN="$(pass private/heztner-api-key)" ghcr.io/apricote/hcloud-upload-image:latest'
 alias butane='podman run --rm --interactive --security-opt label=disable --volume "${PWD}":/workspace --workdir /workspace quay.io/coreos/butane:release'
-alias cargo='podman run --rm --interactive --env CARGO_HOME=/cargo --env RUSTUP_HOME=/rustup --volume $HOME/.cargo:/cargo --volume $HOME/.rustup:/rustup --volume "${PWD}":/workspace --workdir /workspace docker.io/library/rust cargo'
-alias rustup='podman run --rm --interactive --env CARGO_HOME=/cargo --env RUSTUP_HOME=/rustup --volume $HOME/.cargo:/cargo --volume $HOME/.rustup:/rustup --volume "${PWD}":/workspace --workdir /workspace docker.io/library/rust rustup'

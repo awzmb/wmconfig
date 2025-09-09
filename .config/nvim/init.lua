@@ -136,7 +136,6 @@ require("lazy").setup({
       "L3MON4D3/LuaSnip",
       "saadparwaiz1/cmp_luasnip",
     },
-    -- THIS IS THE NEW, CORRECTED CONFIG BLOCK YOU PROVIDED:
     config = function()
       local cmp = require("cmp")
       local luasnip = require("luasnip")
@@ -163,6 +162,7 @@ require("lazy").setup({
         "luacheck",
         "luaformatter",
         "kube-linter",
+        "hclfmt",
       }
 
       -- Configure Mason to install ALL packages (LSPs + other tools)
@@ -175,7 +175,8 @@ require("lazy").setup({
       local mason_pkg_map = {
         ["lua_ls"] = "lua-language-server",
         ["terraformls"] = "terraform-ls",
-        ["helm_ls"] = "helm-ls"
+        ["helm_ls"] = "helm-ls",
+        ["rust_analyzer"] = "rust_analyzer",
       }
       for i, pkg in ipairs(all_packages) do
         if mason_pkg_map[pkg] then
@@ -240,7 +241,7 @@ require("lazy").setup({
     "stevearc/conform.nvim", -- Formatting plugin (replaces coc-prettier)
     opts = {
       formatters_by_ft = {
-        lua = { "stylua", "luaformatter" }, -- <-- ADDED luaformatter
+        lua = { "stylua", "luaformatter" },
         python = { "isort", "black" },
         javascript = { { "prettierd", "prettier" } },
         json = { "prettier" },
@@ -248,7 +249,7 @@ require("lazy").setup({
       format_on_save = { timeout_ms = 500, lsp_fallback = true },
     },
   },
-  -- ADDED LINTER PLUGIN to use tflint, tfsec, etc.
+  -- Linting tflint, tfsec, etc.
   {
     "mfussenegger/nvim-lint",
     event = { "BufReadPost", "BufWritePost", "InsertLeave" },
@@ -319,6 +320,15 @@ require("lazy").setup({
   -- ===================================
   { "tpope/vim-fugitive" },
   { "lewis6991/gitsigns.nvim", config = function() require("gitsigns").setup() end },
+  {
+    "f-person/git-blame.nvim",
+    opts = {
+      enabled = true,
+      message_template = " <summary> • <date> • <author> • <<sha>>",
+      date_format = "%m-%d-%Y %H:%M:%S",
+      virtual_text_column = 1,
+    },
+  },
 
   -- ===================================
   -- Utility & Language Support
@@ -397,11 +407,18 @@ local function open_neotree_on_startup()
     require("neo-tree.command").execute({ toggle = true, dir = vim.fn.getcwd() })
   end
 end
+
 vim.api.nvim_create_autocmd({ "VimEnter" }, {
   pattern = "*",
   once = true,
   callback = function()
-    if vim.fn.argc() > 0 then
+    if vim.fn.argc() == 0 then
+      -- No arguments were given, so open the tree in the current directory
+      vim.schedule(function()
+        require("neo-tree.command").execute({ toggle = true, dir = vim.fn.getcwd() })
+      end)
+    else
+      -- Arguments WERE given. Run your original check.
       vim.schedule(open_neotree_on_startup)
     end
   end,

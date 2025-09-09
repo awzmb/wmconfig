@@ -134,7 +134,6 @@ calc
 eza
 bat
 bat-extras
-jdk-openjdk
 git
 fd
 npm
@@ -163,7 +162,12 @@ glances
 procs
 curlie
 yq
+
+# Development
+jdk-openjdk
 luacheck
+rust-analyzer
+cargo
 
 # Media drivers and extensions
 seatd
