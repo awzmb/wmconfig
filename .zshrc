@@ -118,10 +118,10 @@ fi
 # trigger completion initialization
 compinit
 
-# openjdk 11
-export PATH="${PATH}:${HOME}/.jdk/openjdk-11/bin"
-export JAVA_HOME="${HOME}/.jdk/openjdk-11"
-#export JAVA_HOME="/usr/lib/jvm/java"
+# openjdk
+# export PATH="${PATH}:${HOME}/.jdk/openjdk-11/bin"
+# export JAVA_HOME="${HOME}/.jdk/openjdk-11"
+export JAVA_HOME="/usr/lib/jvm/default"
 
 #
 export NVM_DIR="$HOME/.nvm"
