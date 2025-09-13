@@ -423,3 +423,47 @@ vim.api.nvim_create_autocmd({ "VimEnter" }, {
     end
   end,
 })
+
+-- Disable italics in Neo-tree (Corrected version that preserves colors)
+local noItalicsNeoTreeGroup = vim.api.nvim_create_augroup("NoItalicsNeoTree", { clear = true })
+
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "neo-tree",
+  group = noItalicsNeoTreeGroup,
+  desc = "Disable italics and preserve colors in NeoTree window",
+  callback = function()
+    local highlights_to_disable_italics = {
+      "NeoTreeDirectoryName",
+      "NeoTreeDirectoryIcon",
+      "NeoTreeSymbolicLinkTarget",
+      "NeoTreeRootName",
+      "NeoTreeGitAdded",
+      "NeoTreeGitDeleted",
+      "NeoTreeGitUnstaged",
+      "NeoTreeGitModified",
+      "NeoTreeGitConflict",
+      "NeoTreeGitIgnored",
+      "NeoTreeGitUntracked",
+      "NeoTreeGitStaged",
+      "NeoTreeTitleBar",
+      "NeoTreeFileName",
+    }
+
+    for _, group in ipairs(highlights_to_disable_italics) do
+      -- We must get the current highlight properties first, otherwise we lose the colors.
+      -- The 'true' argument resolves all links (e.g., gets the colors from 'Directory').
+      -- We use pcall in case a specific highlight group doesn't exist.
+      local success, hl_info = pcall(vim.api.nvim_get_hl_by_name, group, true)
+
+      if success and hl_info then
+        -- hl_info is now a table with all existing properties like { fg = 'blue', ... }
+        -- We just modify the italic key.
+        hl_info.italic = false
+
+        -- Now, we set the highlight using the *full* definition,
+        -- which preserves all the original colors.
+        vim.api.nvim_set_hl(0, group, hl_info)
+      end
+    end
+  end,
+})

@@ -133,11 +133,11 @@ input type:pointer {
 
 # idle settings
 exec swayidle -w \
-  timeout 300 "$locker" \
-  timeout 600 'swaymsg "output * dpms off"' \
-  resume 'swaymsg "output * dpms on"' \
-  before-sleep "$locker"
-
+  timeout 300 "$locker"
+  # timeout 600 'swaymsg "output * dpms off"' \
+  # resume 'swaymsg "output * dpms on"' \
+  # before-sleep "$locker"
+  #
 # map escape to capslock
 input * xkb_options caps:escape
 
