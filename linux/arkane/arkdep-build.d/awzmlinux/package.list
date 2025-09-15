@@ -149,7 +149,7 @@ wireguard-tools
 python-pip
 python-pipx
 python-pynvim
-gnu-netcat
+netcat
 termshark
 jwt-cli
 zip
