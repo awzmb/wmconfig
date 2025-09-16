@@ -27,3 +27,6 @@ Undo (make sure you re-enable your Virtual Display as well):
 /usr/bin/kscreen-doctor output.DP-2.enable
 Test on Moonlight to verify everything works as expected.
 (citation: https://www.reddit.com/r/linux_gaming/comments/199ylqz/streaming_with_sunshine_from_virtual_screens/)
+
+# force custom resolution
+3. Modify "video=HDMI-A-1:e" to contain the enforced resolution "video=HDMI-A-1:2560x1080e" 
