@@ -162,6 +162,7 @@ glances
 procs
 curlie
 yq
+talosctl
 
 # Development
 jdk-openjdk

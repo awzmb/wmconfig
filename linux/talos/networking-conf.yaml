@@ -1,0 +1,20 @@
+machine:
+  network:
+    interfaces:
+      # WAN interface: dhcp client
+      - interface: eth0
+        dhcp: true
+        vip:
+          ip: dhcp
+
+      # LAN interface: static IP
+      - interface: eth1
+        dhcp: false
+        addresses:
+          - 192.168.200.1/24
+
+  # Enable IP forwarding
+  sysctls:
+    net.ipv4.ip_forward: "1"
+    # K8s traffic forwarding
+    net.ipv4.conf.all.forwarding: "1"
