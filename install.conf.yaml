@@ -18,6 +18,7 @@
     - ~/.config/gtk-3.0
     - ~/.config/gtk-4.0
     - ~/.config/aichat
+    - ~/.config/gemini
     - ~/.terraform.d/cache
     - ~/.terraform.d/plugin-cache
     - ~/.bin
