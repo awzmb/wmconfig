@@ -121,7 +121,6 @@ foot
 vifm
 hub
 github-cli
-act
 git-delta
 git-lfs
 git-crypt
@@ -163,6 +162,7 @@ procs
 curlie
 yq
 talosctl
+age
 
 # Development
 jdk-openjdk
