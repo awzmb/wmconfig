@@ -4,7 +4,7 @@ WORKDIR /app
 
 # Install gemini-cli using npm. This installs it and all its
 # dependencies into /app/node_modules
-RUN npm install @google/gemini-cli@latest
+RUN npm install @google/gemini-cli@v0.6.1
 
 
 FROM gcr.io/distroless/nodejs24-debian12

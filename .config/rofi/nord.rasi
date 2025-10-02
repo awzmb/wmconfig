@@ -1,0 +1,144 @@
+configuration {
+    modi:                    "drun,run,window";
+    show-icons:              true;
+    display-drun:            "  Applications";
+    display-run:             " Run";
+    display-window:          " Windows";
+    drun-display-format:     "{name}";
+    font:                    "TerminessNerdFont 12";
+}
+
+* {
+    /* Nord Color Palette */
+    nord0:     #2e3440; /* Polar Night */
+    nord1:     #3b4252;
+    nord2:     #434c5e;
+    nord3:     #4c566a;
+
+    nord4:     #d8dee9; /* Snow Storm */
+    nord5:     #e5e9f0;
+    nord6:     #eceff4;
+
+    nord7:     #8fbcbb; /* Frost */
+    nord8:     #88c0d0;
+    nord9:     #81a1c1;
+    nord10:    #5e81ac;
+
+    nord11:    #bf616a; /* Aurora */
+    nord12:    #d08770;
+    nord13:    #ebcb8b;
+    nord14:    #a3be8c;
+    nord15:    #b48ead;
+
+    /* Theme-specific variables */
+    background:             @nord0;
+    background-alt:         @nord1;
+    foreground:             @nord4;
+    selected:               @nord3;
+    active:                 @nord8;
+    urgent:                 @nord11;
+
+    background-color:       transparent;
+    text-color:             @foreground;
+}
+
+window {
+    background-color:       rgba(46, 52, 64, 0.95); /* nord0 with 95% opacity */
+    border:                 0px;
+    border-color:           @nord10;
+    border-radius:          0px;
+    width:                  500px;
+    padding:                16px;
+    location:               center;
+    anchor:                 center;
+}
+
+mainbox {
+    border:  0;
+    padding: 0;
+}
+
+message {
+    border:       0px 0px 0px;
+    border-color: @selected;
+    padding:      5px;
+}
+
+textbox {
+    text-color: @foreground;
+}
+
+listview {
+    fixed-height: 0;
+    border:       0px;
+    padding:      8px 0px 0px;
+    spacing:      4px;
+    scrollbar:    false;
+    columns:      1;
+}
+
+element {
+    border:  0;
+    padding: 8px;
+    border-radius: 0px;
+}
+
+element-text {
+    background-color: inherit;
+    text-color:       inherit;
+}
+
+element.normal.normal {
+    background-color: transparent;
+    text-color:       @foreground;
+}
+
+element.normal.urgent {
+    background-color: @urgent;
+    text-color:       @nord6;
+}
+
+element.normal.active {
+    background-color: @active;
+    text-color:       @nord0;
+}
+
+element.selected.normal {
+    background-color: @selected;
+    text-color:       @nord6;
+}
+
+element.selected.urgent {
+    background-color: @urgent;
+    text-color:       @nord6;
+}
+
+element.selected.active {
+    background-color: @active;
+    text-color:       @nord0;
+}
+
+element.alternate.normal {
+    background-color: transparent;
+    text-color:       @foreground;
+}
+
+
+inputbar {
+    spacing:    0;
+    text-color: @foreground;
+    padding:    8px;
+    background-color: @nord1;
+    border-radius: 0px;
+    children:   [ prompt, entry ];
+}
+
+prompt {
+    spacing:    0;
+    text-color: @nord8;
+    padding: 0 8px 0 0;
+}
+
+entry {
+    text-color: @foreground;
+}

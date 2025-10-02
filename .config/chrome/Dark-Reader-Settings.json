@@ -50,7 +50,9 @@
         "darkColorScheme": "Default",
         "immediateModify": false
       },
-      "url": ["*.officeapps.live.com"]
+      "url": [
+        "*.officeapps.live.com"
+      ]
     },
     {
       "builtIn": true,
@@ -76,7 +78,9 @@
         "darkColorScheme": "Default",
         "immediateModify": false
       },
-      "url": ["*.sharepoint.com"]
+      "url": [
+        "*.sharepoint.com"
+      ]
     },
     {
       "builtIn": true,
@@ -102,7 +106,9 @@
         "darkColorScheme": "Default",
         "immediateModify": false
       },
-      "url": ["docs.google.com"]
+      "url": [
+        "docs.google.com"
+      ]
     },
     {
       "builtIn": true,
@@ -128,7 +134,9 @@
         "darkColorScheme": "Default",
         "immediateModify": false
       },
-      "url": ["onedrive.live.com"]
+      "url": [
+        "onedrive.live.com"
+      ]
     },
     {
       "builtIn": true,
@@ -154,7 +162,37 @@
         "darkColorScheme": "Default",
         "immediateModify": false
       },
-      "url": ["duckduckgo.com"]
+      "url": [
+        "duckduckgo.com"
+      ]
+    },
+    {
+      "builtIn": true,
+      "theme": {
+        "mode": 1,
+        "brightness": 100,
+        "contrast": 100,
+        "grayscale": 0,
+        "sepia": 0,
+        "useFont": false,
+        "fontFamily": "Open Sans",
+        "textStroke": 0,
+        "engine": "cssFilter",
+        "stylesheet": "",
+        "darkSchemeBackgroundColor": "#242933",
+        "darkSchemeTextColor": "#d8dee9",
+        "lightSchemeBackgroundColor": "#4c566a",
+        "lightSchemeTextColor": "#242933",
+        "scrollbarColor": "#242933",
+        "selectionColor": "auto",
+        "styleSystemControls": false,
+        "lightColorScheme": "Default",
+        "darkColorScheme": "Default",
+        "immediateModify": false
+      },
+      "url": [
+        "open.spotify.com"
+      ]
     }
   ],
   "enabledByDefault": true,
@@ -178,10 +216,10 @@
   },
   "previewNewDesign": false,
   "previewNewestDesign": false,
-  "enableForPDF": true,
-  "enableForProtectedPages": false,
+  "enableForPDF": false,
+  "enableForProtectedPages": true,
   "enableContextMenus": false,
-  "detectDarkTheme": true,
+  "detectDarkTheme": false,
   "installation": {
     "date": 1755845621933,
     "reason": "install",

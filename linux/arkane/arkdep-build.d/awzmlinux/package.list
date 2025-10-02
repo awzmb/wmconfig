@@ -287,3 +287,4 @@ networkmanager-vpnc
 networkmanager-openconnect
 networkmanager-openvpn
 libxml2-legacy
+xmlstarlet # i hate Cisco with a passion

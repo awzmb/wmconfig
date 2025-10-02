@@ -1,0 +1,47 @@
+#!/bin/bash
+
+set -e
+
+# 1. Check for container runtime
+if command -v podman &> /dev/null;
+then
+    CONTAINER_RUNTIME="podman"
+elif command -v docker &> /dev/null;
+then
+    CONTAINER_RUNTIME="docker"
+else
+    echo "Error: Neither podman nor docker found. Please install one of them."
+    exit 1
+fi
+
+echo "Using $CONTAINER_RUNTIME as container runtime."
+
+# 3. Get tokens
+echo "Fetching GITHUB_TOKEN..."
+GITHUB_TOKEN=$(gh auth token)
+if [ -z "$GITHUB_TOKEN" ]; then
+    echo "Error: Failed to get GITHUB_TOKEN. Make sure you are logged in with 'gh auth login'."
+    exit 1
+fi
+
+echo "Fetching GCP_ACCESS_TOKEN..."
+GCP_ACCESS_TOKEN=$(gcloud auth print-access-token)
+if [ -z "$GCP_ACCESS_TOKEN" ]; then
+    echo "Error: Failed to get GCP_ACCESS_TOKEN. Make sure you are logged in with 'gcloud auth login'."
+    exit 1
+fi
+
+# 4. Get repository name
+echo "Getting repository name from git..."
+REPOSITORY=$(gh repo view --json nameWithOwner --jq .nameWithOwner)
+if [ -z "$REPOSITORY" ]; then
+    echo "Error: Failed to get repository name. Make sure you are in a git repository with a remote."
+    exit 1
+fi
+
+echo "Starting container for repository: $REPOSITORY"
+$CONTAINER_RUNTIME run -it --rm \
+    -e GITHUB_TOKEN="$GITHUB_TOKEN" \
+    -e GCP_ACCESS_TOKEN="$GCP_ACCESS_TOKEN" \
+    -e REPOSITORY="$REPOSITORY" \
+    local-renovate
