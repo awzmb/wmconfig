@@ -1,0 +1,26 @@
+{
+  "security": {
+    "auth": {
+      "selectedType": "oauth-personal"
+    }
+  },
+  "ui": {
+    "theme": "Atom One",
+    "hideWindowTitle": false,
+    "hideTips": true,
+    "hideBanner": true,
+    "hideFooter": true,
+    "showLineNumbers": true
+  },
+  "privacy": {
+    "usageStatisticsEnabled": false
+  },
+  "general": {
+    "vimMode": true,
+    "disableAutoUpdate": true,
+    "disableUpdateNag": true,
+    "checkpointing": {
+      "enabled": true
+    }
+  }
+}

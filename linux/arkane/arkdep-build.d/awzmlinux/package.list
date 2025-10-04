@@ -234,7 +234,8 @@ swaybg
 waybar
 wlr-randr
 wlr-protocols
-xdg-desktop-portal-wlr
+# xdg-desktop-portal-wlr
+xdg-desktop-portal-wlr-git
 
 # Hyprland
 hyprutils
@@ -280,6 +281,7 @@ pipewire-v4l2
 pipewire-session-manager
 pipewire-ffado
 obs-studio
+wlrobs-hg
 
 # Networking
 opensnitch

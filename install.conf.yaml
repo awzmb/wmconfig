@@ -52,7 +52,6 @@
     ~/.config/k9s: .config/k9s
     ~/.config/broot: .config/broot
     ~/.config/nvim: .config/nvim
-    ~/.dockerfiles: .dockerfiles
     ~/.config/vdirsyncer:
       path: .config/vdirsyncer
     ~/.config/kanshi:
@@ -137,8 +136,9 @@
       if: "[ `uname` = Linux ]"
       path: .config/Code/User/keybindings.json
     ~/.config/alacritty/alacritty.toml:
-      if: "[ `uname` = Linux ]"
       path: .config/alacritty/alacritty.toml
+    ~/.config/gemini/settings.json:
+      path: .config/gemini/settings.json
     ~/.config/wofi:
       if: "[ `uname` = Linux ]"
       path: .config/wofi
