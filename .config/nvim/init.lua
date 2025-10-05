@@ -279,7 +279,7 @@ require("lazy").setup({
         ["lua_ls"] = "lua-language-server",
         ["terraformls"] = "terraform-ls",
         ["helm_ls"] = "helm-ls",
-        ["rust_analyzer"] = "rust_analyzer",
+        ["rust_analyzer"] = "rust-analyzer",
       }
       for i, pkg in ipairs(all_packages) do
         if mason_pkg_map[pkg] then
@@ -489,6 +489,15 @@ require("lazy").setup({
   { "jasonccox/vim-wayland-clipboard" },
   { 'norcalli/nvim-colorizer.lua',    config = function() require 'colorizer'.setup() end },
 })
+
+-- =============================================================================
+-- USER COMMANDS
+-- =============================================================================
+
+-- Mason Install All command (to install all LSP servers and tools in container)
+vim.api.nvim_create_user_command("MasonInstallAll", function()
+  vim.cmd("MasonInstall " .. table.concat(ensure_installed, " "))
+end, {})
 
 -- =============================================================================
 -- AUTOCOMMANDS

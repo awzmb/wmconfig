@@ -1,13 +1,36 @@
 #!/bin/bash
 
 IMAGE_NAME="localhost/neovim:latest"
+VOLUME_NAME="neovim_home"
+USERNAME=$(whoami)
+USER_ID=$(id -u)
+GROUP_ID=$(id -g)
 
+# Check if the podman volume exists.
+if ! podman volume exists "${VOLUME_NAME}" &> /dev/null; then
+  echo "Creating persistent podman volume: ${VOLUME_NAME}"
+  podman volume create "${VOLUME_NAME}" > /dev/null
+
+  # One-time initialization of the volume's permissions.
+  # We run a temporary container as root to chown the volume's contents
+  # to the current user's UID/GID.
+  echo "Initializing volume permissions for user ${USER_ID}:${GROUP_ID}..."
+  podman run --rm \
+    --user root \
+    --volume "${VOLUME_NAME}:/home/${USERNAME}:Z" \
+    "${IMAGE_NAME}" \
+    chown -R "${USER_ID}:${GROUP_ID}" /home/${USERNAME}
+fi
+
+# The main run command
+# NOTE: this assumes that the host is using Wayland for wl-clipboard support
 podman run --rm -it \
-  --user "$(id -u):$(id -g)" \
-  --volume "${HOME}/.config/nvim:/home/dev/.config/nvim:Z" \
-  --volume "${XDG_DATA_HOME:-$HOME/.local/share}/nvim:/home/dev/.local/share/nvim:Z" \
-  --volume "${XDG_CACHE_HOME:-$HOME/.cache}/nvim:/home/dev/.cache/nvim:Z" \
-  --volume "${XDG_STATE_HOME:-$HOME/.local/state}/nvim:/home/dev/.local/state/nvim:Z" \
+  --env WAYLAND_DISPLAY \
+  --env XDG_RUNTIME_DIR \
+  --env XDG_SESSION_TYPE=wayland \
+  --volume "${XDG_RUNTIME_DIR}/${WAYLAND_DISPLAY}:${XDG_RUNTIME_DIR}/${WAYLAND_DISPLAY}:rw" \
+  --user "${USER_ID}:${GROUP_ID}" \
+  --volume "${VOLUME_NAME}:/home/${USERNAME}:Z" \
   --volume "${PWD}:/workspace:Z" \
   --workdir /workspace \
-  "${IMAGE_NAME}" "$@"
+ "${IMAGE_NAME}" "$@"
