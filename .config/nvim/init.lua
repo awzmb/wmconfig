@@ -61,6 +61,56 @@ vim.opt.completeopt = { "menuone", "noselect", "noinsert" }
 vim.opt.clipboard = "unnamedplus"
 
 -- =============================================================================
+-- MASON PACKAGE LISTS
+-- =============================================================================
+
+-- List of language servers with the CORRECT lspconfig names
+local servers = {
+  "pyright",
+  "gopls",
+  "rust_analyzer",
+  "terraformls",
+  "lua_ls",
+  "yamlls",
+  "dockerls",
+  "jsonls",
+  "bashls",
+  "helm_ls",
+}
+
+-- List of other tools (linters, formatters, etc.)
+local linters = {
+  "tflint",
+  "tfsec",
+  "luacheck",
+  "luaformatter",
+  "kube-linter",
+  "hclfmt",
+}
+
+-- This logic correctly maps the lspconfig name (e.g., "lua_ls")
+-- to the mason package name (e.g., "lua-language-server") for installation.
+local mason_pkg_map = {
+  ["lua_ls"] = "lua-language-server",
+  ["terraformls"] = "terraform-ls",
+  ["helm_ls"] = "helm-ls",
+  ["rust_analyzer"] = "rust-analyzer",
+}
+
+-- Create the final list of packages for Mason to install.
+-- We create a new table to avoid modifying the original `servers` and `linters` tables.
+local ensure_installed = {}
+for _, pkg in ipairs(servers) do table.insert(ensure_installed, pkg) end
+for _, pkg in ipairs(linters) do table.insert(ensure_installed, pkg) end
+
+-- Apply the package name mapping.
+for i, pkg in ipairs(ensure_installed) do
+  if mason_pkg_map[pkg] then
+    ensure_installed[i] = mason_pkg_map[pkg]
+  end
+end
+
+-- =============================================================================
 -- KEYBINDINGS
 -- =============================================================================
 local keymap = vim.keymap.set
@@ -244,56 +294,18 @@ require("lazy").setup({
       local luasnip = require("luasnip")
       local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
-      -- List of language servers with the CORRECT lspconfig names
-      local servers = {
-        "pyright",
-        "gopls",
-        "rust_analyzer",
-        "terraformls",
-        "lua_ls",
-        "yamlls",
-        "dockerls",
-        "jsonls",
-        "bashls",
-        "helm_ls",
-      }
-
-      -- List of other tools (linters, formatters, etc.)
-      local linter = {
-        "tflint",
-        "tfsec",
-        "luacheck",
-        "luaformatter",
-        "kube-linter",
-        "hclfmt",
-      }
-
-      -- Configure Mason to install ALL packages (LSPs + other tools)
-      local all_packages = {}
-      for _, pkg in ipairs(servers) do table.insert(all_packages, pkg) end
-      for _, pkg in ipairs(linter) do table.insert(all_packages, pkg) end
-
-      -- This logic correctly maps the lspconfig name (e.g., "lua_ls")
-      -- to the mason package name (e.g., "lua-language-server") for installation.
-      local mason_pkg_map = {
-        ["lua_ls"] = "lua-language-server",
-        ["terraformls"] = "terraform-ls",
-        ["helm_ls"] = "helm-ls",
-        ["rust_analyzer"] = "rust-analyzer",
-      }
-      for i, pkg in ipairs(all_packages) do
-        if mason_pkg_map[pkg] then
-          all_packages[i] = mason_pkg_map[pkg]
-        end
-      end
+      -- NOTE: The package lists (`servers`, `linters`, `ensure_installed`) are now defined globally at the top of this file.
+      -- This allows the `MasonInstallAll` command to access them.
 
       require("mason").setup({
-        ensure_installed = all_packages
+        -- `ensure_installed` is the list of mapped package names for Mason.
+        ensure_installed = ensure_installed
       })
 
       -- Configure mason-lspconfig to ONLY set up the Language Servers
       require("mason-lspconfig").setup({
-        ensure_installed = servers, -- This MUST be the list with the lspconfig names
+        -- This MUST be the `servers` list with the original lspconfig names.
+        ensure_installed = servers,
         handlers = {
           function(server_name)
             require("lspconfig")[server_name].setup({
