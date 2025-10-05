@@ -1,10 +1,13 @@
 #!/bin/bash
-  # --user "$(id -u):$(id -g)" \
-podman run --rm -it --interactive \
-  --volume ${HOME}/.config/nvim:/root/.config/nvim \
-  --volume ${HOME}/.vim:/root/.vim \
-  --volume ${XDG_CACHE_HOME:-$HOME/.cache}/nvim:/root/.cache/nvim \
-  --volume ${XDG_STATE_HOME:-$HOME/.local/state}/nvim:/root/.local/state/nvim \
-  --volume "${PWD}":/workspace \
+
+IMAGE_NAME="localhost/neovim:latest"
+
+podman run --rm -it \
+  --user "$(id -u):$(id -g)" \
+  --volume "${HOME}/.config/nvim:/home/dev/.config/nvim:Z" \
+  --volume "${XDG_DATA_HOME:-$HOME/.local/share}/nvim:/home/dev/.local/share/nvim:Z" \
+  --volume "${XDG_CACHE_HOME:-$HOME/.cache}/nvim:/home/dev/.cache/nvim:Z" \
+  --volume "${XDG_STATE_HOME:-$HOME/.local/state}/nvim:/home/dev/.local/state/nvim:Z" \
+  --volume "${PWD}:/workspace:Z" \
   --workdir /workspace \
-  localhost/neovim:latest
+  "${IMAGE_NAME}" "$@"

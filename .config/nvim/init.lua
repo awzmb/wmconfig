@@ -122,6 +122,109 @@ require("lazy").setup({
   },
 
   -- ===================================
+  -- Devcontainers
+  -- ===================================
+  {
+    "amitds1997/remote-nvim.nvim",
+    -- All your previous configuration now goes inside the 'opts' table
+    opts = {
+      -- configuration for devpod connections
+      devpod = {
+        binary = "devpod",
+        docker_binary = "podman",
+        ---@diagnostic disable-next-line:param-type-mismatch
+        ssh_config_path = vim.fn.stdpath("data") .. "/remote-nvim/ssh_config", -- Corrected path using plugin name
+        search_style = "current_dir_only",                                     -- How should devcontainers be searched
+        -- for dotfiles, see https://devpod.sh/docs/developing-in-workspaces/dotfiles-in-a-workspace for more information
+        dotfiles = {
+          -- path to your dotfiles which should be copied into devcontainers
+          path = "${HOME}/.cfg",
+          -- install script that should be called to install your dotfiles
+          install_script = "install",
+        },
+        gpg_agent_forwarding = false,    -- Should GPG agent be forwarded over the network
+        container_list = "running_only", -- How should docker list containers ("running_only" or "all")
+      },
+
+      -- modify the ui for the plugin's progress viewer.
+      progress_view = {
+        type = "popup",
+      },
+
+      -- offline mode configuration. for more details, see the "offline mode" section below.
+      offline_mode = {
+        enabled = false,
+        no_github = false,
+        -- what path should be looked at to find locally available releases
+        cache_dir = vim.fn.stdpath("cache") .. "/remote-nvim/version_cache", -- Corrected path
+      },
+
+      -- remote configuration
+      remote = {
+        app_name = "nvim",
+        -- list of directories that should be copied over
+        copy_dirs = {
+          -- what to copy to remote's neovim config directory
+          config = {
+            -- path from where data has to be copied
+            base = vim.fn.stdpath("config"),
+            -- directories that should be copied over. "*" means all directories. to specify a subset,
+            -- use a list like {"lazy", "mason"} where "lazy", "mason" are subdirectories
+            dirs = "*",
+            -- under path specified in `base`.
+            compression = {
+              -- should compression be enabled or not
+              enabled = true,
+              -- any additional options that should be used for compression. any argument that
+              -- is passed to `tar` (for compression) can be passed here as separate elements.
+              additional_opts = {}
+            },
+          },
+          -- what to copy to remote's neovim data directory
+          data = {
+            base = vim.fn.stdpath("data"),
+            dirs = {},
+            compression = {
+              enabled = true,
+            },
+          },
+          -- what to copy to remote's neovim cache directory
+          cache = {
+            base = vim.fn.stdpath("cache"),
+            dirs = {},
+            compression = {
+              enabled = true,
+            },
+          },
+          -- what to copy to remote's neovim state directory
+          state = {
+            base = vim.fn.stdpath("state"),
+            dirs = {},
+            compression = {
+              enabled = true,
+            },
+          },
+        },
+      },
+
+      -- you can supply your own callback that should be called to create the local client.
+      -- this is the default implementation.
+      -- two arguments are passed to the callback:
+      -- port: local port at which the remote server is available
+      -- workspace_config: workspace configuration for the host. for all the properties available,
+      -- see https://github.com/amitds1997/remote-nvim.nvim/blob/main/lua/remote-nvim/providers/provider.lua#l4
+      -- a sample implementation using wezterm tab is at: https://github.com/amitds1997/remote-nvim.nvim/wiki/configuration-recipes
+      client_callback = function(port, _)
+        require("remote-nvim.ui").float_term(("nvim --server localhost:%s --remote-ui"):format(port), function(exit_code)
+          if exit_code ~= 0 then
+            vim.notify(("Local client failed with exit code %s"):format(exit_code), vim.log.levels.ERROR)
+          end
+        end)
+      end,
+    }
+  },
+
+  -- ===================================
   -- LSP, Completion, and Linting (Replaces CoC and ALE)
   -- ===================================
   {
@@ -200,7 +303,7 @@ require("lazy").setup({
         }
       })
 
-      -- This is your existing cmp.setup(), which is correct
+      -- CMP setup
       cmp.setup({
         snippet = {
           expand = function(args) luasnip.lsp_expand(args.body) end,
