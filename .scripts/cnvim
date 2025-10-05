@@ -1,0 +1,10 @@
+#!/bin/bash
+  # --user "$(id -u):$(id -g)" \
+podman run --rm -it --interactive \
+  --volume ${HOME}/.config/nvim:/root/.config/nvim \
+  --volume ${HOME}/.vim:/root/.vim \
+  --volume ${XDG_CACHE_HOME:-$HOME/.cache}/nvim:/root/.cache/nvim \
+  --volume ${XDG_STATE_HOME:-$HOME/.local/state}/nvim:/root/.local/state/nvim \
+  --volume "${PWD}":/workspace \
+  --workdir /workspace \
+  localhost/neovim:latest

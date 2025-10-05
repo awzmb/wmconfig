@@ -53,12 +53,7 @@ export PATH="$HOME/.appimage:$PATH"
 export PATH="$HOME/.bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
 
-# add snap to path on linux
-if [ "$(uname)" = "Linux" ]; then
-  export PATH="/snap/bin:$PATH"
-fi
-
-# add golaang path
+# add golang path
 export GOPATH="$HOME/.go"
 export GOROOT="${HOME}/.go/go"
 export PATH="$PATH:$GOPATH/bin"
@@ -115,9 +110,6 @@ if [ "$(uname)" = "Linux" ]; then
   #export XDG_RUNTIME_DIR=$HOME/.tmp
 fi
 
-# trigger completion initialization
-compinit
-
 # openjdk
 # export PATH="${PATH}:${HOME}/.jdk/openjdk-11/bin"
 # export JAVA_HOME="${HOME}/.jdk/openjdk-11"
@@ -143,20 +135,19 @@ fi
 
 # extra completions
 command -v gh > /dev/null && . <(gh completion -s zsh)
+command -v devpod > /dev/null && . <(devpod completion zsh)
 command -v timetrace > /dev/null && . <(timetrace completion zsh)
 command -v flux > /dev/null && . <(flux completion zsh)
 command -v helm > /dev/null && . <(helm completion zsh)
 command -v kubectl > /dev/null && . <(kubectl completion zsh --request-timeout 0.0001)
-# timesheet file
-command -v tt > /dev/null && export SHEET_FILE="${HOME}/.timesheets/timesheet.json"
 command -v talosctl > /dev/null && talosctl completion zsh > "${fpath[1]}/_talosctl"
 command -v broot > /dev/null && source /home/awzm/.config/broot/launcher/bash/br
-
+command -v terraform > /dev/null && complete -o nospace -C /home/awzm/.bin/terraform terraform
+# set timesheet file
+command -v tt > /dev/null && export SHEET_FILE="${HOME}/.timesheets/timesheet.json"
 
 # spicetify
-export PATH=$PATH:/home/bawzm/.spicetify
-
-if [ -e /home/bawzm/.nix-profile/etc/profile.d/nix.sh ]; then . /home/bawzm/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
+export PATH=${PATH}:${HOME}/.spicetify
 
 # use iHD driver if intel iris graphics are present
 #if [ "$(uname --machine)" = "x86_64" ]; then
@@ -166,18 +157,14 @@ if [ -e /home/bawzm/.nix-profile/etc/profile.d/nix.sh ]; then . /home/bawzm/.nix
   #fi
 #fi
 
-export PATH=$PATH:/home/dbundschuh/.spicetify
-
-export PATH=$PATH:/var/home/awzm/.spicetify
-
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/home/awzm/extract/google-cloud-sdk/path.zsh.inc' ]; then . '/home/awzm/extract/google-cloud-sdk/path.zsh.inc'; fi
 
 # docker aliases completion
 source ~/.zsh/completion-aliases-docker.zsh
 
-# tool versions
-export TERRAFORM_VERSION="1.7.5"
-
 autoload -U +X bashcompinit && bashcompinit
-complete -o nospace -C /home/awzm/.bin/terraform terraform
+
+# trigger completion initialization
+compinit
+
