@@ -75,6 +75,7 @@ gst-plugin-pipewire
 gst-plugins-base
 gst-plugins-good
 gst-plugins-ugly
+libde265
 gvfs
 gvfs-afc
 gvfs-dnssd
