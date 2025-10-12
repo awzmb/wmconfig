@@ -1,0 +1,11 @@
+# Arkane Linux generic
+base
+linux-firmware
+linux-zen
+arkane-keyring
+dracut
+
+# Custom image
+amd-ucode
+intel-ucode
+dbus-broker-units

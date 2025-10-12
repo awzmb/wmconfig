@@ -275,7 +275,7 @@ require("lazy").setup({
   },
 
   -- ===================================
-  -- LSP, Completion, and Linting (Replaces CoC and ALE)
+  -- LSP, Completion, and Linting
   -- ===================================
   {
     "neovim/nvim-lspconfig",
@@ -293,9 +293,6 @@ require("lazy").setup({
       local cmp = require("cmp")
       local luasnip = require("luasnip")
       local capabilities = require('cmp_nvim_lsp').default_capabilities()
-
-      -- NOTE: The package lists (`servers`, `linters`, `ensure_installed`) are now defined globally at the top of this file.
-      -- This allows the `MasonInstallAll` command to access them.
 
       require("mason").setup({
         -- `ensure_installed` is the list of mapped package names for Mason.

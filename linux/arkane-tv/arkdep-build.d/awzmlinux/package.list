@@ -1,0 +1,88 @@
+# Basic packages
+apparmor
+arch-install-scripts
+archiso
+arkdep
+bind
+binutils
+btrfs-progs
+debugedit
+diffutils
+dosfstools
+efibootmgr
+f2fs-tools
+fakeroot
+git
+glibc-locales
+libnss-extrausers
+libva-mesa-driver
+man-db
+mesa
+mesa-vdpau
+neovim
+networkmanager
+openssh
+pacman-contrib
+plymouth
+pv
+qemu-guest-agent
+skel-arkane
+sof-firmware
+sudo
+terminus-font
+tpm2-tools
+tpm2-tss
+tpm2-tss-engine
+vulkan-intel
+vulkan-mesa-layers
+vulkan-nouveau
+vulkan-radeon
+wget
+zsh
+zsh-completions
+linux-zen-headers
+
+# Hardware
+intel-ucode
+intel-media-driver
+
+# Media
+# kodi
+# kodi-wayland
+kodi-stable-git
+kodi-standalone-service
+mediaelch
+cage
+
+# Codecs
+gst-plugins-bad
+gst-plugins-ugly
+libde265
+
+# Gaming
+kodi-game-libretro
+libretro-bsnes-hd
+libretro-desmume
+libretro-dolphin
+libretro-beetle-psx
+libretro-flycast
+libretro-core-info
+libretro-kronos
+libretro-melonds
+libretro-mesen
+libretro-mupen64plus-next
+libretro-play
+libretro-shaders-slang
+libretro-snes9x
+libretro-yabause
+libretro-genesis-plus-gx
+libretro-ppsspp
+retroarch
+retroarch-assets-glui
+retroarch-assets-ozone
+retroarch-assets-xmb
+librashader
+retroarch-autoconfig-udev-git
+
+# Tools
+keyd

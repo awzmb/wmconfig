@@ -24,11 +24,15 @@ fi
 
 # The main run command
 # NOTE: this assumes that the host is using Wayland for wl-clipboard support
+# FIX: Added 'keep-groups' to ensure access to devices/sockets via group permissions
+# FIX: Added ':Z' to relabel the Wayland socket for SELinux
 podman run --rm -it \
+  --group-add keep-groups \
+  --userns=keep-id \
   --env WAYLAND_DISPLAY \
   --env XDG_RUNTIME_DIR \
   --env XDG_SESSION_TYPE=wayland \
-  --volume "${XDG_RUNTIME_DIR}/${WAYLAND_DISPLAY}:${XDG_RUNTIME_DIR}/${WAYLAND_DISPLAY}:rw" \
+  --volume "${XDG_RUNTIME_DIR}/${WAYLAND_DISPLAY}:${XDG_RUNTIME_DIR}/${WAYLAND_DISPLAY}:Z" \
   --user "${USER_ID}:${GROUP_ID}" \
   --volume "${VOLUME_NAME}:/home/${USERNAME}:Z" \
   --volume "${PWD}:/workspace:Z" \

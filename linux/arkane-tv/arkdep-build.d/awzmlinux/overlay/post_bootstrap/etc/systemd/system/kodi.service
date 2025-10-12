@@ -1,0 +1,14 @@
+[Unit]
+Description=Kodi Media Center
+After=network-online.target
+
+[Service]
+User=kodi
+Group=kodi
+Type=simple
+ExecStart=/usr/bin/cage /usr/bin/kodi --windowing=wayland
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=graphical.target
