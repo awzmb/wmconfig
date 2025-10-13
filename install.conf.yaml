@@ -43,6 +43,9 @@
     ~/.aliases: .aliases
     ~/.dir_colors: .dir_colors
     ~/.terraformrc: .terraformrc
+    ~/.w3m:
+      if: "[ `uname` = Linux ]"
+      path: .w3m
     #~/.gitconfig: .gitconfig
     ~/.config/mc: .config/mc
     ~/.config/MangoHud: .config/MangoHud

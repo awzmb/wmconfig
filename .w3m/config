@@ -1,0 +1,52 @@
+# --- Look & Feel ---
+
+# Display links with numbers [1], [2], etc. so you can type a number to follow one.
+display_link_number 1
+
+# Enable color. This makes pages with colors actually display them.
+# The terminal's color scheme will be used.
+color 1
+
+# Use the mouse. Allows clicking links, scrolling with the wheel, etc.
+use_mouse 1
+
+# Try to display images. Requires w3m-img to be installed.
+display_image 1
+
+# Use unicode characters for tables and form elements where possible.
+display_char_width 2
+
+# Set character sets to handle modern websites correctly.
+display_charset UTF-8
+system_charset UTF-8
+document_charset UTF-8
+
+# --- Behavior ---
+
+# Set a modern user agent. Many websites serve simplified or broken pages
+# to old user agents. Pretending to be Firefox or Chrome often fixes this.
+user_agent Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/118.0
+
+# Automatically follow META refresh/redirects.
+follow_redirection 1
+
+# Don't ask for confirmation when quitting with 'q' or 'Q'.
+confirm_qq 0
+
+# When following a link, move the cursor to the top of the next screen.
+# Makes navigation feel more natural.
+display_link_at_top 1
+
+# Automatically save history on exit.
+auto_save_history 1
+
+# --- External Programs ---
+
+editor nvim
+
+# Set your graphical browser for when you need JavaScript (bound to 'v' in keymap).
+# Examples for Linux, macOS, and WSL. Uncomment the one you need.
+# extbrowser /usr/bin/firefox
+# extbrowser /usr/bin/google-chrome-stable
+# extbrowser /usr/bin/flatpak run org.mozilla.firefox
+# extbrowser open -a "Google Chrome"

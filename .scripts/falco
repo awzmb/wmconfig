@@ -1,0 +1,11 @@
+#!/bin/sh
+
+podman run --rm -it \
+  --cap-drop all \
+  --cap-add sys_admin \
+  --cap-add sys_resource \
+  --cap-add sys_ptrace \
+  -v /run/user/$(id -u)/podman/podman.sock:/host/var/run/podman.sock \
+  -v /proc:/host/proc:ro \
+  -v /etc:/host/etc:ro \
+  docker.io/falcosecurity/falco:latest
