@@ -1,6 +1,6 @@
 #!/bin/sh
 
-podman run --rm -it \
+sudo podman run --rm -it \
   --cap-drop all \
   --cap-add sys_admin \
   --cap-add sys_resource \
