@@ -266,6 +266,8 @@ gamemode
 lutris
 mangohud
 moonlight-qt
+sunshine
+ddcutil
 
 # Camera
 v4l-utils

@@ -168,3 +168,5 @@ autoload -U +X bashcompinit && bashcompinit
 # trigger completion initialization
 compinit
 
+
+complete -o nospace -C /home/awzm/.bin/terraform terraform

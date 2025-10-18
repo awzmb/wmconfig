@@ -1,0 +1,14 @@
+#!/bin/sh
+
+sudo podman run -d --replace --rm -it \
+  --cpus=4 \
+  --memory=4g \
+  --tmpfs /tmp \
+  --tmpfs /run \
+  --tmpfs /run/lock \
+  --volume /sys/fs/cgroup:/sys/fs/cgroup:ro \
+  --volume /sys:/sys:ro \
+  --volume /var/run/dbus:/var/run/dbus \
+  --hostname $(cat /proc/sys/kernel/hostname) \
+  --name sophos \
+  localhost/sophos:latest

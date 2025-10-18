@@ -1,0 +1,13 @@
+# Arkane Linux generic
+base
+#linux-cachyos
+linux-firmware
+linux-zen
+arkane-keyring
+#dracut-cachyos
+dracut
+
+# Custom image
+amd-ucode
+intel-ucode
+dbus-broker-units

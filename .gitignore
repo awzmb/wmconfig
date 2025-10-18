@@ -15,6 +15,8 @@ node_modules
 
 # ignore arkdep-build target directory
 linux/arkane/target
+linux/arkane-tv/target
+linux/arkane-sunshine/target
 
 # ignore display configuration
 .config/hypr/monitors.conf

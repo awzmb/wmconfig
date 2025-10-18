@@ -1,0 +1,5 @@
+[Desktop Entry]
+Name=Steam Big Picture
+Comment=Launches Steam in Big Picture mode
+Exec=/usr/bin/steam -bigpicture
+Type=Application
