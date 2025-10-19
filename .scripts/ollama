@@ -1,0 +1,10 @@
+#!/bin/sh
+
+podman run --rm -it \
+  --publish 11434:11434 \
+  --device=/dev/accel/accel0 \
+  --device /dev/dri \
+  --group-add $(stat -c '%g' /dev/accel/accel0) \
+  --env VLLM_OPENVINO_DEVICE=NPU \
+  --name ollama \
+  localhost/ollama-openvino:latest
