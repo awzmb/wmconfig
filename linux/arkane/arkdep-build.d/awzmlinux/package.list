@@ -234,8 +234,7 @@ swaybg
 waybar
 wlr-randr
 wlr-protocols
-# xdg-desktop-portal-wlr
-xdg-desktop-portal-wlr-git
+xdg-desktop-portal-wlr
 
 # Hyprland
 hyprutils
@@ -253,6 +252,7 @@ hyprlock
 hypridle
 hyprpicker
 xdg-desktop-portal-hyprland
+hy3
 grim
 
 # Themes and icons

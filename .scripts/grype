@@ -1,0 +1,8 @@
+#!/bin/sh
+
+podman run --rm -it \
+  --volume /run/user/$(id -u)/podman/podman.sock:/host/var/run/podman.sock \
+  --volume "${PWD}":/workspace \
+  --workdir /workspace \
+  --name grype \
+  docker.io/anchore/grype:latest $@
