@@ -242,7 +242,7 @@ hyprcursor
 hyprgraphics
 hyprland-protocols
 hyprland-qt-support
-hyprland-qtutils
+# hyprland-qtutils
 hyprlang
 hyprpolkitagent
 hyprsunset
@@ -257,7 +257,7 @@ grim
 
 # Themes and icons
 papirus-icon-theme
-gtk-engines
+# gtk-engines
 gnome-themes-extra
 
 # Gaming
@@ -296,3 +296,6 @@ intel-npu-driver-bin
 openvino
 openvino-intel-gpu-plugin
 # openvino-intel-npu-plugin # not ready yet
+
+# Public cloud CLI tools
+aws-cli-v2

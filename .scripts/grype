@@ -2,6 +2,7 @@
 
 podman run --rm -it \
   --volume /run/user/$(id -u)/podman/podman.sock:/host/var/run/podman.sock \
+  --env DOCKER_HOST=unix:///host/var/run/podman/podman.sock \
   --volume "${PWD}":/workspace \
   --workdir /workspace \
   --name grype \
