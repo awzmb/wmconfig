@@ -17,7 +17,7 @@ arch-chroot "$workdir" hostnamectl set-hostname 'L0223-1024'
 
 # Install AUR packages
 # Set list of AUR packages to install
-aur_packages=('yay-bin' 'paru-bin' 'cisco-secure-client')
+aur_packages=('yay-bin' 'paru-bin' 'cisco-secure-client', 'intel-ipu7-camera-bin')
 
 # Install build dependencies
 printf '\e[1;32m-->\e[0m\e[1m Installing build dependencies\e[0m\n'
