@@ -1,3 +1,8 @@
+[preferred]
+default=gtk
+org.freedesktop.impl.portal.Screenshot=wlr
+org.freedesktop.impl.portal.ScreenCast=wlr
+
 [screencast]
 max_fps=30
 chooser_type=simple
