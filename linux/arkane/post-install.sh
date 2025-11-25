@@ -8,14 +8,9 @@ pip install --user aws-policy-generator --break-system-packages
 pip install --user gcalcli --break-system-packages
 pip install --user posting --break-system-packages
 pip install --user protonup --break-system-packages
-sudo pip install flashfocus --break-system-packages
 
 # flatpak
 flatpak install --system -y org.freedesktop.Platform.VAAPI.Intel
 
-# install gh extensions
-
 # enable user podman.socket
 systemctl --user enable --now podman.socket
-sudo systemctl enable --now seatd.service
-sudo systemctl enable --now keyd.service

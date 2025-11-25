@@ -17,7 +17,7 @@ arch-chroot "$workdir" hostnamectl set-hostname 'L0223-1024'
 
 # Install AUR packages
 # Set list of AUR packages to install
-aur_packages=('yay-bin' 'paru-bin' 'cisco-secure-client' 'intel-ipu7-camera-bin')
+aur_packages=('yay-bin' 'paru-bin' 'intel-ipu7-camera-bin')
 
 # Install build dependencies
 printf '\e[1;32m-->\e[0m\e[1m Installing build dependencies\e[0m\n'
@@ -30,6 +30,19 @@ arch-chroot "$workdir" useradd aur -m -p '!'
 # Allow 'aur' to use sudo without password
 printf '\e[1;32m-->\e[0m\e[1m Allowing aur user passwordless sudo\e[0m\n'
 arch-chroot "$workdir" bash -c "echo 'aur ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/aur"
+
+# Build and install packages from pkgbuild
+printf '\e[1;32m-->\e[0m\e[1m Building and installing local packages\e[0m\n'
+pkgbuild_dir="arkdep-build.d/awzmlinux/pkgbuild"
+for pkg in "$pkgbuild_dir"/*; do
+  if [ -d "$pkg" ]; then
+    pkg_name=$(basename "$pkg")
+    printf "\e[1;32m-->\e[0m\e[1m Building $pkg_name\e[0m\n"
+    cp -r "$pkg" "$workdir/home/aur/"
+    arch-chroot "$workdir" chown -R aur:aur "/home/aur/$pkg_name"
+    arch-chroot -u aur:aur "$workdir" bash -c "cd /home/aur/$pkg_name && makepkg -si --noconfirm"
+  fi
+done
 
 # Install yay manually first (because we need it to install others)
 printf '\e[1;32m-->\e[0m\e[1m Bootstrapping yay-bin\e[0m\n'

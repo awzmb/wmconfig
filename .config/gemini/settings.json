@@ -20,7 +20,7 @@
     "disableAutoUpdate": true,
     "disableUpdateNag": true,
     "checkpointing": {
-      "enabled": true
+      "enabled": false
     }
   }
 }

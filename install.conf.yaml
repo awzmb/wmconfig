@@ -142,6 +142,7 @@
       path: .config/alacritty/alacritty.toml
     ~/.config/gemini/settings.json:
       path: .config/gemini/settings.json
+      type: hardlink
     ~/.config/wofi:
       if: "[ `uname` = Linux ]"
       path: .config/wofi

@@ -235,6 +235,7 @@ waybar
 wlr-randr
 wlr-protocols
 xdg-desktop-portal-wlr
+flashfocus-git
 
 # Hyprland
 hyprutils
