@@ -118,7 +118,7 @@ local opts = { silent = true } -- Use silent by default
 
 -- Telescope (modern fuzzy finder, recommended over FZF for Neovim)
 keymap("n", "<C-f>", "<cmd>Telescope find_files<cr>", opts)
-keymap("n", "<C-g>", "<cmd>Telescope buffers<cr>", opts)
+-- keymap("n", "<C-g>", "<cmd>Telescope buffers<cr>", opts)
 keymap("n", "<leader>fg", "<cmd>Telescope live_grep<cr>", opts) -- Example for live grep
 
 -- Neo-tree (NERDTree replacement)
@@ -152,12 +152,30 @@ require("lazy").setup({
   -- ===================================
   -- UI & Colorscheme
   -- ===================================
+  -- {
+  --   "awzmb/nord-darker-nvim",
+  --   priority = 1000, -- Make sure it loads first
+  --   config = function()
+  --     vim.cmd.colorscheme("nord")
+  --   end,
+  -- },
   {
-    "awzmb/nord-darker-nvim",
-    priority = 1000, -- Make sure it loads first
+    'shaunsingh/nord.nvim',
     config = function()
-      vim.cmd.colorscheme("nord")
-    end,
+      vim.g.nord_contrast = false
+      vim.g.nord_borders = false
+      vim.g.nord_disable_background = true
+      vim.g.nord_italic = false
+      vim.g.nord_uniform_diff_background = false
+      vim.g.nord_bold = false
+      require('nord.colors').nord0_gui = '#242933'
+      require('nord').set()
+      local colors = require('nord.colors')
+      require('nord.util').highlight('LspInlayHint',
+        { fg = colors.nord3_gui_bright, style = 'bold' }
+      )
+      require('nord.util').highlight('WinSeparator', { fg = colors.nord2_gui })
+    end
   },
   {
     "nvim-lualine/lualine.nvim", -- Statusline replacement for vim-airline
@@ -421,8 +439,48 @@ require("lazy").setup({
   },
   {
     "nvim-telescope/telescope.nvim",
-    tag = "0.1.6",
     dependencies = { "nvim-lua/plenary.nvim" }
+  },
+  {
+    'akinsho/bufferline.nvim',
+    dependencies = 'nvim-tree/nvim-web-devicons'
+  },
+  {
+    "folke/trouble.nvim",
+    opts = {}, -- for default options, refer to the configuration section for custom setup.
+    cmd = "Trouble",
+    keys = {
+      {
+        "<C-T>",
+        "<cmd>Trouble diagnostics toggle<cr>",
+        desc = "Diagnostics (Trouble)",
+      },
+      {
+        "<C-B>",
+        "<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
+        desc = "Buffer Diagnostics (Trouble)",
+      },
+      {
+        "<C-S>",
+        "<cmd>Trouble symbols toggle focus=false<cr>",
+        desc = "Symbols (Trouble)",
+      },
+      {
+        "<C-L>",
+        "<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
+        desc = "LSP Definitions / references / ... (Trouble)",
+      },
+      {
+        "<C-O>",
+        "<cmd>Trouble loclist toggle<cr>",
+        desc = "Location List (Trouble)",
+      },
+      {
+        "<C-Q>",
+        "<cmd>Trouble qflist toggle<cr>",
+        desc = "Quickfix List (Trouble)",
+      },
+    },
   },
   { 'junegunn/fzf' },
   { 'junegunn/fzf.vim' },
@@ -445,7 +503,26 @@ require("lazy").setup({
   -- ===================================
   -- Utility & Language Support
   -- ===================================
-  -- ADDED correct setup for Comment.nvim
+  {
+    "NeogitOrg/neogit",
+    lazy = true,
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "sindrets/diffview.nvim",
+      "nvim-telescope/telescope.nvim",
+    },
+    cmd = "Neogit",
+    keys = {
+      { "<C-g>", "<cmd>Neogit<cr>", desc = "Show Neogit UI" }
+    }
+  },
+  {
+    'MeanderingProgrammer/render-markdown.nvim',
+    dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' }, -- if you prefer nvim-web-devicons
+    ---@module 'render-markdown'
+    ---@type render.md.UserConfig
+    opts = {},
+  },
   {
     "numToStr/Comment.nvim",
     config = function()
