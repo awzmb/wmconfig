@@ -19,7 +19,7 @@ libnss-extrausers
 libva-mesa-driver
 man-db
 mesa
-mesa-vdpau
+# mesa-vdpau
 neovim
 networkmanager
 openssh
@@ -43,7 +43,6 @@ vulkan-radeon
 wget
 zsh
 zsh-completions
-#linux-cachyos-headers
 linux-zen-headers
 
 # GNOME
@@ -107,28 +106,21 @@ arkane-flatpak-init
 arkane-wallpapers
 libnss-extrausers
 
-# Hardware
-intel-ucode
-
 # Shell and tools
 keyd
-sshuttle
 fzf
 tmux
 neovim
 vim
 vim-runtime
-foot
 vifm
 hub
-github-cli
 git-delta
 git-lfs
 git-crypt
 git-graph
 git-zsh-completion
 pass
-oath-toolkit
 w3m
 calc
 eza
@@ -140,18 +132,13 @@ npm
 yarn
 htop
 mpv
-calcurse
 yamllint
-glow
-distrobox
 unrar
 wireguard-tools
 python-pip
 python-pipx
 python-pynvim
 netcat
-termshark
-jwt-cli
 zip
 ctags
 cscope
@@ -162,20 +149,11 @@ glances
 procs
 curlie
 yq
-talosctl
 age
-
-# Development
-jdk-openjdk
-luacheck
-rust-analyzer
-cargo
+make
 
 # Media drivers and extensions
 seatd
-intel-media-driver
-libva-intel-driver
-libva-intel-driver
 intel-compute-runtime
 intel-gpu-tools
 intel-graphics-compiler
@@ -194,7 +172,6 @@ igsc
 vulkan-virtio
 vulkan-tools
 radeontop
-nvtop
 
 # General desktop packages
 terminus-font
@@ -234,30 +211,10 @@ swaybg
 waybar
 wlr-randr
 wlr-protocols
-# xdg-desktop-portal-wlr
-xdg-desktop-portal-wlr-git
-
-# Hyprland
-hyprutils
-hyprcursor
-hyprgraphics
-hyprland-protocols
-hyprland-qt-support
-hyprland-qtutils
-hyprlang
-hyprpolkitagent
-hyprsunset
-hyprwayland-scanner
-hyprland
-hyprlock
-hypridle
-hyprpicker
-xdg-desktop-portal-hyprland
-grim
+xdg-desktop-portal-wlr
 
 # Themes and icons
 papirus-icon-theme
-gtk-engines
 gnome-themes-extra
 
 # Gaming
@@ -269,32 +226,14 @@ moonlight-qt
 sunshine
 ddcutil
 
-# Camera
-v4l-utils
-v4l2loopback-dkms
-v4l2loopback-utils
-gst-plugin-libcamera
-libcamera
-libcamera-ipa
-libcamera-tools
-pipewire-libcamera
-pipewire-session-manager
-pipewire-v4l2
-pipewire-session-manager
-pipewire-ffado
-obs-studio
-wlrobs-hg
-
 # Networking
-opensnitch
 networkmanager-vpnc
 networkmanager-openconnect
 networkmanager-openvpn
-libxml2-legacy
-xmlstarlet # i hate Cisco with a passion
+tailscale
 
 # Local LLM inference
-intel-npu-driver-bin
-openvino
-openvino-intel-gpu-plugin
+# intel-npu-driver-bin
+# openvino
+# openvino-intel-gpu-plugin
 # openvino-intel-npu-plugin # not ready yet

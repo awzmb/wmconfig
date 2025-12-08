@@ -145,6 +145,7 @@ command -v broot > /dev/null && source /home/awzm/.config/broot/launcher/bash/br
 command -v terraform > /dev/null && complete -o nospace -C /home/awzm/.bin/terraform terraform
 # set timesheet file
 command -v tt > /dev/null && export SHEET_FILE="${HOME}/.timesheets/timesheet.json"
+command -v broot > /dev/null && source ${HOME}/.config/broot/launcher/bash/br
 
 # spicetify
 export PATH=${PATH}:${HOME}/.spicetify

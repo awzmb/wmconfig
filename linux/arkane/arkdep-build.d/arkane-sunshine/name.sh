@@ -1,1 +1,1 @@
-echo "awzmlinux-$(date +%Y-%m-%d-%H%M)"
+echo "arkane-sunshine-$(date +%Y-%m-%d-%H%M)"
