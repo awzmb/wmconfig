@@ -439,11 +439,8 @@ require("lazy").setup({
   },
   {
     "nvim-telescope/telescope.nvim",
+    version = "*",
     dependencies = { "nvim-lua/plenary.nvim" }
-  },
-  {
-    'akinsho/bufferline.nvim',
-    dependencies = 'nvim-tree/nvim-web-devicons'
   },
   {
     "folke/trouble.nvim",
@@ -503,6 +500,14 @@ require("lazy").setup({
   -- ===================================
   -- Utility & Language Support
   -- ===================================
+  -- {
+  --   'akinsho/bufferline.nvim',
+  --   version = "*",
+  --   dependencies = 'nvim-tree/nvim-web-devicons',
+  --   config = function()
+  --     require("bufferline").setup {}
+  --   end,
+  -- },
   {
     "NeogitOrg/neogit",
     lazy = true,
