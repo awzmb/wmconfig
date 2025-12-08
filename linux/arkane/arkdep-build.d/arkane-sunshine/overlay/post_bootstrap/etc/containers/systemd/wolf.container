@@ -23,7 +23,7 @@ AddDevice=/dev/uinput
 AddDevice=/dev/uhid
 Volume=/dev/:/dev/:rw
 Volume=/run/udev:/run/udev:rw
-Volume=/etc/wolf/:/etc/wolf:z
+Volume=/home/wolf/wolf-app-state:/etc/wolf:z
 Volume=/run/podman/podman.sock:/var/run/docker.sock:ro
 Environment=WOLF_STOP_CONTAINER_ON_EXIT=TRUE
 

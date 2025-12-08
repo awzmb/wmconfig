@@ -74,5 +74,15 @@ arch-chroot "$workdir" hostnamectl set-hostname 'bsunshine'
 
 # chmod +x /home/steam/.config/autostart-virtual-display.sh
 
-# Sunshine
-sudo usermod -aG input $USER
+# Create user wolf
+arch-chroot "$workdir" useradd -m wolf
+arch-chroot "$workdir" passwd -d wolf
+arch-chroot "$workdir" usermod -aG input wolf
+
+# Setup SSH for wolf (adds ssh key for remote access)
+arch-chroot "$workdir" mkdir -p /home/wolf/.ssh
+arch-chroot "$workdir" sh -c 'echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIADD4LxwIuay/NAuqHkr+tlXzQLJbj9BgQGeSjo5ju7h" > /home/wolf/.ssh/authorized_keys'
+arch-chroot "$workdir" chown -R wolf:wolf /home/wolf/.ssh
+arch-chroot "$workdir" chmod 700 /home/wolf/.ssh
+arch-chroot "$workdir" chmod 600 /home/wolf/.ssh/authorized_keys
+arch-chroot "$workdir" mkdir -p /home/wolf/wolf-app-state
