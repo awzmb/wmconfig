@@ -44,29 +44,9 @@ wget
 zsh
 zsh-completions
 linux-zen-headers
+libnss-extrausers
 
-# GNOME
-evolution-data-server
-gdm
-gnome-backgrounds
-gnome-console
-gnome-control-center
-gnome-disk-utility
-gnome-initial-setup
-gnome-menus
-gnome-shell
-gnome-software
-gnome-system-monitor
-gnome-tour
-gnome-tweaks
-mutter
-nautilus
-
-# GNOME extra
-bluez
-bluez-plugins
-bluez-utils
-bluez-tools
+# Basics
 flatpak
 fuse
 fwupd
@@ -75,16 +55,6 @@ gst-plugins-base
 gst-plugins-good
 gst-plugins-ugly
 libde265
-gvfs
-gvfs-afc
-gvfs-dnssd
-gvfs-dnssd
-gvfs-goa
-gvfs-gphoto2
-gvfs-mtp
-gvfs-nfs
-gvfs-smb
-gvfs-wsdd
 ibus-typing-booster
 pipewire
 pipewire-alsa
@@ -99,12 +69,6 @@ wireplumber
 xdg-desktop-portal-gnome
 xdg-user-dirs
 xdg-utils
-
-# Arkane Linux
-arkane-application-cleaner
-arkane-flatpak-init
-arkane-wallpapers
-libnss-extrausers
 
 # Shell and tools
 keyd
@@ -176,53 +140,13 @@ radeontop
 # General desktop packages
 terminus-font
 ttf-terminus-nerd
-fuzzel
-miller
-alacritty
-brightnessctl
-cliphist
-gammastep
-blueman
-blueberry
-wl-clip-persist
-wl-clipboard
 yank
-rofi-wayland
-dunst
-network-manager-applet
-pavucontrol
-pass
-pass-otp
 ttf-font-awesome
 otf-font-awesome
 awesome-terminal-fonts
-kitty
-
-# Sway packages
-kanshi
-nwg-displays
-nwg-look
-sway
-sway-contrib
-swayidle
-swayimg
-swaylock
-swaybg
-waybar
-wlr-randr
-wlr-protocols
-xdg-desktop-portal-wlr
-
-# Themes and icons
-papirus-icon-theme
-gnome-themes-extra
 
 # Gaming
-steam
 gamemode
-lutris
-mangohud
-moonlight-qt
 sunshine
 ddcutil
 

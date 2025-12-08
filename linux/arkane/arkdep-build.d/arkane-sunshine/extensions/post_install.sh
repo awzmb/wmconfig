@@ -78,6 +78,7 @@ arch-chroot "$workdir" hostnamectl set-hostname 'bsunshine'
 arch-chroot "$workdir" useradd -m wolf
 arch-chroot "$workdir" passwd -d wolf
 arch-chroot "$workdir" usermod -aG input wolf
+arch-chroot "$workdir" usermod -aG wheel wolf
 
 # Setup SSH for wolf (adds ssh key for remote access)
 arch-chroot "$workdir" mkdir -p /home/wolf/.ssh
@@ -86,3 +87,4 @@ arch-chroot "$workdir" chown -R wolf:wolf /home/wolf/.ssh
 arch-chroot "$workdir" chmod 700 /home/wolf/.ssh
 arch-chroot "$workdir" chmod 600 /home/wolf/.ssh/authorized_keys
 arch-chroot "$workdir" mkdir -p /home/wolf/wolf-app-state
+arch-chroot "$workdir" chown -R wolf:wolf /home/wolf/wolf-app-state
