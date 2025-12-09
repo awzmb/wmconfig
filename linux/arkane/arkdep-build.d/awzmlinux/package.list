@@ -19,7 +19,7 @@ libnss-extrausers
 libva-mesa-driver
 man-db
 mesa
-mesa-vdpau
+# mesa-vdpau
 neovim
 networkmanager
 openssh
