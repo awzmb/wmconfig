@@ -30,7 +30,7 @@ exec_always swaymsg input type:touch events disabled
 # set keyboard layout
 exec_always setxkbmap -layout us -variant altgr-intl
 # flash focus window indicator
-# now being activated via systemctl --user enable --now flashfocus.service
+exec systemctl --user enable --now flashfocus.service
 # exec_always --no-startup-id flashfocus
 
 set $gnome-schema org.gnome.desktop.interface
