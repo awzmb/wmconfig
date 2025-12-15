@@ -84,16 +84,6 @@ else
 	fi
 fi
 
-unset use_color safe_term match_lhs sh
-
-alias cp="cp -i"                          # confirm before overwriting something
-alias df='df -h'                          # human-readable sizes
-alias free='free -m'                      # show sizes in MB
-alias np='nano -w PKGBUILD'
-alias more=less
-
-xhost +local:root > /dev/null 2>&1
-
 complete -cf sudo
 
 # Bash won't get SIGWINCH if another process is in the foreground.
@@ -109,9 +99,9 @@ shopt -s expand_aliases
 # Enable history appending instead of overwriting.  #139609
 shopt -s histappend
 
-#
-# # ex - archive extractor
-# # usage: ex <file>
+
+# ex - archive extractor
+# usage: ex <file>
 ex ()
 {
   if [ -f $1 ] ; then
@@ -133,36 +123,3 @@ ex ()
     echo "'$1' is not a valid file"
   fi
 }
-
-# better yaourt colors
-export YAOURT_COLORS="nb=1:pkg=1:ver=1;32:lver=1;45:installed=1;42:grp=1;34:od=1;41;5:votes=1;44:dsc=0:other=1;35"
-
-#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
-export SDKMAN_DIR="$HOME/.sdkman"
-[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
-
-zsh
-
-# >>> conda initialize >>>
-# !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/usr/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__conda_setup"
-else
-    if [ -f "/usr/etc/profile.d/conda.sh" ]; then
-        . "/usr/etc/profile.d/conda.sh"
-    else
-        export PATH="/usr/bin:$PATH"
-    fi
-fi
-unset __conda_setup
-# <<< conda initialize <<<
-
-
-export PATH=$PATH:/home/awzm/.spicetify
-export PATH="$HOME/bin:$PATH"
-
-complete -C /home/awzm/.bin/terraform terraform
-
-source /home/awzm/.config/broot/launcher/bash/br
-. "$HOME/.cargo/env"
