@@ -299,3 +299,9 @@ intel-npu-driver-bin
 
 # Public cloud CLI tools
 aws-cli-v2
+
+# Android
+waydroid-git
+waydroid-helper
+waydroid-image-gapps
+waydroid-script-git

@@ -141,11 +141,9 @@ command -v flux > /dev/null && . <(flux completion zsh)
 command -v helm > /dev/null && . <(helm completion zsh)
 command -v kubectl > /dev/null && . <(kubectl completion zsh --request-timeout 0.0001)
 command -v talosctl > /dev/null && talosctl completion zsh > "${fpath[1]}/_talosctl"
-command -v broot > /dev/null && source /home/awzm/.config/broot/launcher/bash/br
 command -v terraform > /dev/null && complete -o nospace -C /home/awzm/.bin/terraform terraform
 # set timesheet file
 command -v tt > /dev/null && export SHEET_FILE="${HOME}/.timesheets/timesheet.json"
-command -v broot > /dev/null && source ${HOME}/.config/broot/launcher/bash/br
 
 # spicetify
 export PATH=${PATH}:${HOME}/.spicetify
