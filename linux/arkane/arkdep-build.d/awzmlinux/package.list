@@ -50,31 +50,30 @@ rootlesskit
 
 # GNOME
 gdm
-# evolution-data-server
-# gnome-backgrounds
-# gnome-console
-# gnome-control-center
-# gnome-disk-utility
-# gnome-initial-setup
-# gnome-menus
-# gnome-shell
-# gnome-software
-# gnome-system-monitor
-# gnome-tour
-# gnome-tweaks
-# mutter
-# nautilus
-# gvfs
-# gvfs-afc
-# gvfs-dnssd
-# gvfs-dnssd
-# gvfs-goa
-# gvfs-gphoto2
-# gvfs-mtp
-# gvfs-nfs
-# gvfs-smb
-# gvfs-wsdd
-# xdg-desktop-portal-gnome
+evolution-data-server
+gnome-backgrounds
+gnome-console
+gnome-control-center
+gnome-disk-utility
+gnome-initial-setup
+gnome-menus
+gnome-shell
+gnome-software
+gnome-system-monitor
+gnome-tweaks
+mutter
+nautilus
+gvfs
+gvfs-afc
+gvfs-dnssd
+gvfs-dnssd
+gvfs-goa
+gvfs-gphoto2
+gvfs-mtp
+gvfs-nfs
+gvfs-smb
+gvfs-wsdd
+xdg-desktop-portal-gnome
 
 # Desktop
 bluez
@@ -206,7 +205,6 @@ brightnessctl
 cliphist
 gammastep
 blueman
-blueberry
 wl-clip-persist
 wl-clipboard
 yank
@@ -301,7 +299,7 @@ intel-npu-driver-bin
 aws-cli-v2
 
 # Android
-waydroid-git
-waydroid-helper
-waydroid-image-gapps
-waydroid-script-git
+# waydroid-git
+# waydroid-helper
+# waydroid-image-gapps
+# waydroid-script-git
