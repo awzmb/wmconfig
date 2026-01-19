@@ -1,15 +1,57 @@
 #!/bin/sh
-LAPTOP_OUTPUT="eDP-1"
+#
+# This script automatically enables/disables the laptop's internal display
+# and its touchpad/touchscreen based on the lid state.
+#
+# It dynamically detects the internal display name (e.g., eDP-1, DSI-1),
+# so it does not need to be hardcoded.
+#
+# Dependencies: sway, jq
+
+# Check for required dependency: jq
+if ! command -v jq >/dev/null; then
+  echo "Error: jq is not installed. Please install it to use this script." >&2
+  exit 1
+fi
+
+# dynamically find the laptop's internal display name.
+# we search for outputs with names containing edp, lvds, or dsi.
+LAPTOP_OUTPUT=$(swaymsg -t get_outputs | jq -r '.[] | select(.name | test("eDP-|LVDS-|DSI-")) | .name' | head -n 1)
+
+# check if we found an output. if not, exit with an error.
+if [ -z "$LAPTOP_OUTPUT" ]; then
+  echo "Error: Could not find a laptop display (eDP, LVDS, or DSI)." >&2
+  exit 1
+fi
+
 LID_STATE_FILE="/proc/acpi/button/lid/LID0/state"
+
+# check if the lid state file exists
+if [ ! -f "$LID_STATE_FILE" ]; then
+    echo "Error: Lid state file not found at $LID_STATE_FILE" >&2
+    exit 1
+fi
 
 read -r LS < "$LID_STATE_FILE"
 
 case "$LS" in
-*open)   swaymsg output "$LAPTOP_OUTPUT" enable && swaymsg input type:touchpad events enabled && swaymsg input type:touch events enabled ;;
-*closed) swaymsg output "$LAPTOP_OUTPUT" disable && swaymsg input type:touchpad events disabled && swaymsg input type:touch events disabled ;;
-*)       echo "Could not get lid state" >&2 ; exit 1 ;;
+  *open)
+    echo "Lid opened. Enabling $LAPTOP_OUTPUT and inputs."
+    swaymsg output "$LAPTOP_OUTPUT" enable
+    swaymsg input type:touchpad events enabled
+    swaymsg input type:touch events enabled
+    ;;
+  *closed)
+    echo "Lid closed. Disabling $LAPTOP_OUTPUT and inputs."
+    swaymsg output "$LAPTOP_OUTPUT" disable
+    swaymsg input type:touchpad events disabled
+    swaymsg input type:touch events disabled
+    ;;
+  *)
+    echo "Could not determine lid state from: $LS" >&2
+    exit 1
+    ;;
 esac
-
 
 #LAPTOP_OUTPUT="eDP-1"
 #LID_STATE_FILE="/proc/acpi/button/lid/LID0/state"

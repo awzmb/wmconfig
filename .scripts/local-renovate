@@ -44,4 +44,4 @@ $CONTAINER_RUNTIME run -it --rm \
     -e GITHUB_TOKEN="$GITHUB_TOKEN" \
     -e GCP_ACCESS_TOKEN="$GCP_ACCESS_TOKEN" \
     -e REPOSITORY="$REPOSITORY" \
-    local-renovate
+    localhost/local-renovate:latest

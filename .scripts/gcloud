@@ -5,5 +5,6 @@ podman run --rm -it \
   --volume "$HOME/.kube:/root/.kube:Z" \
   --volume "$HOME/.ssh:/root/.ssh:Z" \
   --volume "$(pwd):/workspace" \
+  --volume "${HOME}/.docker/config.json:/root/.docker/config.json:Z" \
   --workdir "/workspace" \
   gcr.io/google.com/cloudsdktool/google-cloud-cli:latest gcloud "$@"
