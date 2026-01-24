@@ -123,3 +123,5 @@ ex ()
     echo "'$1' is not a valid file"
   fi
 }
+
+complete -C /home/awzm/.bin/terraform terraform

@@ -41,12 +41,14 @@ wget
 zsh
 zsh-completions
 linux-zen-headers
+lvm2
 
 # Container
 podman
 podman-compose
 cni-plugins
 rootlesskit
+incus
 
 # GNOME
 gdm
