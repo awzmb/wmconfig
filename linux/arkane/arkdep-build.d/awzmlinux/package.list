@@ -15,8 +15,11 @@ f2fs-tools
 fakeroot
 git
 glibc-locales
+# iptables-nft
 libnss-extrausers
 libva-mesa-driver
+linux-zen-headers
+lvm2
 man-db
 mesa
 neovim
@@ -40,15 +43,15 @@ vulkan-radeon
 wget
 zsh
 zsh-completions
-linux-zen-headers
-lvm2
 
 # Container
 podman
 podman-compose
 cni-plugins
 rootlesskit
-incus
+
+# Incus
+minio
 
 # GNOME
 gdm

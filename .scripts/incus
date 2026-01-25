@@ -1,0 +1,8 @@
+#!/bin/sh
+
+podman run --rm -it \
+  --volume "$(pwd):/workspace" \
+  --volume "${HOME}/.config/incus:/root/.config/incus:Z" \
+  --volume "${HOME}/.mc:/root/.mc:Z" \
+  --workdir "/workspace" \
+  localhost/incus-client:latest "$@"

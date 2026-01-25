@@ -23,6 +23,7 @@
     - ~/.terraform.d/plugin-cache
     - ~/.bin
     - ~/.timesheets
+    - ~/.config/incus
 
 - link:
     ~/.tmux.conf: .tmux.conf
