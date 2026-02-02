@@ -70,8 +70,8 @@ set $launcher-bluetooth ~/.scripts/rofi-bluetooth
 set $term kitty
 
 # set mod key (Mod1=<Alt>, Mod4=<Super>)
-# set $mod Mod4
-set $mod Mod1
+set $mod Mod4
+# set $mod Mod1
 
 # set laptop screen
 set $laptop eDP-1

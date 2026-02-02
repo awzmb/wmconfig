@@ -1,0 +1,6 @@
+#!/bin/sh
+
+PUBSUB_EMULATOR_PORT=8681
+
+podman run --rm -p ${PUBSUB_EMULATOR_PORT}:${PUBSUB_EMULATOR_PORT} \
+  gcr.io/google.com/cloudsdktool/google-cloud-cli:latest /bin/bash -c "gcloud beta emulators pubsub start --project=some-project-id --host-port='0.0.0.0:${PUBSUB_EMULATOR_PORT}'"
