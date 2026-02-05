@@ -51,7 +51,7 @@ cni-plugins
 rootlesskit
 
 # Incus
-minio
+minio-client
 
 # GNOME
 gdm
@@ -292,7 +292,7 @@ networkmanager-vpnc
 networkmanager-openconnect
 networkmanager-openvpn
 libxml2-legacy
-xmlstarlet # i hate Cisco with a passion
+xmlstarlet # i hate cisco with a passion
 
 # Local LLM inference
 intel-npu-driver-bin
