@@ -1,0 +1,10 @@
+#!/bin/sh
+
+podman run --rm -it \
+  --volume "$HOME/.config/gcloud:/root/.config/gcloud:Z" \
+  --volume "$HOME/.kube:/root/.kube:Z" \
+  --volume "$HOME/.ssh:/root/.ssh:Z" \
+  --volume "$(pwd):/workspace" \
+  --volume "${HOME}/.docker/config.json:/root/.docker/config.json:Z" \
+  --workdir "/workspace" \
+  docker.io/istio/istioctl:1.27.6-distroless "$@"

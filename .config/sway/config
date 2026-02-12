@@ -6,7 +6,8 @@
 # adapted from xorg's 50-systemd-user.sh, which achieves a similar goal.
 exec systemctl --user import-environment DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP
 # import environment variables into dbus (screen sharing)
-exec dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP=sway XDG_SESSION_DESKTOP=sway
+exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP=sway
+# exec dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP=sway XDG_SESSION_DESKTOP=sway
 # bluetooth manager
 exec --no-startup-id blueman-applet
 # clipboard
@@ -70,8 +71,8 @@ set $launcher-bluetooth ~/.scripts/rofi-bluetooth
 set $term kitty
 
 # set mod key (Mod1=<Alt>, Mod4=<Super>)
-set $mod Mod4
-# set $mod Mod1
+# set $mod Mod4
+set $mod Mod1
 
 # set laptop screen
 set $laptop eDP-1

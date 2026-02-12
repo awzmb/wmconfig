@@ -6,6 +6,9 @@ arch-chroot "$workdir" sed -i -e 's|Exec=.*|Exec=/usr/local/bin/sway-egpu|g' /us
 # remove fallback hyprland configuration
 arch-chroot "$workdir" rm -f /usr/share/hypr/hyprland.conf
 
+# add custom xdg-desktop-portal-wlr configuration
+# arch-chroot "$workdir" FILE=/usr/share/xdg-desktop-portal/wlr-portals.conf; grep -qxF 'org.freedesktop.impl.portal.Screenshot=wlr' $FILE || echo 'org.freedesktop.impl.portal.Screenshot=wlr' >> $FILE; grep -qxF 'org.freedesktop.impl.portal.ScreenCast=wlr' $FILE || echo 'org.freedesktop.impl.portal.ScreenCast=wlr' >> $FILE
+
 # workaround for https://www.reddit.com/r/archlinux/comments/1ja6y69/it_looks_like_linuxfirmware_20250311b69d4b742_has/
 #TMP_DIR=$(mktemp -d)
 #curl -L https://archive.archlinux.org/packages/l/linux-firmware/linux-firmware-20250210.5bc5868b-1-any.pkg.tar.zst -o $TMP_DIR/linux-firmware-20250210.5bc5868b-1-any.pkg.tar.zst

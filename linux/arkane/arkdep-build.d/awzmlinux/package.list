@@ -66,6 +66,7 @@ gnome-shell
 gnome-software
 gnome-system-monitor
 gnome-tweaks
+gnome-keyring
 mutter
 nautilus
 gvfs
@@ -86,6 +87,7 @@ bluez-plugins
 bluez-utils
 bluez-tools
 flatpak
+flatpak-builder
 fuse
 fwupd
 gst-plugin-pipewire

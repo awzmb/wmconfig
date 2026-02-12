@@ -1,0 +1,2 @@
+# Vortex keyboard udev rule
+KERNEL=="hidraw*", SUBSYSTEM=="hidraw", ATTRS{idVendor}=="your_vendor_id", ATTRS{idProduct}=="your_product_id", MODE="0660", GROUP="users", TAG+="uaccess", TAG+="udev-acl"
