@@ -1,0 +1,14 @@
+#!/bin/sh
+
+podman run --rm -it \
+  --volume "$HOME/.config/gcloud:/root/.config/gcloud:Z" \
+  --volume "$HOME/.kube:/root/.kube:Z" \
+  --volume "$HOME/.config/helm:/root/.config/helm:Z" \
+  --volume "$HOME/.cache/helm:/root/.cache/helm:Z" \
+  --volume "$(pwd):/workspace" \
+  --volume "${HOME}/.docker/config.json:/root/.docker/config.json:ro" \
+  --workdir "/workspace" \
+  --env=KUBECONFIG=/root/.kube/config \
+  --env=TERM=$(echo ${TERM}) \
+  --env=EDITOR=nvim \
+  localhost/helm:latest "$@"
