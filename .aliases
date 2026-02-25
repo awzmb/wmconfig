@@ -21,7 +21,7 @@ alias gps='git push'
 alias gct='git shortlog -s -n --all --no-merges'
 
 # kubectl
-alias k='kubectl'
+alias k='gkubectl'
 
 # fzf find aliases
 alias fcd='cd $(find . -type d 2>&1 | grep -v "Permission denied" | fzf)'

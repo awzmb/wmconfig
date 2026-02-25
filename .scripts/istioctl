@@ -7,4 +7,5 @@ podman run --rm -it \
   --volume "$(pwd):/workspace" \
   --volume "${HOME}/.docker/config.json:/root/.docker/config.json:Z" \
   --workdir "/workspace" \
-  docker.io/istio/istioctl:1.27.6-distroless "$@"
+  localhost/gcloud-istioctl:latest "$@"
+  # docker.io/istio/istioctl:1.27.6-distroless "$@"
