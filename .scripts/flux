@@ -3,9 +3,9 @@
 podman run --rm -it \
   --volume "$HOME/.config/gcloud:/root/.config/gcloud:ro" \
   --volume "$HOME/.kube:/root/.kube:ro" \
-  --volume "$HOME/.docker/config.json:/root/.docker/config.json:ro" \
   --volume "$(pwd):/workspace" \
+  --volume "${HOME}/.docker/config.json:/root/.docker/config.json:ro" \
   --workdir "/workspace" \
   --env=KUBECONFIG=/root/.kube/config \
   --env=TERM=$(echo ${TERM}) \
-  "docker.io/fluxcd/flux-cli:v2.8.1" "$@"
+  localhost/flux:latest "$@"

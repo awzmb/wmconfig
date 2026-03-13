@@ -137,7 +137,7 @@ fi
 command -v gh > /dev/null && . <(gh completion -s zsh)
 command -v devpod > /dev/null && . <(devpod completion zsh)
 command -v timetrace > /dev/null && . <(timetrace completion zsh)
-command -v flux > /dev/null && . <(flux completion zsh)
+# command -v flux > /dev/null && . <(flux completion zsh)
 # command -v helm > /dev/null && . <(helm completion zsh)
 # command -v kubectl > /dev/null && . <(kubectl completion zsh --request-timeout 0.0001)
 command -v talosctl > /dev/null && talosctl completion zsh > "${fpath[1]}/_talosctl"
