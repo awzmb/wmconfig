@@ -1,0 +1,10 @@
+#!/bin/sh
+
+podman run --rm -it \
+  --user "$(id -u):$(id -g)" \
+  --userns=keep-id \
+  --volume "$HOME/.config/copilot:/home/$(whoami)/.copilot:Z" \
+  --volume "$(pwd):/home/$(whoami)/workspace:Z" \
+  --workdir "/home/$(whoami)/workspace" \
+  --env=TERM=$(echo ${TERM}) \
+  localhost/copilot:latest "$@"
