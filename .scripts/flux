@@ -1,11 +1,13 @@
 #!/bin/sh
 
 podman run --rm -it \
-  --volume "$HOME/.config/gcloud:/root/.config/gcloud:ro" \
-  --volume "$HOME/.kube:/root/.kube:ro" \
-  --volume "$(pwd):/workspace" \
-  --volume "${HOME}/.docker/config.json:/root/.docker/config.json:ro" \
+  --user "$(id -u):$(id -g)" \
+  --userns=keep-id \
+  --volume "$HOME/.config/gcloud:/home/$(whoami)/.config/gcloud:ro" \
+  --volume "$HOME/.kube:/home/$(whoami)/.kube:ro" \
+  --volume "$HOME/.docker/config.json:/home/$(whoami)/.docker/config.json:ro" \
+  --volume "$(pwd):/workspace:Z" \
   --workdir "/workspace" \
-  --env=KUBECONFIG=/root/.kube/config \
+  --env=KUBECONFIG=/home/$(whoami)/.kube/config \
   --env=TERM=$(echo ${TERM}) \
   localhost/flux:latest "$@"
