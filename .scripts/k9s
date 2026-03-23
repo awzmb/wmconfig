@@ -1,13 +1,15 @@
 #!/bin/sh
 
 podman run --rm -it \
-  --volume "$HOME/.config/gcloud:/root/.config/gcloud:Z" \
-  --volume "$HOME/.kube:/root/.kube:Z" \
-  --volume "$HOME/.config/k9s:/root/.config/k9s:ro" \
+  --user "$(id -u):$(id -g)" \
+  --userns=keep-id \
+  --volume "$HOME/.config/gcloud:/home/$(whoami)/.config/gcloud:Z" \
+  --volume "$HOME/.kube:/home/$(whoami)/.kube:ro" \
+  --volume "$HOME/.config/k9s:/home/$(whoami)/.config/k9s:Z" \
   --volume "$(pwd):/workspace" \
-  --volume "${HOME}/.docker/config.json:/root/.docker/config.json:ro" \
+  --volume "${HOME}/.docker/config.json:/home/$(whoami)/.docker/config.json:ro" \
   --workdir "/workspace" \
-  --env=KUBECONFIG=/root/.kube/config \
+  --env=KUBECONFIG=/home/$(whoami)/.kube/config \
   --env=TERM=$(echo ${TERM}) \
   --env=EDITOR=nvim \
   localhost/gcloud-k9s:latest "$@"

@@ -1,10 +1,12 @@
 #!/bin/sh
 
 podman run --rm -it \
-  --volume "$HOME/.config/gcloud:/root/.config/gcloud:Z" \
-  --volume "$HOME/.kube:/root/.kube:Z" \
-  --volume "$HOME/.ssh:/root/.ssh:Z" \
+  --user "$(id -u):$(id -g)" \
+  --userns=keep-id \
+  --volume "$HOME/.config/gcloud:/home/$(whoami)/.config/gcloud:Z" \
+  --volume "$HOME/.kube:/home/$(whoami)/.kube:Z" \
+  --volume "$HOME/.ssh:/home/$(whoami)/.ssh:Z" \
   --volume "$(pwd):/workspace" \
-  --volume "${HOME}/.docker/config.json:/root/.docker/config.json:Z" \
+  --volume "${HOME}/.docker/config.json:/home/$(whoami)/.docker/config.json:Z" \
   --workdir "/workspace" \
-  gcr.io/google.com/cloudsdktool/google-cloud-cli:latest gcloud "$@"
+  localhost/gcloud:latest "$@"

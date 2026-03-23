@@ -3,7 +3,7 @@
 podman run --rm -it \
   --user "$(id -u):$(id -g)" \
   --userns=keep-id \
-  --volume "$HOME/.config/gcloud:/home/$(whoami)/.config/gcloud:ro" \
+  --volume "$HOME/.config/gcloud:/home/$(whoami)/.config/gcloud:Z" \
   --volume "$HOME/.kube:/home/$(whoami)/.kube:ro" \
   --volume "$HOME/.docker/config.json:/home/$(whoami)/.docker/config.json:ro" \
   --volume "$(pwd):/workspace:Z" \
