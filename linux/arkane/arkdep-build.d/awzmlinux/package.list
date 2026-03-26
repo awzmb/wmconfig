@@ -33,6 +33,7 @@ skel-arkane
 sof-firmware
 sudo
 terminus-font
+ttf-zed-mono-nerd
 tpm2-tools
 tpm2-tss
 tpm2-tss-engine
