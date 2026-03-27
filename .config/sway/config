@@ -39,9 +39,9 @@ exec_always {
     gsettings set $gnome-schema gtk-theme 'Qogir-Dark'
     gsettings set $gnome-schema icon-theme 'Papirus'
     gsettings set $gnome-schema cursor-theme 'Adwaita'
-    gsettings set $gnome-schema font-name 'ZedMonoNerdFont 12'
-    gsettings set $gnome-schema monospace-font-name 'ZedMonoNerdFont 12'
-    gsettings set $gnome-schema document-font-name 'ZedMonoNerdFont 12'
+    gsettings set $gnome-schema font-name 'ZedMonoNerdFont 11'
+    gsettings set $gnome-schema monospace-font-name 'ZedMonoNerdFont 11'
+    gsettings set $gnome-schema document-font-name 'ZedMonoNerdFont 11'
     gsettings set $gnome-schema color-scheme prefer-dark
     gsettings set $gnome-schema enable-animations false
 }
@@ -78,7 +78,7 @@ set $mod Mod4
 set $laptop eDP-1
 
 # font for window titles. ISO 10646 = Unicode
-font pango:ZedMonoNerdFont 12
+font pango:ZedMonoNerdFont 11
 
 # no border / window title bar
 default_border none
