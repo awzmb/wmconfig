@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# Kills all running instances of wl-mirror
+killall wl-mirror
+echo "Stopped all wl-mirror instances."

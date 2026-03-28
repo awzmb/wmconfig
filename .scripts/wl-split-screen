@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# --- Configuration ---
+# Get this from `swaymsg -t get_outputs`
+PHYSICAL_OUTPUT="DP-1"
+WIDTH=3440
+HEIGHT=1440
+
+# --- Logic ---
+# Don't run if it's already running
+if pgrep -x "wl-mirror" > /dev/null
+then
+    echo "wl-mirror is already running. Exiting."
+    exit 0
+fi
+
+HALF_WIDTH=$((WIDTH / 2))
+
+# Create Left Virtual Screen
+wl-mirror --region "0,0,${HALF_WIDTH}x${HEIGHT}" --virtual "VIRTUAL-LEFT" "$PHYSICAL_OUTPUT" &
+
+# Create Right Virtual Screen
+wl-mirror --region "${HALF_WIDTH},0,${HALF_WIDTH}x${HEIGHT}" --virtual "VIRTUAL-RIGHT" "$PHYSICAL_OUTPUT" &
+
+echo "Ultrawide screen split into VIRTUAL-LEFT and VIRTUAL-RIGHT."
