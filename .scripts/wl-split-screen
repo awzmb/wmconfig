@@ -1,25 +1,37 @@
 #!/bin/bash
 
 # --- Configuration ---
-# Get this from `swaymsg -t get_outputs`
-PHYSICAL_OUTPUT="DP-1"
-WIDTH=3440
-HEIGHT=1440
+output_json=$(swaymsg -t get_outputs | jq -r '.[] | select(.focused)')
+
+PHYSICAL_OUTPUT=$(echo "$output_json" | jq -r '.name')
+WIDTH=$(echo "$output_json" | jq -r '.current_mode.width')
+HEIGHT=$(echo "$output_json" | jq -r '.current_mode.height')
 
 # --- Logic ---
-# Don't run if it's already running
 if pgrep -x "wl-mirror" > /dev/null
 then
     echo "wl-mirror is already running. Exiting."
+    # To stop the existing screens, you can run: killall wl-mirror
     exit 0
+fi
+
+# Check if we successfully got the output details
+if [ -z "$PHYSICAL_OUTPUT" ] || [ -z "$WIDTH" ] || [ -z "$HEIGHT" ]; then
+    echo "Error: Could not determine focused output's dimensions."
+    exit 1
 fi
 
 HALF_WIDTH=$((WIDTH / 2))
 
+echo "Physical screen: $PHYSICAL_OUTPUT (${WIDTH}x${HEIGHT})"
+echo "Splitting into two virtual screens of ${HALF_WIDTH}x${HEIGHT} each."
+
 # Create Left Virtual Screen
-wl-mirror --region "0,0,${HALF_WIDTH}x${HEIGHT}" --virtual "VIRTUAL-LEFT" "$PHYSICAL_OUTPUT" &
+# The format is X,Y,WIDTH,HEIGHT
+wl-mirror --region "0,0,${HALF_WIDTH},${HEIGHT}" --virtual "VIRTUAL-LEFT" "$PHYSICAL_OUTPUT" &
 
 # Create Right Virtual Screen
-wl-mirror --region "${HALF_WIDTH},0,${HALF_WIDTH}x${HEIGHT}" --virtual "VIRTUAL-RIGHT" "$PHYSICAL_OUTPUT" &
+wl-mirror --region "${HALF_WIDTH},0,${HALF_WIDTH},${HEIGHT}" --virtual "VIRTUAL-RIGHT" "$PHYSICAL_OUTPUT" &
 
 echo "Ultrawide screen split into VIRTUAL-LEFT and VIRTUAL-RIGHT."
+echo "To stop, run: killall wl-mirror"
