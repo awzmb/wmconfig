@@ -1,7 +1,0 @@
-defaultaccount = 'owner'
-
-[[accounts]]
-defaultZone = 'de-fra-1'
-key = 'EXO3493ca59def2db7b4c9dd6b0'
-name = 'owner'
-secret = 'FkSsM_yRwFg7NWkFUyAuPI2JX0XwSE4S0GxKORFEMpU'
