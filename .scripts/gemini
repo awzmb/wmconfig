@@ -1,6 +1,8 @@
 #!/bin/bash
 podman run --rm -it --interactive \
-  --volume ~/.config/gemini:/root/.gemini:Z \
+  --user "$(id -u):$(id -g)" \
+  --userns=keep-id \
+  --volume ~/.config/gemini:/home/$(whoami)/.gemini:Z \
   --volume "${PWD}":/workspace \
   --env GOOGLE_API_KEY=$(pass private/google/vertex-api-key) \
   --env GOOGLE_GENAI_USE_VERTEXAI=true \

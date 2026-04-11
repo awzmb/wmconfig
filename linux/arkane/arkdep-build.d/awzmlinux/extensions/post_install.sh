@@ -34,7 +34,7 @@ arch-chroot "$workdir" useradd aur -m -p '!'
 printf '\e[1;32m-->\e[0m\e[1m Allowing aur user passwordless sudo\e[0m\n'
 arch-chroot "$workdir" bash -c "echo 'aur ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/aur"
 
-# Build and install packages from pkgbuild
+# Build and install packages from pkgbuild directory
 printf '\e[1;32m-->\e[0m\e[1m Building and installing local packages\e[0m\n'
 pkgbuild_dir="arkdep-build.d/awzmlinux/pkgbuild"
 for pkg in "$pkgbuild_dir"/*; do

@@ -1,0 +1,9 @@
+#!/bin/sh
+
+podman run --rm -it \
+  --user "$(id -u):$(id -g)" \
+  --userns=keep-id \
+  --volume "$HOME/.config/exoscale:/home/$(whoami)/.config/exoscale:Z" \
+  --volume "$(pwd):/workspace" \
+  --workdir "/workspace" \
+  docker.io/exoscale/cli:1.94.0 "$@"

@@ -12,14 +12,14 @@ white="%F{7}"
 
 
 # k8s and aws profile information
-function k8s_info {
-  if command -v kubectl &> /dev/null; then
-    k8s_context=$(kubectl config current-context --request-timeout 0.0001 2>&1 | grep -v 'error: current-context is not set')
-    if [ ! -z $k8s_context ]; then
-      echo " %F{135}<$k8s_context>"
-    fi
-  fi
-}
+# function k8s_info {
+#   if command -v kubectl &> /dev/null; then
+#     k8s_context=$(kubectl config current-context --request-timeout 0.0001 2>&1 | grep -v 'error: current-context is not set')
+#     if [ ! -z $k8s_context ]; then
+#       echo " %F{135}<$k8s_context>"
+#     fi
+#   fi
+# }
 
 function aws_info {
   if [ ! -z $AWS_PROFILE ]; then
@@ -90,7 +90,7 @@ function left_prompt {
 
 function right_prompt {
 	echo -n "$vcs_info_msg_0_" # git branch
-  echo -n "$(k8s_info)$(aws_info)%{$reset_color%}" # kubectl config
+  # echo -n "$(k8s_info)$(aws_info)%{$reset_color%}" # kubectl config
 }
 
 PROMPT='$(left_prompt)'

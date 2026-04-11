@@ -18,11 +18,9 @@ license=('custom')
 # skip stripping the binaries to pass integrity check inside vpnagentd
 options=('!strip')
 
-source=(
-    "cisco-secure-client-linux64-${pkgver}-predeploy-k9.tar.gz::https://bluelink.ca/ftp/CiscoVPN/cisco-secure-client-linux64-${pkgver}-predeploy-k9.tar.gz"
-)
+source=("cisco-secure-client-linux64-${pkgver}-predeploy-k9.tar.gz::https://bluelink.ca/ftp/CiscoVPN/cisco-secure-client-linux64-${pkgver}-predeploy-k9.tar.gz")
 
-sha256sums=('066815d05c2547e3cab02167e7ed85c2adcbab95f6942aa94561db8395e01c69')
+sha256sums=('f53affe5d264475bb30fba642e0f5c425840ae522f7ecf8a353ad4ebc1143517')
 
 package() {
     mkdir -p "${pkgdir}/opt/cisco/anyconnect"
