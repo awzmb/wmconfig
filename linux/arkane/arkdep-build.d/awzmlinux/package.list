@@ -299,7 +299,7 @@ libxml2-legacy
 xmlstarlet # i hate cisco with a passion
 
 # Local LLM inference
-intel-npu-driver-bin
+# intel-npu-driver-bin
 # openvino
 # openvino-intel-gpu-plugin
 # openvino-intel-npu-plugin # not ready yet
