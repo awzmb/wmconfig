@@ -50,6 +50,8 @@ podman
 podman-compose
 cni-plugins
 rootlesskit
+firecracker
+krun
 
 # Incus
 minio-client
