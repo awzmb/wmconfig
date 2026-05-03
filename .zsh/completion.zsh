@@ -126,7 +126,7 @@ compdef _gh_pr_checkout_completion gh-pr-checkout
 command -v gh        > /dev/null && source <(gh completion -s zsh)
 command -v devpod    > /dev/null && source <(devpod completion zsh)
 command -v timetrace > /dev/null && source <(timetrace completion zsh)
-command -v talosctl  > /dev/null && talosctl completion zsh > "${fpath[1]}/_talosctl"
+command -v talosctl  > /dev/null && source <(talosctl completion zsh)
 command -v terraform > /dev/null && complete -o nospace -C "${HOME}/.bin/terraform" terraform
 command -v aws_completer > /dev/null && complete -C aws_completer aws
 

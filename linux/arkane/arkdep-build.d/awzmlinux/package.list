@@ -52,6 +52,7 @@ cni-plugins
 rootlesskit
 firecracker
 krun
+krunvm
 
 # Incus
 minio-client
