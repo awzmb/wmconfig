@@ -22,6 +22,7 @@ linux/arkane-sunshine/target
 .config/hypr/monitors.conf
 .config/sway/monitors.conf
 .config/sway/outputs
+.config/sway/workspaces
 
 # ignore current hardware configuration file in nixos setup
 .config/nixpkgs/nixos/hardware-configuration.nix
