@@ -1,3 +1,4 @@
+# --- general settings ---
 # ensure we have correct locale set (this is mostly for MacOS)
 export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
@@ -16,17 +17,6 @@ else
   export VISUAL=vim
 fi
 
-# colored ls (one version for GNU, other for macos)
-if whence dircolors > /dev/null; then
-  eval "`dircolors -b`"
-  alias ls='ls --color=auto'
-else
-  export CLICOLOR=1
-fi
-
-# load completion
-autoload -Uz compinit; compinit
-_comp_options+=(globdots) # With hidden files
 
 # make less always work with colored input
 alias less='less -R'
@@ -90,11 +80,14 @@ setopt MENU_COMPLETE
 setopt no_list_ambiguous
 zstyle ':completion:*' menu yes select
 
-# completions
-compinit -u -d "${HOME}/.zcompdump_${ZSH_VERSION}"
+# --- tools ---
+zinit param'zs_set_path' for @psprint/zsh-sweep
 
-# allow ssh tab completion for mosh hostnames
-compdef mosh=ssh
-
-# load bashcompinit for some old bash completions
-autoload bashcompinit && bashcompinit
+# --- fixes ---
+# linux-specific settings
+if [ "$(uname)" = "Linux" ]; then
+  # xdg runtime dir for podman
+  export XDG_RUNTIME_DIR=/run/user/$(id -u)
+  # don't use a gui prompt for git credentials
+  unset SSH_ASKPASS
+fi

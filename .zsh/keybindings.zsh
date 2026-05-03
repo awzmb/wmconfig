@@ -1,4 +1,8 @@
+# --- vi mode ---
 ##### vi mode settings
+# enable vi key bindings
+bindkey -v
+
 # Remove mode switching delay.
 KEYTIMEOUT=5
 
@@ -53,3 +57,18 @@ bindkey '^s' history-incremental-search-forward
 # allow ctrl-a and ctrl-e to move to beginning/end of line
 bindkey '^a' beginning-of-line
 bindkey '^e' end-of-line
+
+# --- rationalize dot ---
+# rastonalize dot module
+rationalise-dot() {
+  if [[ $LBUFFER = *.. ]]; then
+    LBUFFER+=/..
+  else
+    LBUFFER+=.
+  fi
+}
+
+zle -N rationalise-dot
+bindkey . rationalise-dot
+# without the following, typing a period aborts incremental history search
+bindkey -M isearch . self-insert
