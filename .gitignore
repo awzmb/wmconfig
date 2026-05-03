@@ -31,3 +31,4 @@ linux/arkane-sunshine/target
 
 # zsh completion generator directories
 .zsh/gencompl
+.zsh/completions
