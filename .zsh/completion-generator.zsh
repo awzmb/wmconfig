@@ -1,5 +1,5 @@
 # set completion path
-GENCOMPL_FPATH=$HOME/.zsh/completions
+GENCOMPL_FPATH=$HOME/.zsh/gencompl
 
 # load plugin
 zinit light RobSis/zsh-completion-generator

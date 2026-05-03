@@ -28,3 +28,6 @@ linux/arkane-sunshine/target
 
 # ignore lazuvim cache
 .config/nvim/lazy-lock.json
+
+# zsh completion generator directories
+.zsh/gencompl
