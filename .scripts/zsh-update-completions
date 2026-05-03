@@ -1,0 +1,44 @@
+#!/bin/zsh
+COMPLETIONS_DIR="${HOME}/.zsh/completions"
+
+echo "Ensuring completion directory exists: ${COMPLETIONS_DIR}"
+mkdir -p "$COMPLETIONS_DIR"
+
+echo ""
+
+# --- Flux ---
+if command -v flux >/dev/null; then
+  echo "=> Found flux, generating completion file..."
+  flux completion zsh > "${COMPLETIONS_DIR}/_flux"
+  echo "   Done: ${_COMPLETIONS_DIR}/_flux"
+else
+  echo "-> flux not found, skipping."
+fi
+
+echo ""
+
+# --- Helm ---
+if command -v helm >/dev/null; then
+  echo "=> Found helm, generating completion file..."
+  helm completion zsh > "${COMPLETIONS_DIR}/_helm"
+  echo "   Done: ${_COMPLETIONS_DIR}/_helm"
+else
+  echo "-> helm not found, skipping."
+fi
+
+echo ""
+
+# --- Kubectl ---
+# The --request-timeout flag is used to prevent kubectl from hanging
+# if it can't reach a Kubernetes API server during generation.
+if command -v kubectl >/dev/null; then
+  echo "=> Found kubectl, generating completion file..."
+  kubectl completion zsh --request-timeout=0.0001 > "${COMPLETIONS_DIR}/_kubectl"
+  echo "   Done: ${_COMPLETIONS_DIR}/_kubectl"
+else
+  echo "-> kubectl not found, skipping."
+fi
+
+echo ""
+echo "--------------------------------------------------------"
+echo "✅ All done!"
