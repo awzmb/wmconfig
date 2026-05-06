@@ -1,6 +1,7 @@
 #!/bin/sh
 
-podman run --rm -it --runtime=krun \
+#podman run --rm -it --runtime=krun \
+podman run --rm -it \
   --user "$(id -u):$(id -g)" \
   --userns=keep-id \
   --volume "$HOME/.config/copilot:/home/$(whoami)/.copilot:Z" \

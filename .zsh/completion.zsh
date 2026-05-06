@@ -131,4 +131,3 @@ command -v terraform > /dev/null && complete -o nospace -C "${HOME}/.bin/terrafo
 command -v aws_completer > /dev/null && complete -C aws_completer aws
 
 compdef mosh=ssh
-command -v tt > /dev/null && export SHEET_FILE="${HOME}/.timesheets/timesheet.json"

@@ -42,3 +42,6 @@ if [ "$TERM" = "linux" ]; then
     echo -en "\e]P7E5E9F0" #lightgrey
     echo -en "\e]PFD8DEE9" #white
 fi
+
+# Set timesheet file if tt is installed
+command -v tt > /dev/null && export SHEET_FILE="${HOME}/.timesheets/timesheet.json"

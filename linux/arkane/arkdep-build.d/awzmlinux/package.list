@@ -53,6 +53,7 @@ rootlesskit
 firecracker
 krun
 krunvm
+virtiofsd
 
 # Incus
 minio-client

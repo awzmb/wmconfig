@@ -1,6 +1,6 @@
 #!/bin/sh
 
-podman run --rm -it \
+podman run --rm -i \
   --user "$(id -u):$(id -g)" \
   --userns=keep-id \
   --volume "$HOME/.config/gcloud:/home/$(whoami)/.config/gcloud:Z" \
