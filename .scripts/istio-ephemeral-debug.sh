@@ -8,4 +8,4 @@ NAMESPACE=$1
 POD_NAME=$2
 
 # run the kubectl debug command
-gkubectl debug -it $POD_NAME --image=nicolaka/netshoot --namespace=$NAMESPACE
+kubectl debug -it $POD_NAME --image=nicolaka/netshoot --namespace=$NAMESPACE
