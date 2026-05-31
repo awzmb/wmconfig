@@ -52,3 +52,5 @@ alias tfupdate="${HOME}/.scripts/container-tfupdate.sh"
 alias hcloud='podman run --rm -e HCLOUD_TOKEN="$(pass private/heztner-api-key)" docker.io/hetznercloud/cli:latest'
 alias hcloud-upload-image='podman run --rm -e HCLOUD_TOKEN="$(pass private/heztner-api-key)" ghcr.io/apricote/hcloud-upload-image:latest'
 alias butane='podman run --rm --interactive --security-opt label=disable --volume "${PWD}":/workspace --workdir /workspace quay.io/coreos/butane:release'
+
+alias dost='kubectl --kubeconfig ~/.kube/dost2-config'

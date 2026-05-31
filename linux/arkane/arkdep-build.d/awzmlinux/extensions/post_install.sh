@@ -15,6 +15,9 @@ arch-chroot "$workdir" rm -f /usr/share/hypr/hyprland.conf
 #pacman -U --noconfirm $TMP_DIR/linux-firmware-20250210.5bc5868b-1-any.pkg.tar.zst
 #rm -rf $TMP_DIR
 
+# remove unwanted packages pulled in as dependencies
+arch-chroot "$workdir" pacman -Rdd --noconfirm chromium 2>/dev/null || true
+
 # set hostname
 arch-chroot "$workdir" hostnamectl set-hostname 'L0223-1024'
 
