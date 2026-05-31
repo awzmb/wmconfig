@@ -11,20 +11,21 @@ diffutils
 distrobox
 dosfstools
 efibootmgr
+espeak-ng
 f2fs-tools
 fakeroot
 git
 glibc-locales
-# iptables-nft
 libnss-extrausers
-libva-mesa-driver
 linux-zen-headers
+libva-mesa-driver
 lvm2
 man-db
 mesa
 neovim
 networkmanager
 openssh
+orca
 pacman-contrib
 plymouth
 pv
@@ -32,6 +33,7 @@ qemu-guest-agent
 skel-arkane
 sof-firmware
 sudo
+sudo-rs
 terminus-font
 ttf-zed-mono-nerd
 tpm2-tools
@@ -42,8 +44,13 @@ vulkan-mesa-layers
 vulkan-nouveau
 vulkan-radeon
 wget
+xfsprogs
 zsh
 zsh-completions
+kmscon
+
+# Audio
+realtime-privileges
 
 # Container
 podman
@@ -266,6 +273,7 @@ hyprpicker
 xdg-desktop-portal-hyprland
 hy3
 grim
+slurp
 
 # Themes and icons
 papirus-icon-theme

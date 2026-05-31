@@ -1,7 +1,7 @@
 # Arkane Linux generic
 base
-linux-firmware
 linux-zen
+linux-firmware
 arkane-keyring
 dracut
 
