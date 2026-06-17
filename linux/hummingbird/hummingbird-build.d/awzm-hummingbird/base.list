@@ -1,0 +1,14 @@
+# Base OCI image used as the FROM in the generated Containerfile.
+#
+# This is the arkdep `bootstrap.list` equivalent: instead of a list of packages
+# pacstrapped into an empty root, a bootc image starts from an existing
+# image-mode base.
+#
+# The first non-comment, non-empty line is used as the base image reference.
+# Override at build time with:  HUMMINGBIRD_BASE=<ref> ./hummingbird-build awzm-hummingbird
+#
+# Fedora bootc base image (official, confirmed public on quay.io/fedora/fedora-bootc).
+# "Fedora Hummingbird" uses this as its base — the branding is a project layered
+# on top of the standard Fedora image-mode base, not a separate registry repo.
+# Tags: latest, 42, 43, rawhide  (see quay.io/fedora/fedora-bootc for all tags)
+quay.io/fedora/fedora-bootc:42

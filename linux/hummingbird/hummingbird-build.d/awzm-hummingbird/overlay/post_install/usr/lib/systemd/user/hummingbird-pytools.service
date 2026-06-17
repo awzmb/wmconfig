@@ -1,0 +1,13 @@
+[Unit]
+Description=Install Hummingbird per-user Python tools via uv
+Documentation=https://docs.astral.sh/uv/
+ConditionPathExists=/usr/share/hummingbird/python-tools.list
+ConditionPathExists=!%h/.local/state/hummingbird/.pytools-installed
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/libexec/hummingbird-pytools-install
+
+[Install]
+WantedBy=default.target

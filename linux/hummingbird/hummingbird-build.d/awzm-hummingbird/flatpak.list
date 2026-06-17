@@ -1,0 +1,13 @@
+# Flatpaks installed system-wide on first boot.
+#
+# Mirrors the `flatpak install --system` step from arkane/post-install.sh and the
+# Flatpak apps referenced by the GNOME favourites overlay. Flathub is added and
+# these are installed by the hummingbird-flatpak.service first-boot unit (because
+# flatpak needs a writable /var that only exists on the deployed system).
+#
+# Format: one Flatpak ref (application id) per line.
+
+org.mozilla.firefox
+io.bassi.Amberol
+com.moonlight_stream.Moonlight
+org.freedesktop.Platform.VAAPI.Intel

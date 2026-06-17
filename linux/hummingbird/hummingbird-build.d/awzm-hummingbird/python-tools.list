@@ -1,0 +1,15 @@
+# Python CLI tools installed per-user on first login via `uv tool install`.
+#
+# Mirrors the `pip install --user` block from arkane/post-install.sh, but uses uv
+# instead of pip (honouring the "never pip, use uv" preference). Installed by the
+# hummingbird-pytools.service user unit (see overlay/post_install).
+#
+# Format: one PyPI package (uv tool) per line.
+
+pre-commit
+tt-time-tracker
+parliament
+aws-policy-generator
+gcalcli
+posting
+protonup

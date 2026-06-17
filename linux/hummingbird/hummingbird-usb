@@ -1,0 +1,160 @@
+#!/usr/bin/env bash
+#
+# hummingbird-usb
+#
+# Turn a built Hummingbird bootc image into a bootable installer and (optionally)
+# write it to a USB stick, so the OS can be installed on bare-metal devices.
+#
+# It uses bootc-image-builder to produce either an Anaconda installer ISO
+# (default, recommended for a USB installer) or a raw disk image, then can flash
+# the result to a USB device with dd.
+#
+# Usage:
+#   sudo ./hummingbird-usb [options] [variant]
+#
+# Options:
+#   --type <t>      output type: anaconda-iso (default) | iso | raw | qcow2
+#   --image <ref>   image reference to build from
+#                   (default: localhost/<variant>:latest, built by hummingbird-build)
+#   --config <f>    bootc-image-builder config.toml
+#                   (default: hummingbird-build.d/<variant>/bib/config.toml)
+#   --output <dir>  output directory (default: ./target)
+#   --device <dev>  USB block device to flash, e.g. /dev/sdb (DESTRUCTIVE)
+#   --bib <ref>     bootc-image-builder image
+#                   (default: quay.io/centos-bootc/bootc-image-builder:latest)
+#   --yes           skip the flashing confirmation prompt
+#   -h, --help      show this help
+#
+# Examples:
+#   sudo ./hummingbird-usb                          # build installer ISO into ./target
+#   sudo ./hummingbird-usb --device /dev/sdb        # build ISO and flash to /dev/sdb
+#   sudo ./hummingbird-usb --type raw --device /dev/sdb awzm-hummingbird
+#
+set -euo pipefail
+
+self_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+configsdir="$self_dir/hummingbird-build.d"
+PODMAN=${PODMAN:-podman}
+
+die() { printf '\e[1;31m==> error:\e[0m %s\n' "$*" >&2; exit 1; }
+info() { printf '\e[1;32m==>\e[0m\e[1m %s\e[0m\n' "$*"; }
+warn() { printf '\e[1;33m==> warning:\e[0m %s\n' "$*" >&2; }
+
+# --- defaults ------------------------------------------------------------
+out_type=anaconda-iso
+image=
+config=
+outdir="$self_dir/target"
+device=
+bib_image=quay.io/centos-bootc/bootc-image-builder:latest
+assume_yes=0
+variant=
+
+# --- parse args ----------------------------------------------------------
+while [[ $# -gt 0 ]]; do
+	case "$1" in
+		--type)   out_type=$2; shift 2;;
+		--image)  image=$2; shift 2;;
+		--config) config=$2; shift 2;;
+		--output) outdir=$2; shift 2;;
+		--device) device=$2; shift 2;;
+		--bib)    bib_image=$2; shift 2;;
+		--yes|-y) assume_yes=1; shift;;
+		-h|--help) sed -n '2,40p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'; exit 0;;
+		-*)        die "unknown option: $1";;
+		*)         variant=$1; shift;;
+	esac
+done
+
+variant=${variant:-awzm-hummingbird}
+variantdir="$configsdir/$variant"
+[[ -d $variantdir ]] || die "variant '$variant' not found in $configsdir"
+
+image=${image:-localhost/${variant}:latest}
+config=${config:-$variantdir/bib/config.toml}
+
+[[ $(id -u) -eq 0 ]] || die "must run as root (bootc-image-builder needs --privileged)"
+command -v "$PODMAN" >/dev/null 2>&1 || die "$PODMAN not found"
+[[ -f $config ]] || die "config not found: $config"
+
+# Verify the source image exists locally (built by hummingbird-build).
+local_flag=()
+if "$PODMAN" image exists "$image" 2>/dev/null; then
+	local_flag=(--local)
+	info "using local image: $image"
+else
+	warn "image '$image' not found in local storage; bib will try to pull it"
+fi
+
+mkdir -p "$outdir"
+
+# --- run bootc-image-builder --------------------------------------------
+info "building installer (type=$out_type) from $image"
+"$PODMAN" run --rm -it --privileged --pull=newer \
+	--security-opt label=type:unconfined_t \
+	-v "$config":/config.toml:ro \
+	-v "$outdir":/output \
+	-v /var/lib/containers/storage:/var/lib/containers/storage \
+	"$bib_image" \
+	--type "$out_type" \
+	--use-librepo=True \
+	"${local_flag[@]}" \
+	"$image"
+
+# --- locate the produced artifact ---------------------------------------
+artifact=
+case "$out_type" in
+	anaconda-iso|iso)
+		artifact=$(find "$outdir" -name '*.iso' -type f 2>/dev/null | head -n1);;
+	raw)
+		artifact=$(find "$outdir" -name '*.raw' -type f 2>/dev/null | head -n1);;
+	qcow2)
+		artifact=$(find "$outdir" -name '*.qcow2' -type f 2>/dev/null | head -n1);;
+esac
+
+[[ -n $artifact && -f $artifact ]] || die "could not locate build artifact under $outdir"
+info "artifact: $artifact"
+
+# --- optionally flash to USB --------------------------------------------
+if [[ -z $device ]]; then
+	cat <<EOF
+
+No --device given, so nothing was flashed.
+
+To write the installer to a USB stick manually:
+  sudo dd if='$artifact' of=/dev/sdX bs=4M status=progress oflag=direct conv=fsync
+  sync
+
+(Replace /dev/sdX with your USB device. Double-check with 'lsblk' first!)
+EOF
+	exit 0
+fi
+
+[[ -b $device ]] || die "$device is not a block device"
+
+# Safety checks before destroying a disk.
+if findmnt -rno SOURCE,TARGET | grep -q "^${device}.* / *$"; then
+	die "$device hosts the running root filesystem; refusing to flash"
+fi
+if lsblk -rno MOUNTPOINT "$device" 2>/dev/null | grep -q '^/$'; then
+	die "$device appears to be mounted at /; refusing to flash"
+fi
+
+echo
+warn "About to OVERWRITE all data on $device:"
+lsblk -o NAME,SIZE,TYPE,MODEL,MOUNTPOINTS "$device" || lsblk "$device"
+echo
+if [[ $assume_yes -ne 1 ]]; then
+	read -r -p "Type 'YES' to write '$(basename "$artifact")' to $device: " ans
+	[[ $ans == YES ]] || die "aborted by user"
+fi
+
+# Unmount any mounted partitions of the target device.
+for part in $(lsblk -rno NAME "$device" | tail -n +2); do
+	umount "/dev/$part" 2>/dev/null || true
+done
+
+info "writing to $device ..."
+dd if="$artifact" of="$device" bs=4M status=progress oflag=direct conv=fsync
+sync
+info "done; $device is now a bootable Hummingbird installer"

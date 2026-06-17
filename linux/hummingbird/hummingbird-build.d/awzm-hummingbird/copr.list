@@ -1,0 +1,20 @@
+# COPR repositories to enable before installing packages.
+#
+# Fedora analogue of the Chaotic-AUR / AUR usage in awzmlinux
+# (extensions/post_bootstrap.sh + post_install.sh on Arch).
+#
+# Format: one `owner/project` per line. Enabled with `dnf copr enable -y` in the
+# post_bootstrap extension. Comment out any you don't need. These are common
+# sources for the packages marked "COPR" in package.list; adjust to taste.
+
+# Hyprland ecosystem (only needed if not in the main Fedora repos for your release)
+# solopasha/hyprland
+
+# keyd key remapping daemon (if not in stable Fedora repos)
+# alternateved/keyd
+
+# kmscon terminal
+# atim/kmscon
+
+# Niche tooling
+# firecracker -> upstream release binary, see extensions/post_install.sh notes

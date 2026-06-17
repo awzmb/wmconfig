@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# Per-user first-login Python tool installer for Hummingbird, using uv.
+# Mirrors the pip block from arkane/post-install.sh but with `uv tool install`.
+set -euo pipefail
+
+list=/usr/share/hummingbird/python-tools.list
+[[ -f $list ]] || exit 0
+
+command -v uv >/dev/null 2>&1 || { echo "uv not found, skipping"; exit 0; }
+
+while read -r pkg; do
+	pkg=${pkg%%#*}
+	pkg=$(echo "$pkg" | xargs)
+	[[ -z $pkg ]] && continue
+	echo "==> uv tool install $pkg"
+	uv tool install "$pkg" || echo "!! failed to install $pkg, continuing"
+done < "$list"
+
+state="${XDG_STATE_HOME:-$HOME/.local/state}/hummingbird"
+mkdir -p "$state"
+touch "$state/.pytools-installed"

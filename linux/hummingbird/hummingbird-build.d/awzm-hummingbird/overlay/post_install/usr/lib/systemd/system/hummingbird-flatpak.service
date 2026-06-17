@@ -1,0 +1,17 @@
+[Unit]
+Description=Install Hummingbird system Flatpaks on first boot
+Documentation=https://docs.fedoraproject.org/en-US/bootc/
+After=network-online.target
+Wants=network-online.target
+ConditionPathExists=/usr/share/hummingbird/flatpak.list
+ConditionPathExists=!/var/lib/hummingbird/.flatpak-installed
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/libexec/hummingbird-flatpak-install
+ExecStartPost=/usr/bin/mkdir -p /var/lib/hummingbird
+ExecStartPost=/usr/bin/touch /var/lib/hummingbird/.flatpak-installed
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,22 @@
+# bootc-image-builder configuration for the awzm-hummingbird variant.
+# https://github.com/osbuild/bootc-image-builder
+#
+# Used by ./hummingbird-usb to produce the installer ISO / disk image.
+# The installer created from this config installs the OS to bare metal.
+
+[[customizations.user]]
+name = "awzm"
+# Member of wheel (sudo) and the groups the desktop/services expect.
+groups = ["wheel", "seat", "video", "audio", "input", "render", "realtime"]
+# Default password below is "hummingbird" (CHANGE IT). Generate your own with:
+#   mkpasswd -m sha512    (or)   openssl passwd -6
+# (or use `key` below for SSH-only login and remove this line)
+password = "$6$aXSt5MJYOE9adprF$meD2Y.dOCjHDLBfak04pKXBndgFupGFIU/1X8TwxNUD0lm.16OcGjYK5MOp/M.ppobWlQY8Fr2laGi4VI3RT51"
+# key = "ssh-ed25519 AAAA... user@host"
+
+[customizations.installer.kickstart]
+# Minimal extra kickstart appended to the generated Anaconda installer.
+# Keep empty to use Anaconda defaults; add e.g. partitioning here.
+contents = """
+timezone UTC --utc
+"""

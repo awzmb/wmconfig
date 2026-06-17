@@ -1,0 +1,272 @@
+# Fedora package list for the awzm-hummingbird variant.
+#
+# Ported from arkane/arkdep-build.d/awzmlinux/package.list (Arch) to Fedora/dnf
+# package names. Installed with `dnf install` inside the bootc image build.
+#
+# Lines beginning with '#' and blank lines are ignored. Packages that have no
+# Fedora equivalent, are Arch/arkdep specific, or live in COPR/RPM Fusion are
+# commented out with a note (COPR repos -> copr.list, RPM Fusion -> see build).
+
+# Basic packages
+# apparmor                    # Fedora uses SELinux by default; kept off
+bind-utils
+binutils
+btrfs-progs
+debugedit
+diffutils
+distrobox
+dosfstools
+efibootmgr
+espeak-ng
+f2fs-tools
+fakeroot
+git
+glibc-langpack-en
+lvm2
+man-db
+mesa-dri-drivers
+mesa-va-drivers
+mesa-vulkan-drivers
+neovim
+NetworkManager
+openssh-clients
+openssh-server
+orca
+plymouth
+pv
+qemu-guest-agent
+alsa-sof-firmware
+sudo
+terminus-fonts
+terminus-fonts-console
+tpm2-tools
+tpm2-tss
+vulkan-tools
+vulkan-loader
+wget2
+xfsprogs
+zsh
+# kmscon                      # COPR (see copr.list)
+# arch-install-scripts        # Arch-only
+# archiso                     # Arch-only
+# arkdep                      # replaced by bootc
+# skel-arkane                 # Arch/arkane-only
+# libnss-extrausers           # not needed under bootc (standard nsswitch)
+# sudo-rs                     # not packaged; using sudo
+# pacman-contrib              # Arch-only
+
+# Audio
+realtime-setup                # Fedora equivalent of realtime-privileges
+
+# Container
+podman
+podman-compose
+containernetworking-plugins
+# rootlesskit                 # bundled with podman on Fedora
+# firecracker                 # COPR (see copr.list)
+crun
+# krun / krunvm               # COPR (see copr.list)
+virtiofsd
+
+# Incus / object storage
+# minio-client                # COPR / upstream binary (see copr.list)
+
+# GNOME (GDM login/greeter; Sway is the default session — see post_install.sh.
+# gnome-shell is required by the GDM greeter even though Sway is the main WM)
+gdm
+evolution-data-server
+gnome-backgrounds
+gnome-console
+gnome-control-center
+gnome-disk-utility
+gnome-initial-setup
+gnome-menus
+gnome-shell
+gnome-software
+gnome-system-monitor
+gnome-tweaks
+gnome-keyring
+mutter
+nautilus
+gvfs
+gvfs-afc
+gvfs-fuse
+gvfs-goa
+gvfs-gphoto2
+gvfs-mtp
+gvfs-nfs
+gvfs-smb
+xdg-desktop-portal-gnome
+
+# Desktop
+bluez
+bluez-tools
+flatpak
+flatpak-builder
+fuse
+fuse3
+fwupd
+gstreamer1-plugins-base
+gstreamer1-plugins-good
+gstreamer1-plugins-bad-free
+gstreamer1-plugins-ugly-free   # RPM Fusion
+gstreamer1-plugin-libav        # RPM Fusion
+libde265                       # RPM Fusion
+ibus-typing-booster
+pipewire
+pipewire-alsa
+pipewire-jack-audio-connection-kit
+pipewire-pulseaudio
+power-profiles-daemon
+spice-vdagent
+switcheroo-control
+webp-pixbuf-loader
+wireplumber
+xdg-user-dirs
+xdg-utils
+wl-mirror
+
+# Hardware / microcode
+microcode_ctl                  # covers intel + amd ucode on Fedora
+
+# Shell and tools
+keyd                           # COPR may be required on stable Fedora
+sshuttle
+fzf
+tmux
+vim-enhanced
+foot
+vifm
+gh                             # github-cli
+git-delta
+git-lfs
+git-crypt
+pass
+oath-toolkit
+w3m
+calc
+eza
+bat
+fd-find
+nodejs-npm
+yarnpkg
+htop
+mpv
+calcurse
+yamllint
+glow
+unrar                          # RPM Fusion
+wireguard-tools
+python3-pip
+pipx
+python3-neovim
+nmap-ncat
+termshark
+zip
+ctags
+cscope
+ttyd
+broot
+glances
+procs
+yq
+age
+uv                             # honoured user pref: uv over pip
+
+# Development
+java-latest-openjdk
+luarocks
+rust-analyzer
+cargo
+
+# Media drivers and extensions
+seatd
+intel-media-driver
+libva-intel-driver             # RPM Fusion
+intel-compute-runtime
+intel-gpu-tools
+intel-graphics-compiler
+intel-gmmlib
+libva-utils
+radeontop
+nvtop                          # RPM Fusion
+mesa-libGL
+mesa-libEGL
+
+# General desktop packages
+fuzzel
+miller
+alacritty
+brightnessctl
+cliphist
+gammastep
+blueman
+wl-clipboard
+rofi-wayland
+dunst
+NetworkManager-applet
+pavucontrol
+pass-otp
+fontawesome-fonts-all
+kitty
+google-noto-emoji-fonts
+
+# Sway packages
+kanshi
+nwg-displays
+nwg-look
+sway
+swayidle
+swaylock
+swaybg
+waybar
+wlr-randr
+xdg-desktop-portal-wlr
+grim
+slurp
+
+# Hyprland (Fedora ships hyprland in repos on recent releases / COPR otherwise)
+hyprland
+hyprlock
+hypridle
+hyprpicker
+hyprcursor
+hyprlang
+xdg-desktop-portal-hyprland
+# hyprpolkitagent             # COPR if unavailable
+# hyprsunset                  # COPR if unavailable
+# hy3                         # COPR/build (hyprland plugin)
+
+# Themes and icons
+papirus-icon-theme
+gnome-themes-extra
+
+# Gaming (RPM Fusion + Flathub)
+steam                          # RPM Fusion (nonfree)
+gamemode
+lutris
+mangohud
+# moonlight-qt                # Flatpak (see flatpak.list)
+
+# Camera
+v4l-utils
+# v4l2loopback-dkms / -utils  # akmod-v4l2loopback via RPM Fusion (see copr.list note)
+akmod-v4l2loopback             # RPM Fusion
+libcamera
+libcamera-tools
+pipewire-plugin-libcamera
+obs-studio                     # RPM Fusion
+
+# Networking
+opensnitch
+NetworkManager-vpnc
+NetworkManager-openconnect
+NetworkManager-openvpn
+xmlstarlet                     # i hate cisco with a passion
+
+# Public cloud CLI tools
+awscli2
+
+# Bare-metal / image-mode tooling
+coreos-installer
+bootc
