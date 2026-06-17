@@ -1,7 +1,0 @@
-#!/bin/sh
-
-podman run --rm -it \
-  --volume "$(pwd):/workspace" \
-  --workdir "/workspace" \
-  --env=TERM=$(echo ${TERM}) \
-  docker.io/magicwormhole/magic-wormhole "$@"
