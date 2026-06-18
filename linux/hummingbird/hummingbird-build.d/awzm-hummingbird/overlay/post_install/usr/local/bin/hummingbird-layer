@@ -1,0 +1,185 @@
+#!/usr/bin/env bash
+#
+# hummingbird-layer
+#
+# Persistently layer extra RPM packages on top of the running Hummingbird bootc
+# image, the bootc-native way: build a small derived image locally and stage it
+# for the next boot with `bootc switch`. This is the equivalent of Silverblue's
+# `rpm-ostree install`, but it produces a real (local) container image so the
+# result stays reproducible and rolls back cleanly.
+#
+# State lives in /etc/hummingbird/layer:
+#   base       the upstream image reference to build FROM (auto-detected once)
+#   packages   newline-separated list of layered package names
+#
+# The derived image is tagged localhost/hummingbird-layered:latest in the
+# machine's (root) container storage.
+#
+# Usage:
+#   sudo hummingbird-layer <command> [args]
+#
+# Commands:
+#   add <pkg>...      Add package(s), rebuild the layer, stage for next boot
+#   remove <pkg>...   Remove package(s), rebuild the layer, stage for next boot
+#   list              Show the currently layered packages
+#   update            Re-pull the upstream base image and rebuild the layer
+#                     (this is how a layered system receives OS updates — the
+#                     automatic bootc update timer cannot update a locally
+#                     switched image)
+#   reset             Switch back to the pristine upstream image (drop the layer)
+#   status            Show `bootc status`
+#   base [<ref>]      Show, or set, the upstream base image reference
+#   -h, --help        Show this help
+#
+# Examples:
+#   sudo hummingbird-layer add htop neovim
+#   sudo hummingbird-layer remove htop
+#   sudo hummingbird-layer update
+#   sudo hummingbird-layer reset
+#
+# After any change that stages a new image, reboot to activate it.
+#
+set -euo pipefail
+
+LOCAL_IMAGE=localhost/hummingbird-layered:latest
+STATE_DIR=/etc/hummingbird/layer
+BASE_FILE="$STATE_DIR/base"
+PKG_FILE="$STATE_DIR/packages"
+
+die()  { printf '\e[1;31m==> error:\e[0m %s\n' "$*" >&2; exit 1; }
+info() { printf '\e[1;32m==>\e[0m\e[1m %s\e[0m\n' "$*"; }
+warn() { printf '\e[1;33m==> warning:\e[0m %s\n' "$*" >&2; }
+
+need_root() { [[ $(id -u) -eq 0 ]] || die "must run as root (try: sudo hummingbird-layer $*)"; }
+
+usage() { sed -n '2,40p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'; }
+
+# Print the upstream base image reference, detecting and persisting it the first
+# time. Detection reads the *currently booted* bootc image; if the machine is
+# already running a locally layered image we cannot recover the upstream ref, so
+# the user must set it explicitly with `hummingbird-layer base <ref>`.
+get_base() {
+	if [[ -s $BASE_FILE ]]; then
+		cat "$BASE_FILE"; return 0
+	fi
+	command -v jq >/dev/null 2>&1 || die "cannot auto-detect base image (jq missing); set it with: hummingbird-layer base <registry>/<repo>:<tag>"
+	local transport image
+	transport=$(bootc status --format json 2>/dev/null | jq -r '.status.booted.image.image.transport // empty')
+	image=$(bootc status --format json 2>/dev/null | jq -r '.status.booted.image.image.image // empty')
+	[[ -n $image ]] || die "could not read the booted image from 'bootc status'; set the base with: hummingbird-layer base <ref>"
+	if [[ $transport == "containers-storage" && $image == "$LOCAL_IMAGE" ]]; then
+		die "this system is already running the local layer; the upstream base is unknown. Set it with: hummingbird-layer base <registry>/<repo>:<tag>"
+	fi
+	mkdir -p "$STATE_DIR"
+	printf '%s\n' "$image" > "$BASE_FILE"
+	cat "$BASE_FILE"
+}
+
+# Read layered packages (one per line, comments/blanks stripped), de-duplicated.
+read_packages() {
+	[[ -f $PKG_FILE ]] || return 0
+	sed -e 's/#.*//' -e 's/[[:space:]]\+/\n/g' "$PKG_FILE" | sed '/^$/d' | sort -u
+}
+
+write_packages() {  # reads package list from stdin, writes the canonical file
+	mkdir -p "$STATE_DIR"
+	sort -u > "$PKG_FILE"
+}
+
+do_reset() {
+	local base
+	base=$(get_base)
+	info "switching back to the upstream image: $base"
+	bootc switch "$base"
+	info "done — reboot to activate. Layered package list is kept; 'hummingbird-layer update' re-applies it."
+}
+
+# Build the derived image and stage it for the next boot.
+# $1 = podman --pull mode (e.g. "missing" or "newer")
+build_and_switch() {
+	local pull=${1:-missing} base ctx
+	base=$(get_base)
+	mapfile -t pkgs < <(read_packages)
+
+	if ((${#pkgs[@]} == 0)); then
+		warn "no packages are layered; switching back to the pristine base image"
+		do_reset
+		return
+	fi
+
+	ctx=$(mktemp -d)
+	{
+		echo "FROM $base"
+		printf 'RUN dnf -y install %s && dnf clean all\n' "${pkgs[*]}"
+	} > "$ctx/Containerfile"
+
+	info "layering ${#pkgs[@]} package(s) onto $base"
+	printf '    %s\n' "${pkgs[@]}"
+	if ! podman build --pull="$pull" -t "$LOCAL_IMAGE" -f "$ctx/Containerfile" "$ctx"; then
+		rm -rf "$ctx"
+		die "image build failed (a package name may be wrong: 'hummingbird-layer remove <pkg>' to drop it)"
+	fi
+	rm -rf "$ctx"
+
+	info "staging $LOCAL_IMAGE for next boot"
+	bootc switch --transport containers-storage "$LOCAL_IMAGE"
+	info "done — reboot to activate (sudo bootc rollback reverts)"
+}
+
+cmd=${1:-}
+[[ -n $cmd ]] || { usage; exit 0; }
+shift || true
+
+case "$cmd" in
+	add)
+		need_root "$cmd $*"
+		[[ $# -gt 0 ]] || die "usage: hummingbird-layer add <pkg>..."
+		merged=$( { read_packages; printf '%s\n' "$@"; } )
+		printf '%s\n' "$merged" | write_packages
+		build_and_switch missing
+		;;
+	remove|rm)
+		need_root "$cmd $*"
+		[[ $# -gt 0 ]] || die "usage: hummingbird-layer remove <pkg>..."
+		# Drop the named packages from the list.
+		remaining=$(read_packages | grep -vxF -f <(printf '%s\n' "$@") || true)
+		printf '%s\n' "$remaining" | write_packages
+		build_and_switch missing
+		;;
+	list|ls)
+		pkgs=$(read_packages)
+		if [[ -z $pkgs ]]; then
+			echo "no packages are layered"
+		else
+			echo "$pkgs"
+		fi
+		;;
+	update|upgrade)
+		need_root "$cmd"
+		info "re-pulling upstream base and rebuilding the layer"
+		build_and_switch newer
+		;;
+	reset)
+		need_root "$cmd"
+		do_reset
+		;;
+	status)
+		bootc status
+		;;
+	base)
+		if [[ $# -gt 0 ]]; then
+			need_root "base $*"
+			mkdir -p "$STATE_DIR"
+			printf '%s\n' "$1" > "$BASE_FILE"
+			info "base image set to: $1"
+		else
+			get_base
+		fi
+		;;
+	-h|--help|help)
+		usage
+		;;
+	*)
+		die "unknown command: $cmd (try: hummingbird-layer --help)"
+		;;
+esac

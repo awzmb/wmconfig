@@ -153,13 +153,78 @@ practical:
 
 ## After installation
 
-On the installed system:
+On the installed system, the OS is a read-only bootc image. You do **not** use
+`dnf install` to permanently add software the way you would on a traditional
+Fedora install — instead you update or replace the whole image atomically, and
+the previous deployment always stays available for rollback (`sudo bootc rollback`).
 
-- Update the OS:        `sudo bootc upgrade`
-- Rebase to another ref: `sudo bootc switch <registry>/<repo>:<tag>`
-- Temporarily layer a package: `sudo bootc usroverlay` then `dnf install …`
+### Updating the OS
+
+```sh
+sudo bootc upgrade        # pull + stage the newest published image, reboot to apply
+sudo bootc status         # show booted / staged deployments
+```
 
 **Automatic updates:** the base image enables `bootc-fetch-apply-updates.timer`,
 so the system periodically pulls and atomically applies newer published images on
-the next boot (the previous deployment stays available for rollback). Disable
-with `sudo systemctl disable --now bootc-fetch-apply-updates.timer`.
+the next boot. Disable with
+`sudo systemctl disable --now bootc-fetch-apply-updates.timer`.
+
+> **Important — the `localhost/` payload gotcha.** The installer records the image
+> reference it was given as the system's update source. If you built the USB from a
+> purely local image (`localhost/awzm-hummingbird:latest`), the installed machine
+> has no way to pull updates and `bootc upgrade` / the auto-update timer will fail.
+> Push the image to a registry **once** and point the machine at it:
+>
+> ```sh
+> # on the build host
+> podman push localhost/awzm-hummingbird:latest <registry>/<repo>:latest
+> # on the installed machine, one time
+> sudo bootc switch <registry>/<repo>:latest
+> ```
+>
+> From then on `bootc upgrade` and the timer track that registry tag.
+
+### Adding / removing packages (the Silverblue equivalent)
+
+bootc has no `rpm-ostree install`. The native way to keep extra packages across
+updates is to **build a small derived image and switch to it**. Hummingbird ships
+a helper, `hummingbird-layer`, that automates this:
+
+```sh
+sudo hummingbird-layer add htop neovim   # layer packages, stage for next boot
+sudo hummingbird-layer remove htop       # drop a package, rebuild
+sudo hummingbird-layer list              # show layered packages
+sudo hummingbird-layer update            # re-pull upstream + re-apply your layers
+sudo hummingbird-layer reset             # drop all layers, back to the pristine image
+sudo hummingbird-layer status            # bootc status
+reboot                                   # activate any staged change
+```
+
+Under the hood it writes a one-line `Containerfile` (`FROM <upstream> ` +
+`RUN dnf install …`), `podman build`s it to `localhost/hummingbird-layered:latest`,
+and runs `bootc switch --transport containers-storage …`. State lives in
+`/etc/hummingbird/layer/` (`base` = upstream ref, `packages` = your list). The
+upstream ref is auto-detected from `bootc status` on first use, or set it
+explicitly with `sudo hummingbird-layer base <registry>/<repo>:tag`.
+
+> Because a layered machine boots a **local** image, the automatic update timer
+> can no longer fetch OS updates for it. Run `sudo hummingbird-layer update` to
+> re-pull the upstream base and rebuild your layers on top — that is how a layered
+> system receives OS updates.
+
+For a quick, **transient** change (gone on next boot), use
+`sudo bootc usroverlay` then `dnf install …`.
+
+### Silverblue → bootc cheat sheet
+
+| Silverblue (`rpm-ostree`)        | Hummingbird (`bootc`)                                  |
+| -------------------------------- | ----------------------------------------------------- |
+| `rpm-ostree upgrade`             | `bootc upgrade`                                        |
+| `rpm-ostree rebase <ref>`        | `bootc switch <ref>`                                   |
+| `rpm-ostree install <pkg>`       | `hummingbird-layer add <pkg>` (build + `bootc switch`) |
+| `rpm-ostree uninstall <pkg>`     | `hummingbird-layer remove <pkg>`                       |
+| `rpm-ostree status`              | `bootc status`                                         |
+| `rpm-ostree rollback`            | `bootc rollback`                                       |
+| `rpm-ostree install` (one-shot)  | `bootc usroverlay` + `dnf install` (transient)         |
+
