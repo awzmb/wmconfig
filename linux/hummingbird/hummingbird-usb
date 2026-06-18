@@ -142,6 +142,7 @@ RUN dnf install -y \\
         anaconda \\
         anaconda-install-env-deps \\
         anaconda-dracut \\
+        rpm-ostree \\
         dracut-config-generic \\
         dracut-network \\
         nfs-utils \\

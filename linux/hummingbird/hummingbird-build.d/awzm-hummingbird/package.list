@@ -36,6 +36,16 @@ plymouth
 pv
 qemu-guest-agent
 alsa-sof-firmware
+# Bare-metal devices need GPU and Wi-Fi firmware; the distroless base does not
+# ship it. In Fedora rawhide `linux-firmware` was split into per-vendor
+# subpackages and no longer bundles iwlwifi / GPU blobs, so request them
+# explicitly (these pair with the i915/xe/amdgpu drivers forced in dracut).
+# Also inherited by the Anaconda installer image so the live installer has Wi-Fi.
+linux-firmware
+iwlwifi-mvm-firmware
+iwlwifi-dvm-firmware
+intel-gpu-firmware
+amd-gpu-firmware
 sudo
 terminus-fonts
 terminus-fonts-console

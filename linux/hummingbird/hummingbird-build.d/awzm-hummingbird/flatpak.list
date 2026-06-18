@@ -7,7 +7,9 @@
 #
 # Format: one Flatpak ref (application id) per line.
 
-org.mozilla.firefox
-io.bassi.Amberol
 com.moonlight_stream.Moonlight
 org.freedesktop.Platform.VAAPI.Intel
+org.gtk.Gtk3theme.Qogir-dark
+org.videolan.VLC
+org.chromium.chromium
+com.brave.Browser
