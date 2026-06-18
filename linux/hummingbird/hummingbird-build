@@ -70,9 +70,17 @@ else
 	image_tag="localhost/${image_name}:latest"
 fi
 
+# --- release version (dnf releasever) ------------------------------------
+# Hummingbird is a rolling, rawhide-based distribution. We always build against
+# Fedora rawhide so layered packages match the base and stay current; there is
+# intentionally no option to pin a numbered release. The numeric rawhide version
+# (needed for GPG key filenames) is detected dynamically inside the build.
+releasever=rawhide
+
 info "variant      : $variant"
 info "base image   : $base_image"
 info "target image : $image_tag"
+info "releasever   : $releasever"
 
 # --- assemble build context ---------------------------------------------
 context=$(mktemp -d /tmp/hummingbird-build.XXXXXX)
@@ -102,7 +110,8 @@ FROM $base_image
 COPY variant /run/hummingbird/variant
 ENV HUMMINGBIRD_VARIANT_DIR=/run/hummingbird/variant
 
-# pre_build: enable extra repos (RPM Fusion, COPR) before installing packages.
+# pre_build: add Fedora repos (the Hummingbird base ships only its own curated
+# repo) plus RPM Fusion + COPR, before installing packages.
 RUN bash /run/hummingbird/variant/extensions/pre_build.sh
 
 # Apply the post_bootstrap overlay (early /etc, /usr config).

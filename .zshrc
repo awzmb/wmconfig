@@ -19,3 +19,6 @@ source ~/.zsh/keybindings.zsh
 source ~/.zsh/fzf.zsh
 source ~/.zsh/completion.zsh
 
+
+autoload -U +X bashcompinit && bashcompinit
+complete -o nospace -C /home/awzm/.bin/terraform terraform

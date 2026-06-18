@@ -6,9 +6,4 @@
 #
 # The first non-comment, non-empty line is used as the base image reference.
 # Override at build time with:  HUMMINGBIRD_BASE=<ref> ./hummingbird-build awzm-hummingbird
-#
-# Fedora bootc base image (official, confirmed public on quay.io/fedora/fedora-bootc).
-# "Fedora Hummingbird" uses this as its base — the branding is a project layered
-# on top of the standard Fedora image-mode base, not a separate registry repo.
-# Tags: latest, 42, 43, rawhide  (see quay.io/fedora/fedora-bootc for all tags)
-quay.io/fedora/fedora-bootc:42
+quay.io/hummingbird-community/bootc-os@sha256:09ab46f8c8e705f91a9a179c04867cb2570193da5c5f67e76df12f41c3f994e6

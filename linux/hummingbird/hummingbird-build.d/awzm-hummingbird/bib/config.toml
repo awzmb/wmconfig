@@ -14,9 +14,11 @@ groups = ["wheel", "seat", "video", "audio", "input", "render", "realtime"]
 password = "$6$aXSt5MJYOE9adprF$meD2Y.dOCjHDLBfak04pKXBndgFupGFIU/1X8TwxNUD0lm.16OcGjYK5MOp/M.ppobWlQY8Fr2laGi4VI3RT51"
 # key = "ssh-ed25519 AAAA... user@host"
 
-[customizations.installer.kickstart]
-# Minimal extra kickstart appended to the generated Anaconda installer.
-# Keep empty to use Anaconda defaults; add e.g. partitioning here.
-contents = """
-timezone UTC --utc
-"""
+# Set the timezone via a blueprint customization rather than raw kickstart
+# content: bib auto-generates kickstart `user`/`group` commands from the
+# [[customizations.user]] block above, and osbuild refuses to combine those with
+# user-supplied [customizations.installer.kickstart] contents
+# ("kickstart users and/or groups are not compatible with user-supplied
+# kickstart content"). Blueprint customizations avoid that conflict.
+[customizations.timezone]
+timezone = "UTC"

@@ -77,10 +77,7 @@ The package install step uses `--skip-unavailable --skip-broken`, so packages
 without a Fedora equivalent for your release are skipped with a warning rather
 than failing the whole build.
 
-> **Base image:** `base.list` defaults to `quay.io/fedora/fedora-bootc:42` — the
-> official, public Fedora image-mode base on quay.io. "Fedora Hummingbird" is a
-> project layered on top of standard Fedora bootc, not a separate registry image.
-> Change the tag to `43`, `rawhide`, or `latest` as needed.
+> **Base image:** `base.list` uses `quay.io/hummingbird-community/bootc-os:latest`.
 
 ## Creating the bootable USB
 
@@ -88,18 +85,31 @@ than failing the whole build.
 sudo ./hummingbird-usb [options] [variant]
 ```
 
-| Option          | Default                                            | Notes                                  |
-| --------------- | -------------------------------------------------- | -------------------------------------- |
-| `--type`        | `anaconda-iso`                                     | also `raw`, `qcow2`, `iso`             |
-| `--image`       | `localhost/<variant>:latest`                       | image built by `hummingbird-build`     |
-| `--config`      | `hummingbird-build.d/<variant>/bib/config.toml`    | bootc-image-builder config             |
-| `--output`      | `./target`                                         | where artifacts are written           |
-| `--device`      | (none)                                             | USB block device to flash, e.g. `/dev/sdb` |
-| `--yes`         | off                                                | skip the flash confirmation prompt     |
+| Option            | Default                                            | Notes                                  |
+| ----------------- | -------------------------------------------------- | -------------------------------------- |
+| `--type`          | `bootc-installer`                                  | also `anaconda-iso`, `raw`, `qcow2`    |
+| `--rootfs`        | `xfs`                                              | root filesystem: `xfs`, `ext4`, `btrfs` |
+| `--image`         | `localhost/<variant>:latest`                       | image built by `hummingbird-build`     |
+| `--config`        | `hummingbird-build.d/<variant>/bib/config.toml`    | bootc-image-builder config             |
+| `--output`        | `./target`                                         | where artifacts are written           |
+| `--device`        | (none)                                             | USB block device to flash, e.g. `/dev/sdb` |
+| `--keep-installer`| off                                                | keep the generated Anaconda installer image |
+| `--yes`           | off                                                | skip the flash confirmation prompt     |
 
-`anaconda-iso` produces a graphical installer ISO — the recommended way to
-install Hummingbird on bare metal. Without `--device`, the artifact is left in
-`./target` and the exact `dd` command is printed.
+`bootc-installer` produces an installer ISO — the recommended way to install
+Hummingbird on bare metal. It works with **any** bootc image regardless of its
+`/etc/os-release`, which matters because Hummingbird's os-release `ID` is
+`hummingbird` (not `fedora`). bib's legacy `anaconda-iso` path instead tries to
+map `ID-VERSION_ID` to a built-in distro definition and fails with
+*"could not find def file for distro hummingbird-&lt;date&gt;"*, so `anaconda-iso`
+is **not** usable here.
+
+For `bootc-installer`, bib needs the positional container to ship Anaconda and a
+`--installer-payload-ref` for the OS image to install. `hummingbird-usb` builds
+that Anaconda installer image automatically (layering the installer packages on
+top of the clean image and passing the clean image as the payload), so the
+**installed** OS stays free of installer-only packages. Without `--device`, the
+artifact is left in `./target` and the exact `dd` command is printed.
 
 The default installer user is `awzm` / password `hummingbird` — **change this**
 in `bib/config.toml` (generate a hash with `mkpasswd -m sha512` or

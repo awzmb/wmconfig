@@ -5,15 +5,29 @@
 # Turn a built Hummingbird bootc image into a bootable installer and (optionally)
 # write it to a USB stick, so the OS can be installed on bare-metal devices.
 #
-# It uses bootc-image-builder to produce either an Anaconda installer ISO
-# (default, recommended for a USB installer) or a raw disk image, then can flash
+# It uses bootc-image-builder (bib) to produce an installer ISO, then can flash
 # the result to a USB device with dd.
+#
+# Default type is `bootc-installer`: a modern bootc installer ISO that works with
+# ANY bootc image regardless of its /etc/os-release. This matters for Hummingbird,
+# whose os-release ID is `hummingbird` (not `fedora`): bib's legacy `anaconda-iso`
+# path tries to map ID-VERSION_ID to a built-in distro definition and fails with
+# "could not find def file for distro hummingbird-<date>". `bootc-installer` uses
+# bib's generic bootc path instead, so it is the reliable choice here.
+#
+# For `bootc-installer`, bib expects the positional container to have Anaconda
+# baked in, plus a `--installer-payload-ref` pointing at the OS image to install.
+# This script builds that Anaconda installer image automatically by layering the
+# required packages on top of the clean Hummingbird image, so the installed OS
+# itself stays free of installer-only packages.
 #
 # Usage:
 #   sudo ./hummingbird-usb [options] [variant]
 #
 # Options:
-#   --type <t>      output type: anaconda-iso (default) | iso | raw | qcow2
+#   --type <t>      output type: bootc-installer (default) | anaconda-iso | raw | qcow2
+#                   (anaconda-iso does NOT work with Hummingbird's custom os-release)
+#   --rootfs <fs>   root filesystem type: xfs (default) | ext4 | btrfs
 #   --image <ref>   image reference to build from
 #                   (default: localhost/<variant>:latest, built by hummingbird-build)
 #   --config <f>    bootc-image-builder config.toml
@@ -22,6 +36,8 @@
 #   --device <dev>  USB block device to flash, e.g. /dev/sdb (DESTRUCTIVE)
 #   --bib <ref>     bootc-image-builder image
 #                   (default: quay.io/centos-bootc/bootc-image-builder:latest)
+#   --keep-installer  keep the generated Anaconda installer image instead of
+#                   removing it after the build (bootc-installer only)
 #   --yes           skip the flashing confirmation prompt
 #   -h, --help      show this help
 #
@@ -41,13 +57,15 @@ info() { printf '\e[1;32m==>\e[0m\e[1m %s\e[0m\n' "$*"; }
 warn() { printf '\e[1;33m==> warning:\e[0m %s\n' "$*" >&2; }
 
 # --- defaults ------------------------------------------------------------
-out_type=anaconda-iso
+out_type=bootc-installer
 image=
 config=
 outdir="$self_dir/target"
 device=
+rootfs=xfs
 bib_image=quay.io/centos-bootc/bootc-image-builder:latest
 assume_yes=0
+keep_installer=0
 variant=
 
 # --- parse args ----------------------------------------------------------
@@ -58,9 +76,11 @@ while [[ $# -gt 0 ]]; do
 		--config) config=$2; shift 2;;
 		--output) outdir=$2; shift 2;;
 		--device) device=$2; shift 2;;
+		--rootfs) rootfs=$2; shift 2;;
 		--bib)    bib_image=$2; shift 2;;
+		--keep-installer) keep_installer=1; shift;;
 		--yes|-y) assume_yes=1; shift;;
-		-h|--help) sed -n '2,40p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'; exit 0;;
+		-h|--help) sed -n '2,48p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'; exit 0;;
 		-*)        die "unknown option: $1";;
 		*)         variant=$1; shift;;
 	esac
@@ -75,18 +95,95 @@ config=${config:-$variantdir/bib/config.toml}
 
 [[ $(id -u) -eq 0 ]] || die "must run as root (bootc-image-builder needs --privileged)"
 command -v "$PODMAN" >/dev/null 2>&1 || die "$PODMAN not found"
+
+# Resolve config and outdir to absolute paths (podman -v requires absolute paths).
+config=$(realpath -- "$config")
+outdir=$(mkdir -p "$outdir" && realpath -- "$outdir")
+
 [[ -f $config ]] || die "config not found: $config"
 
-# Verify the source image exists locally (built by hummingbird-build).
-local_flag=()
-if "$PODMAN" image exists "$image" 2>/dev/null; then
-	local_flag=(--local)
-	info "using local image: $image"
+# Ensure the image is in root's podman storage (bib no longer auto-pulls).
+# hummingbird-build runs as a regular user, so the image lands in that user's
+# storage; hummingbird-usb runs as root, which has separate storage.
+# Auto-transfer via save/load if needed.
+local_flag=(--local)
+if ! "$PODMAN" image exists "$image" 2>/dev/null; then
+	if [[ -n ${SUDO_USER:-} ]]; then
+		info "image not in root storage; transferring from ${SUDO_USER}'s podman storage..."
+		sudo -u "$SUDO_USER" podman image save "$image" | "$PODMAN" image load \
+			|| die "transfer failed — build the image first with: ./hummingbird-build $variant"
+	else
+		die "image '$image' not found in local podman storage; build it first with: ./hummingbird-build $variant"
+	fi
 else
-	warn "image '$image' not found in local storage; bib will try to pull it"
+	info "using local image: $image"
 fi
 
 mkdir -p "$outdir"
+
+# --- bootc-installer: build the Anaconda installer image ----------------
+# The `bootc-installer` type expects the positional container to have Anaconda
+# (and lorax templates) baked in, and a separate `--installer-payload-ref` for
+# the OS image Anaconda should install. We keep the installed OS clean by
+# building a throwaway installer image layered on top of the real image.
+installer_image=""
+bib_target="$image"
+payload_args=()
+
+build_installer_image() {  # $1 = base (payload) image, $2 = installer tag
+	local from=$1 tag=$2 ctx
+	ctx=$(mktemp -d)
+	cat > "$ctx/Containerfile" <<EOF
+FROM $from
+
+# Anaconda + lorax stack required by bib's bootc-installer type. These come from
+# the Fedora rawhide / RPM Fusion repos that pre_build.sh wired into the image.
+RUN dnf install -y \\
+        anaconda \\
+        anaconda-install-env-deps \\
+        anaconda-dracut \\
+        dracut-config-generic \\
+        dracut-network \\
+        nfs-utils \\
+        rpcbind \\
+        net-tools \\
+        squashfs-tools \\
+        grub2-efi-x64-cdboot \\
+        python3-mako \\
+        lorax-templates-generic \\
+        biosdevname \\
+        prefixdevname \\
+    && dnf clean all
+
+# bib's generic-bootc path chooses the lorax template tree from os-release:
+# Hummingbird's ID_LIKE contains "rhel", so bib asks osbuild for the RHEL
+# (80-rhel) templates. But this is a Fedora-based image, which ships the
+# equivalent templates under 99-generic (lorax-templates-generic). Expose them
+# under the 80-rhel path too so osbuild's lorax-script stage resolves them.
+RUN d=/usr/share/lorax/templates.d; \\
+    if [ -d "\$d/99-generic" ] && [ ! -e "\$d/80-rhel" ]; then \\
+        ln -s 99-generic "\$d/80-rhel"; \\
+    fi
+
+# Fedora 43+ moved the EFI payload to /usr/lib/efi; anaconda/lorax expect it under
+# /boot/efi, so copy it into place.
+RUN mkdir -p /boot/efi && cp -ra /usr/lib/efi/*/*/EFI /boot/efi
+
+# lorax wants to create a symlink /mnt -> /var/mnt which may not exist on bootc.
+RUN mkdir -p /var/mnt
+EOF
+	info "building Anaconda installer image $tag (layered on $from)"
+	"$PODMAN" build -t "$tag" -f "$ctx/Containerfile" "$ctx" \
+		|| { rm -rf "$ctx"; die "failed to build the Anaconda installer image"; }
+	rm -rf "$ctx"
+}
+
+if [[ $out_type == bootc-installer ]]; then
+	installer_image="localhost/${variant}-installer:latest"
+	build_installer_image "$image" "$installer_image"
+	bib_target="$installer_image"
+	payload_args=(--installer-payload-ref "$image")
+fi
 
 # --- run bootc-image-builder --------------------------------------------
 info "building installer (type=$out_type) from $image"
@@ -97,14 +194,19 @@ info "building installer (type=$out_type) from $image"
 	-v /var/lib/containers/storage:/var/lib/containers/storage \
 	"$bib_image" \
 	--type "$out_type" \
-	--use-librepo=True \
-	"${local_flag[@]}" \
-	"$image"
+	--rootfs "$rootfs" \
+	"${payload_args[@]}" \
+	"$bib_target"
+
+# Drop the throwaway installer image unless the user wants to keep it.
+if [[ -n $installer_image && $keep_installer -ne 1 ]]; then
+	"$PODMAN" image rm "$installer_image" >/dev/null 2>&1 || true
+fi
 
 # --- locate the produced artifact ---------------------------------------
 artifact=
 case "$out_type" in
-	anaconda-iso|iso)
+	bootc-installer|anaconda-iso|iso)
 		artifact=$(find "$outdir" -name '*.iso' -type f 2>/dev/null | head -n1);;
 	raw)
 		artifact=$(find "$outdir" -name '*.raw' -type f 2>/dev/null | head -n1);;

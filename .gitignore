@@ -18,6 +18,9 @@ linux/arkane/target
 linux/arkane-tv/target
 linux/arkane-sunshine/target
 
+# ignore hummingbird build target directory
+linux/hummingbird/target
+
 # ignore display configuration
 .config/hypr/monitors.conf
 .config/sway/monitors.conf
