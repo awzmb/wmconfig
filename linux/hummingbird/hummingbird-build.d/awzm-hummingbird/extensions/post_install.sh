@@ -39,8 +39,22 @@ dconf update || true
 sway_desktop=/usr/share/wayland-sessions/sway.desktop
 [[ -f $sway_desktop ]] && sed -i -e 's|^Exec=.*|Exec=/usr/local/bin/sway-egpu|' "$sway_desktop"
 
-# --- Default to the graphical target -------------------------------------
+# --- Default to the graphical target + enable GDM ------------------------
 systemctl set-default graphical.target || true
+
+# Enable GDM as the boot-time display manager. graphical.target has
+# `Wants=display-manager.service`, and gdm.service is enabled purely through its
+# `Alias=display-manager.service` (it ships no `WantedBy`). `systemctl enable`
+# can be unreliable in the offline image build (no running systemd/D-Bus), so
+# also create the alias symlink explicitly and deterministically.
+if [[ -e /usr/lib/systemd/system/gdm.service ]]; then
+	printf '\e[1;32m-->\e[0m\e[1m Enabling GDM on boot (display-manager.service)\e[0m\n'
+	systemctl enable gdm.service 2>/dev/null || true
+	ln -sf /usr/lib/systemd/system/gdm.service \
+		/etc/systemd/system/display-manager.service
+else
+	echo "!! gdm.service not found; GDM will not be enabled on boot"
+fi
 
 # --- Make Sway the default graphical session -----------------------------
 # GDM remembers the last session per user via AccountsService. Seed a default
@@ -64,7 +78,6 @@ EOF
 printf '\e[1;32m-->\e[0m\e[1m Enabling system services\e[0m\n'
 for unit in \
 	NetworkManager.service \
-	gdm.service \
 	sshd.service \
 	keyd.service \
 	seatd.service \
