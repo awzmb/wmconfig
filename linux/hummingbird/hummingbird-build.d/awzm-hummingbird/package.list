@@ -12,6 +12,7 @@
 bind-utils
 binutils
 btrfs-progs
+cryptsetup                    # LUKS management (luksChangeKey, luksAddKey, etc.)
 debugedit
 diffutils
 distrobox
@@ -21,7 +22,11 @@ espeak-ng
 f2fs-tools
 fakeroot
 git
-glibc-langpack-en
+# glibc-langpack-en omitted: it hard-pins `glibc = <exact EVR>` and the distroless
+# base ships a `.hum1` glibc no Fedora langpack matches, so it is always dropped by
+# --skip-broken. post_install.sh generates en_US.UTF-8 with `localedef` instead.
+iproute                       # ip, ss (socket stats) — likely in base, pinned explicitly
+iptables-nft                  # iptables/ebtables on the nftables backend
 lvm2
 man-db
 mesa-dri-drivers
@@ -33,11 +38,16 @@ openssh-clients
 openssh-server
 orca
 plymouth
+# Boot-splash plugin + default Fedora theme (bgrt). Without a theme package
+# plymouth has nothing to render; the initramfs is regenerated with the plymouth
+# dracut module and `rhgb quiet` kargs are set in post_install.sh.
+plymouth-plugin-label
+plymouth-theme-spinner
 pv
 qemu-guest-agent
 alsa-sof-firmware
 # Bare-metal devices need GPU and Wi-Fi firmware; the distroless base does not
-# ship it. In Fedora rawhide `linux-firmware` was split into per-vendor
+# ship it. In current Fedora `linux-firmware` was split into per-vendor
 # subpackages and no longer bundles iwlwifi / GPU blobs, so request them
 # explicitly (these pair with the i915/xe/amdgpu drivers forced in dracut).
 # Also inherited by the Anaconda installer image so the live installer has Wi-Fi.
@@ -56,14 +66,6 @@ vulkan-loader
 wget2
 xfsprogs
 zsh
-# kmscon                      # COPR (see copr.list)
-# arch-install-scripts        # Arch-only
-# archiso                     # Arch-only
-# arkdep                      # replaced by bootc
-# skel-arkane                 # Arch/arkane-only
-# libnss-extrausers           # not needed under bootc (standard nsswitch)
-# sudo-rs                     # not packaged; using sudo
-# pacman-contrib              # Arch-only
 
 # Audio
 realtime-setup                # Fedora equivalent of realtime-privileges
@@ -72,13 +74,28 @@ realtime-setup                # Fedora equivalent of realtime-privileges
 podman
 podman-compose
 containernetworking-plugins
-# rootlesskit                 # bundled with podman on Fedora
-# firecracker                 # COPR (see copr.list)
 crun
-# krun / krunvm               # COPR (see copr.list)
 virtiofsd
 
-# Incus / object storage
+# Virtualization (KVM / libvirt) — enough to create and run KVM guests with
+# virt-manager / virt-install / virsh. libvirt-daemon-kvm pulls qemu-kvm and all
+# the daemon drivers; virt-install pulls libvirt-client. So no separate `libvirt`
+# meta or `libvirt-client` needed.
+libvirt-daemon-kvm
+libvirt-daemon-config-network  # default NAT 'default' network
+libvirt-nss
+qemu-img                       # create/convert VM disks (qcow2/raw)
+virt-install
+virt-manager
+virt-viewer
+edk2-ovmf                      # UEFI (OVMF) firmware for guests
+swtpm                          # software TPM for guests (Windows 11 etc.)
+swtpm-tools
+
+# Object storage / system containers
+# Classic LXC system containers.
+lxc
+lxc-templates
 # minio-client                # COPR / upstream binary (see copr.list)
 
 # GNOME (GDM login/greeter; Sway is the default session — see post_install.sh.
@@ -134,6 +151,7 @@ webp-pixbuf-loader
 wireplumber
 xdg-user-dirs
 xdg-utils
+xdg-desktop-portal            # base portal frontend (backends below depend on it)
 wl-mirror
 
 # Hardware / microcode
@@ -165,10 +183,10 @@ mpv
 calcurse
 yamllint
 glow
-unrar                          # RPM Fusion
+unrar
 wireguard-tools
-python3                         # Python interpreter
-python-unversioned-command     # provides /usr/bin/python -> python3
+python3
+python-unversioned-command
 python3-pip
 pipx
 python3-neovim
@@ -183,7 +201,7 @@ glances
 procs
 yq
 age
-uv                             # honoured user pref: uv over pip
+uv
 
 # Development
 java-latest-openjdk
@@ -259,11 +277,11 @@ steam                          # RPM Fusion (nonfree)
 gamemode
 lutris
 mangohud
-# moonlight-qt                # Flatpak (see flatpak.list)
+# moonlight-qt                 # Flatpak (see flatpak.list)
 
 # Camera
 v4l-utils
-# v4l2loopback-dkms / -utils  # akmod-v4l2loopback via RPM Fusion (see copr.list note)
+# v4l2loopback-dkms / -utils   # akmod-v4l2loopback via RPM Fusion (see copr.list note)
 akmod-v4l2loopback             # RPM Fusion
 libcamera
 libcamera-tools
@@ -276,6 +294,8 @@ NetworkManager-vpnc
 NetworkManager-openconnect
 NetworkManager-openvpn
 xmlstarlet                     # i hate cisco with a passion
+nftables
+tcpdump
 
 # Public cloud CLI tools
 awscli2
@@ -283,5 +303,12 @@ awscli2
 # Bare-metal / image-mode tooling
 coreos-installer
 bootc
-# jq: used by hummingbird-layer to parse `bootc status --format json`
 jq
+yq
+
+# Secure Boot: the signed shim is what makes the image bootable with Secure Boot
+# enabled (shim -> grub2 -> kernel, all signed by Fedora's keys). The base usually
+# ships it, but pin it so the guarantee does not depend on the base. Enabling
+# Secure Boot itself is a UEFI firmware action, not a build step.
+shim-x64
+grub2-efi-x64

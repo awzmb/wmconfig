@@ -71,11 +71,13 @@ else
 fi
 
 # --- release version (dnf releasever) ------------------------------------
-# Hummingbird is a rolling, rawhide-based distribution. We always build against
-# Fedora rawhide so layered packages match the base and stay current; there is
-# intentionally no option to pin a numbered release. The numeric rawhide version
-# (needed for GPG key filenames) is detected dynamically inside the build.
-releasever=rawhide
+# The Hummingbird base image is a snapshot of a SPECIFIC Fedora release (not
+# rawhide). To avoid an ABI skew (glibc/libxml2/etc.) between the base and the
+# overlay repos, pre_build.sh detects the base's OWN Fedora release at build time
+# (via `rpm -E %fedora`) and overlays the MATCHING stable Fedora repositories.
+# The outer build script cannot know that number without inspecting the base
+# image, so we just label it as auto-detected here.
+releasever="(auto-detected from base inside pre_build.sh)"
 
 info "variant      : $variant"
 info "base image   : $base_image"

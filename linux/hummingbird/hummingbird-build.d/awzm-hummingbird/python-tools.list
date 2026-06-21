@@ -13,3 +13,4 @@ aws-policy-generator
 gcalcli
 posting
 protonup
+flashfocus                  # Sway/i3 window focus-dim daemon (not in Fedora repos)

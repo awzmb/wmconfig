@@ -137,7 +137,7 @@ build_installer_image() {  # $1 = base (payload) image, $2 = installer tag
 FROM $from
 
 # Anaconda + lorax stack required by bib's bootc-installer type. These come from
-# the Fedora rawhide / RPM Fusion repos that pre_build.sh wired into the image.
+# the Fedora / RPM Fusion repos that pre_build.sh wired into the image.
 RUN dnf install -y \\
         anaconda \\
         anaconda-install-env-deps \\
