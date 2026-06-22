@@ -113,6 +113,11 @@ gnome-software
 gnome-system-monitor
 gnome-tweaks
 gnome-keyring
+# Fedora splits the PAM module into its own subpackage; without it logins log
+# "gkr-pam: ... missing" and the login keyring is never unlocked (this also broke
+# starting the Sway session via GDM). Required for GNOME/Silverblue-style keyring
+# auto-unlock at login.
+gnome-keyring-pam
 mutter
 nautilus
 gvfs

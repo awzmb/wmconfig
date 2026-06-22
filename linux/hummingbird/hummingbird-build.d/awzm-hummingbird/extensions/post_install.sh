@@ -34,11 +34,6 @@ fi
 printf '\e[1;32m-->\e[0m\e[1m Updating dconf databases\e[0m\n'
 dconf update || true
 
-# --- Sway session: use the eGPU-aware wrapper ----------------------------
-# Mirrors the sway.desktop Exec rewrite from the Arch post_install.sh.
-sway_desktop=/usr/share/wayland-sessions/sway.desktop
-[[ -f $sway_desktop ]] && sed -i -e 's|^Exec=.*|Exec=/usr/local/bin/sway-egpu|' "$sway_desktop"
-
 # --- Default to the graphical target + enable GDM ------------------------
 # Enablement must be deterministic in an image build: `systemctl` cannot always
 # operate offline in the build container, and changes under /etc are subject to
@@ -278,6 +273,14 @@ if command -v dracut >/dev/null 2>&1 && [[ -d /usr/lib/modules ]]; then
 			--add "plymouth crypt lvm dm" \
 			--kver "$kver" "/usr/lib/modules/$kver/initramfs.img" \
 			|| echo "!! dracut failed to regenerate initramfs for $kver"
+		# Verify the splash actually landed: a silent dracut that drops the
+		# plymouth module (the original bug) leaves an initramfs that boots
+		# without a splash. Fail loudly here instead of discovering it post-install.
+		if lsinitrd "/usr/lib/modules/$kver/initramfs.img" 2>/dev/null | grep -q plymouth; then
+			printf '    plymouth present in initramfs (%s)\n' "$kver"
+		else
+			echo "!! plymouth MISSING from regenerated initramfs ($kver) — boot splash / graphical LUKS prompt will NOT appear"
+		fi
 	done
 else
 	echo "!! dracut or /usr/lib/modules not available; skipping initramfs regen (plymouth splash may not appear)"

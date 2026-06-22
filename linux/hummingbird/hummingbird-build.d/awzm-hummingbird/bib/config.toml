@@ -33,6 +33,14 @@ clearpart --all --initlabel --disklabel=gpt
 # (autopart takes the passphrase in PLAINTEXT — there is no hashed form for it.)
 autopart --type=lvm --noswap --encrypted --passphrase=hummingbird
 
+# Boot splash: append `rhgb quiet` here (the reliable Anaconda path). The bootc
+# kargs.d snippet in post_install.sh is NOT honored by Anaconda's ostreecontainer
+# install, which is why Plymouth was inactive. With rhgb + the plymouth/crypt
+# dracut modules baked into the image initramfs, Plymouth shows the boot splash AND
+# renders the LUKS passphrase prompt graphically (Fedora Silverblue behaviour); the
+# default Fedora `bgrt` theme is selected in post_install.sh.
+bootloader --append="rhgb quiet"
+
 # Networking + clock. (bib appends the `ostreecontainer` line itself.)
 network --bootproto=dhcp --device=link --activate --onboot=on
 timezone UTC --utc

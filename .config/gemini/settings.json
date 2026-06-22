@@ -17,10 +17,10 @@
   },
   "general": {
     "vimMode": true,
-    "disableAutoUpdate": true,
-    "disableUpdateNag": true,
     "checkpointing": {
       "enabled": false
-    }
+    },
+    "enableAutoUpdate": false,
+    "enableAutoUpdateNotification": false
   }
 }
