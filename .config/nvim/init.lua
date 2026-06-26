@@ -124,6 +124,9 @@ keymap("n", "<leader>fg", "<cmd>Telescope live_grep<cr>", opts) -- Example for l
 -- Neo-tree (NERDTree replacement)
 keymap("n", "<C-n>", "<cmd>Neotree toggle<cr>", opts)
 
+-- remote-nvim: open the remote/devcontainer picker (visual <C-p> is AI-improve)
+keymap("n", "<C-p>", "<cmd>RemoteStart<cr>", { silent = true, desc = "Remote: connect / devcontainer menu" })
+
 -- LSP (replaces CoC bindings)
 keymap("n", "gd", vim.lsp.buf.definition, { desc = "Go to Definition" })
 keymap("n", "gr", "<cmd>Telescope lsp_references<cr>", { desc = "Find References" })
@@ -134,11 +137,7 @@ keymap("n", "[d", vim.diagnostic.goto_prev, { desc = "Previous Diagnostic" })
 keymap("n", "]d", vim.diagnostic.goto_next, { desc = "Next Diagnostic" })
 keymap({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, { desc = "Code Action" })
 
--- Copilot (using copilot.lua API)
--- Using Alt+l as the robust hotkey we found
-keymap("i", "<M-l>", function()
-  require("copilot.suggestion").accept_line()
-end, { silent = true, desc = "Copilot: Accept suggestion and add new line" })
+-- AI assistant (CodeCompanion) keymaps live in the plugin spec below.
 
 -- Formatting
 keymap({ "n", "v" }, "<leader>f", function()
@@ -194,102 +193,27 @@ require("lazy").setup({
   -- ===================================
   {
     "amitds1997/remote-nvim.nvim",
-    -- All your previous configuration now goes inside the 'opts' table
+    version = "*", -- pin to releases (plugin ships breaking changes on main)
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "MunifTanjim/nui.nvim",
+      "nvim-telescope/telescope.nvim",
+    },
+    cmd = { "RemoteStart", "RemoteStop", "RemoteInfo", "RemoteCleanup", "RemoteLog" },
+    -- Only non-default values are set; everything else uses the plugin defaults.
     opts = {
-      -- configuration for devpod connections
       devpod = {
-        binary = "devpod",
-        docker_binary = "podman",
-        ---@diagnostic disable-next-line:param-type-mismatch
-        ssh_config_path = vim.fn.stdpath("data") .. "/remote-nvim/ssh_config", -- Corrected path using plugin name
-        search_style = "current_dir_only",                                     -- How should devcontainers be searched
-        -- for dotfiles, see https://devpod.sh/docs/developing-in-workspaces/dotfiles-in-a-workspace for more information
+        docker_binary = "podman", -- default is "docker"
         dotfiles = {
-          -- path to your dotfiles which should be copied into devcontainers
           path = "${HOME}/.cfg",
-          -- install script that should be called to install your dotfiles
           install_script = "install",
         },
-        gpg_agent_forwarding = false,    -- Should GPG agent be forwarded over the network
-        container_list = "running_only", -- How should docker list containers ("running_only" or "all")
       },
-
-      -- modify the ui for the plugin's progress viewer.
-      progress_view = {
-        type = "popup",
-      },
-
-      -- offline mode configuration. for more details, see the "offline mode" section below.
-      offline_mode = {
-        enabled = false,
-        no_github = false,
-        -- what path should be looked at to find locally available releases
-        cache_dir = vim.fn.stdpath("cache") .. "/remote-nvim/version_cache", -- Corrected path
-      },
-
-      -- remote configuration
       remote = {
-        app_name = "nvim",
-        -- list of directories that should be copied over
-        copy_dirs = {
-          -- what to copy to remote's neovim config directory
-          config = {
-            -- path from where data has to be copied
-            base = vim.fn.stdpath("config"),
-            -- directories that should be copied over. "*" means all directories. to specify a subset,
-            -- use a list like {"lazy", "mason"} where "lazy", "mason" are subdirectories
-            dirs = "*",
-            -- under path specified in `base`.
-            compression = {
-              -- should compression be enabled or not
-              enabled = true,
-              -- any additional options that should be used for compression. any argument that
-              -- is passed to `tar` (for compression) can be passed here as separate elements.
-              additional_opts = {}
-            },
-          },
-          -- what to copy to remote's neovim data directory
-          data = {
-            base = vim.fn.stdpath("data"),
-            dirs = {},
-            compression = {
-              enabled = true,
-            },
-          },
-          -- what to copy to remote's neovim cache directory
-          cache = {
-            base = vim.fn.stdpath("cache"),
-            dirs = {},
-            compression = {
-              enabled = true,
-            },
-          },
-          -- what to copy to remote's neovim state directory
-          state = {
-            base = vim.fn.stdpath("state"),
-            dirs = {},
-            compression = {
-              enabled = true,
-            },
-          },
-        },
+        -- compress the config upload (default false); faster sync over the wire
+        copy_dirs = { config = { compression = { enabled = true } } },
       },
-
-      -- you can supply your own callback that should be called to create the local client.
-      -- this is the default implementation.
-      -- two arguments are passed to the callback:
-      -- port: local port at which the remote server is available
-      -- workspace_config: workspace configuration for the host. for all the properties available,
-      -- see https://github.com/amitds1997/remote-nvim.nvim/blob/main/lua/remote-nvim/providers/provider.lua#l4
-      -- a sample implementation using wezterm tab is at: https://github.com/amitds1997/remote-nvim.nvim/wiki/configuration-recipes
-      client_callback = function(port, _)
-        require("remote-nvim.ui").float_term(("nvim --server localhost:%s --remote-ui"):format(port), function(exit_code)
-          if exit_code ~= 0 then
-            vim.notify(("Local client failed with exit code %s"):format(exit_code), vim.log.levels.ERROR)
-          end
-        end)
-      end,
-    }
+    },
   },
 
   -- ===================================
@@ -359,7 +283,6 @@ require("lazy").setup({
         }),
         sources = cmp.config.sources({
           { name = "nvim_lsp" },
-          { name = "copilot" },
           { name = "luasnip" },
           { name = "buffer" },
           { name = "path" },
@@ -370,14 +293,23 @@ require("lazy").setup({
   {
     "stevearc/conform.nvim", -- Formatting plugin (replaces coc-prettier)
     opts = {
+      formatters = {
+        hclfmt = { command = "hclfmt", stdin = true },
+      },
       formatters_by_ft = {
         lua = { "stylua", "luaformatter" },
         python = { "isort", "black" },
         javascript = { { "prettierd", "prettier" } },
         json = { "prettier" },
+        hcl = { "hclfmt" },
       },
       format_on_save = { timeout_ms = 500, lsp_fallback = true },
     },
+  },
+  {
+    "spacedentist/resolve.nvim",
+    event = { "BufReadPre", "BufNewFile" },
+    opts = {},
   },
   -- Linting tflint, tfsec, etc.
   {
@@ -566,15 +498,23 @@ require("lazy").setup({
   {
     'nvim-treesitter/nvim-treesitter',
     lazy = false,
-    build = ':TSUpdate'
+    build = ':TSUpdate',
+    config = function()
+      -- yaml + markdown parsers are required by CodeCompanion to parse its
+      -- markdown prompt frontmatter; without them it warns "Missing frontmatter".
+      require('nvim-treesitter.configs').setup({
+        ensure_installed = { "markdown", "markdown_inline", "yaml" },
+        auto_install = true,
+      })
+    end,
   },
-  -- {
-  --   'MeanderingProgrammer/render-markdown.nvim',
-  --   dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' },
-  --   ---@module 'render-markdown'
-  --   ---@type render.md.UserConfig
-  --   opts = {},
-  -- },
+  {
+    'MeanderingProgrammer/render-markdown.nvim',
+    dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' },
+    ---@module 'render-markdown'
+    ---@type render.md.UserConfig
+    opts = {},
+  },
   {
     "numToStr/Comment.nvim",
     config = function()
@@ -597,24 +537,58 @@ require("lazy").setup({
     end,
   },
   {
+    -- Auth-only: provides the GitHub Copilot OAuth token (run `:Copilot auth` once)
+    -- that CodeCompanion's `copilot` adapter reads from ~/.config/github-copilot/.
+    -- Inline suggestions and panel are disabled; CodeCompanion is the assistant.
     "zbirenbaum/copilot.lua",
     cmd = "Copilot",
-    event = "InsertEnter",
     config = function()
       require("copilot").setup({
-        suggestion = { auto_trigger = true },
-        panel = { enabled = true },
+        suggestion = { enabled = false },
+        panel = { enabled = false },
       })
     end,
   },
   {
-    "zbirenbaum/copilot-cmp",
-    dependencies = { "zbirenbaum/copilot.lua" },
-    config = function()
-      require("copilot_cmp").setup()
-    end
+    "olimorris/codecompanion.nvim",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "nvim-treesitter/nvim-treesitter",
+    },
+    cmd = { "CodeCompanion", "CodeCompanionChat", "CodeCompanionActions" },
+    keys = {
+      { "<C-p>",      "<cmd>CodeCompanion /improve<cr>",   mode = "v",          desc = "AI: Improve selection" },
+      { "<leader>aa", "<cmd>CodeCompanionActions<cr>",     mode = { "n", "v" }, desc = "AI: Actions" },
+      { "<leader>ac", "<cmd>CodeCompanionChat Toggle<cr>", mode = { "n", "v" }, desc = "AI: Toggle chat" },
+    },
+    opts = {
+      strategies = {
+        chat = { adapter = "copilot" },
+        inline = { adapter = "copilot" },
+      },
+      prompt_library = {
+        ["Improve"] = {
+          interaction = "chat",
+          description = "Improve the selected code",
+          opts = { modes = { "v" }, alias = "improve", is_slash_cmd = true, auto_submit = false },
+          prompts = {
+            {
+              role = "system",
+              content = "You are an expert programmer. Improve the user's code for clarity, "
+                  .. "correctness, performance and idioms, then briefly explain the key changes.",
+            },
+            {
+              role = "user",
+              content = function(context)
+                local code = require("codecompanion.helpers.code").get_code(context.start_line, context.end_line)
+                return "Please improve this code:\n\n```" .. context.filetype .. "\n" .. code .. "\n```"
+              end,
+            },
+          },
+        },
+      },
+    },
   },
-  --{ "github/copilot.vim" },
   { "hashivim/vim-terraform",         ft = "terraform" },
   { "towolf/vim-helm",                ft = "helm" },
   { "pearofducks/ansible-vim",        ft = "ansible" },
