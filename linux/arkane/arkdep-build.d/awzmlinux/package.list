@@ -189,6 +189,8 @@ jdk-openjdk
 luacheck
 rust-analyzer
 cargo
+tree-sitter
+tree-sitter-cli
 
 # Media drivers and extensions
 seatd

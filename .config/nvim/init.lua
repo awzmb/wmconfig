@@ -497,14 +497,19 @@ require("lazy").setup({
   },
   {
     'nvim-treesitter/nvim-treesitter',
+    -- main branch is the rewrite required by Neovim 0.12+; the old master
+    -- branch ships markdown injection queries that crash 0.12's highlighter.
+    branch = 'main',
     lazy = false,
     build = ':TSUpdate',
     config = function()
-      -- yaml + markdown parsers are required by CodeCompanion to parse its
-      -- markdown prompt frontmatter; without them it warns "Missing frontmatter".
-      require('nvim-treesitter.configs').setup({
-        ensure_installed = { "markdown", "markdown_inline", "yaml" },
-        auto_install = true,
+      -- yaml + markdown parsers are required by render-markdown.nvim and by
+      -- CodeCompanion to parse its markdown prompt frontmatter.
+      require('nvim-treesitter').install({ 'markdown', 'markdown_inline', 'yaml' })
+      vim.api.nvim_create_autocmd('FileType', {
+        pattern = { 'markdown', 'yaml' },
+        -- pcall: install() is async, parser may not exist on first open.
+        callback = function() pcall(vim.treesitter.start) end,
       })
     end,
   },
