@@ -55,6 +55,18 @@ command -v "$PODMAN" >/dev/null 2>&1 || die "$PODMAN not found; install podman/b
 base_tag=${FEDORA_BASE_TAG:-localhost/fedora-base:latest}
 image_tag=${FEDORA_TAG:-localhost/fedora-${flavor}:latest}
 
+# Cache-bust for the single bind-mounted RUN. podman does NOT hash the files
+# bind-mounted via `RUN --mount=type=bind,source=.` (unlike COPY), so edits to
+# scripts/, package.list or overlay/ would otherwise NOT invalidate the RUN layer
+# and the rebuilt image would silently be stale. We pass a content hash of the
+# build context as --build-arg CACHEBUST, which the Containerfile's RUN consumes,
+# so the RUN re-executes whenever anything in the context changes (and is a cache
+# hit when nothing did).
+ctx_hash() {
+	find "$1" -type f -not -path '*/.git/*' -exec sha256sum {} + 2>/dev/null \
+		| sort | sha256sum | cut -d' ' -f1
+}
+
 base_count=$(sed -e 's/#.*//' "$basedir/package.list" 2>/dev/null | tr -s ' \t' '\n' | awk 'NF' | wc -l || echo 0)
 flavor_count=$(sed -e 's/#.*//' "$flavordir/package.list" 2>/dev/null | tr -s ' \t' '\n' | awk 'NF' | wc -l || echo 0)
 info "flavor        : $flavor"
@@ -72,12 +84,14 @@ else
 	[[ -n ${FEDORA_BASE:-} ]] && base_from_args=(--build-arg "BASE=$FEDORA_BASE")
 	info "building base layer (this can take a while)..."
 	"$PODMAN" build --pull=newer "${base_from_args[@]}" \
+		--build-arg "CACHEBUST=$(ctx_hash "$basedir")" \
 		-t "$base_tag" -f "$basedir/Containerfile" "$basedir"
 fi
 
 # --- 2. flavor layer -----------------------------------------------------
 info "building flavor layer ($flavor) FROM $base_tag ..."
 "$PODMAN" build --build-arg "BASE=$base_tag" \
+	--build-arg "CACHEBUST=$(ctx_hash "$flavordir")" \
 	-t "$image_tag" -f "$flavordir/Containerfile" "$flavordir"
 
 info "done"

@@ -10,11 +10,11 @@
 # RPM Fusion + Tailscale are wired up in scripts/setup-repos.sh.
 
 # Basic packages
-# apparmor                    # Fedora uses SELinux by default; kept off
+# apparmor # Fedora uses SELinux by default; kept off
 bind-utils
 binutils
 btrfs-progs
-cryptsetup                    # LUKS management (luksChangeKey, luksAddKey, etc.)
+cryptsetup # LUKS management (luksChangeKey, luksAddKey, etc.)
 debugedit
 diffutils
 distrobox
@@ -31,17 +31,18 @@ git
 # `localedef` still works as a fallback in configure.sh.
 glibc-langpack-en
 glibc-locale-source
-iproute                       # ip, ss (socket stats) — likely in base, pinned explicitly
-iptables-nft                  # iptables/ebtables on the nftables backend
+iproute # ip, ss (socket stats) — likely in base, pinned explicitly
+iptables-nft # iptables/ebtables on the nftables backend
 lvm2
 man-db
 mesa-dri-drivers
 mesa-va-drivers
 mesa-vulkan-drivers
+xorg-x11-server-Xwayland # X11 apps under Wayland; a Recommends, so weak-deps-off drops it — every flavor's compositor (GNOME/Sway/Hyprland/Plasma) needs it
 neovim
 NetworkManager
 openssh-clients
-openssh-server
+# openssh-server intentionally NOT installed — desktop device (also in package-remove.list to strip the base image's copy)
 orca
 plymouth
 # Boot-splash plugin + default Fedora theme (bgrt). Without a theme package
@@ -55,7 +56,9 @@ alsa-sof-firmware
 # Bare-metal devices need GPU and Wi-Fi firmware; the distroless base does not
 # ship it. In current Fedora `linux-firmware` was split into per-vendor
 # subpackages and no longer bundles iwlwifi / GPU blobs, so request them
-# explicitly (these pair with the i915/xe/amdgpu drivers forced in dracut).
+# explicitly. intel-gpu-firmware ships the i915/xe GuC+HuC blobs the GPU driver
+# loads after pivot (see dracut.conf.d/fedora.conf on why we don't force GPU
+# drivers into the initramfs).
 # Also inherited by the Anaconda installer image so the live installer has Wi-Fi.
 linux-firmware
 iwlwifi-mvm-firmware
@@ -74,7 +77,7 @@ xfsprogs
 zsh
 
 # Audio
-realtime-setup                # Fedora equivalent of realtime-privileges
+realtime-setup # Fedora equivalent of realtime-privileges
 
 # Container
 podman
@@ -82,27 +85,29 @@ podman-compose
 containernetworking-plugins
 crun
 virtiofsd
+# Isolated containers with unikernel (microvm)
+crun-krun
+krunvm
 
 # Virtualization (KVM / libvirt) — enough to create and run KVM guests with
 # virt-manager / virt-install / virsh. libvirt-daemon-kvm pulls qemu-kvm and all
 # the daemon drivers; virt-install pulls libvirt-client. So no separate `libvirt`
 # meta or `libvirt-client` needed.
 libvirt-daemon-kvm
-libvirt-daemon-config-network  # default NAT 'default' network
+libvirt-daemon-config-network # default NAT 'default' network
 libvirt-nss
-qemu-img                       # create/convert VM disks (qcow2/raw)
+qemu-img # create/convert VM disks (qcow2/raw)
 virt-install
 virt-manager
 virt-viewer
-edk2-ovmf                      # UEFI (OVMF) firmware for guests
-swtpm                          # software TPM for guests (Windows 11 etc.)
+edk2-ovmf # UEFI (OVMF) firmware for guests
+swtpm # software TPM for guests (Windows 11 etc.)
 swtpm-tools
 
 # Object storage / system containers
 # Classic LXC system containers.
 lxc
 lxc-templates
-# minio-client                # COPR / upstream binary (enable COPR manually)
 
 # NOTE: the desktop environment (GNOME / Sway / Hyprland / KDE), its display
 # manager and portals are NOT in this base list — each flavor layer adds them.
@@ -120,9 +125,9 @@ fwupd
 gstreamer1-plugins-base
 gstreamer1-plugins-good
 gstreamer1-plugins-bad-free
-gstreamer1-plugins-ugly-free   # RPM Fusion
-gstreamer1-plugin-libav        # RPM Fusion
-libde265                       # RPM Fusion
+gstreamer1-plugins-ugly-free # RPM Fusion
+gstreamer1-plugin-libav # RPM Fusion
+libde265 # RPM Fusion
 ibus-typing-booster
 pipewire
 pipewire-alsa
@@ -135,10 +140,10 @@ webp-pixbuf-loader
 wireplumber
 xdg-user-dirs
 xdg-utils
-xdg-desktop-portal            # base portal frontend (backends are per-flavor)
+xdg-desktop-portal # base portal frontend (backends are per-flavor)
 
 # Hardware / microcode
-microcode_ctl                  # covers intel + amd ucode on Fedora
+microcode_ctl # covers intel + amd ucode on Fedora
 
 # Shell and tools
 keyd
@@ -159,7 +164,6 @@ calc
 eza
 bat
 fd-find
-nodejs-npm
 yarnpkg
 htop
 mpv
@@ -209,12 +213,10 @@ sd                             # sed (find/replace)
 du-dust                        # du
 bottom                         # top/htop (provides `btm`)
 zoxide                         # cd (smart jump)
-starship                       # shell prompt
 zellij                         # tmux-style terminal multiplexer
 tealdeer                       # tldr (fast man summaries; provides `tldr`)
 gitui                          # git terminal UI
 hyperfine                      # command benchmarking (time)
-hexyl                          # hex viewer (xxd)
 bandwhich                      # per-process network bandwidth monitor
 
 # Media drivers and extensions

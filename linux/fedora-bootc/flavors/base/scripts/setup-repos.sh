@@ -32,6 +32,14 @@ dnf -y install \
 # Tailscale ships its own dnf repo; drop it in so package.list's `tailscale`
 # resolves. repo_gpgcheck verifies the repo metadata; the packages themselves
 # are validated the same way (gpgcheck=0 upstream, repo signed).
+#
+# Tailscale ships its own dnf repo; drop it in so package.list's `tailscale`
+# resolves. `gpgkey=` is the upstream https URL — it must stay network-fetchable
+# because bootc-image-builder (anaconda-iso) re-depsolves the image's enabled
+# repos in ITS OWN environment, where an in-image `file://` key path wouldn't
+# exist. During the image build dnf5 prints one cosmetic "repomd.xml GPG
+# signature verification error: Signing key not found" before it imports the key
+# from this URL and succeeds — expected dnf5 noise, not a failure.
 printf '\e[1;32m-->\e[0m\e[1m Enabling the Tailscale stable repo\e[0m\n'
 cat > /etc/yum.repos.d/tailscale.repo <<'EOF'
 [tailscale-stable]

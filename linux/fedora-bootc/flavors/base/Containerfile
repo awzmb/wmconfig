@@ -34,8 +34,14 @@ FROM ${BASE}
 # there — some IDEs, browsers — has nowhere to go), and /var/roothome is
 # ensured so package scriptlets that touch root's home don't fail. Both are
 # no-ops if the base already does them.
+# CACHEBUST is a content hash of the build context passed by ./fedora-build.
+# Referencing it in the RUN forces a rebuild whenever any file in the context
+# changes — podman does not hash bind-mounted files, so without this an edit to
+# scripts/package.list/overlay would silently reuse the cached (stale) layer.
+ARG CACHEBUST
 RUN --mount=type=bind,source=.,target=/run/fedora/variant \
     set -eu; \
+    : "cachebust ${CACHEBUST:-}"; \
     HB=/run/fedora/variant; export HB; \
     if [ ! -L /opt ]; then rmdir /opt 2>/dev/null && ln -sfn var/opt /opt || true; fi; \
     mkdir -p /var/opt /var/roothome; \

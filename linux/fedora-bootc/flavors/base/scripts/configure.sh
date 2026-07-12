@@ -78,7 +78,6 @@ enable_user_unit() {
 
 printf '\e[1;32m-->\e[0m\e[1m Enabling system services (static /usr enablement)\e[0m\n'
 enable_unit NetworkManager.service
-enable_unit sshd.service
 enable_unit keyd.service
 enable_unit power-profiles-daemon.service
 enable_unit switcheroo-control.service

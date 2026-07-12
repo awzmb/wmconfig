@@ -15,6 +15,8 @@ gnome-disk-utility
 gnome-initial-setup
 gnome-menus
 gnome-shell
+gnome-session # session launcher GDM execs; Recommends-vulnerable under weak-deps-off
+gnome-settings-daemon # display/power/media-keys glue; a missing g-s-d can black-screen the session
 gnome-shell-extension-appindicator
 gnome-software
 gnome-system-monitor

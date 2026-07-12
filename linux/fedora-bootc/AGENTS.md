@@ -5,15 +5,17 @@ Guidance for AI agents working in this repo.
 ## What this is
 
 Scripts that build a custom **Fedora** — a `bootc` / image-mode Fedora desktop
-image — and turn it into a bootable USB installer. The build is **two layers**: a
-shared DE-agnostic **base** image and a thin **flavor** layer that adds a desktop.
-Each layer is driven by one **Containerfile** with declarative config next to it.
+image — turn it into a bootable USB installer, and update an installed system
+in place. The build is **two layers**: a shared DE-agnostic **base** image and a
+thin **flavor** layer that adds a desktop. Each layer is driven by one
+**Containerfile** with declarative config next to it.
 
 ## Layout
 
 ```
 fedora-build                       # build base + selected flavor (podman build)
 fedora-usb                         # build installer ISO/raw + flash to USB (bib)
+fedora-update                      # day-2: rebuild locally + `bootc switch` for next boot
 flavors/
 ├── base/                          # shared foundation -> localhost/fedora-base
 │   ├── Containerfile                   # FROM rawhide + all base build steps
@@ -45,6 +47,8 @@ toolset — only the desktop environment + display manager + session differ.
 FEDORA_SKIP_BASE=1 ./fedora-build kde  # reuse an existing base (faster iteration)
 sudo ./fedora-usb kde                # build installer ISO for a flavor into ./target
 sudo ./fedora-usb --device /dev/sdX  # ...and flash it (DESTRUCTIVE)
+sudo ./fedora-update                 # day-2: rebuild locally + stage for next boot
+sudo ./fedora-update --apply kde     # ...and reboot into the kde flavor now
 bash -n <script>                          # syntax-check a changed shell script
 ```
 
@@ -81,6 +85,28 @@ reason about the Containerfiles.
   `--setopt=install_weak_deps=False` to drop non-essential recommends (the big
   size lever); critical drivers/firmware/mesa/portals are listed explicitly so
   nothing needed is lost. Flip weak deps back on if a desktop feature goes missing.
+- **podman does NOT hash the bind-mounted context**, so editing `scripts/`,
+  `package.list` or `overlay/` would reuse the cached (stale) RUN layer and the
+  rebuilt image would silently be old. `fedora-build` defends against this by
+  passing `--build-arg CACHEBUST=<content-hash>` (via `ctx_hash`), which each
+  Containerfile's RUN references (`: "cachebust ${CACHEBUST}"`). Keep both the
+  `ARG CACHEBUST`/reference and the `ctx_hash` args when touching the build.
+- **`fedora-usb` runs rootful** (`sudo`): bib needs a privileged container that
+  can relabel SELinux for its osbuild store (`chcon ... /store`), which a rootless
+  user namespace CANNOT do on an enforcing-SELinux host — rootless bib (even with
+  `--in-vm`) fails at `EnsureEnvironment` with `Operation not permitted`. So don't
+  reintroduce a rootless bib path. bib reads ROOT's podman storage, which is
+  separate from a rootless `./fedora-build`; `fedora-usb` compares image IDs and
+  re-syncs (save|load) from the user's build when they differ, and uses a
+  root-storage image directly when present (no copy). Building rootful too
+  (`sudo ./fedora-build`) avoids the copy entirely — recommend that.
+- **`fedora-update` is the day-2 path** (in-place update of an installed system):
+  it runs `fedora-build` ROOTFUL (must be root so the rebuilt image lands in the
+  store bootc reads) then `bootc switch --transport containers-storage
+  localhost/fedora-<flavor>:latest` to stage it for the next boot. `switch`
+  re-reads the freshly built image each run, so it doubles as the re-deploy
+  command; `--apply` reboots; `bootc rollback` reverts. bootc has no rootless
+  mode — same root requirement as `fedora-usb`.
 - **Plymouth is set up declaratively**: the `ostree plymouth crypt lvm dm` dracut
   modules are declared in `base/overlay/etc/dracut.conf.d/fedora.conf`
   (`add_dracutmodules`); base `configure.sh` selects the theme, writes
@@ -95,14 +121,32 @@ reason about the Containerfiles.
   landed. Every bootc image project does the same `--add ostree` (see
   bootc-dev/bootc #1084). configure.sh also builds `--reproducible`, sets
   `DRACUT_NO_XATTR=1` (container overlayfs), and `chmod 0600`s the image.
+- **Do NOT force GPU drivers (`i915`/`xe`/`amdgpu`) into the initramfs.** We tried
+  `add_drivers` for "early KMS" and it broke the desktop: i915 probed in the
+  initramfs where the GuC/HuC firmware (`intel-gpu-firmware`, only on the real
+  root) is absent, so GuC never loaded and never retried after pivot — Plymouth
+  (dumb scanout) worked but GDM/mutter black-screened and hung. Like stock
+  Fedora, let Plymouth use the EFI-GOP/`simpledrm` framebuffer early and load the
+  GPU drivers after pivot where their firmware is present.
 - **Display manager + default session are per-flavor** (gnome-sway/gnome → GDM,
-  kde → SDDM); the base sets no DM. Enablement is static.
+  kde → SDDM); the base sets no DM. Enablement is static. NOTE: gnome-sway
+  currently boots to `multi-user.target` (GDM installed but NOT autostarted) while
+  the GPU/compositor issue is debugged — start the desktop with
+  `systemctl isolate graphical.target` or re-enable with
+  `systemctl set-default graphical.target`.
+- **No SSH server** — this is a desktop device; `openssh-server` is removed
+  (package-remove.list) and `sshd.service` is not enabled. openssh-clients stays.
 - **Service enablement is static** (`.wants` symlinks written into `/usr`), because
   `systemctl enable` is unreliable in an offline image build. Keep that pattern.
 - **Install-time disk encryption + user creation live in the kickstart** in
   `flavors/base/bib/config.toml` — shared by all flavors (bib has no native LUKS
   knob, and kickstart can't coexist with a `[[customizations.user]]` block). Keep
   the LUKS passphrase == the user password.
+- **The installer MUST use bib's `anaconda-iso` type** (fedora-usb default). bib
+  only embeds `[customizations.installer.kickstart]` for `anaconda-iso`; the
+  lower-level `bootc-installer` type ignores it and Anaconda aborts with
+  `/run/install/ks.cfg is missing` (plus downstream `storage.log`/`auditctl`
+  errors). Don't switch the default back to `bootc-installer`.
 
 ## Conventions
 

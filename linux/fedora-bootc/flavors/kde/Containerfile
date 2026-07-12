@@ -9,8 +9,10 @@ FROM ${BASE}
 
 # Single layer, bind-mounted context (see flavors/base/Containerfile). No overlay
 # dir for this flavor, so the cp is a no-op tolerated by `|| true`.
+ARG CACHEBUST
 RUN --mount=type=bind,source=.,target=/run/fedora/variant \
     set -eu; \
+    : "cachebust ${CACHEBUST:-}"; \
     HB=/run/fedora/variant; export HB; \
     pkgs=$(sed -e 's/#.*//' "$HB/package.list" | tr -s ' \t' '\n' | awk 'NF'); \
     if [ -n "$pkgs" ]; then \

@@ -27,9 +27,15 @@ enable_unit() {
 # --- seat group required by seatd ----------------------------------------
 getent group seat >/dev/null 2>&1 || groupadd -r seat || true
 
-# --- Default to the graphical target -------------------------------------
-systemctl set-default graphical.target 2>/dev/null || true
-ln -sfn graphical.target /usr/lib/systemd/system/default.target
+# --- Default boot target -------------------------------------------------
+# Boot to the TEXT (multi-user) target — GDM is NOT autostarted. This keeps a
+# usable console even when the GPU/compositor misbehaves (i915's fbcon works
+# while a Wayland session may hang). GDM stays installed and configured below,
+# so the desktop is one command away:
+#   sudo systemctl isolate graphical.target   # start the desktop now
+#   sudo systemctl set-default graphical.target   # re-enable autostart
+systemctl set-default multi-user.target 2>/dev/null || true
+ln -sfn multi-user.target /usr/lib/systemd/system/default.target
 
 # --- Enable GDM on boot (display-manager.service) ------------------------
 # GDM ships only `Alias=display-manager.service` (no WantedBy); graphical.target

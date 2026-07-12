@@ -99,33 +99,63 @@ than failing the whole build.
 sudo ./fedora-usb [options] [flavor]
 ```
 
+Runs as **root**: bib needs a privileged container that can relabel SELinux for
+its build store, which a rootless user namespace can't do on an enforcing-SELinux
+host (rootless bib fails with `chcon ... /store: Operation not permitted`). To
+avoid a slow multi-GB image copy, build the image rootful too — `sudo
+./fedora-build <flavor>` puts it straight into root storage, which `fedora-usb`
+then uses directly (it reports "using image already in root storage — no copy
+needed"). A rootless build still works but gets copied into root storage first.
+
 | Option            | Default                                            | Notes                                  |
 | ----------------- | -------------------------------------------------- | -------------------------------------- |
-| `--type`          | `bootc-installer`                                  | also `anaconda-iso`, `raw`, `qcow2`    |
+| `--type`          | `anaconda-iso`                                     | also `raw`, `qcow2`                    |
 | `--rootfs`        | `xfs`                                              | root filesystem: `xfs`, `ext4`, `btrfs` |
 | `--image`         | `localhost/fedora-<flavor>:latest`                 | image built by `fedora-build`     |
 | `--config`        | `flavors/base/bib/config.toml`                     | bootc-image-builder config (shared)    |
 | `--output`        | `./target`                                         | where artifacts are written           |
 | `--device`        | (none)                                             | USB block device to flash, e.g. `/dev/sdb` |
-| `--keep-installer`| off                                                | keep the generated Anaconda installer image |
 | `--yes`           | off                                                | skip the flash confirmation prompt     |
 
-`bootc-installer` produces an installer ISO — the recommended way to install
-Fedora on bare metal. It works with **any** bootc image regardless of its
-`/etc/os-release`. Now that the base is a standard Fedora image (os-release `ID`
-`fedora`), bib's legacy `anaconda-iso` path works too, but `bootc-installer`
-stays the robust, base-agnostic default.
+`anaconda-iso` produces an installer ISO — the recommended way to install Fedora
+on bare metal. bib builds the Anaconda installer straight from the bootc image
+and **embeds the kickstart** from `config.toml` (full-disk LUKS + user creation).
+This works because the base is a standard Fedora image (os-release `ID` `fedora`).
 
-For `bootc-installer`, bib needs the positional container to ship Anaconda and a
-`--installer-payload-ref` for the OS image to install. `fedora-usb` builds
-that Anaconda installer image automatically (layering the installer packages on
-top of the clean image and passing the clean image as the payload), so the
-**installed** OS stays free of installer-only packages. Without `--device`, the
-artifact is left in `./target` and the exact `dd` command is printed.
+The kickstart is only processed for `anaconda-iso`; the lower-level
+`bootc-installer` type ignores it, so Anaconda aborts at install with
+`/run/install/ks.cfg is missing` — which is why `anaconda-iso` is the default.
+Without `--device`, the artifact is left in `./target` and the exact `dd` command
+is printed.
 
 The default installer user is `awzm` / password `fedora` — **change this**
 in `flavors/base/bib/config.toml` (generate a hash with `mkpasswd -m sha512` or
 `openssl passwd -6`, or switch to an SSH `key`).
+
+## Updating an installed system
+
+Once installed, update in place without reflashing — rebuild the image locally
+and stage it as the next boot:
+
+```sh
+sudo ./fedora-update [--apply] [flavor]   # default flavor: gnome-sway
+```
+
+This rebuilds `localhost/fedora-<flavor>:latest` into root's podman storage
+(`fedora-build`) and then runs
+`bootc switch --transport containers-storage localhost/fedora-<flavor>:latest`
+to deploy it for the next boot. It's rootful because `bootc` runs as root and
+reads root's storage.
+
+- **Apply:** reboot to boot the new image, or pass `--apply` to reboot
+  automatically once staged.
+- **Roll back:** if the new image misbehaves, `sudo bootc rollback && sudo
+  systemctl reboot` returns to the previous deployment.
+- **Iterate faster:** `sudo FEDORA_SKIP_BASE=1 ./fedora-update` reuses the
+  existing base and only rebuilds the flavor layer.
+
+Because the source is the local `containers-storage`, no registry is involved —
+`fedora-update` re-reads whatever you just built each time.
 
 ## How the awzmlinux config was ported
 

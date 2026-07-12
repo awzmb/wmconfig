@@ -18,6 +18,8 @@ gnome-disk-utility
 gnome-initial-setup
 gnome-menus
 gnome-shell
+gnome-session # session launcher GDM execs; Recommends-vulnerable under weak-deps-off
+gnome-settings-daemon # display/power/media-keys glue; a missing g-s-d can black-screen the session
 gnome-software
 gnome-system-monitor
 gnome-tweaks
@@ -46,7 +48,7 @@ gammastep
 rofi-wayland
 dunst
 wl-mirror
-seatd                          # seat management for the wlroots sessions
+seatd # seat management for the wlroots sessions
 
 # Sway packages
 kanshi
@@ -61,6 +63,7 @@ wlr-randr
 xdg-desktop-portal-wlr
 grim
 slurp
+blueman
 
 # Hyprland (Fedora ships hyprland in repos on recent releases / COPR otherwise)
 hyprland
@@ -70,6 +73,6 @@ hyprpicker
 hyprcursor
 hyprlang
 xdg-desktop-portal-hyprland
-# hyprpolkitagent             # COPR if unavailable
-# hyprsunset                  # COPR if unavailable
-# hy3                         # COPR/build (hyprland plugin)
+# hyprpolkitagent # COPR if unavailable
+# hyprsunset # COPR if unavailable
+# hy3 # COPR/build (hyprland plugin)

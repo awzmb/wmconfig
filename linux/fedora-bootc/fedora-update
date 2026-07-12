@@ -1,0 +1,81 @@
+#!/usr/bin/env bash
+#
+# fedora-update
+#
+# In-place update for an already-installed fedora-bootc system: rebuild the image
+# locally on THIS machine and stage it as the bootc target for the NEXT boot
+# (atomic, with rollback). Day-2 counterpart to fedora-usb (day-1 install).
+#
+# How it works:
+#   1. `fedora-build <flavor>` rebuilds localhost/fedora-<flavor>:latest into
+#      ROOT's podman storage — that's the store bootc reads from.
+#   2. `bootc switch --transport containers-storage localhost/fedora-<flavor>:latest`
+#      re-reads the freshly built image from local storage and deploys it for the
+#      next boot. Reboot (or pass --apply) to activate; `bootc rollback` reverts
+#      to the previous deployment if something's wrong.
+#
+# Must run as root: both the rootful build (so the image lands where bootc looks)
+# and bootc itself need privilege. Requires this repo (flavors/ + fedora-build),
+# podman and bootc present on the machine — all shipped in the base image.
+#
+# Usage:
+#   sudo ./fedora-update [--apply] [flavor]
+#
+# Options:
+#   --apply     reboot immediately after staging (bootc switch --apply)
+#   -h, --help  show this help
+#
+# Examples:
+#   sudo ./fedora-update                 # rebuild gnome-sway, stage for next boot
+#   sudo ./fedora-update --apply kde     # rebuild kde and reboot into it now
+#
+set -euo pipefail
+
+self_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+
+die() { printf '\e[1;31m==> error:\e[0m %s\n' "$*" >&2; exit 1; }
+info() { printf '\e[1;32m==>\e[0m\e[1m %s\e[0m\n' "$*"; }
+
+apply=0
+flavor=
+while [[ $# -gt 0 ]]; do
+	case "$1" in
+		--apply)   apply=1; shift;;
+		-h|--help) sed -n '2,30p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'; exit 0;;
+		-*)        die "unknown option: $1";;
+		*)         flavor=$1; shift;;
+	esac
+done
+
+flavor=${flavor:-gnome-sway}
+image=localhost/fedora-${flavor}:latest
+
+[[ $(id -u) -eq 0 ]] || die "must run as root: sudo ./fedora-update ${*:-$flavor}"
+command -v bootc >/dev/null 2>&1 || die "bootc not found — fedora-update runs on an installed fedora-bootc system"
+[[ -x $self_dir/fedora-build ]] || die "fedora-build not found next to fedora-update ($self_dir)"
+
+# 1. Rebuild the image into ROOT's containers-storage (where bootc looks). The
+#    build runs rootful here because we're already root; that's exactly what
+#    makes the image visible to bootc below (no user->root copy needed).
+info "building $image locally"
+"$self_dir/fedora-build" "$flavor"
+
+# 2. Stage it for the next boot straight from local storage. `switch` re-reads
+#    the (now rebuilt) image every time, so it doubles as the re-deploy command;
+#    it also (re)sets the origin to the containers-storage ref, which is correct
+#    whether this is the first update after install or the hundredth.
+info "staging $image for next boot (bootc switch, containers-storage)"
+switch_args=(switch --transport containers-storage)
+[[ $apply -eq 1 ]] && switch_args+=(--apply)
+bootc "${switch_args[@]}" "$image"
+
+if [[ $apply -eq 0 ]]; then
+	cat <<EOF
+
+Staged for next boot. Reboot to apply:
+  sudo systemctl reboot
+
+If the new image misbehaves, roll back to the previous deployment:
+  sudo bootc rollback && sudo systemctl reboot
+EOF
+fi

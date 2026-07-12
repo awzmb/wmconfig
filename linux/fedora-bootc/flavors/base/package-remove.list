@@ -7,4 +7,11 @@
 # Dropping it slims kernel updates and the image. (Recommended by the Fedora
 # Magazine bootc-desktop guide.)
 dracut-config-rescue
-chromium
+
+# openssh-server: this is a desktop device, not a remote-managed server, so we
+# don't ship an SSH daemon. Removing the package also removes its units, so it
+# can't be started even if something re-enables it. (openssh-clients stays for
+# outbound ssh.)
+openssh-server
+
+# chromium
