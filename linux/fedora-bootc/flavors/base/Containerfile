@@ -1,0 +1,55 @@
+# Containerfile — the shared BASE bootc image (localhost/fedora-base).
+#
+# This is the DE-agnostic foundation every flavor builds FROM. `./fedora-build`
+# builds this first, then the selected flavor layers its desktop on top.
+# Everything the base needs lives next to this file:
+#
+#   package.list         dnf packages to layer (system/dev/gaming/virt/CLI/...)
+#   package-remove.list  packages to remove
+#   flatpak.list         flatpaks installed on first boot
+#   overlay/             rootfs overlay (/etc, /usr config, services, helpers)
+#   scripts/setup-repos.sh   add RPM Fusion + Tailscale
+#   scripts/configure.sh     services, timezone, locale, plymouth, initramfs, ...
+#   bib/config.toml      bootc-image-builder config (used by ./fedora-usb)
+#
+# Base: a standard Fedora bootc image. Override with `--build-arg BASE=<ref>`
+# (./fedora-build passes FEDORA_BASE through for you).
+ARG BASE=quay.io/fedora/fedora-bootc:rawhide
+FROM ${BASE}
+
+# Variant config, available during the build only (removed at the end).
+COPY . /run/fedora/variant
+ENV HB=/run/fedora/variant
+
+# Add the extra package sources package.list depends on (RPM Fusion).
+RUN bash $HB/scripts/setup-repos.sh
+
+# Install layered packages (strip comments/blanks from package.list inline).
+# --skip-unavailable/--skip-broken keep the build resilient to packages with no
+# Fedora equivalent for a given release.
+RUN pkgs=$(sed -e 's/#.*//' $HB/package.list | tr -s ' \t' '\n' | awk 'NF'); \
+    if [ -n "$pkgs" ]; then \
+        dnf -y install --skip-unavailable --skip-broken $pkgs; \
+    fi && dnf clean all
+
+# Apply the rootfs overlay after packages so our files win over anything a
+# package shipped, and before configure.sh, which consumes the overlay's
+# dracut.conf.d + unit files.
+RUN cp -a $HB/overlay/. / 2>/dev/null || true
+
+# Ship list metadata consumed by the first-boot flatpak unit.
+RUN mkdir -p /usr/share/fedora && \
+    [ -f $HB/flatpak.list ] && cp -f $HB/flatpak.list /usr/share/fedora/ || true
+
+# Make shipped helper scripts executable.
+RUN chmod -R a+rx /usr/libexec/fedora-* /usr/local/bin 2>/dev/null || true
+
+# Configure the system (services, timezone, locale, package removals, dconf,
+# default session, plymouth + initramfs).
+RUN bash $HB/scripts/configure.sh
+
+# Remove build-only material so it does not ship in the image.
+RUN rm -rf /run/fedora /var/cache/* /var/lib/dnf/history* /var/log/* 2>/dev/null || true
+
+# bootc images must pass the container lint.
+RUN bootc container lint

@@ -1,0 +1,248 @@
+#!/usr/bin/env bash
+#
+# fedora-usb
+#
+# Turn a built Fedora bootc image into a bootable installer and (optionally)
+# write it to a USB stick, so the OS can be installed on bare-metal devices.
+#
+# It uses bootc-image-builder (bib) to produce an installer ISO, then can flash
+# the result to a USB device with dd.
+#
+# Default type is `bootc-installer`: a modern bootc installer ISO that works with
+# ANY bootc image. It builds an Anaconda installer image (layered on the OS image)
+# and passes the OS image as `--installer-payload-ref`, keeping the installed OS
+# free of installer-only packages. `anaconda-iso` also works now that the base is
+# a standard Fedora image (os-release ID `fedora`), but `bootc-installer` is the
+# robust, base-agnostic default.
+#
+# Usage:
+#   sudo ./fedora-usb [options] [flavor]
+#
+# Options:
+#   --type <t>      output type: bootc-installer (default) | anaconda-iso | raw | qcow2
+#   --rootfs <fs>   root filesystem type: xfs (default) | ext4 | btrfs
+#   --image <ref>   image reference to build from
+#                   (default: localhost/fedora-<flavor>:latest, built by fedora-build)
+#   --config <f>    bootc-image-builder config.toml
+#                   (default: flavors/base/bib/config.toml, shared by all flavors)
+#   --output <dir>  output directory (default: ./target)
+#   --device <dev>  USB block device to flash, e.g. /dev/sdb (DESTRUCTIVE)
+#   --bib <ref>     bootc-image-builder image
+#                   (default: quay.io/centos-bootc/bootc-image-builder:latest)
+#   --keep-installer  keep the generated Anaconda installer image instead of
+#                   removing it after the build (bootc-installer only)
+#   --yes           skip the flashing confirmation prompt
+#   -h, --help      show this help
+#
+# Examples:
+#   sudo ./fedora-usb                          # build gnome-sway installer ISO into ./target
+#   sudo ./fedora-usb --device /dev/sdb        # build ISO and flash to /dev/sdb
+#   sudo ./fedora-usb --type raw --device /dev/sdb kde   # kde flavor, raw image
+#
+set -euo pipefail
+
+self_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+flavorsdir="$self_dir/flavors"
+PODMAN=${PODMAN:-podman}
+
+die() { printf '\e[1;31m==> error:\e[0m %s\n' "$*" >&2; exit 1; }
+info() { printf '\e[1;32m==>\e[0m\e[1m %s\e[0m\n' "$*"; }
+warn() { printf '\e[1;33m==> warning:\e[0m %s\n' "$*" >&2; }
+
+# --- defaults ------------------------------------------------------------
+out_type=bootc-installer
+image=
+config=
+outdir="$self_dir/target"
+device=
+rootfs=xfs
+bib_image=quay.io/centos-bootc/bootc-image-builder:latest
+assume_yes=0
+keep_installer=0
+flavor=
+
+# --- parse args ----------------------------------------------------------
+while [[ $# -gt 0 ]]; do
+	case "$1" in
+		--type)   out_type=$2; shift 2;;
+		--image)  image=$2; shift 2;;
+		--config) config=$2; shift 2;;
+		--output) outdir=$2; shift 2;;
+		--device) device=$2; shift 2;;
+		--rootfs) rootfs=$2; shift 2;;
+		--bib)    bib_image=$2; shift 2;;
+		--keep-installer) keep_installer=1; shift;;
+		--yes|-y) assume_yes=1; shift;;
+		-h|--help) sed -n '2,41p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'; exit 0;;
+		-*)        die "unknown option: $1";;
+		*)         flavor=$1; shift;;
+	esac
+done
+
+flavor=${flavor:-gnome-sway}
+flavordir="$flavorsdir/$flavor"
+[[ -d $flavordir ]] || die "flavor '$flavor' not found in $flavorsdir"
+
+# The image tag matches ./fedora-build; the bib config (kickstart/LUKS/user) is
+# shared by all flavors and lives in the base layer.
+image=${image:-localhost/fedora-${flavor}:latest}
+config=${config:-$flavorsdir/base/bib/config.toml}
+
+[[ $(id -u) -eq 0 ]] || die "must run as root (bootc-image-builder needs --privileged)"
+command -v "$PODMAN" >/dev/null 2>&1 || die "$PODMAN not found"
+
+# Resolve config and outdir to absolute paths (podman -v requires absolute paths).
+config=$(realpath -- "$config")
+outdir=$(mkdir -p "$outdir" && realpath -- "$outdir")
+
+[[ -f $config ]] || die "config not found: $config"
+
+# Ensure the image is in root's podman storage (bib no longer auto-pulls).
+# fedora-build runs as a regular user, so the image lands in that user's
+# storage; fedora-usb runs as root, which has separate storage.
+# Auto-transfer via save/load if needed.
+local_flag=(--local)
+if ! "$PODMAN" image exists "$image" 2>/dev/null; then
+	if [[ -n ${SUDO_USER:-} ]]; then
+		info "image not in root storage; transferring from ${SUDO_USER}'s podman storage..."
+		sudo -u "$SUDO_USER" podman image save "$image" | "$PODMAN" image load \
+			|| die "transfer failed — build the image first with: ./fedora-build $flavor"
+	else
+		die "image '$image' not found in local podman storage; build it first with: ./fedora-build $flavor"
+	fi
+else
+	info "using local image: $image"
+fi
+
+mkdir -p "$outdir"
+
+# --- bootc-installer: build the Anaconda installer image ----------------
+# The `bootc-installer` type expects the positional container to have Anaconda
+# (and lorax templates) baked in, and a separate `--installer-payload-ref` for
+# the OS image Anaconda should install. We keep the installed OS clean by
+# building a throwaway installer image layered on top of the real image.
+installer_image=""
+bib_target="$image"
+payload_args=()
+
+build_installer_image() {  # $1 = base (payload) image, $2 = installer tag
+	local from=$1 tag=$2 ctx
+	ctx=$(mktemp -d)
+	cat > "$ctx/Containerfile" <<EOF
+FROM $from
+
+# Anaconda + lorax stack required by bib's bootc-installer type. These come from
+# the native Fedora repos (plus RPM Fusion, which setup-repos.sh added to the image).
+RUN dnf install -y \\
+        anaconda \\
+        anaconda-install-env-deps \\
+        anaconda-dracut \\
+        rpm-ostree \\
+        dracut-config-generic \\
+        dracut-network \\
+        nfs-utils \\
+        rpcbind \\
+        net-tools \\
+        squashfs-tools \\
+        grub2-efi-x64-cdboot \\
+        python3-mako \\
+        lorax-templates-generic \\
+        biosdevname \\
+        prefixdevname \\
+    && dnf clean all
+
+# Fedora 43+ moved the EFI payload to /usr/lib/efi; anaconda/lorax expect it under
+# /boot/efi, so copy it into place.
+RUN mkdir -p /boot/efi && cp -ra /usr/lib/efi/*/*/EFI /boot/efi
+
+# lorax wants to create a symlink /mnt -> /var/mnt which may not exist on bootc.
+RUN mkdir -p /var/mnt
+EOF
+	info "building Anaconda installer image $tag (layered on $from)"
+	"$PODMAN" build -t "$tag" -f "$ctx/Containerfile" "$ctx" \
+		|| { rm -rf "$ctx"; die "failed to build the Anaconda installer image"; }
+	rm -rf "$ctx"
+}
+
+if [[ $out_type == bootc-installer ]]; then
+	installer_image="localhost/fedora-${flavor}-installer:latest"
+	build_installer_image "$image" "$installer_image"
+	bib_target="$installer_image"
+	payload_args=(--installer-payload-ref "$image")
+fi
+
+# --- run bootc-image-builder --------------------------------------------
+info "building installer (type=$out_type) from $image"
+"$PODMAN" run --rm -it --privileged --pull=newer \
+	--security-opt label=type:unconfined_t \
+	-v "$config":/config.toml:ro \
+	-v "$outdir":/output \
+	-v /var/lib/containers/storage:/var/lib/containers/storage \
+	"$bib_image" \
+	--type "$out_type" \
+	--rootfs "$rootfs" \
+	"${payload_args[@]}" \
+	"$bib_target"
+
+# Drop the throwaway installer image unless the user wants to keep it.
+if [[ -n $installer_image && $keep_installer -ne 1 ]]; then
+	"$PODMAN" image rm "$installer_image" >/dev/null 2>&1 || true
+fi
+
+# --- locate the produced artifact ---------------------------------------
+artifact=
+case "$out_type" in
+	bootc-installer|anaconda-iso|iso)
+		artifact=$(find "$outdir" -name '*.iso' -type f 2>/dev/null | head -n1);;
+	raw)
+		artifact=$(find "$outdir" -name '*.raw' -type f 2>/dev/null | head -n1);;
+	qcow2)
+		artifact=$(find "$outdir" -name '*.qcow2' -type f 2>/dev/null | head -n1);;
+esac
+
+[[ -n $artifact && -f $artifact ]] || die "could not locate build artifact under $outdir"
+info "artifact: $artifact"
+
+# --- optionally flash to USB --------------------------------------------
+if [[ -z $device ]]; then
+	cat <<EOF
+
+No --device given, so nothing was flashed.
+
+To write the installer to a USB stick manually:
+  sudo dd if='$artifact' of=/dev/sdX bs=4M status=progress oflag=direct conv=fsync
+  sync
+
+(Replace /dev/sdX with your USB device. Double-check with 'lsblk' first!)
+EOF
+	exit 0
+fi
+
+[[ -b $device ]] || die "$device is not a block device"
+
+# Safety checks before destroying a disk.
+if findmnt -rno SOURCE,TARGET | grep -q "^${device}.* / *$"; then
+	die "$device hosts the running root filesystem; refusing to flash"
+fi
+if lsblk -rno MOUNTPOINT "$device" 2>/dev/null | grep -q '^/$'; then
+	die "$device appears to be mounted at /; refusing to flash"
+fi
+
+echo
+warn "About to OVERWRITE all data on $device:"
+lsblk -o NAME,SIZE,TYPE,MODEL,MOUNTPOINTS "$device" || lsblk "$device"
+echo
+if [[ $assume_yes -ne 1 ]]; then
+	read -r -p "Type 'YES' to write '$(basename "$artifact")' to $device: " ans
+	[[ $ans == YES ]] || die "aborted by user"
+fi
+
+# Unmount any mounted partitions of the target device.
+for part in $(lsblk -rno NAME "$device" | tail -n +2); do
+	umount "/dev/$part" 2>/dev/null || true
+done
+
+info "writing to $device ..."
+dd if="$artifact" of="$device" bs=4M status=progress oflag=direct conv=fsync
+sync
+info "done; $device is now a bootable Fedora installer"

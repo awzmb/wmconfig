@@ -1,0 +1,36 @@
+# gnome flavor packages — a plain GNOME desktop layered on the shared base image.
+#
+# GNOME shell + GDM + the standard GNOME apps/backends. No Sway/Hyprland. All the
+# DE-agnostic tooling comes from the base image.
+#
+# Lines beginning with '#' and blank lines are ignored. Installed with
+# `dnf install --skip-unavailable --skip-broken`.
+
+gdm
+evolution-data-server
+gnome-backgrounds
+gnome-console
+gnome-control-center
+gnome-disk-utility
+gnome-initial-setup
+gnome-menus
+gnome-shell
+gnome-shell-extension-appindicator
+gnome-software
+gnome-system-monitor
+gnome-tweaks
+gnome-keyring
+# Fedora splits the PAM module into its own subpackage; without it the login
+# keyring is never unlocked (see "gkr-pam: ... missing" in the logs).
+gnome-keyring-pam
+mutter
+nautilus
+gvfs
+gvfs-afc
+gvfs-fuse
+gvfs-goa
+gvfs-gphoto2
+gvfs-mtp
+gvfs-nfs
+gvfs-smb
+xdg-desktop-portal-gnome

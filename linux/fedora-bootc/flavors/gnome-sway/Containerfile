@@ -1,0 +1,35 @@
+# Containerfile — the gnome-sway flavor (GNOME + Sway + Hyprland).
+#
+# Layers the desktop on top of the shared base image (localhost/fedora-base).
+# ./fedora-build builds the base first and passes it as --build-arg BASE.
+# The base already carries the Fedora/RPM Fusion/Tailscale repos, so this layer
+# only adds the desktop packages, overlay and enablement.
+#
+#   package.list         desktop packages (GNOME shell, GDM, Sway, Hyprland, ...)
+#   overlay/             desktop overlay (seatd, portals, suspend hook)
+#   scripts/configure.sh GDM + Sway default session + seat/suspend services
+ARG BASE=localhost/fedora-base:latest
+FROM ${BASE}
+
+# Flavor config, available during the build only (removed at the end).
+COPY . /run/fedora/variant
+ENV HB=/run/fedora/variant
+
+# Install the desktop packages (repos come from the base image).
+RUN pkgs=$(sed -e 's/#.*//' $HB/package.list | tr -s ' \t' '\n' | awk 'NF'); \
+    if [ -n "$pkgs" ]; then \
+        dnf -y install --skip-unavailable --skip-broken $pkgs; \
+    fi && dnf clean all
+
+# Apply the desktop overlay, then make shipped helpers executable.
+RUN cp -a $HB/overlay/. / 2>/dev/null || true
+RUN chmod -R a+rx /usr/local/bin 2>/dev/null || true
+
+# Enable the display manager, default session and desktop services.
+RUN bash $HB/scripts/configure.sh
+
+# Remove build-only material so it does not ship in the image.
+RUN rm -rf /run/fedora /var/cache/* /var/lib/dnf/history* /var/log/* 2>/dev/null || true
+
+# bootc images must pass the container lint.
+RUN bootc container lint

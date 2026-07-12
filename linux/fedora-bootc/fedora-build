@@ -1,0 +1,91 @@
+#!/usr/bin/env bash
+#
+# fedora-build
+#
+# Build a Fedora (bootc / image-mode) OS image. The build is two layers:
+#
+#   1. flavors/base/     -> localhost/fedora-base:latest   (DE-agnostic foundation)
+#   2. flavors/<flavor>/ -> localhost/fedora-<flavor>:latest (FROM the base)
+#
+# This script builds the base first, then layers the selected desktop flavor on
+# top with `podman build`. Each layer's Containerfile is the driver; this script
+# just resolves tags and passes the base image through as --build-arg BASE.
+#
+# Flavors (flavors/<flavor>/):
+#   gnome-sway   GNOME + Sway (default) + Hyprland — the full daily driver (default)
+#   gnome        plain GNOME
+#   kde          KDE Plasma + SDDM
+#
+# Each flavor dir holds:
+#   Containerfile        -> FROM the base + installs its desktop packages
+#   package.list         -> desktop packages to layer
+#   scripts/configure.sh -> display manager + session enablement
+#   overlay/             -> desktop rootfs overlay (optional)
+#
+# Usage:
+#   ./fedora-build [flavor]
+#
+# Environment overrides:
+#   FEDORA_BASE       override the FROM of the BASE image (rawhide) — passed as
+#                     --build-arg BASE to flavors/base
+#   FEDORA_TAG        override the built flavor image tag
+#                     (default localhost/fedora-<flavor>:latest)
+#   FEDORA_BASE_TAG   override the base image tag (default localhost/fedora-base:latest)
+#   FEDORA_SKIP_BASE  set to 1 to skip rebuilding the base (reuse an existing one)
+#   PODMAN            podman binary to use (default: podman)
+#
+set -euo pipefail
+
+self_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+flavorsdir="$self_dir/flavors"
+PODMAN=${PODMAN:-podman}
+
+die() { printf '\e[1;31m==> error:\e[0m %s\n' "$*" >&2; exit 1; }
+info() { printf '\e[1;32m==>\e[0m\e[1m %s\e[0m\n' "$*"; }
+
+flavor=${1:-gnome-sway}
+flavordir="$flavorsdir/$flavor"
+basedir="$flavorsdir/base"
+
+[[ $flavor != base ]] || die "'base' is the shared foundation, not a flavor; pick gnome-sway, gnome or kde"
+[[ -f $flavordir/Containerfile ]] || die "no Containerfile for flavor '$flavor' in $flavorsdir"
+[[ -f $basedir/Containerfile ]] || die "missing base layer at $basedir"
+command -v "$PODMAN" >/dev/null 2>&1 || die "$PODMAN not found; install podman/buildah"
+
+base_tag=${FEDORA_BASE_TAG:-localhost/fedora-base:latest}
+image_tag=${FEDORA_TAG:-localhost/fedora-${flavor}:latest}
+
+base_count=$(sed -e 's/#.*//' "$basedir/package.list" 2>/dev/null | tr -s ' \t' '\n' | awk 'NF' | wc -l || echo 0)
+flavor_count=$(sed -e 's/#.*//' "$flavordir/package.list" 2>/dev/null | tr -s ' \t' '\n' | awk 'NF' | wc -l || echo 0)
+info "flavor        : $flavor"
+info "base image    : $base_tag ($base_count packages)"
+info "target image  : $image_tag (+$flavor_count desktop packages)"
+
+# --- 1. base layer -------------------------------------------------------
+if [[ ${FEDORA_SKIP_BASE:-0} == 1 ]]; then
+	info "FEDORA_SKIP_BASE=1 — reusing existing base image $base_tag"
+	"$PODMAN" image exists "$base_tag" || die "base image $base_tag not found; build it once without FEDORA_SKIP_BASE"
+else
+	# The rawhide FROM of the base defaults to the one in flavors/base/Containerfile;
+	# FEDORA_BASE overrides it via --build-arg.
+	base_from_args=()
+	[[ -n ${FEDORA_BASE:-} ]] && base_from_args=(--build-arg "BASE=$FEDORA_BASE")
+	info "building base layer (this can take a while)..."
+	"$PODMAN" build --pull=newer "${base_from_args[@]}" \
+		-t "$base_tag" -f "$basedir/Containerfile" "$basedir"
+fi
+
+# --- 2. flavor layer -----------------------------------------------------
+info "building flavor layer ($flavor) FROM $base_tag ..."
+"$PODMAN" build --build-arg "BASE=$base_tag" \
+	-t "$image_tag" -f "$flavordir/Containerfile" "$flavordir"
+
+info "done"
+info "built: $image_tag"
+cat <<EOF
+
+Next steps:
+  * Test locally:     sudo $PODMAN run --rm -it $image_tag /bin/bash
+  * Build a USB/ISO:  sudo ./fedora-usb $flavor
+  * Push to registry: $PODMAN push $image_tag <registry>/<repo>:<tag>
+EOF

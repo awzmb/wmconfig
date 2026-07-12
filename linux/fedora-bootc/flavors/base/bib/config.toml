@@ -1,0 +1,64 @@
+# bootc-image-builder configuration shared by all Fedora flavors.
+# https://github.com/osbuild/bootc-image-builder
+#
+# Used by ./fedora-usb to produce the installer ISO / disk image.
+# The installer created from this config installs the OS to bare metal.
+#
+# FULL-DISK ENCRYPTION (LUKS) + USER CREATION VIA KICKSTART
+# --------------------------------------------------------
+# bib has no native disk-encryption customization; the only way to get LUKS is an
+# Anaconda kickstart with `autopart --encrypted`. Anaconda kickstart content is
+# NOT allowed alongside a `[[customizations.user]]` block (osbuild/bootc-image-
+# builder#528), so the user/group/timezone setup that used to live in
+# [[customizations.user]] + [customizations.timezone] is now part of the kickstart
+# below. bib still auto-appends the `ostreecontainer` line that installs the image.
+#
+# Secure Boot is NOT configured here: it is a UEFI firmware setting, not an install
+# step. The image already ships the signed shim -> grub2 -> kernel chain
+# (shim-x64/grub2-efi-x64 in package.list), so it boots with Secure Boot enabled —
+# just turn Secure Boot on in the machine's UEFI/BIOS setup.
+
+[customizations.installer.kickstart]
+contents = """
+# Non-interactive text install.
+text --non-interactive
+
+# Wipe the target disk and lay down a fresh GPT.
+zerombr
+clearpart --all --initlabel --disklabel=gpt
+
+# Full-disk LUKS encryption on LVM. The passphrase MUST match the awzm account
+# password so a single secret both unlocks the disk and logs in.
+# CHANGE BOTH the passphrase here and the --password hash in the `user` line.
+# (autopart takes the passphrase in PLAINTEXT — there is no hashed form for it.)
+autopart --type=lvm --noswap --encrypted --passphrase=fedora
+
+# Boot splash: append `rhgb quiet` here (the reliable Anaconda path). The bootc
+# kargs.d snippet in base configure.sh is NOT honored by Anaconda's ostreecontainer
+# install, which is why Plymouth was inactive. With rhgb + the plymouth/crypt
+# dracut modules baked into the image initramfs, Plymouth shows the boot splash AND
+# renders the LUKS passphrase prompt graphically (Fedora Silverblue behaviour); the
+# default Fedora `bgrt` theme is selected in base configure.sh.
+bootloader --append="rhgb quiet"
+
+# Networking + clock. (bib appends the `ostreecontainer` line itself.)
+network --bootproto=dhcp --device=link --activate --onboot=on
+timezone UTC --utc
+
+# Lock direct root login; administer through the wheel user below.
+rootpw --lock
+
+# Recreate the awzm user the old [[customizations.user]] block made. The password
+# is the SHA-512 crypt of "fedora" — CHANGE IT (mkpasswd -m sha512). Only the
+# always-present base groups go here; image-specific groups (seat/realtime/libvirt/
+# kvm) are added in %post so a missing one never aborts the install.
+user --name=awzm --groups=wheel,video,audio,input,render --iscrypted --password=$6$aXSt5MJYOE9adprF$meD2Y.dOCjHDLBfak04pKXBndgFupGFIU/1X8TwxNUD0lm.16OcGjYK5MOp/M.ppobWlQY8Fr2laGi4VI3RT51
+
+%post --log=/var/log/fedora-ks-post.log
+# Add awzm to the desktop/virtualisation groups if they exist in the installed
+# image; never fail the install if one is absent.
+for g in seat realtime libvirt kvm; do
+    getent group "$g" >/dev/null 2>&1 && usermod -aG "$g" awzm || true
+done
+%end
+"""

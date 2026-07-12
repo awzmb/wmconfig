@@ -1,0 +1,24 @@
+# Containerfile — the kde flavor (KDE Plasma + SDDM).
+#
+# Layers a KDE Plasma desktop on top of the shared base image
+# (localhost/fedora-base). ./fedora-build builds the base first and passes it as
+# --build-arg BASE. Repos come from the base image; this layer only adds the
+# Plasma packages and enablement.
+ARG BASE=localhost/fedora-base:latest
+FROM ${BASE}
+
+COPY . /run/fedora/variant
+ENV HB=/run/fedora/variant
+
+RUN pkgs=$(sed -e 's/#.*//' $HB/package.list | tr -s ' \t' '\n' | awk 'NF'); \
+    if [ -n "$pkgs" ]; then \
+        dnf -y install --skip-unavailable --skip-broken $pkgs; \
+    fi && dnf clean all
+
+RUN cp -a $HB/overlay/. / 2>/dev/null || true
+
+RUN bash $HB/scripts/configure.sh
+
+RUN rm -rf /run/fedora /var/cache/* /var/lib/dnf/history* /var/log/* 2>/dev/null || true
+
+RUN bootc container lint

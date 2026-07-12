@@ -20,6 +20,7 @@ linux/arkane-sunshine/target
 
 # ignore hummingbird build target directory
 linux/hummingbird/target
+linux/fedora-bootc/target
 
 # ignore display configuration
 .config/hypr/monitors.conf

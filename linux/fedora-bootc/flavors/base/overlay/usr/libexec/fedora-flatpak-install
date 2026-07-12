@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# First-boot system Flatpak installer for Fedora.
+# Adds Flathub and installs the refs listed in /usr/share/fedora/flatpak.list.
+set -euo pipefail
+
+list=/usr/share/fedora/flatpak.list
+[[ -f $list ]] || exit 0
+
+flatpak remote-add --if-not-exists flathub \
+	https://dl.flathub.org/repo/flathub.flatpakrepo
+
+while read -r ref; do
+	# strip comments and whitespace
+	ref=${ref%%#*}
+	ref=$(echo "$ref" | xargs)
+	[[ -z $ref ]] && continue
+	echo "==> Installing flatpak: $ref"
+	flatpak install --system --noninteractive --or-update flathub "$ref" || \
+		echo "!! failed to install $ref, continuing"
+done < "$list"

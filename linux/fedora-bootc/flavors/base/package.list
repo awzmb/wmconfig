@@ -1,0 +1,288 @@
+# Fedora package list for the shared BASE image (flavors/base).
+#
+# This is the DE-agnostic foundation shared by every flavor: system, dev,
+# gaming, virt, CLI, networking, media — but NOT the desktop environment, its
+# display manager or its portals (those live in flavors/<desktop>/package.list).
+# Installed with `dnf install` inside the bootc image build.
+#
+# Lines beginning with '#' and blank lines are ignored. Packages that have no
+# Fedora equivalent or are Arch/arkdep specific are commented out with a note.
+# RPM Fusion + Tailscale are wired up in scripts/setup-repos.sh.
+
+# Basic packages
+# apparmor                    # Fedora uses SELinux by default; kept off
+bind-utils
+binutils
+btrfs-progs
+cryptsetup                    # LUKS management (luksChangeKey, luksAddKey, etc.)
+debugedit
+diffutils
+distrobox
+dosfstools
+efibootmgr
+espeak-ng
+f2fs-tools
+fakeroot
+git
+# glibc-langpack-en omitted: it hard-pins `glibc = <exact EVR>` and the distroless
+# base ships a `.hum1` glibc no Fedora langpack matches, so it is always dropped by
+# --skip-broken. post_install.sh generates en_US.UTF-8 with `localedef` instead.
+iproute                       # ip, ss (socket stats) — likely in base, pinned explicitly
+iptables-nft                  # iptables/ebtables on the nftables backend
+lvm2
+man-db
+mesa-dri-drivers
+mesa-va-drivers
+mesa-vulkan-drivers
+neovim
+NetworkManager
+openssh-clients
+openssh-server
+orca
+plymouth
+# Boot-splash plugin + default Fedora theme (bgrt). Without a theme package
+# plymouth has nothing to render; the initramfs is regenerated with the plymouth
+# dracut module and `rhgb quiet` kargs are set in post_install.sh.
+plymouth-plugin-label
+plymouth-theme-spinner
+pv
+qemu-guest-agent
+alsa-sof-firmware
+# Bare-metal devices need GPU and Wi-Fi firmware; the distroless base does not
+# ship it. In current Fedora `linux-firmware` was split into per-vendor
+# subpackages and no longer bundles iwlwifi / GPU blobs, so request them
+# explicitly (these pair with the i915/xe/amdgpu drivers forced in dracut).
+# Also inherited by the Anaconda installer image so the live installer has Wi-Fi.
+linux-firmware
+iwlwifi-mvm-firmware
+iwlwifi-dvm-firmware
+intel-gpu-firmware
+amd-gpu-firmware
+sudo
+terminus-fonts
+terminus-fonts-console
+tpm2-tools
+tpm2-tss
+vulkan-tools
+vulkan-loader
+wget2
+xfsprogs
+zsh
+
+# Audio
+realtime-setup                # Fedora equivalent of realtime-privileges
+
+# Container
+podman
+podman-compose
+containernetworking-plugins
+crun
+virtiofsd
+
+# Virtualization (KVM / libvirt) — enough to create and run KVM guests with
+# virt-manager / virt-install / virsh. libvirt-daemon-kvm pulls qemu-kvm and all
+# the daemon drivers; virt-install pulls libvirt-client. So no separate `libvirt`
+# meta or `libvirt-client` needed.
+libvirt-daemon-kvm
+libvirt-daemon-config-network  # default NAT 'default' network
+libvirt-nss
+qemu-img                       # create/convert VM disks (qcow2/raw)
+virt-install
+virt-manager
+virt-viewer
+edk2-ovmf                      # UEFI (OVMF) firmware for guests
+swtpm                          # software TPM for guests (Windows 11 etc.)
+swtpm-tools
+
+# Object storage / system containers
+# Classic LXC system containers.
+lxc
+lxc-templates
+# minio-client                # COPR / upstream binary (enable COPR manually)
+
+# NOTE: the desktop environment (GNOME / Sway / Hyprland / KDE), its display
+# manager and portals are NOT in this base list — each flavor layer adds them.
+# This base image is the shared, DE-agnostic foundation (system, dev, gaming,
+# virt, CLI, networking, media). See ../gnome-sway, ../gnome, ../kde.
+
+# Desktop (DE-agnostic bits: audio, bluetooth, flatpak, portals frontend, ...)
+bluez
+bluez-tools
+flatpak
+flatpak-builder
+fuse
+fuse3
+fwupd
+gstreamer1-plugins-base
+gstreamer1-plugins-good
+gstreamer1-plugins-bad-free
+gstreamer1-plugins-ugly-free   # RPM Fusion
+gstreamer1-plugin-libav        # RPM Fusion
+libde265                       # RPM Fusion
+ibus-typing-booster
+pipewire
+pipewire-alsa
+pipewire-jack-audio-connection-kit
+pipewire-pulseaudio
+power-profiles-daemon
+spice-vdagent
+switcheroo-control
+webp-pixbuf-loader
+wireplumber
+xdg-user-dirs
+xdg-utils
+xdg-desktop-portal            # base portal frontend (backends are per-flavor)
+
+# Hardware / microcode
+microcode_ctl                  # covers intel + amd ucode on Fedora
+
+# Shell and tools
+keyd
+sshuttle
+fzf
+tmux
+vim-enhanced
+foot
+vifm
+gh
+git-delta
+git-lfs
+git-crypt
+pass
+oath-toolkit
+w3m
+calc
+eza
+bat
+fd-find
+nodejs-npm
+yarnpkg
+htop
+mpv
+calcurse
+yamllint
+glow
+unrar
+wireguard-tools
+python3
+python-unversioned-command
+python3-pip
+pipx
+python3-neovim
+nmap-ncat
+termshark
+zip
+ctags
+cscope
+ttyd
+broot
+glances
+procs
+yq
+age
+uv
+
+# Development
+java-latest-openjdk
+luarocks
+rust-analyzer
+cargo
+
+# Basic system tools
+lsof
+less
+file
+which
+strace
+util-linux                     # lscpu, lsblk, dmesg, mount, etc.
+
+# Rust CLI tools (preferred over the traditional equivalents where a Fedora
+# package exists; the classics come from the base coreutils/util-linux anyway).
+#   already listed above: eza (ls), bat (cat), fd-find (find), git-delta (diff),
+#   procs (ps), broot (tree/nav)
+ripgrep                        # grep
+sd                             # sed (find/replace)
+du-dust                        # du
+bottom                         # top/htop (provides `btm`)
+zoxide                         # cd (smart jump)
+starship                       # shell prompt
+zellij                         # tmux-style terminal multiplexer
+tealdeer                       # tldr (fast man summaries; provides `tldr`)
+gitui                          # git terminal UI
+hyperfine                      # command benchmarking (time)
+hexyl                          # hex viewer (xxd)
+bandwhich                      # per-process network bandwidth monitor
+
+# Media drivers and extensions
+intel-media-driver
+libva-intel-driver
+intel-compute-runtime
+intel-gpu-tools
+intel-graphics-compiler
+intel-gmmlib
+libva-utils
+radeontop
+nvtop
+mesa-libGL
+mesa-libEGL
+
+# General desktop packages (DE-agnostic: terminals, fonts, applets)
+miller
+alacritty
+brightnessctl
+blueman
+wl-clipboard                   # generic Wayland clipboard CLI
+NetworkManager-applet
+pavucontrol
+pass-otp
+fontconfig
+fontawesome-fonts-all
+kitty
+google-noto-emoji-fonts
+
+# Themes and icons
+papirus-icon-theme
+gnome-themes-extra
+
+# Gaming (RPM Fusion + Flathub)
+steam                          # RPM Fusion (nonfree)
+gamemode
+lutris
+mangohud
+# moonlight-qt                 # Flatpak (see flatpak.list)
+
+# Camera
+v4l-utils
+# v4l2loopback-dkms / -utils   # akmod-v4l2loopback via RPM Fusion
+akmod-v4l2loopback             # RPM Fusion
+libcamera
+libcamera-tools
+pipewire-plugin-libcamera
+obs-studio                     # RPM Fusion
+
+# Networking
+opensnitch
+NetworkManager-vpnc
+NetworkManager-openconnect
+NetworkManager-openvpn
+xmlstarlet                     # i hate cisco with a passion
+nftables
+tcpdump
+iputils
+traceroute
+mtr
+whois
+tailscale                      # mesh VPN (repo added in scripts/setup-repos.sh)
+
+# Bare-metal / image-mode tooling
+coreos-installer
+bootc
+jq
+yq
+
+# Secure Boot: the signed shim is what makes the image bootable with Secure Boot
+# enabled (shim -> grub2 -> kernel, all signed by Fedora's keys). The base usually
+# ships it, but pin it so the guarantee does not depend on the base. Enabling
+# Secure Boot itself is a UEFI firmware action, not a build step.
+shim-x64
+grub2-efi-x64

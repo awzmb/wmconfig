@@ -1,0 +1,75 @@
+# gnome-sway flavor packages — layered on top of the shared base image.
+#
+# The full daily-driver desktop: GNOME (GDM greeter + GNOME session) with Sway as
+# the default session and Hyprland also available. DE-agnostic bits (terminals,
+# fonts, media, dev, gaming, virt, CLI, tailscale, ...) come from the base image.
+#
+# Lines beginning with '#' and blank lines are ignored. Installed with
+# `dnf install --skip-unavailable --skip-broken`.
+
+# GNOME (GDM login/greeter; Sway is the default session — see scripts/configure.sh.
+# gnome-shell is required by the GDM greeter even though Sway is the main WM)
+gdm
+evolution-data-server
+gnome-backgrounds
+gnome-console
+gnome-control-center
+gnome-disk-utility
+gnome-initial-setup
+gnome-menus
+gnome-shell
+gnome-software
+gnome-system-monitor
+gnome-tweaks
+gnome-keyring
+# Fedora splits the PAM module into its own subpackage; without it logins log
+# "gkr-pam: ... missing" and the login keyring is never unlocked (this also broke
+# starting the Sway session via GDM). Required for GNOME/Silverblue-style keyring
+# auto-unlock at login.
+gnome-keyring-pam
+mutter
+nautilus
+gvfs
+gvfs-afc
+gvfs-fuse
+gvfs-goa
+gvfs-gphoto2
+gvfs-mtp
+gvfs-nfs
+gvfs-smb
+xdg-desktop-portal-gnome
+
+# wlroots session helpers (launcher, notifications, clipboard, night light)
+fuzzel
+cliphist
+gammastep
+rofi-wayland
+dunst
+wl-mirror
+seatd                          # seat management for the wlroots sessions
+
+# Sway packages
+kanshi
+nwg-displays
+nwg-look
+sway
+swayidle
+swaylock
+swaybg
+waybar
+wlr-randr
+xdg-desktop-portal-wlr
+grim
+slurp
+
+# Hyprland (Fedora ships hyprland in repos on recent releases / COPR otherwise)
+hyprland
+hyprlock
+hypridle
+hyprpicker
+hyprcursor
+hyprlang
+xdg-desktop-portal-hyprland
+# hyprpolkitagent             # COPR if unavailable
+# hyprsunset                  # COPR if unavailable
+# hy3                         # COPR/build (hyprland plugin)

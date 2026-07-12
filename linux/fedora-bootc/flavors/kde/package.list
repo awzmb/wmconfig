@@ -1,0 +1,43 @@
+# kde flavor packages — KDE Plasma + SDDM layered on the shared base image.
+#
+# Plasma (Wayland session), SDDM greeter, the Plasma applets/backends and the
+# core KDE apps. All DE-agnostic tooling comes from the base image.
+#
+# Lines beginning with '#' and blank lines are ignored. Installed with
+# `dnf install --skip-unavailable --skip-broken`.
+
+# Plasma session + workspace
+plasma-desktop
+plasma-workspace
+plasma-workspace-wayland        # Wayland Plasma session
+kwin
+kscreen
+powerdevil
+plasma-systemmonitor
+plasma-nm                       # NetworkManager applet
+plasma-pa                       # PulseAudio/PipeWire volume applet
+plasma-pk-updates
+kdeplasma-addons
+kinfocenter
+systemsettings
+kmenuedit
+xdg-desktop-portal-kde
+kde-gtk-config                  # make GTK apps follow the Plasma theme
+breeze-gtk
+
+# Display manager
+sddm
+sddm-kcm                        # SDDM settings module for System Settings
+
+# Keyring / wallet (PAM auto-unlock at login)
+kwallet-pam
+kwalletmanager5
+
+# Core KDE apps
+dolphin                         # file manager
+konsole                         # terminal
+ark                             # archive manager
+gwenview                        # image viewer
+okular                          # document viewer
+spectacle                       # screenshots
+kate                            # text editor
