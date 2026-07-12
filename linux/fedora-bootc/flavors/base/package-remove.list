@@ -1,5 +1,10 @@
 # Packages to remove from the image after installation.
-# Mirrors `pacman -Rdd --noconfirm chromium` from awzmlinux post_install.sh.
-# Removed with `dnf remove` in the post_install extension. Ignored if absent.
+# Removed with `dnf remove` (tolerant of absence) in configure.sh.
 
-# chromium
+# dracut-config-rescue generates a separate, large "rescue" initramfs + boot
+# entry on the installed system. On a bootc/atomic desktop that's dead weight —
+# recovery is a `bootc rollback` to the previous deployment, not a rescue kernel.
+# Dropping it slims kernel updates and the image. (Recommended by the Fedora
+# Magazine bootc-desktop guide.)
+dracut-config-rescue
+chromium

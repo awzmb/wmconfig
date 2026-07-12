@@ -21,4 +21,4 @@ source ~/.zsh/completion.zsh
 
 
 autoload -U +X bashcompinit && bashcompinit
-complete -o nospace -C /home/awzm/.bin/terraform terraform
+autoload -Uz compinit & compinit -u

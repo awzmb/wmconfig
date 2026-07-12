@@ -28,9 +28,17 @@ FROM ${BASE}
 # drivers/firmware/mesa/portals are all listed explicitly in package.list, so
 # nothing needed is lost. --skip-unavailable/--skip-broken keep the build
 # resilient to packages with no Fedora equivalent for a given release.
+#
+# The two guarded fs-prep lines make the image bootc-day-2 friendly: /opt is
+# pointed at writable /var/opt (else it's immutable and software that installs
+# there — some IDEs, browsers — has nowhere to go), and /var/roothome is
+# ensured so package scriptlets that touch root's home don't fail. Both are
+# no-ops if the base already does them.
 RUN --mount=type=bind,source=.,target=/run/fedora/variant \
     set -eu; \
     HB=/run/fedora/variant; export HB; \
+    if [ ! -L /opt ]; then rmdir /opt 2>/dev/null && ln -sfn var/opt /opt || true; fi; \
+    mkdir -p /var/opt /var/roothome; \
     bash "$HB/scripts/setup-repos.sh"; \
     pkgs=$(sed -e 's/#.*//' "$HB/package.list" | tr -s ' \t' '\n' | awk 'NF'); \
     if [ -n "$pkgs" ]; then \

@@ -211,26 +211,39 @@ kargs = ["rhgb", "quiet"]
 EOF
 
 # Regenerate the initramfs(es). The dracut modules come from the declarative
-# overlay config above; build a generic (non-hostonly) initramfs in place at the
-# ostree/bootc location (/usr/lib/modules/<kver>/initramfs.img).
+# overlay config above (which force-adds `ostree` — see fedora.conf); build a
+# generic (non-hostonly) initramfs in place at the ostree/bootc location
+# (/usr/lib/modules/<kver>/initramfs.img). DRACUT_NO_XATTR avoids xattr failures
+# on the container's overlay filesystem; --reproducible + chmod 0600 match how
+# every bootc image project ships the initramfs (deterministic bytes, root-only).
 if command -v dracut >/dev/null 2>&1 && [[ -d /usr/lib/modules ]]; then
+	export DRACUT_NO_XATTR=1
 	for kver in $(ls /usr/lib/modules 2>/dev/null); do
 		[[ -e /usr/lib/modules/$kver/vmlinuz ]] || continue
-		printf '\e[1;32m-->\e[0m\e[1m Regenerating initramfs with Plymouth + LUKS (%s)\e[0m\n' "$kver"
-		dracut --force --no-hostonly --no-hostonly-cmdline \
-			--kver "$kver" "/usr/lib/modules/$kver/initramfs.img" \
+		img="/usr/lib/modules/$kver/initramfs.img"
+		printf '\e[1;32m-->\e[0m\e[1m Regenerating initramfs with ostree + Plymouth + LUKS (%s)\e[0m\n' "$kver"
+		dracut --force --reproducible --no-hostonly --no-hostonly-cmdline \
+			--kver "$kver" "$img" \
 			|| echo "!! dracut failed to regenerate initramfs for $kver"
-		# Verify the splash actually landed: a silent dracut that drops the
-		# plymouth module (the original bug) leaves an initramfs that boots
-		# without a splash. Fail loudly here instead of discovering it post-install.
-		if lsinitrd "/usr/lib/modules/$kver/initramfs.img" 2>/dev/null | grep -q plymouth; then
+		chmod 0600 "$img" 2>/dev/null || true
+		# Verify the two must-have modules actually landed. A silent dracut that
+		# drops `ostree` yields an UNBOOTABLE image (root can't be mounted);
+		# dropping `plymouth` "only" loses the splash / graphical LUKS prompt.
+		# Fail loudly here instead of discovering either post-install.
+		contents=$(lsinitrd "$img" 2>/dev/null || true)
+		if grep -q '/ostree' <<<"$contents" || lsinitrd -m "$img" 2>/dev/null | grep -qw ostree; then
+			printf '    ostree present in initramfs (%s)\n' "$kver"
+		else
+			echo "!! ostree MISSING from regenerated initramfs ($kver) — the system will NOT boot (cannot mount the composefs/ostree root)"
+		fi
+		if grep -q plymouth <<<"$contents"; then
 			printf '    plymouth present in initramfs (%s)\n' "$kver"
 		else
 			echo "!! plymouth MISSING from regenerated initramfs ($kver) — boot splash / graphical LUKS prompt will NOT appear"
 		fi
 	done
 else
-	echo "!! dracut or /usr/lib/modules not available; skipping initramfs regen (plymouth splash may not appear)"
+	echo "!! dracut or /usr/lib/modules not available; skipping initramfs regen (system may not boot / plymouth splash may not appear)"
 fi
 
 printf '\e[1;32m-->\e[0m\e[1m base configure complete\e[0m\n'

@@ -81,12 +81,20 @@ reason about the Containerfiles.
   `--setopt=install_weak_deps=False` to drop non-essential recommends (the big
   size lever); critical drivers/firmware/mesa/portals are listed explicitly so
   nothing needed is lost. Flip weak deps back on if a desktop feature goes missing.
-- **Plymouth is set up declaratively**: the `plymouth crypt lvm dm` dracut modules
-  are declared in `base/overlay/etc/dracut.conf.d/fedora.conf`
+- **Plymouth is set up declaratively**: the `ostree plymouth crypt lvm dm` dracut
+  modules are declared in `base/overlay/etc/dracut.conf.d/fedora.conf`
   (`add_dracutmodules`); base `configure.sh` selects the theme, writes
   `rhgb quiet` kargs (`/usr/lib/bootc/kargs.d`) and regenerates the initramfs.
   `bib/config.toml` ALSO appends `rhgb quiet` via `bootloader --append` (Anaconda
   doesn't honor bootc kargs.d). crypt/lvm/dm are needed to unlock the LUKS root.
+- **Force-adding `ostree` to the initramfs is mandatory, not cosmetic.** Because we
+  force-regenerate the initramfs for Plymouth, we MUST re-add the `ostree` dracut
+  module or the regen silently drops it and the image can't mount its
+  composefs/ostree root → unbootable. This is why `ostree` is in `add_dracutmodules`
+  and `configure.sh` verifies (via `lsinitrd`) that BOTH `ostree` and `plymouth`
+  landed. Every bootc image project does the same `--add ostree` (see
+  bootc-dev/bootc #1084). configure.sh also builds `--reproducible`, sets
+  `DRACUT_NO_XATTR=1` (container overlayfs), and `chmod 0600`s the image.
 - **Display manager + default session are per-flavor** (gnome-sway/gnome → GDM,
   kde → SDDM); the base sets no DM. Enablement is static.
 - **Service enablement is static** (`.wants` symlinks written into `/usr`), because
