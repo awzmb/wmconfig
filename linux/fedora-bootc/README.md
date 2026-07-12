@@ -200,42 +200,32 @@ the next boot. Disable with
 ### Adding / removing packages (the Silverblue equivalent)
 
 bootc has no `rpm-ostree install`. The native way to keep extra packages across
-updates is to **build a small derived image and switch to it**. Fedora ships
-a helper, `fedora-layer`, that automates this:
+updates is to **build a small derived image and switch to it** — the same
+`Containerfile` + `podman build` flow this repo already uses:
 
 ```sh
-sudo fedora-layer add htop neovim   # layer packages, stage for next boot
-sudo fedora-layer remove htop       # drop a package, rebuild
-sudo fedora-layer list              # show layered packages
-sudo fedora-layer update            # re-pull upstream + re-apply your layers
-sudo fedora-layer reset             # drop all layers, back to the pristine image
-sudo fedora-layer status            # bootc status
-reboot                                   # activate any staged change
+# derived.Containerfile
+FROM <registry>/<repo>:latest       # your published image
+RUN dnf install -y htop neovim && dnf clean all
 ```
 
-Under the hood it writes a one-line `Containerfile` (`FROM <upstream> ` +
-`RUN dnf install …`), `podman build`s it to `localhost/fedora-layered:latest`,
-and runs `bootc switch --transport containers-storage …`. State lives in
-`/etc/fedora/layer/` (`base` = upstream ref, `packages` = your list). The
-upstream ref is auto-detected from `bootc status` on first use, or set it
-explicitly with `sudo fedora-layer base <registry>/<repo>:tag`.
+```sh
+podman build -t localhost/fedora-local:latest -f derived.Containerfile .
+sudo bootc switch --transport containers-storage localhost/fedora-local:latest
+reboot
+```
 
-> Because a layered machine boots a **local** image, the automatic update timer
-> can no longer fetch OS updates for it. Run `sudo fedora-layer update` to
-> re-pull the upstream base and rebuild your layers on top — that is how a layered
-> system receives OS updates.
-
-For a quick, **transient** change (gone on next boot), use
-`sudo bootc usroverlay` then `dnf install …`.
+Rebuild the derived image whenever you want to pull upstream OS updates (change
+the `FROM` tag / re-pull, then rebuild). For a quick **transient** change (gone on
+next boot), use `sudo bootc usroverlay` then `dnf install …`.
 
 ### Silverblue → bootc cheat sheet
 
-| Silverblue (`rpm-ostree`)        | Fedora (`bootc`)                                  |
+| Silverblue (`rpm-ostree`)        | Fedora (`bootc`)                                       |
 | -------------------------------- | ----------------------------------------------------- |
 | `rpm-ostree upgrade`             | `bootc upgrade`                                        |
 | `rpm-ostree rebase <ref>`        | `bootc switch <ref>`                                   |
-| `rpm-ostree install <pkg>`       | `fedora-layer add <pkg>` (build + `bootc switch`) |
-| `rpm-ostree uninstall <pkg>`     | `fedora-layer remove <pkg>`                       |
+| `rpm-ostree install <pkg>`       | derived image (`FROM` + `RUN dnf install`) + `bootc switch` |
 | `rpm-ostree status`              | `bootc status`                                         |
 | `rpm-ostree rollback`            | `bootc rollback`                                       |
 | `rpm-ostree install` (one-shot)  | `bootc usroverlay` + `dnf install` (transient)         |

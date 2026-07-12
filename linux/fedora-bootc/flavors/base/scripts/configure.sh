@@ -135,19 +135,17 @@ rpm -q shim-x64 >/dev/null 2>&1 \
 	|| echo "!! shim-x64 not installed; image is NOT Secure Boot capable (enable SB in UEFI after install)"
 
 # --- System locale -------------------------------------------------------
-# The Fedora base is minimal and may not set a UTF-8 locale, which causes
-# `cannot change locale (en_US.UTF-8)` warnings (and breaks tools like fc-cache).
-#
-# glibc-langpack-en (package.list) is the normal source of the en_US.UTF-8 data,
-# but it hard-pins `glibc = <exact EVR>` and the distroless Fedora base ships
-# a `.hum1` glibc whose EVR no Fedora-repo langpack matches, so dnf --skip-broken
-# silently drops it. Instead, generate the locale from glibc's own i18n sources
-# with `localedef` — this uses whatever glibc is installed, no version matching.
+# glibc-langpack-en (package.list) installs the en_US.UTF-8 locale on the
+# standard Fedora base. As a fallback (e.g. if the langpack was dropped by
+# --skip-broken), generate it from glibc's i18n sources with `localedef`
+# (glibc-locale-source, also in package.list). Setting a UTF-8 locale avoids the
+# `cannot change locale (en_US.UTF-8)` warnings that break tools like fc-cache.
 printf '\e[1;32m-->\e[0m\e[1m Setting system locale to en_US.UTF-8\e[0m\n'
 if ! locale -a 2>/dev/null | grep -qiE '^en_US\.(utf8|UTF-8)$'; then
+	echo "!! en_US.UTF-8 not present (glibc-langpack-en missing?); generating with localedef"
 	if command -v localedef >/dev/null 2>&1; then
 		localedef -i en_US -f UTF-8 en_US.UTF-8 \
-			|| echo "!! localedef failed to build en_US.UTF-8 (glibc-common i18n data missing?)"
+			|| echo "!! localedef failed to build en_US.UTF-8 (glibc-locale-source missing?)"
 	else
 		echo "!! localedef not found (glibc-common missing); cannot generate en_US.UTF-8"
 	fi

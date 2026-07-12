@@ -24,9 +24,13 @@ espeak-ng
 f2fs-tools
 fakeroot
 git
-# glibc-langpack-en omitted: it hard-pins `glibc = <exact EVR>` and the distroless
-# base ships a `.hum1` glibc no Fedora langpack matches, so it is always dropped by
-# --skip-broken. post_install.sh generates en_US.UTF-8 with `localedef` instead.
+# Locale data. The base is a STANDARD Fedora bootc image whose glibc matches the
+# Fedora repos, so the langpack installs normally (the old distroless `.hum1`
+# glibc that forced a localedef workaround is gone). glibc-langpack-en ships the
+# en_US.UTF-8 locale; glibc-locale-source ships the i18n source files so
+# `localedef` still works as a fallback in configure.sh.
+glibc-langpack-en
+glibc-locale-source
 iproute                       # ip, ss (socket stats) — likely in base, pinned explicitly
 iptables-nft                  # iptables/ebtables on the nftables backend
 lvm2

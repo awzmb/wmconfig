@@ -42,7 +42,7 @@ RUN mkdir -p /usr/share/fedora && \
     [ -f $HB/flatpak.list ] && cp -f $HB/flatpak.list /usr/share/fedora/ || true
 
 # Make shipped helper scripts executable.
-RUN chmod -R a+rx /usr/libexec/fedora-* /usr/local/bin 2>/dev/null || true
+RUN chmod -R a+rx /usr/libexec/fedora-* 2>/dev/null || true
 
 # Configure the system (services, timezone, locale, package removals, dconf,
 # default session, plymouth + initramfs).
