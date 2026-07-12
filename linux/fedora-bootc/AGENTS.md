@@ -74,6 +74,13 @@ reason about the Containerfiles.
 - **Overlay is applied once per layer, after that layer's packages, before its
   `configure.sh`** so our files win over package-shipped ones and the
   dracut.conf.d/units are present when `configure.sh` runs.
+- **Each Containerfile is ONE `RUN` over a bind-mounted context** (no `COPY`), so
+  no build cruft (dnf cache, logs, the variant dir) is ever baked into a layer —
+  deleting files in a *later* layer does NOT reclaim space, so setup+install+
+  overlay+configure+cleanup must share one RUN. `dnf` installs pass
+  `--setopt=install_weak_deps=False` to drop non-essential recommends (the big
+  size lever); critical drivers/firmware/mesa/portals are listed explicitly so
+  nothing needed is lost. Flip weak deps back on if a desktop feature goes missing.
 - **Plymouth is set up declaratively**: the `plymouth crypt lvm dm` dracut modules
   are declared in `base/overlay/etc/dracut.conf.d/fedora.conf`
   (`add_dracutmodules`); base `configure.sh` selects the theme, writes

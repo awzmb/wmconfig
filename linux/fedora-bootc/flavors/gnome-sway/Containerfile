@@ -11,25 +11,23 @@
 ARG BASE=localhost/fedora-base:latest
 FROM ${BASE}
 
-# Flavor config, available during the build only (removed at the end).
-COPY . /run/fedora/variant
-ENV HB=/run/fedora/variant
-
-# Install the desktop packages (repos come from the base image).
-RUN pkgs=$(sed -e 's/#.*//' $HB/package.list | tr -s ' \t' '\n' | awk 'NF'); \
+# One layer, bind-mounted context (see flavors/base/Containerfile for why): the
+# desktop packages, overlay, configure and cleanup all share a single RUN so no
+# dnf cache / log / build-context cruft is baked into the image. Weak deps are
+# dropped (--setopt=install_weak_deps=False); the base already carries the repos.
+RUN --mount=type=bind,source=.,target=/run/fedora/variant \
+    set -eu; \
+    HB=/run/fedora/variant; export HB; \
+    pkgs=$(sed -e 's/#.*//' "$HB/package.list" | tr -s ' \t' '\n' | awk 'NF'); \
     if [ -n "$pkgs" ]; then \
-        dnf -y install --skip-unavailable --skip-broken $pkgs; \
-    fi && dnf clean all
-
-# Apply the desktop overlay, then make shipped helpers executable.
-RUN cp -a $HB/overlay/. / 2>/dev/null || true
-RUN chmod -R a+rx /usr/local/bin 2>/dev/null || true
-
-# Enable the display manager, default session and desktop services.
-RUN bash $HB/scripts/configure.sh
-
-# Remove build-only material so it does not ship in the image.
-RUN rm -rf /run/fedora /var/cache/* /var/lib/dnf/history* /var/log/* 2>/dev/null || true
+        dnf -y install --setopt=install_weak_deps=False \
+            --skip-unavailable --skip-broken $pkgs; \
+    fi; \
+    cp -a "$HB/overlay/." / 2>/dev/null || true; \
+    chmod -R a+rx /usr/local/bin 2>/dev/null || true; \
+    bash "$HB/scripts/configure.sh"; \
+    dnf clean all; \
+    rm -rf /var/cache/* /var/lib/dnf/history* /var/log/* /tmp/* /var/tmp/* 2>/dev/null || true
 
 # bootc images must pass the container lint.
 RUN bootc container lint
