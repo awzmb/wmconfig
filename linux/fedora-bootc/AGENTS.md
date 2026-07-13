@@ -111,8 +111,8 @@ reason about the Containerfiles.
   `ostree crypt systemd-cryptsetup lvm dm` (declared in `base/overlay/etc/dracut.conf.d/fedora.conf`
   via `add_dracutmodules`); base `configure.sh` selects a Plymouth theme, writes
   `rhgb quiet` kargs (`/usr/lib/bootc/kargs.d`) and regenerates the initramfs.
-  `bib/config.toml` ALSO appends `rhgb quiet` via `bootloader --append` (Anaconda
-  doesn't honor bootc kargs.d). crypt/systemd-cryptsetup/lvm/dm are needed to unlock the LUKS root;
+  The anaconda-iso installer picks up these bootc `kargs.d` snippets, so
+  `bib/config.toml` needs no `bootloader --append` override. crypt/systemd-cryptsetup/lvm/dm are needed to unlock the LUKS root;
   the generic initramfs unlocks LUKS via systemd-cryptsetup-generator from
   `rd.luks.uuid=`, so `systemd-cryptsetup` must be added explicitly (`crypt` only
   pulls it in hostonly mode) or first boot dies "systemd-cryptsetup@luks-…not found";
@@ -152,8 +152,9 @@ reason about the Containerfiles.
   dracut module was removed — it solved the wrong problem and never shipped into the
   booted initramfs anyway; the `sed` patch rides the proven fedora.conf/configure.sh
   channel instead.
-  `rd.luks.options=x-initrd.attach` is set (config.toml `bootloader --append` +
-  `kargs.d/15-luks.toml`) and IS required: it makes the generator emit the unlock unit
+  `rd.luks.options=x-initrd.attach` is set via `kargs.d/15-luks.toml` (the
+  anaconda-iso installer picks up bootc `kargs.d`, so no `bootloader --append` is
+  needed) and IS required: it makes the generator emit the unlock unit
   into the initrd and wire `cryptsetup.target`. If this fleet ever boots SATA/virtio
   roots, add `ahci`/`sd_mod`/`virtio_blk` to `force_drivers` too.
 - **Force-adding `ostree` to the initramfs is mandatory, not cosmetic.** Because we

@@ -215,8 +215,8 @@ if command -v plymouth-set-default-theme >/dev/null 2>&1; then
 fi
 
 # Append boot kargs via bootc kargs.d (consumed at deploy time by bootc-native
-# installs/updates; Anaconda's ostreecontainer install ignores these — see
-# bib/config.toml bootloader --append, which is the path the installer uses).
+# installs/updates; the anaconda-iso installer also picks these up, so bib
+# config.toml needs no bootloader --append override).
 #   rhgb quiet                     — drive the userspace Plymouth splash.
 #   rd.luks.options=x-initrd.attach — mark the rd.luks.uuid device x-initrd.attach
 #       so systemd-cryptsetup-generator emits its unlock unit INTO the initrd (and

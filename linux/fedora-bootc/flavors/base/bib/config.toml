@@ -33,23 +33,9 @@ clearpart --all --initlabel --disklabel=gpt
 # (autopart takes the passphrase in PLAINTEXT — there is no hashed form for it.)
 autopart --type=lvm --noswap --encrypted --passphrase=fedora
 
-# Kernel args (the reliable Anaconda path; the bootc kargs.d snippet in base
-# configure.sh is NOT honored by Anaconda's ostreecontainer install):
-#   rhgb quiet                   — boot splash. Plymouth runs in USERSPACE (omitted
-#       from the initramfs so the GPU driver doesn't probe before its firmware — see
-#       base configure.sh / dracut.conf.d), so the LUKS passphrase prompt is
-#       text-mode in the initramfs and the graphical splash (default `bgrt` theme)
-#       shows after unlock, once systemd starts Plymouth on the real root.
-#   rd.luks.options=x-initrd.attach — mark the cmdline LUKS device x-initrd.attach so
-#       systemd-cryptsetup-generator emits its unlock unit INTO the initrd (wiring
-#       cryptsetup.target.requires/) rather than the real-root systemd (no UUID =
-#       applies to any cmdline LUKS device with no crypttab entry). Required for
-#       early-boot unlock. The first-boot hang we chased was NOT this and NOT unit
-#       escaping — the generic initramfs failed to autoload the `nvme` driver, so the
-#       root disk never appeared, the LUKS device unit timed out and no passphrase was
-#       ever prompted. Fixed by force-loading nvme in overlay/etc/dracut.conf.d/
-#       fedora.conf (force_drivers).
-bootloader --append="rhgb quiet rd.luks.options=x-initrd.attach"
+# Kernel args: none set here. rhgb quiet + rd.luks.options=x-initrd.attach come from
+# the image's bootc kargs.d (base configure.sh: 10-plymouth.toml / 15-luks.toml) —
+# the installer picks them up, so no bootloader --append override is needed.
 
 # Networking + clock. (bib appends the `ostreecontainer` line itself.)
 network --bootproto=dhcp --device=link --activate --onboot=on
@@ -58,17 +44,17 @@ timezone UTC --utc
 # Lock direct root login; administer through the wheel user below.
 rootpw --lock
 
-# Recreate the awzm user the old [[customizations.user]] block made. The password
-# is the SHA-512 crypt of "fedora" — CHANGE IT (mkpasswd -m sha512). Only the
-# always-present base groups go here; image-specific groups (seat/realtime/libvirt/
-# kvm) are added in %post so a missing one never aborts the install.
-user --name=awzm --groups=wheel,video,audio,input,render --iscrypted --password="$6$pFef8YoeGqQyniz$LlrBHrR1u.3t4ozivb3j3Op.s6dZZWg9yjkFcNCol.SF7vibaGrrlQnmIGO/AYmR9FlG0GPzh8SzNFUZlqwIS/"
+# Recreate the fedora user the old [[customizations.user]] block made. Password is
+# plaintext "fedora" (--plaintext) — CHANGE IT (or use a hash: mkpasswd -m yescrypt,
+# then drop --plaintext). Only the always-present base groups go here; image-specific
+# groups (seat/realtime/libvirt/kvm) are added in %post so a missing one never aborts.
+user --name=fedora --groups=wheel,video,audio,input,render --password=fedora --plaintext
 
 %post --log=/var/log/fedora-ks-post.log
-# Add awzm to the desktop/virtualisation groups if they exist in the installed
+# Add fedora to the desktop/virtualisation groups if they exist in the installed
 # image; never fail the install if one is absent.
 for g in seat realtime libvirt kvm; do
-    getent group "$g" >/dev/null 2>&1 && usermod -aG "$g" awzm || true
+    getent group "$g" >/dev/null 2>&1 && usermod -aG "$g" fedora || true
 done
 %end
 """
