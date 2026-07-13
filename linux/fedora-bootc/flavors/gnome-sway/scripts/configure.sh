@@ -37,18 +37,24 @@ getent group seat >/dev/null 2>&1 || groupadd -r seat || true
 systemctl set-default multi-user.target 2>/dev/null || true
 ln -sfn multi-user.target /usr/lib/systemd/system/default.target
 
-# --- Enable GDM on boot (display-manager.service) ------------------------
-# GDM ships only `Alias=display-manager.service` (no WantedBy); graphical.target
-# has `Wants=display-manager.service`. So GDM starts at boot as long as (a) the
-# default target is graphical and (b) display-manager.service resolves to gdm.
+# --- Enable GDM (display-manager.service) --------------------------------
+# gdm.service's [Install] is `WantedBy=graphical.target` + `Alias=display-
+# manager.service`. So proper enablement needs the graphical.target.wants/
+# gdm.service symlink (from WantedBy) — the display-manager.service alias alone is
+# NOT pulled in by graphical.target. `systemctl enable` is unreliable offline, so
+# we write BOTH symlinks statically. We keep the default target at multi-user
+# (above), so this does not autostart GDM at boot; it makes `systemctl isolate
+# graphical.target` / `set-default graphical.target` actually bring GDM up.
 if [[ -e /usr/lib/systemd/system/gdm.service ]]; then
-	printf '\e[1;32m-->\e[0m\e[1m Enabling GDM on boot (display-manager.service)\e[0m\n'
-	systemctl enable gdm.service 2>/dev/null || true
+	printf '\e[1;32m-->\e[0m\e[1m Enabling GDM (graphical.target.wants + display-manager.service)\e[0m\n'
+	mkdir -p /usr/lib/systemd/system/graphical.target.wants
+	ln -sfn /usr/lib/systemd/system/gdm.service \
+		/usr/lib/systemd/system/graphical.target.wants/gdm.service
 	ln -sfn gdm.service /usr/lib/systemd/system/display-manager.service
 	ln -sfn /usr/lib/systemd/system/gdm.service \
 		/etc/systemd/system/display-manager.service
 else
-	echo "!! gdm.service not found; GDM will not be enabled on boot"
+	echo "!! gdm.service not found; GDM will not be enabled"
 fi
 
 # --- Make Sway the default graphical session -----------------------------

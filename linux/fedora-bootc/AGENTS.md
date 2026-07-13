@@ -107,27 +107,73 @@ reason about the Containerfiles.
   re-reads the freshly built image each run, so it doubles as the re-deploy
   command; `--apply` reboots; `bootc rollback` reverts. bootc has no rootless
   mode — same root requirement as `fedora-usb`.
-- **Plymouth is set up declaratively**: the `ostree plymouth crypt lvm dm` dracut
-  modules are declared in `base/overlay/etc/dracut.conf.d/fedora.conf`
-  (`add_dracutmodules`); base `configure.sh` selects the theme, writes
+- **Plymouth runs in USERSPACE, not the initramfs**: the initramfs carries only
+  `ostree crypt systemd-cryptsetup lvm dm` (declared in `base/overlay/etc/dracut.conf.d/fedora.conf`
+  via `add_dracutmodules`); base `configure.sh` selects a Plymouth theme, writes
   `rhgb quiet` kargs (`/usr/lib/bootc/kargs.d`) and regenerates the initramfs.
   `bib/config.toml` ALSO appends `rhgb quiet` via `bootloader --append` (Anaconda
-  doesn't honor bootc kargs.d). crypt/lvm/dm are needed to unlock the LUKS root.
+  doesn't honor bootc kargs.d). crypt/systemd-cryptsetup/lvm/dm are needed to unlock the LUKS root;
+  the generic initramfs unlocks LUKS via systemd-cryptsetup-generator from
+  `rd.luks.uuid=`, so `systemd-cryptsetup` must be added explicitly (`crypt` only
+  pulls it in hostonly mode) or first boot dies "systemd-cryptsetup@luks-…not found";
+  the LUKS passphrase prompt is text-mode (no in-initramfs plymouth) and the
+  graphical splash appears in userspace after unlock.
+- **The LUKS root's disk-not-appearing hang is because the `nvme` driver doesn't
+  autoload — not a karg or the unit-name escaping (that's a separate second bug,
+  below).** This is a
+  GENERIC (`--no-hostonly`) initramfs, which relies on udev coldplug to autoload
+  storage drivers from PCI modaliases. On this rawhide that autoload does NOT fire for
+  `nvme`, so the root disk never appears: `systemd-cryptsetup` blocks on its
+  `BindsTo=dev-disk-by-uuid-<uuid>.device` dependency, times out ("Timed out waiting
+  for device …"), and NO passphrase is ever prompted — boot hangs. Proven on-machine:
+  at an `rd.break` shell `/proc/partitions` was empty and `/dev/nvme*` absent; a manual
+  `modprobe nvme` made the disk appear and `systemctl start cryptsetup.target` then
+  prompted and unlocked via the STOCK generator path (the generator had correctly
+  wired `cryptsetup.target.requires/systemd-cryptsetup@luks\x2d<uuid>.service`, single
+  backslashes). Fix: `force_drivers+=" nvme "` in
+  `base/overlay/etc/dracut.conf.d/fedora.conf` plus `--force-drivers nvme` on the
+  `configure.sh` dracut cmdline, which modprobes nvme unconditionally at initramfs
+  start. `test.sh` asserts the `nvme` driver is in the initramfs.
+- **A SECOND, independent LUKS bug: dracut's `70crypt` mis-escapes the unlock unit
+  name and it IS fatal on normal boot.** Once the disk appears, dracut's
+  `parse-crypt.sh` (systemd mode) writes a udev rule that runs
+  `systemctl start systemd-cryptsetup@<name>.service`, but it DOUBLES the backslash in
+  the escaped instance (`luks\x2d…` -> `luks\\x2d…`) to survive a layer of udev
+  unescaping. Rawhide udev no longer unescapes `RUN=` strings, so the doubled name
+  reaches systemctl verbatim, matches no unit, and normal boot loops on
+  `Failed to start systemd-cryptsetup@luks\\x2d….service` — the passphrase prompt never
+  unlocks. (Manual unlock works because at an `rd.break` shell udev hasn't fired that
+  rule; only the generator's single-escaped `cryptsetup.target.requires/…` unit runs.)
+  Fix: `configure.sh` `sed`-patches `parse-crypt.sh` before the initramfs regen to drop
+  the backslash-doubling (`str_replace "$luksname" '\' '\\'` lines), so the udev-rule
+  path targets the SAME correctly-escaped unit the generator wires. `test.sh` asserts
+  the initramfs `parse-crypt.sh` no longer doubles. Ceiling: revert once rawhide udev
+  restores `RUN=` unescaping or dracut stops doubling. An earlier `luks-unlock-fix`
+  dracut module was removed — it solved the wrong problem and never shipped into the
+  booted initramfs anyway; the `sed` patch rides the proven fedora.conf/configure.sh
+  channel instead.
+  `rd.luks.options=x-initrd.attach` is set (config.toml `bootloader --append` +
+  `kargs.d/15-luks.toml`) and IS required: it makes the generator emit the unlock unit
+  into the initrd and wire `cryptsetup.target`. If this fleet ever boots SATA/virtio
+  roots, add `ahci`/`sd_mod`/`virtio_blk` to `force_drivers` too.
 - **Force-adding `ostree` to the initramfs is mandatory, not cosmetic.** Because we
-  force-regenerate the initramfs for Plymouth, we MUST re-add the `ostree` dracut
-  module or the regen silently drops it and the image can't mount its
-  composefs/ostree root → unbootable. This is why `ostree` is in `add_dracutmodules`
-  and `configure.sh` verifies (via `lsinitrd`) that BOTH `ostree` and `plymouth`
-  landed. Every bootc image project does the same `--add ostree` (see
-  bootc-dev/bootc #1084). configure.sh also builds `--reproducible`, sets
-  `DRACUT_NO_XATTR=1` (container overlayfs), and `chmod 0600`s the image.
-- **Do NOT force GPU drivers (`i915`/`xe`/`amdgpu`) into the initramfs.** We tried
-  `add_drivers` for "early KMS" and it broke the desktop: i915 probed in the
-  initramfs where the GuC/HuC firmware (`intel-gpu-firmware`, only on the real
-  root) is absent, so GuC never loaded and never retried after pivot — Plymouth
-  (dumb scanout) worked but GDM/mutter black-screened and hung. Like stock
-  Fedora, let Plymouth use the EFI-GOP/`simpledrm` framebuffer early and load the
-  GPU drivers after pivot where their firmware is present.
+  force-regenerate the initramfs, we MUST re-add the `ostree` dracut module or the
+  regen silently drops it and the image can't mount its composefs/ostree root →
+  unbootable. This is why `ostree` is in `add_dracutmodules` and `configure.sh`
+  verifies (via `lsinitrd`) that `ostree` landed. Every bootc image project does
+  the same `--add ostree` (see bootc-dev/bootc #1084). configure.sh also builds
+  `--reproducible`, sets `DRACUT_NO_XATTR=1` (container overlayfs), `chmod 0600`s
+  the image, and asserts NO `i915`/`xe`/`amdgpu` leaked in.
+- **Keep `drm` and `plymouth` OUT of the initramfs (`omit_dracutmodules`).** The
+  `plymouth` dracut module drags in `drm` + every GPU KMS driver, so i915 would
+  probe in the initramfs where its GuC/HuC firmware (`intel-gpu-firmware`, only on
+  the real root) is absent — GuC never loads, never retries after pivot, and the
+  GPU can't do command submission: Plymouth's dumb scanout still paints (masking
+  it) but the console and GDM/mutter black-screen and hang. Omitting drm/plymouth
+  lets the kernel use EFI-GOP/`simpledrm` early and load the GPU driver after pivot
+  with firmware present — matching stock Fedora and `TypicalAM/fedora-bootc`
+  (`dracut --omit "drm ... plymouth"`). Do NOT re-add plymouth/drm or `add_drivers`
+  GPU modules to the initramfs.
 - **Display manager + default session are per-flavor** (gnome-sway/gnome → GDM,
   kde → SDDM); the base sets no DM. Enablement is static. NOTE: gnome-sway
   currently boots to `multi-user.target` (GDM installed but NOT autostarted) while

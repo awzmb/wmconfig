@@ -1,0 +1,56 @@
+`journalctl | grep -i crypt' returns a lot. last line: `fedora systemd[1]: Reached target remote-cryptsetup.target - Remote Encrypted Volumes.`
+`systemctl list-units | grep crypt` returns lots of lines:
+```
+systemd-cryptsetup@luks\x2dc163<concatenated> loaded active exited Cryptography Setup for luks-c163<concatenated>
+system-systemd\x2dcryptsetup.slice loaded active active
+cryptsetup-pre.target loaded active active
+cryptsetup.target loaded active active
+remote-cryptsetup.target loaded active active
+```
+`ls /dev/mapper/`: ```control fl_fedora-root luks-c163<concatenated>```
+
+`cryptsetup status luks-c163<concatenated>`:
+```
+type: LUKS2
+cipher: aes-xts-plain64
+keysize: 512 [bits]
+key location: keyring
+device: /dev/nvme0n1p3
+sector size: 512 [bytes]
+offset: 32<concatenated>
+size: 1994<concatenated>
+mode: read/write
+flags: discards
+```
+
+`mount /dev/mapper/fl_fedora-root /sysroot -o ro`: already mounted
+`ls /sysroot`: shows the ostree directory, no composefs visible
+
+
+`dmesg | tail -2`
+```
+mounted filesystem 5242f1bb-3257-<concatenated> r/w with ordered data mode. Quota mode: none
+erofs (device erofs): mounted with root inode @nid 36.
+```
+
+
+
+- toggle syft/grype
+- download artifact for docker
+- SHORT_SHA use damit images nicht unnoetig neu gebaut werden
+- dirks weinhardt SBOM scanning
+- python-selective-cleanup
+- central-scripts repository
+
+
+`sd-close died` `systemd-hostnam died` `sd-rmrf died` `virtqemud.service: Deactivated successfully`
+
+module_blacklist=i915  (or  i915.modeset=0 )
+console=ttyS0,115200n8
+plymouth.enable=0 module_blacklist=i915 panic=0
+
+` Started prower-profiles-daemon.service - Power Profiles daemon.`
+`kaudit_printk_skb: 176 callbacks suppressed`
+`audit: type=1131 audit <concatenated>
+
+plymouth.enable=0 module_blacklist=i915 panic=0 console=tty0 console=ttyS0,115200n8

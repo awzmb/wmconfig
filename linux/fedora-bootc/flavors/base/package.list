@@ -15,6 +15,7 @@ bind-utils
 binutils
 btrfs-progs
 cryptsetup # LUKS management (luksChangeKey, luksAddKey, etc.)
+systemd-cryptsetup # /usr/lib/systemd/systemd-cryptsetup + @.service — REQUIRED to unlock the encrypted root at boot; split out of systemd, absent from the minimal bootc base, so the initramfs's `systemctl start systemd-cryptsetup@luks-…` fails without it
 debugedit
 diffutils
 distrobox
@@ -42,7 +43,6 @@ xorg-x11-server-Xwayland # X11 apps under Wayland; a Recommends, so weak-deps-of
 neovim
 NetworkManager
 openssh-clients
-# openssh-server intentionally NOT installed — desktop device (also in package-remove.list to strip the base image's copy)
 orca
 plymouth
 # Boot-splash plugin + default Fedora theme (bgrt). Without a theme package
@@ -191,7 +191,6 @@ age
 uv
 
 # Development
-java-latest-openjdk
 luarocks
 rust-analyzer
 cargo

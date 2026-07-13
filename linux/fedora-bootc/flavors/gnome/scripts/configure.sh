@@ -9,10 +9,18 @@ set -euo pipefail
 systemctl set-default graphical.target 2>/dev/null || true
 ln -sfn graphical.target /usr/lib/systemd/system/default.target
 
-# --- Enable GDM on boot (display-manager.service) ------------------------
+# --- Enable GDM on boot --------------------------------------------------
+# gdm.service's [Install] is `WantedBy=graphical.target` + `Alias=display-
+# manager.service`. The graphical.target.wants/gdm.service symlink (from WantedBy)
+# is what actually starts GDM under graphical.target; the display-manager.service
+# alias alone is NOT pulled in. `systemctl enable` is unreliable offline, so write
+# both symlinks statically. Default target is graphical.target (above), so GDM
+# autostarts at boot.
 if [[ -e /usr/lib/systemd/system/gdm.service ]]; then
-	printf '\e[1;32m-->\e[0m\e[1m Enabling GDM on boot (display-manager.service)\e[0m\n'
-	systemctl enable gdm.service 2>/dev/null || true
+	printf '\e[1;32m-->\e[0m\e[1m Enabling GDM on boot (graphical.target.wants + display-manager.service)\e[0m\n'
+	mkdir -p /usr/lib/systemd/system/graphical.target.wants
+	ln -sfn /usr/lib/systemd/system/gdm.service \
+		/usr/lib/systemd/system/graphical.target.wants/gdm.service
 	ln -sfn gdm.service /usr/lib/systemd/system/display-manager.service
 	ln -sfn /usr/lib/systemd/system/gdm.service \
 		/etc/systemd/system/display-manager.service

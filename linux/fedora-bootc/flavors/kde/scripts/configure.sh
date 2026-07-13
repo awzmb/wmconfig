@@ -13,13 +13,18 @@ set -euo pipefail
 systemctl set-default graphical.target 2>/dev/null || true
 ln -sfn graphical.target /usr/lib/systemd/system/default.target
 
-# --- Enable SDDM on boot (display-manager.service) -----------------------
-# sddm.service carries `Alias=display-manager.service`; wire it up statically in
-# the immutable /usr tree (systemctl enable is unreliable offline in an image
-# build) and default display-manager.service to it.
+# --- Enable SDDM on boot -------------------------------------------------
+# sddm.service's [Install] is `WantedBy=graphical.target` + `Alias=display-
+# manager.service`. The graphical.target.wants/sddm.service symlink (from
+# WantedBy) is what actually starts SDDM under graphical.target; the display-
+# manager.service alias alone is NOT pulled in. `systemctl enable` is unreliable
+# offline, so write both symlinks statically. Default target is graphical.target
+# (above), so SDDM autostarts at boot.
 if [[ -e /usr/lib/systemd/system/sddm.service ]]; then
-	printf '\e[1;32m-->\e[0m\e[1m Enabling SDDM on boot (display-manager.service)\e[0m\n'
-	systemctl enable sddm.service 2>/dev/null || true
+	printf '\e[1;32m-->\e[0m\e[1m Enabling SDDM on boot (graphical.target.wants + display-manager.service)\e[0m\n'
+	mkdir -p /usr/lib/systemd/system/graphical.target.wants
+	ln -sfn /usr/lib/systemd/system/sddm.service \
+		/usr/lib/systemd/system/graphical.target.wants/sddm.service
 	ln -sfn sddm.service /usr/lib/systemd/system/display-manager.service
 	ln -sfn /usr/lib/systemd/system/sddm.service \
 		/etc/systemd/system/display-manager.service
