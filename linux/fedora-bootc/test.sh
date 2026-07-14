@@ -85,6 +85,16 @@ ls -l /usr/lib/systemd/system/graphical.target.wants/*dm*.service /etc/systemd/s
 echo "display-manager.service alias:"
 readlink -f /etc/systemd/system/display-manager.service 2>/dev/null || echo "(no display-manager.service)"
 
+sep "login user: fedora exists, is in wheel, has a usable (non-locked) password"
+getent passwd fedora >/dev/null 2>&1 && echo "OK: fedora user present" || echo "!! fedora user MISSING (console login will fail)"
+id -nG fedora 2>/dev/null | grep -qw wheel && echo "OK: fedora in wheel (sudo)" || echo "!! fedora NOT in wheel"
+# /etc/shadow field 2 must be a real hash: empty = no password, ! or * = locked.
+hash=$(getent shadow fedora 2>/dev/null | cut -d: -f2)
+case "$hash" in
+  ""|"!"*|"*") echo "!! fedora password locked/empty ($hash) — login will fail \"incorrect\"";;
+  *)           echo "OK: fedora has a hashed password";;
+esac
+
 sep "local VT login (getty on tty1)"
 ls -l /usr/lib/systemd/system/getty.target.wants/getty@tty1.service 2>/dev/null \
 	&& echo "OK: getty@tty1 enabled — physical console gets a login prompt" \
@@ -93,6 +103,6 @@ ls -l /usr/lib/systemd/system/getty.target.wants/getty@tty1.service 2>/dev/null 
 sep "ssh should be DISABLED (desktop device)"
 rpm -q openssh-server >/dev/null 2>&1 && echo "!! openssh-server still installed" || echo "OK: openssh-server not installed"
 
-sep "kernel args baked by image (bootc kargs.d; note: Anaconda ignores these)"
+sep "kernel args baked by image (bootc kargs.d; the anaconda-iso installer applies these)"
 cat /usr/lib/bootc/kargs.d/*.toml 2>/dev/null || echo "(none)"
 '

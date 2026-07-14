@@ -48,7 +48,7 @@ xfsprogs
 zsh
 zsh-completions
 kmscon
-
+iptables-nft
 # Audio
 realtime-privileges
 
@@ -61,6 +61,15 @@ firecracker
 krun
 krunvm
 virtiofsd
+
+# Virtualization
+qemu-full
+virt-manager
+virt-viewer
+libvirt
+dnsmasq
+edk2-ovmf
+swtpm
 
 # Incus
 minio-client
@@ -311,18 +320,3 @@ networkmanager-openconnect
 networkmanager-openvpn
 libxml2-legacy
 xmlstarlet # i hate cisco with a passion
-
-# Local LLM inference
-# intel-npu-driver-bin
-# openvino
-# openvino-intel-gpu-plugin
-# openvino-intel-npu-plugin # not ready yet
-
-# Public cloud CLI tools
-aws-cli-v2
-
-# Android
-# waydroid-git
-# waydroid-helper
-# waydroid-image-gapps
-# waydroid-script-git

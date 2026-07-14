@@ -19,6 +19,27 @@ ln -sf ../usr/share/zoneinfo/UTC /etc/localtime
 # seatd.service runs `seatd -g seat`
 getent group seat >/dev/null 2>&1 || groupadd -r seat || true
 
+# --- Login user (build-time) ---------------------------------------------
+# Create the `fedora` user in the IMAGE rather than via the installer kickstart:
+# Anaconda's kickstart `user` password did not produce a working login on this
+# ostree/bootc target (console login failed "Login incorrect"), whereas baking the
+# account into the image's /etc/passwd+/etc/shadow works under any install path.
+# ponytail: password is literal "fedora" and MUST match the LUKS passphrase in
+# flavors/base/bib/config.toml — change both together.
+# ponytail: `useradd -m` seeds /var/home/fedora (/home -> var/home) which bootc
+# carries into the target's /var; if home is ever missing on first boot, add
+# oddjob-mkhomedir/pam_mkhomedir instead.
+printf '\e[1;32m-->\e[0m\e[1m Creating login user "fedora"\e[0m\n'
+mkdir -p /var/home
+if ! getent passwd fedora >/dev/null 2>&1; then
+	useradd -m -G wheel fedora
+fi
+for g in video audio input render seat realtime libvirt kvm; do
+	getent group "$g" >/dev/null 2>&1 && usermod -aG "$g" fedora || true
+done
+echo 'fedora:fedora' | chpasswd
+# %wheel sudo comes from the stock Fedora /etc/sudoers rule — nothing to add.
+
 # --- Remove unwanted packages --------------------------------------------
 # Mirrors `pacman -Rdd chromium` from the Arch config.
 if [[ -f $variant/package-remove.list ]]; then
@@ -214,17 +235,18 @@ if command -v plymouth-set-default-theme >/dev/null 2>&1; then
 		|| echo "!! could not set a default plymouth theme"
 fi
 
-# Append boot kargs via bootc kargs.d (consumed at deploy time by bootc-native
-# installs/updates; the anaconda-iso installer also picks these up, so bib
-# config.toml needs no bootloader --append override).
+# Append boot kargs via bootc kargs.d (consumed at deploy time by `bootc install`,
+# run from live/install.sh, and by day-2 bootc updates).
 #   rhgb quiet                     — drive the userspace Plymouth splash.
-#   rd.luks.options=x-initrd.attach — mark the rd.luks.uuid device x-initrd.attach
-#       so systemd-cryptsetup-generator emits its unlock unit INTO the initrd (and
-#       wires cryptsetup.target.requires/) instead of the real-root systemd. Without
-#       it the root can't be unlocked during early boot. (The first-boot hang we
-#       chased was NOT this or the unit escaping — it was the `nvme` driver failing
-#       to autoload so the disk never appeared; see force_drivers in
-#       overlay/etc/dracut.conf.d/fedora.conf.)
+#   rd.luks.options=x-initrd.attach — global option marking the LUKS root device
+#       x-initrd.attach so systemd-cryptsetup-generator emits its unlock unit INTO
+#       the initrd (and wires cryptsetup.target.requires/) instead of the real-root
+#       systemd. The device itself is named at install time: live/install.sh appends
+#       `rd.luks.name=<LUKS-header-UUID>=root` to the BLS options line (mapping the
+#       container to /dev/mapper/root). Without the attach option the root can't be
+#       unlocked during early boot. (The first-boot hang we chased was NOT this or
+#       the unit escaping — it was the `nvme` driver failing to autoload so the disk
+#       never appeared; see force_drivers in overlay/etc/dracut.conf.d/fedora.conf.)
 printf '\e[1;32m-->\e[0m\e[1m Writing kernel arguments (rhgb quiet, LUKS initrd-attach)\e[0m\n'
 mkdir -p /usr/lib/bootc/kargs.d
 cat > /usr/lib/bootc/kargs.d/10-plymouth.toml <<'EOF'
@@ -232,8 +254,10 @@ cat > /usr/lib/bootc/kargs.d/10-plymouth.toml <<'EOF'
 kargs = ["rhgb", "quiet"]
 EOF
 cat > /usr/lib/bootc/kargs.d/15-luks.toml <<'EOF'
-# Mark the rd.luks.uuid device x-initrd.attach so systemd-cryptsetup-generator emits
-# the unlock unit into the initrd (wiring cryptsetup.target.requires/). Required for
+# Global LUKS option: mark the root device x-initrd.attach so systemd-cryptsetup-
+# generator emits the unlock unit into the initrd (wiring cryptsetup.target.requires/).
+# The device is named at install time by live/install.sh, which appends
+# rd.luks.name=<LUKS-header-UUID>=root to the BLS options line. Required for
 # early-boot unlock. The disk-not-appearing hang was fixed by force-loading nvme
 # (overlay/etc/dracut.conf.d/fedora.conf), not by this karg.
 kargs = ["rd.luks.options=x-initrd.attach"]

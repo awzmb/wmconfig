@@ -8,9 +8,8 @@ The build is two layers: a shared **base** image (all the DE-agnostic tooling)
 and a thin **flavor** layer on top that adds a desktop. Each layer is driven by
 its own **Containerfile** with declarative inputs (package lists, a rootfs
 overlay, setup scripts) next to it. `fedora-build` builds the base then the
-selected flavor with `podman`; `fedora-usb` converts the result into an
-installer with
-[`bootc-image-builder`](https://github.com/osbuild/bootc-image-builder).
+selected flavor with `podman`; `fedora-usb` converts the result into a live
+installer ISO with [`tacklebox`](https://github.com/tuna-os/tacklebox).
 
 ## Flavors
 
@@ -28,7 +27,7 @@ Plymouth, …) — only the desktop environment differs.
 ```text
 fedora/
 ├── fedora-build              # build the base + a desktop flavor
-├── fedora-usb                # build an installer ISO/raw image + flash to USB
+├── fedora-usb                # build a live installer ISO (tacklebox) + flash to USB
 └── flavors/
     ├── base/                 # shared DE-agnostic foundation -> localhost/fedora-base
     │   ├── Containerfile          # FROM rawhide; drives lists/scripts
@@ -38,8 +37,10 @@ fedora/
     │   ├── overlay/               # rootfs overlay (/etc, /usr config, services, helpers)
     │   ├── scripts/
     │   │   ├── setup-repos.sh      # RPM Fusion + Tailscale
-    │   │   └── configure.sh        # services, timezone, locale, dconf, plymouth, initramfs
-    │   └── bib/config.toml         # bootc-image-builder config (user, kickstart) — shared
+    │   │   └── configure.sh        # services, timezone, locale, dconf, plymouth, initramfs, login user
+    │   └── live/
+    │       ├── install.sh          # in-live installer: LUKS + bootc install to-filesystem
+    │       └── customize-live.sh   # tacklebox live_customize hook (TTY installer autolaunch)
     ├── gnome-sway/           # FROM base: GNOME + Sway + Hyprland
     │   ├── Containerfile
     │   ├── package.list
@@ -51,7 +52,8 @@ fedora/
 
 ## Prerequisites
 
-- A Fedora (or any) host with `podman` and `bootc-image-builder` access.
+- A Fedora (or any) host with `podman` access (the installer ISO is built with
+  the `tuna-os/tacklebox` container).
 - Root privileges for `fedora-usb` (it runs a `--privileged` container and
   writes to a block device).
 
@@ -99,38 +101,46 @@ than failing the whole build.
 sudo ./fedora-usb [options] [flavor]
 ```
 
-Runs as **root**: bib needs a privileged container that can relabel SELinux for
-its build store, which a rootless user namespace can't do on an enforcing-SELinux
-host (rootless bib fails with `chcon ... /store: Operation not permitted`). To
-avoid a slow multi-GB image copy, build the image rootful too — `sudo
-./fedora-build <flavor>` puts it straight into root storage, which `fedora-usb`
-then uses directly (it reports "using image already in root storage — no copy
-needed"). A rootless build still works but gets copied into root storage first.
+Runs as **root**: the ISO is built with [`tuna-os/tacklebox`](https://github.com/tuna-os/tacklebox)
+(run as a `--privileged` container reading root's podman storage), and flashing
+writes a raw device. To avoid a slow multi-GB image copy, build the image rootful
+too — `sudo ./fedora-build <flavor>` puts it straight into root storage, which
+`fedora-usb` then uses directly. A rootless build still works but gets copied into
+root storage first.
+
+tacklebox packs the flavor image into a **squashfs live environment** (its own
+systemd-boot + `tbox-live` initramfs — the image's grub2 only matters for the
+*installed* system) and embeds the same image as an offline payload. The live env
+autologins root on tty1 and runs the installer (`flavors/base/live/install.sh`):
+partition (ESP + unencrypted ext4 `/boot` + **LUKS2** root) → `bootc install
+to-filesystem` into the open mapper → inject the `rd.luks.name=<uuid>=root` unlock
+karg into the BLS entries.
+
+> Credit: the live-ISO pipeline and LUKS install recipe are adapted from the
+> tunaOS ecosystem (`tuna-os/tacklebox`, `projectbluefin/fisherman`,
+> `projectbluefin/dakota-iso`), all Apache-2.0.
 
 | Option            | Default                                            | Notes                                  |
 | ----------------- | -------------------------------------------------- | -------------------------------------- |
-| `--type`          | `anaconda-iso`                                     | also `raw`, `qcow2`                    |
-| `--rootfs`        | `xfs`                                              | root filesystem: `xfs`, `ext4`, `btrfs` |
 | `--image`         | `localhost/fedora-<flavor>:latest`                 | image built by `fedora-build`     |
-| `--config`        | `flavors/base/bib/config.toml`                     | bootc-image-builder config (shared)    |
 | `--output`        | `./target`                                         | where artifacts are written           |
 | `--device`        | (none)                                             | USB block device to flash, e.g. `/dev/sdb` |
+| `--tacklebox`     | `ghcr.io/tuna-os/tacklebox:latest`                 | tacklebox container image              |
+| `--xz`            | off                                                | also produce a compressed `.iso.xz`    |
 | `--yes`           | off                                                | skip the flash confirmation prompt     |
 
-`anaconda-iso` produces an installer ISO — the recommended way to install Fedora
-on bare metal. bib builds the Anaconda installer straight from the bootc image
-and **embeds the kickstart** from `config.toml` (full-disk LUKS + user creation).
-This works because the base is a standard Fedora image (os-release `ID` `fedora`).
-
-The kickstart is only processed for `anaconda-iso`; the lower-level
-`bootc-installer` type ignores it, so Anaconda aborts at install with
-`/run/install/ks.cfg is missing` — which is why `anaconda-iso` is the default.
 Without `--device`, the artifact is left in `./target` and the exact `dd` command
 is printed.
 
-The default installer user is `awzm` / password `fedora` — **change this**
-in `flavors/base/bib/config.toml` (generate a hash with `mkpasswd -m sha512` or
-`openssl passwd -6`, or switch to an SSH `key`).
+Disk encryption + the target disk are chosen **automatically when possible**: the
+installer auto-selects the sole disk (excluding the live media) and uses the
+default LUKS passphrase `fedora`, so a single-disk machine installs unattended.
+It only **prompts** for the disk when several are found, and for the passphrase
+only when running interactively; `--disk`, `--image`, and
+`FEDORA_INSTALL_PASSPHRASE` override the defaults. The login account
+(`fedora` / password `fedora`) is baked into the image at build time in
+`flavors/base/scripts/configure.sh` — **change it there** (edit the `useradd` /
+`chpasswd` block), not in the installer.
 
 ## Updating an installed system
 
@@ -175,7 +185,8 @@ Fedora as closely as practical:
   default session to Sway via AccountsService (`gnome-shell` stays installed only
   because the GDM greeter uses it). Change `FEDORA_DEFAULT_USER` /
   `FEDORA_DEFAULT_SESSION` (e.g. to `hyprland`) to override; keep
-  `FEDORA_DEFAULT_USER` in sync with the user in `flavors/base/bib/config.toml`.
+  `FEDORA_DEFAULT_USER` in sync with the login user created in
+  `flavors/base/scripts/configure.sh`.
 - **AUR / Chaotic-AUR** → **RPM Fusion** (`scripts/setup-repos.sh`).
 - **Rust CLI tools** are preferred where a Fedora package exists (`ripgrep`, `sd`,
   `du-dust`, `bottom`, `zoxide`, `zellij`, `eza`, `bat`, `fd-find`, …).

@@ -2,53 +2,46 @@
 #
 # fedora-usb
 #
-# Turn a built Fedora bootc image into a bootable installer and (optionally)
-# write it to a USB stick, so the OS can be installed on bare-metal devices.
+# Turn a built Fedora bootc image into a bootable LIVE INSTALLER ISO and
+# (optionally) flash it to a USB stick.
 #
-# It uses bootc-image-builder (bib) to produce an installer ISO, then can flash
-# the result to a USB device with dd.
+# The ISO is built with tacklebox (tuna-os/tacklebox): it packs the flavor image
+# into a squashfs live environment (its own systemd-boot + `tbox-live` initramfs
+# modules — our image's grub2 only matters for the INSTALLED system, not the live
+# media) and embeds the same image as an offline payload for `bootc install`. The
+# live env autologins root on tty1 and runs the installer (flavors/base/live/
+# install.sh): partition -> LUKS2 -> `bootc install to-filesystem` -> BLS unlock
+# karg. This REPLACES the old bib/Anaconda `anaconda-iso` path (flavors/base/bib/).
 #
-# Runs as root (bib needs a privileged container that can relabel SELinux for the
-# osbuild store — a rootless user namespace can't, so rootless bib fails on an
-# enforcing-SELinux host). To avoid a slow multi-GB image copy, build the image
-# rootful too: `sudo ./fedora-build <flavor>` puts it straight into root storage,
-# which this script then uses directly.
+# CREDIT: the live-ISO pipeline is built on tuna-os/tacklebox and the
+# tunaOS/fisherman install recipe (Apache-2.0). See flavors/base/live/*.sh.
 #
-# Default type is `anaconda-iso`: bib builds an unattended Anaconda installer
-# directly from the bootc image and — crucially — embeds the kickstart from
-# `[customizations.installer.kickstart]` in config.toml (LUKS + user creation).
-# The kickstart is ONLY processed for `anaconda-iso`; the lower-level
-# `bootc-installer` type ignores it (Anaconda then aborts with
-# "/run/install/ks.cfg is missing"), which is why anaconda-iso is the default.
-# It works because the base is a standard Fedora image (os-release ID `fedora`).
+# Runs as root: tacklebox needs a privileged container and root's podman storage,
+# and flashing writes a raw device. Build the image rootful too so it lands in the
+# store tacklebox reads: `sudo ./fedora-build <flavor>` (avoids a save|load copy).
 #
 # Usage:
 #   sudo ./fedora-usb [options] [flavor]
 #
 # Options:
-#   --type <t>      output type: anaconda-iso (default) | raw | qcow2
-#   --rootfs <fs>   root filesystem type: xfs (default) | ext4 | btrfs
-#   --image <ref>   image reference to build from
-#                   (default: localhost/fedora-<flavor>:latest, built by fedora-build)
-#   --config <f>    bootc-image-builder config.toml
-#                   (default: flavors/base/bib/config.toml, shared by all flavors)
-#   --output <dir>  output directory (default: ./target)
-#   --device <dev>  USB block device to flash, e.g. /dev/sdb (DESTRUCTIVE)
-#   --bib <ref>     bootc-image-builder image
-#                   (default: quay.io/centos-bootc/bootc-image-builder:latest)
-#   --yes           skip the flashing confirmation prompt
-#   -h, --help      show this help
+#   --image <ref>     image to build from (default: localhost/fedora-<flavor>:latest)
+#   --output <dir>    output directory (default: ./target)
+#   --device <dev>    USB block device to flash, e.g. /dev/sdb (DESTRUCTIVE)
+#   --tacklebox <ref> tacklebox image (default: ghcr.io/tuna-os/tacklebox:latest)
+#   --xz              also produce a compressed .iso.xz
+#   --yes             skip the flashing confirmation prompt
+#   -h, --help        show this help
 #
 # Examples:
-#   sudo ./fedora-usb                          # build gnome-sway installer ISO into ./target
-#   sudo ./fedora-usb --device /dev/sdb        # build ISO and flash to /dev/sdb
-#   sudo ./fedora-usb --type raw --device /dev/sdb kde   # kde flavor, raw image
-#   # fastest (no image copy): sudo ./fedora-build gnome-sway && sudo ./fedora-usb gnome-sway
-#
+#   sudo ./fedora-usb                     # build gnome-sway live installer ISO into ./target
+#   sudo ./fedora-usb --device /dev/sdb   # build ISO and flash to /dev/sdb
+#   sudo ./fedora-usb kde                 # kde flavor
+#   # fastest (no image copy): sudo ./fedora-build kde && sudo ./fedora-usb kde
 set -euo pipefail
 
 self_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 flavorsdir="$self_dir/flavors"
+livedir="$flavorsdir/base/live"
 PODMAN=${PODMAN:-podman}
 
 die() { printf '\e[1;31m==> error:\e[0m %s\n' "$*" >&2; exit 1; }
@@ -56,105 +49,109 @@ info() { printf '\e[1;32m==>\e[0m\e[1m %s\e[0m\n' "$*"; }
 warn() { printf '\e[1;33m==> warning:\e[0m %s\n' "$*" >&2; }
 
 # --- defaults ------------------------------------------------------------
-out_type=anaconda-iso
 image=
-config=
 outdir="$self_dir/target"
 device=
-rootfs=xfs
-bib_image=quay.io/centos-bootc/bootc-image-builder:latest
+tacklebox_image=${FEDORA_TACKLEBOX:-ghcr.io/tuna-os/tacklebox:latest}
 assume_yes=0
+want_xz=0
 flavor=
 
 # --- parse args ----------------------------------------------------------
 while [[ $# -gt 0 ]]; do
 	case "$1" in
-		--type)   out_type=$2; shift 2;;
-		--image)  image=$2; shift 2;;
-		--config) config=$2; shift 2;;
-		--output) outdir=$2; shift 2;;
-		--device) device=$2; shift 2;;
-		--rootfs) rootfs=$2; shift 2;;
-		--bib)    bib_image=$2; shift 2;;
-		--yes|-y) assume_yes=1; shift;;
-		-h|--help) sed -n '2,46p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'; exit 0;;
-		-*)        die "unknown option: $1";;
-		*)         flavor=$1; shift;;
+		--image)     image=$2; shift 2;;
+		--output)    outdir=$2; shift 2;;
+		--device)    device=$2; shift 2;;
+		--tacklebox) tacklebox_image=$2; shift 2;;
+		--xz)        want_xz=1; shift;;
+		--yes|-y)    assume_yes=1; shift;;
+		-h|--help)   sed -n '2,40p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'; exit 0;;
+		-*)          die "unknown option: $1";;
+		*)           flavor=$1; shift;;
 	esac
 done
 
 flavor=${flavor:-gnome-sway}
 flavordir="$flavorsdir/$flavor"
 [[ -d $flavordir ]] || die "flavor '$flavor' not found in $flavorsdir"
+[[ -f $livedir/install.sh && -f $livedir/customize-live.sh ]] \
+	|| die "live installer scripts missing under $livedir"
 
-# The image tag matches ./fedora-build; the bib config (kickstart/LUKS/user) is
-# shared by all flavors and lives in the base layer.
 image=${image:-localhost/fedora-${flavor}:latest}
-config=${config:-$flavorsdir/base/bib/config.toml}
+
+# desktop hint for the tacklebox recipe (cosmetic here — we boot to a TTY
+# installer, not a desktop — but the recipe schema expects it).
+case "$flavor" in
+	kde) desktop=kde;;
+	*)   desktop=gnome;;
+esac
 
 command -v "$PODMAN" >/dev/null 2>&1 || die "$PODMAN not found"
+[[ $(id -u) -eq 0 ]] || die "must run as root (tacklebox needs a privileged container): sudo ./fedora-usb ${*:-}"
 
-[[ $(id -u) -eq 0 ]] || die "must run as root (bootc-image-builder needs a privileged container): sudo ./fedora-usb ${*:-}"
-command -v "$PODMAN" >/dev/null 2>&1 || die "$PODMAN not found"
-
-# Resolve config and outdir to absolute paths (podman -v requires absolute paths).
-config=$(realpath -- "$config")
 outdir=$(mkdir -p "$outdir" && realpath -- "$outdir")
 
-[[ -f $config ]] || die "config not found: $config"
-
-# bib reads the image from ROOT's podman storage (bind-mounted below), which is
-# separate from a rootless `./fedora-build`. Make sure root has the CURRENT image
-# before building the installer:
-#   fast path  — `sudo ./fedora-build` already put it in root storage: no copy.
-#   slow path  — a rootless build lands in the user's storage: transfer it in
-#                (save|load serializes the whole image — avoid it via the fast path).
+# --- ensure the image is in ROOT's podman storage ------------------------
+# tacklebox (rootful) reads root's storage, which is separate from a rootless
+# `./fedora-build`. Fast path: `sudo ./fedora-build` already put it there.
 root_id=$("$PODMAN" image inspect --format '{{.Id}}' "$image" 2>/dev/null || true)
 user_id=""
 if [[ -n ${SUDO_USER:-} ]]; then
 	user_id=$(sudo -u "$SUDO_USER" podman image inspect --format '{{.Id}}' "$image" 2>/dev/null || true)
 fi
-
 if [[ -n $user_id && $user_id != "$root_id" ]]; then
-	root_disp=${root_id:0:12}; root_disp=${root_disp:-none}
-	info "syncing image from ${SUDO_USER}'s storage to root (user=${user_id:0:12} root=${root_disp}); tip: 'sudo ./fedora-build $flavor' avoids this copy"
+	info "syncing image from ${SUDO_USER}'s storage to root; tip: 'sudo ./fedora-build $flavor' avoids this copy"
 	sudo -u "$SUDO_USER" podman image save "$image" | "$PODMAN" image load \
 		|| die "transfer failed — build the image first with: ./fedora-build $flavor"
 elif [[ -n $root_id ]]; then
-	info "using image already in root storage (${root_id:0:12}) — no copy needed"
+	info "using image already in root storage (${root_id:0:12})"
 else
 	die "image '$image' not found in root or ${SUDO_USER:-local} podman storage; build it first (fastest: sudo ./fedora-build $flavor)"
 fi
 
-mkdir -p "$outdir"
+# --- assemble a tacklebox build dir (recipe + live scripts side by side) --
+# live_customize paths in the recipe are relative to the recipe file, so the
+# scripts must sit next to it.
+label=$(printf 'FEDORA-%s' "$flavor" | tr '[:lower:]' '[:upper:]')
+build=$(mktemp -d "$outdir/.tacklebox-XXXXXX")
+trap 'rm -rf "$build"' EXIT
+cp "$livedir/install.sh" "$livedir/customize-live.sh" "$build/"
 
-# --- run bootc-image-builder --------------------------------------------
-# anaconda-iso builds the installer straight from the bootc image and embeds the
-# kickstart from config.toml. No pre-built Anaconda image is needed.
-info "building installer (type=$out_type) from $image"
-"$PODMAN" run --rm -it --privileged --pull=newer \
-	--security-opt label=type:unconfined_t \
-	-v "$config":/config.toml:ro \
-	-v "$outdir":/output \
-	-v /var/lib/containers/storage:/var/lib/containers/storage \
-	"$bib_image" \
-	--type "$out_type" \
-	--rootfs "$rootfs" \
-	"$image"
+cat > "$build/recipe.json" <<EOF
+{
+  "media_name": "$label",
+  "size": "16G",
+  "shared_store": { "format": "ext4" },
+  "kargs": ["console=tty0"],
+  "bootable_environments": [
+    {
+      "id": "fedora-$flavor",
+      "image": "$image",
+      "title": "Fedora $flavor installer (live)",
+      "desktop": "$desktop",
+      "modes": ["live"],
+      "live_customize": ["customize-live.sh"]
+    }
+  ],
+  "offline_payloads": ["$image"]
+}
+EOF
 
-# --- locate the produced artifact ---------------------------------------
-artifact=
-case "$out_type" in
-	anaconda-iso|iso)
-		artifact=$(find "$outdir" -name '*.iso' -type f 2>/dev/null | head -n1);;
-	raw)
-		artifact=$(find "$outdir" -name '*.raw' -type f 2>/dev/null | head -n1);;
-	qcow2)
-		artifact=$(find "$outdir" -name '*.qcow2' -type f 2>/dev/null | head -n1);;
-esac
+# --- run tacklebox -------------------------------------------------------
+iso="$outdir/fedora-$flavor.iso"
+info "building live installer ISO with tacklebox ($tacklebox_image)"
+"$PODMAN" run --rm --privileged --pull=newer \
+	-v /dev:/dev \
+	-v /var/lib/containers:/var/lib/containers \
+	-v "$build":/work -w /work \
+	"$tacklebox_image" \
+	build /work/recipe.json --iso /work/out.iso -b /work/build $([[ $want_xz -eq 1 ]] && echo --xz) --yes
 
-[[ -n $artifact && -f $artifact ]] || die "could not locate build artifact under $outdir"
-info "artifact: $artifact"
+[[ -f $build/out.iso ]] || die "tacklebox did not produce an ISO"
+mv -f "$build/out.iso" "$iso"
+[[ $want_xz -eq 1 && -f $build/out.iso.xz ]] && mv -f "$build/out.iso.xz" "$iso.xz"
+info "artifact: $iso"
 
 # --- optionally flash to USB --------------------------------------------
 if [[ -z $device ]]; then
@@ -163,7 +160,7 @@ if [[ -z $device ]]; then
 No --device given, so nothing was flashed.
 
 To write the installer to a USB stick manually:
-  sudo dd if='$artifact' of=/dev/sdX bs=4M status=progress oflag=direct conv=fsync
+  sudo dd if='$iso' of=/dev/sdX bs=4M status=progress oflag=direct conv=fsync
   sync
 
 (Replace /dev/sdX with your USB device. Double-check with 'lsblk' first!)
@@ -172,8 +169,6 @@ EOF
 fi
 
 [[ -b $device ]] || die "$device is not a block device"
-
-# Safety checks before destroying a disk.
 if findmnt -rno SOURCE,TARGET | grep -q "^${device}.* / *$"; then
 	die "$device hosts the running root filesystem; refusing to flash"
 fi
@@ -186,16 +181,15 @@ warn "About to OVERWRITE all data on $device:"
 lsblk -o NAME,SIZE,TYPE,MODEL,MOUNTPOINTS "$device" || lsblk "$device"
 echo
 if [[ $assume_yes -ne 1 ]]; then
-	read -r -p "Type 'YES' to write '$(basename "$artifact")' to $device: " ans
+	read -r -p "Type 'YES' to write '$(basename "$iso")' to $device: " ans
 	[[ $ans == YES ]] || die "aborted by user"
 fi
 
-# Unmount any mounted partitions of the target device.
 for part in $(lsblk -rno NAME "$device" | tail -n +2); do
 	umount "/dev/$part" 2>/dev/null || true
 done
 
 info "writing to $device ..."
-dd if="$artifact" of="$device" bs=4M status=progress oflag=direct conv=fsync
+dd if="$iso" of="$device" bs=4M status=progress oflag=direct conv=fsync
 sync
-info "done; $device is now a bootable Fedora installer"
+info "done; $device is now a bootable Fedora live installer"

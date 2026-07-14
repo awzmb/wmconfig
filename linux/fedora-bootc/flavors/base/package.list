@@ -65,6 +65,20 @@ iwlwifi-mvm-firmware
 iwlwifi-dvm-firmware
 intel-gpu-firmware
 amd-gpu-firmware
+# Non-Intel Wi-Fi/BT vendors: linux-firmware no longer bundles these either, so
+# an adapter from any of these vendors shows up with no firmware (and often no
+# driver at all — see kernel-modules-extra below) without them explicitly listed.
+realtek-firmware
+atheros-firmware
+brcmfmac-firmware
+mediatek-firmware
+mt7xxx-firmware
+libertas-firmware
+# Some Wi-Fi drivers (e.g. rtw88/rtw89, mt76, ath9k_htc) ship in the "extra"
+# kernel-modules split, not the base kernel package pulled in by the bootc base
+# image — without it the adapter has no firmware AND no driver, so it never
+# shows up as a network device at all.
+kernel-modules-extra
 sudo
 terminus-fonts
 terminus-fonts-console
