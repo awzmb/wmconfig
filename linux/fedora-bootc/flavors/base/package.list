@@ -20,6 +20,7 @@ debugedit
 diffutils
 distrobox
 dosfstools
+e2fsprogs # mkfs.ext4 — the live installer (live/install.sh) formats /boot ext4; usually in the bootc base but pinned so the live env always has it
 efibootmgr
 espeak-ng
 f2fs-tools

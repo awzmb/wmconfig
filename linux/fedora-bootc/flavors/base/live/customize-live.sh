@@ -20,11 +20,24 @@ set -euo pipefail
 here=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 install -Dm0755 "$here/install.sh" /usr/libexec/fedora-install
 
-# Tools the installer needs that the base might not carry (base has cryptsetup /
-# xfsprogs / e2fsprogs / util-linux / podman already; dosfstools + gdisk are the
-# usual gaps). --skip-* so a missing one warns instead of failing the squash.
-dnf -y install --setopt=install_weak_deps=False --skip-unavailable --skip-broken \
-	dosfstools gdisk util-linux cryptsetup podman || true
+# The installer (install.sh) needs a fixed set of tools, and they are ALL already
+# baked into the flavor image via flavors/base/package.list (+ the bootc base):
+#   cryptsetup, sfdisk/lsblk/udevadm (util-linux+systemd), mkfs.xfs (xfsprogs),
+#   mkfs.ext4 (e2fsprogs), mkfs.vfat (dosfstools), bootc, podman.
+# So do NOT `dnf install` here: this hook runs in a NESTED container where a repo-
+# metadata refresh (Fedora/RPM Fusion/Tailscale, some with external-URL gpgkeys)
+# stalls with no timeout and hangs the whole ISO build ("Updating and loading
+# repositories:" forever). Instead verify offline that every tool is present, and
+# fail the build fast if the image is missing one (so we never ship a dud ISO).
+missing=()
+for c in cryptsetup sfdisk mkfs.xfs mkfs.ext4 mkfs.vfat bootc podman lsblk udevadm; do
+	command -v "$c" >/dev/null 2>&1 || missing+=("$c")
+done
+if (( ${#missing[@]} )); then
+	echo "!! installer tools missing from the image: ${missing[*]}" >&2
+	echo "!! add the providing package to flavors/base/package.list and rebuild" >&2
+	exit 1
+fi
 
 # Offline image store (tacklebox `offline_payloads`). Tacklebox packs the flavor
 # image into LiveOS/store.squashfs.img on the ISO, but only tacklebox-PREPARED

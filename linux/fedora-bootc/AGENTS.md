@@ -120,6 +120,26 @@ reason about the Containerfiles.
   of `flavors/base/live/{install.sh,customize-live.sh}` (live_customize paths are
   relative to the recipe). The old bib/Anaconda `anaconda-iso` path has been removed
   (see the install-encryption bullet).
+- **NEVER `dnf install` in `customize-live.sh`** (the tacklebox `live_customize`
+  hook). It runs inside a NESTED `podman run` against the flavor image (see
+  tacklebox `internal/install/customize.go`), and a repo-metadata refresh there —
+  the image ships Fedora + RPM Fusion + Tailscale repos, some with external-URL
+  `gpgkey=` — stalls with no timeout and hangs the ENTIRE ISO build forever at
+  `Updating and loading repositories:`. Every tool the installer needs
+  (`cryptsetup`, `sfdisk`/`lsblk`/`udevadm`, `mkfs.xfs`/`mkfs.ext4`/`mkfs.vfat`
+  from xfsprogs/e2fsprogs/dosfstools, `bootc`, `podman`) is already baked into the
+  image via `flavors/base/package.list` + the bootc base, so `customize-live.sh`
+  only does an OFFLINE `command -v` presence check that fails the build fast if one
+  is missing. Add new live-installer tools to `package.list`, never to a
+  customize-time `dnf`.
+- **tacklebox `build` runs SILENT without `--verbose`.** Its runner sets
+  `cmd.Stdout = io.Discard` for every nested subprocess unless `--verbose` is
+  passed (`internal/runner/runner.go`), so a hung customize/`dnf`/`commit`/
+  `mksquashfs` step looks completely frozen with zero output. `fedora-usb` passes
+  `--verbose` so `+ podman run …` traces and child output stream through — keep it,
+  and reach for it first when an ISO build appears stuck. (A silent `podman commit`
+  of the multi-GB derived image also just looks hung; sample CPU time twice to tell
+  progress from a real wedge.)
 - **`fedora-update` is the day-2 path** (in-place update of an installed system):
   it runs `fedora-build` ROOTFUL (must be root so the rebuilt image lands in the
   store bootc reads) then `bootc switch --transport containers-storage
@@ -218,7 +238,16 @@ reason about the Containerfiles.
   container to `/dev/mapper/root` for systemd-gpt-auto-generator). The exact karg
   form is boot-critical: `rd.luks.uuid=` or a bare name hangs ~90s into an emergency
   shell (dakota #270). No `/etc/crypttab` needed; the initrd `crypt` module unlocks
-  from the karg. `install.sh --self-test` checks the BLS-patch logic. The **login
+  from the karg. `install.sh --self-test` checks the BLS-patch logic. The `bootc
+  install` call passes **`--skip-finalize`** and we do our own `fstrim` + clean
+  `umount` afterward (install.sh step 8). Without it the install dies
+  `Installing to filesystem: Read-only file system (os error 30)` right after
+  `Finalizing filesystem root`: bootc's finalize remounts `$mnt` read-only as its
+  last action, but we point `TMPDIR` at a bind-mount under `$mnt` (needed because
+  bootc imports blobs to `$TMPDIR` and the live overlay tmpfs is too small), and a
+  bind mount shares the SAME superblock — so remounting root ro makes `$TMPDIR` ro
+  too, and bootc's own post-finalize tempdir cleanup then hits EROFS. Do NOT drop
+  `--skip-finalize`. The **login
   `fedora` user is created at BUILD TIME** in `flavors/base/scripts/configure.sh`
   (`useradd`/`chpasswd`), NOT by the installer — the old Anaconda kickstart password
   never produced a working console login on this ostree target ("Login incorrect");

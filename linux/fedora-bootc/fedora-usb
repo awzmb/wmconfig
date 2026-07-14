@@ -146,7 +146,7 @@ info "building live installer ISO with tacklebox ($tacklebox_image)"
 	-v /var/lib/containers:/var/lib/containers \
 	-v "$build":/work -w /work \
 	"$tacklebox_image" \
-	build /work/recipe.json --iso /work/out.iso -b /work/build $([[ $want_xz -eq 1 ]] && echo --xz) --yes
+	build /work/recipe.json --iso /work/out.iso -b /work/build --verbose $([[ $want_xz -eq 1 ]] && echo --xz) --yes
 
 [[ -f $build/out.iso ]] || die "tacklebox did not produce an ISO"
 mv -f "$build/out.iso" "$iso"
