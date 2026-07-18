@@ -1,0 +1,2 @@
+[org/gnome/shell]
+enabled-extensions=['paperwm@paperwm.github.com', 'space-bar@luchrioh']

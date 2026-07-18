@@ -43,6 +43,43 @@ Icon=/var/lib/AccountsService/icons/$default_user
 SystemAccount=false
 EOF
 
+# --- Side-load GNOME Shell extensions (no Fedora RPMs exist) --------------
+# PaperWM (plain JS, source tarball) + space-bar (prebuilt release zip). Fetched
+# into the system-wide extensions dir; enabled-extensions +
+# disable-extension-version-validation are set via dconf (base gnome.d).
+# ponytail: pinned tags — bump these two when gnome-shell moves and an extension
+# stops loading. Failures warn (like the dnf --skip-broken path) instead of
+# aborting the build.
+ext_dir=/usr/share/gnome-shell/extensions
+mkdir -p "$ext_dir"
+
+install_paperwm() { # source tarball -> extract straight into the uuid dir
+	local tag=v50.0.1 tmp
+	tmp=$(mktemp -d)
+	curl -fsSL "https://github.com/paperwm/PaperWM/archive/refs/tags/${tag}.tar.gz" \
+		| tar -xz -C "$tmp" --strip-components=1
+	rm -rf "$ext_dir/paperwm@paperwm.github.com"
+	mv "$tmp" "$ext_dir/paperwm@paperwm.github.com"
+}
+
+install_spacebar() { # EGO-format zip (metadata.json at root) -> unzip via python stdlib
+	local tag=v37 tmp zip dest="$ext_dir/space-bar@luchrioh"
+	tmp=$(mktemp -d); zip="$tmp/sb.zip"
+	curl -fsSL -o "$zip" \
+		"https://github.com/christopher-l/space-bar/releases/download/${tag}/space-bar@luchrioh.zip"
+	rm -rf "$dest"; mkdir -p "$dest"
+	python3 -m zipfile -e "$zip" "$dest"
+	rm -rf "$tmp"
+}
+
+if command -v curl >/dev/null && command -v python3 >/dev/null; then
+	printf '\e[1;32m-->\e[0m\e[1m Side-loading PaperWM + space-bar extensions\e[0m\n'
+	install_paperwm  || echo "!! PaperWM install failed (network?); extension will be absent"
+	install_spacebar || echo "!! space-bar install failed (network?); extension will be absent"
+else
+	echo "!! curl/python3 missing; skipping extension side-load"
+fi
+
 # --- Compile any dconf databases the GNOME packages added ----------------
 dconf update || true
 

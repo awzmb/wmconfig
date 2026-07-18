@@ -19,6 +19,5 @@ source ~/.zsh/keybindings.zsh
 source ~/.zsh/fzf.zsh
 source ~/.zsh/completion.zsh
 
-
 autoload -U +X bashcompinit && bashcompinit
-autoload -Uz compinit & compinit -u
+autoload -Uz compinit & compinit -u > /dev/null 2>&1

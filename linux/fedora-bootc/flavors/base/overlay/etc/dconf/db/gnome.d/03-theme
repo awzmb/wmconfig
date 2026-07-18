@@ -1,0 +1,6 @@
+[org/gnome/desktop/interface]
+gtk-theme='Qogir-Dark'
+icon-theme='Paper'
+
+[org/gnome/desktop/wm/preferences]
+theme='Qogir-Dark'

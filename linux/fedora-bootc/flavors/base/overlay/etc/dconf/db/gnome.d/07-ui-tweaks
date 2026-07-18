@@ -1,0 +1,3 @@
+[org/gnome/desktop/interface]
+show-battery-percentage=true
+clock-format='24h'
