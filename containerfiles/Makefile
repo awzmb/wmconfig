@@ -14,5 +14,4 @@ $(IMAGES):
 .PHONY: all $(IMAGES)
 
 update:
-	podman run --rm -it --user $(id -u):$(id -g) --volume "${PWD}":/workspace --volume "${HOME}/.gitconfig:/home/ubuntu/.gitconfig:ro" --workdir /workspace ghcr.io/updatecli/updatecli:latest apply
-	# podman run --rm -it --volume "${PWD}":/workspace --volume "$HOME/.gitconfig:/home/ubuntu/.gitconfig:ro" --workdir /workspace docker.io/renovate/renovate:latest renovate --platform=local
+	podman run --rm -it --user $(id -u):$(id -g) --volume "${PWD}":/workspace:Z --workdir /workspace ghcr.io/updatecli/updatecli:latest apply
