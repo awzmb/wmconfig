@@ -1,0 +1,35 @@
+archs:
+  - amd64
+  - arm64
+
+contents:
+  repositories:
+    - https://packages.wolfi.dev/os
+  keyring:
+    - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+  packages:
+    - wolfi-base
+    - tzdata
+    - glibc-locale-en
+    - ca-certificates
+    - python3
+    - uv
+
+entrypoint:
+  command: /usr/bin/python
+
+accounts:
+  groups:
+    - groupname: nonroot
+      gid: 65532
+  users:
+    - username: nonroot
+      uid: 65532
+      shell: /bin/sh
+  run-as: nonroot
+
+environment:
+  LANG: en_US.UTF-8
+  PATH: /usr/local/sbin:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
+
+cmd: --version

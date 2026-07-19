@@ -1,0 +1,70 @@
+# Credits to misery: https://github.com/misery/DockerAusweisApp/blob/main/Dockerfile
+
+# Build stage: compile AusweisApp + its bundled Qt, plus two libs Wolfi
+# doesn't package (xcb-util-cursor for the Qt xcb plugin, ccid for pcscd).
+FROM cgr.dev/chainguard/wolfi-base:latest@sha256:02dab76bd852a70556b5b2002195c8a5fdab77d323c433bf6642aab080489795 AS build
+
+ENV VERSION=2.5.4
+
+RUN apk add --no-cache \
+  build-base cmake ninja-build meson patch pkgconf perl python-3.12 wget flex \
+  pcsc-lite-dev libusb-dev eudev-dev mesa-dev libx11-dev libxkbcommon-dev \
+  fontconfig-dev freetype-dev libxcb-dev xcb-util-dev xcb-util-wm-dev \
+  xcb-util-image-dev xcb-util-keysyms-dev xcb-util-renderutil-dev
+
+WORKDIR /build
+
+# xcb-util-cursor: required by the Qt6 xcb platform plugin, not in Wolfi
+RUN wget -q https://xorg.freedesktop.org/archive/individual/lib/xcb-util-cursor-0.1.6.tar.xz && \
+  tar xf xcb-util-cursor-0.1.6.tar.xz && \
+  cd xcb-util-cursor-0.1.6 && \
+  ./configure --prefix=/usr && make -j"$(nproc)" && make install
+
+# ccid: the generic USB smartcard reader driver for pcscd, not in Wolfi
+RUN wget -q https://ccid.apdu.fr/files/ccid-1.8.2.tar.xz && \
+  tar xf ccid-1.8.2.tar.xz && \
+  cd ccid-1.8.2 && \
+  meson setup builddir --prefix=/usr && meson install -C builddir
+
+# AusweisApp: build bundled Qt libs, then the app itself
+RUN wget -q https://github.com/Governikus/AusweisApp/releases/download/${VERSION}/AusweisApp-${VERSION}.tar.gz && \
+  tar xf AusweisApp-${VERSION}.tar.gz && \
+  \
+  cmake -S AusweisApp-${VERSION}/libs -B libs -DCMAKE_BUILD_TYPE=Release -DDESTINATION_DIR=/home/ausweisapp/libs && \
+  cmake --build libs && \
+  \
+  cmake -S AusweisApp-${VERSION} -B aa2 -GNinja -DCMAKE_BUILD_TYPE=MinSizeRel \
+  -DCMAKE_PREFIX_PATH=/home/ausweisapp/libs -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=ON && \
+  cmake --build aa2 && cmake --install aa2 && \
+  \
+  cd /home/ausweisapp/libs && \
+  rm -rf include bin doc mkspecs translations phrasebooks ssl && \
+  cd lib && \
+  rm -rf pkgconfig cmake *.a *.la *.prl \
+  libQt6Nfc* libQt6Test* libQt6QuickTest* libQt6Bluetooth* && \
+  strip *.so
+
+
+# Runtime stage
+FROM cgr.dev/chainguard/wolfi-base:latest@sha256:02dab76bd852a70556b5b2002195c8a5fdab77d323c433bf6642aab080489795
+
+ENV QT_PLUGIN_PATH=/home/ausweisapp/libs/plugins
+
+RUN apk add --no-cache \
+  pcsc-lite tini libusb eudev-libs \
+  libxkbcommon libxcb xcb-util xcb-util-renderutil xcb-util-wm \
+  xcb-util-image xcb-util-keysyms \
+  mesa-gl mesa-egl mesa-libgallium libx11 xkeyboard-config \
+  fontconfig freetype ttf-dejavu && \
+  adduser -D -s /bin/sh ausweisapp
+
+COPY --from=build /usr/local/ /usr/local/
+COPY --from=build /usr/lib/libxcb-cursor.so.* /usr/lib/
+COPY --from=build /usr/lib/pcsc/ /usr/lib/pcsc/
+COPY --from=build --chown=ausweisapp:ausweisapp /home/ausweisapp/libs /home/ausweisapp/libs
+
+USER ausweisapp
+
+VOLUME ["/home/ausweisapp/.config"]
+ENTRYPOINT ["tini", "--"]
+CMD /usr/sbin/pcscd && /usr/local/bin/AusweisApp --address 0.0.0.0

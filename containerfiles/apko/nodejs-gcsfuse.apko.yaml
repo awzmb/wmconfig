@@ -1,0 +1,33 @@
+archs:
+  - amd64
+  - arm64
+
+contents:
+  repositories:
+    - https://packages.wolfi.dev/os
+  keyring:
+    - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+  packages:
+    - wolfi-base
+    - ca-certificates
+    - gcsfuse
+    - nodejs
+
+entrypoint:
+  command: /usr/bin/node
+
+accounts:
+  groups:
+    - groupname: nonroot
+      gid: 65532
+  users:
+    - username: nonroot
+      uid: 65532
+      shell: /bin/sh
+  run-as: nonroot
+
+environment:
+  LANG: en_US.UTF-8
+  PATH: /usr/sbin:/sbin:/usr/bin:/bin:/usr/local/bin
+
+cmd: --version

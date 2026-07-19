@@ -1,0 +1,85 @@
+archs:
+  - amd64
+  - arm64
+
+contents:
+  repositories:
+    - https://packages.wolfi.dev/os
+  keyring:
+    - https://packages.wolfi.dev/os/wolfi-signing.rsa.pub
+  packages:
+    - wolfi-base
+    - docker-nginx
+    - nginx-stable
+    - nginx-stable-package-config
+    - nginx-stable-config-compat
+    - ca-certificates
+
+entrypoint:
+  command: /docker-entrypoint.sh
+
+accounts:
+  groups:
+    - groupname: nonroot
+      gid: 65532
+  users:
+    - username: nonroot
+      uid: 65532
+      shell: /bin/sh
+  run-as: nonroot
+
+environment:
+  PATH: /usr/local/sbin:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
+
+paths:
+  - path: /var/lib/nginx
+    type: directory
+    uid: 65532
+    gid: 65532
+    permissions: 0o755
+  - path: /var/lib/nginx/tmp
+    type: directory
+    uid: 65532
+    gid: 65532
+    permissions: 0o775
+  - path: /var/lib/nginx/logs
+    type: directory
+    uid: 65532
+    gid: 65532
+    permissions: 0o775
+  - path: /var/run
+    type: directory
+    uid: 65532
+    gid: 65532
+    permissions: 0o775
+  - path: /run
+    type: directory
+    uid: 65532
+    gid: 65532
+    permissions: 0o775
+  - path: /etc/nginx/conf.d
+    type: directory
+    uid: 65532
+    gid: 65532
+    permissions: 0o775
+  - path: /usr/share/nginx/html
+    type: directory
+    uid: 65532
+    gid: 65532
+    permissions: 0o775
+  - path: /etc/nginx/conf.d/default.conf
+    type: permissions
+    uid: 65532
+    gid: 65532
+    permissions: 0o775
+  - path: /etc/nginx/conf.d/nginx.default.conf
+    type: permissions
+    uid: 65532
+    gid: 65532
+    permissions: 0o775
+
+stop-signal: SIGQUIT
+
+work-dir: /var/lib/nginx
+
+cmd: nginx -c /etc/nginx/nginx.conf -g 'daemon off;'
