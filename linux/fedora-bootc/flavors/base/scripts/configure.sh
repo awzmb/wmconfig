@@ -32,7 +32,11 @@ getent group seat >/dev/null 2>&1 || groupadd -r seat || true
 printf '\e[1;32m-->\e[0m\e[1m Creating login user "fedora"\e[0m\n'
 mkdir -p /var/home
 if ! getent passwd fedora >/dev/null 2>&1; then
-	useradd -m -G wheel fedora
+	# ponytail: UID 1001, not the default 1000 — tacklebox's live baseline.sh
+	# runs `useradd` for its own UID-1000 live user against this image and dies
+	# "UID 1000 is not unique" if we already own 1000. Bump if tacklebox ever
+	# moves its live user off 1000.
+	useradd -u 1001 -m -G wheel fedora
 fi
 for g in video audio input render seat realtime libvirt kvm; do
 	getent group "$g" >/dev/null 2>&1 && usermod -aG "$g" fedora || true
