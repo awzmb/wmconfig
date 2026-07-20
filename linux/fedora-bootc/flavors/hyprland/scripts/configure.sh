@@ -61,7 +61,7 @@ fi
 # box. GNOME Shell stays installed because GDM's greeter uses it.
 # FEDORA_DEFAULT_USER must match the user in ../base/bib/config.toml.
 default_user=${FEDORA_DEFAULT_USER:-awzm}
-default_session=${FEDORA_DEFAULT_SESSION:-sway}
+default_session=${FEDORA_DEFAULT_SESSION:-hyprland}
 printf '\e[1;32m-->\e[0m\e[1m Setting %s as default session for user %s\e[0m\n' \
 	"$default_session" "$default_user"
 install -d -m 0775 /var/lib/AccountsService/users
@@ -76,12 +76,15 @@ EOF
 # --- Desktop services ----------------------------------------------------
 printf '\e[1;32m-->\e[0m\e[1m Enabling desktop services\e[0m\n'
 enable_unit seatd.service
+# suspend/resume hook for Hyprland (WantedBy=systemd-suspend/hibernate)
+enable_unit suspend-hyprland.service systemd-suspend.service
+enable_unit suspend-hyprland.service systemd-hibernate.service
 
 # --- Compile any dconf databases the desktop packages added --------------
 dconf update || true
 
 # --- Sanity: warn loudly about missing critical desktop components -------
-for chk in "gdm:/usr/bin/gdm" "sway:/usr/bin/sway"; do
+for chk in "gdm:/usr/bin/gdm" "hyprland:/usr/bin/Hyprland"; do
 	name=${chk%%:*}; path=${chk#*:}
 	[[ -e $path ]] || echo "!! MISSING: $name ($path) — likely dropped by 'dnf --skip-broken'; check the install log above"
 done

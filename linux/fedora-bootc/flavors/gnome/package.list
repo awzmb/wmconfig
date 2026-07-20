@@ -36,3 +36,19 @@ gvfs-mtp
 gvfs-nfs
 gvfs-smb
 xdg-desktop-portal-gnome
+
+# Gnome Shell Extensions
+gnome-extensions-app
+gnome-shell-extensions
+gnome-shell-extension-forge
+gnome-shell-extension-just-perfection
+gnome-shell-extension-background-logo
+gnome-shell-extension-screen-autorotate
+gnome-shell-extension-pop-shell
+gnome-shell-extension-caffeine
+gnome-shell-extension-forge
+gnome-shell-extension-gamemode
+gnome-shell-extension-suspend-button
+gnome-shell-theme-yaru
+kitty-shell-integration
+florence

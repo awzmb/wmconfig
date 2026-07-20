@@ -9,35 +9,35 @@
 # Plasma session + workspace
 plasma-desktop
 plasma-workspace
-plasma-workspace-wayland        # Wayland Plasma session
+plasma-workspace-wayland # Wayland Plasma session
 kwin
 kscreen
 powerdevil
 plasma-systemmonitor
-plasma-nm                       # NetworkManager applet
-plasma-pa                       # PulseAudio/PipeWire volume applet
+plasma-nm # NetworkManager applet
+plasma-pa # PulseAudio/PipeWire volume applet
 plasma-pk-updates
 kdeplasma-addons
 kinfocenter
 systemsettings
 kmenuedit
 xdg-desktop-portal-kde
-kde-gtk-config                  # make GTK apps follow the Plasma theme
+kde-gtk-config # make GTK apps follow the Plasma theme
 breeze-gtk
 
 # Display manager
 sddm
-sddm-kcm                        # SDDM settings module for System Settings
+sddm-kcm # SDDM settings module for System Settings
 
 # Keyring / wallet (PAM auto-unlock at login)
 kwallet-pam
 kwalletmanager5
 
 # Core KDE apps
-dolphin                         # file manager
-konsole                         # terminal
-ark                             # archive manager
-gwenview                        # image viewer
-okular                          # document viewer
-spectacle                       # screenshots
-kate                            # text editor
+dolphin # file manager
+konsole # terminal
+ark # archive manager
+gwenview # image viewer
+okular # document viewer
+spectacle # screenshots
+kate # text editor
