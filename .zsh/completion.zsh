@@ -69,6 +69,54 @@ zstyle ':completion:*:messages' format '%d'
 zstyle ':completion:*:warnings' format 'No matches for: %d'
 zstyle '*' single-ignored show
 
+# --- containerized tool completions ---
+# These tools run in podman via ~/.scripts wrappers, so generating their
+# completion spins a container (slow). Keep it OUT of startup: the cached
+# _<tool> files in ~/.zsh/completions are autoloaded by compinit at zero
+# cost. Refresh them by hand with `update-zsh-completions`.
+update-zsh-completions() {
+  local -A tools=(
+    uv        'generate-shell-completion zsh'
+    helm      'completion zsh'
+    helm-docs 'completion zsh'
+    flux      'completion zsh'
+    kubectl   'completion zsh'
+    tfsec     'completion zsh'
+  )
+  local dir=~/.zsh/completions t out cmd
+  # timeout must run INSIDE the pty (guarding the tool), not around `script`:
+  # wrapping `script` itself in timeout breaks its pty and yields no output.
+  local tguard=''; (( $+commands[timeout] )) && tguard='timeout 30 '
+  # The wrappers run `podman run -it`; the -t needs a real TTY, which a
+  # $(...) capture (a pipe) is not, so podman bails with no output. `script`
+  # gives it a pseudo-TTY. util-linux and BSD `script` take different args.
+  local pty=''
+  if (( $+commands[script] )); then
+    if script --version 2>&1 | grep -qi util-linux; then pty=uxlinux; else pty=bsd; fi
+  else
+    print -r -- "warning: 'script' not found; -t tools may fail. Install util-linux."
+  fi
+  mkdir -p $dir
+  for t in ${(k)tools}; do
+    (( $+commands[$t] )) || { print -r -- "skip  $t (no command)"; continue }
+    cmd="$tguard$t ${tools[$t]}"
+    case $pty in
+      uxlinux) out=$(script -qec "$cmd" /dev/null 2>/dev/null) ;;
+      bsd)     out=$(script -q /dev/null ${=cmd} 2>/dev/null) ;;
+      *)       out=$(${=cmd} 2>/dev/null) ;;
+    esac
+    out=${out//$'\r'/}
+    # keep from the first #compdef line so any TTY/script preamble is dropped;
+    # never cache a container error or completion-directive noise.
+    if [[ $out == *'#compdef'* ]]; then
+      print -r -- "#compdef${out#*'#compdef'}" > $dir/_$t && print -r -- "ok    $t"
+    else
+      print -r -- "fail  $t (no completion / image missing)"
+    fi
+  done
+  autoload -Uz compinit && compinit  # reload so refreshed files apply now
+}
+
 # --- compinit ---
 fpath=(~/.zsh/completions $fpath)
 autoload -U +X bashcompinit && bashcompinit
