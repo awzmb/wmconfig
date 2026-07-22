@@ -194,6 +194,24 @@ if ! locale -a 2>/dev/null | grep -qiE '^en_US\.(utf8|UTF-8)$'; then
 fi
 printf 'LANG=en_US.UTF-8\n' > /etc/locale.conf
 
+# --- zsh completion (compinit/compdef) system-wide ------------------------
+# Fedora's /etc/zshrc (zshrc.rhs) does NOT source /etc/zshrc.d/*.zsh — it only
+# sets prompt/pathmunge — so our overlay drop-in (etc/zshrc.d/00-fedora-compinit.zsh)
+# is never read and compinit/compdef stay undefined for every interactive zsh
+# except skel-seeded ~/.zshrc. Append an idempotent source loop to /etc/zshrc so
+# the drop-in dir is honoured for all users (root included) and any /etc plugin.
+if [[ -f /etc/zshrc ]] && ! grep -q '/etc/zshrc.d/\*\.zsh' /etc/zshrc; then
+	printf '\e[1;32m-->\e[0m\e[1m Wiring /etc/zshrc.d into /etc/zshrc (compinit)\e[0m\n'
+	cat >> /etc/zshrc <<'EOF'
+
+# Source system drop-ins (added by fedora-build; Fedora's stock zshrc does not).
+for _f in /etc/zshrc.d/*.zsh(N); do source "$_f"; done
+unset _f
+EOF
+else
+	[[ -f /etc/zshrc ]] || echo "!! /etc/zshrc missing (zsh not installed?); compinit drop-in not wired"
+fi
+
 # --- Terminess Nerd Font -------------------------------------------------
 # "Terminess Nerd Font" is the Nerd Fonts patched Terminus. It is not packaged
 # in Fedora, so fetch the official release tarball and install the faces into

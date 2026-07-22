@@ -95,6 +95,13 @@ case "$hash" in
   *)           echo "OK: fedora has a hashed password";;
 esac
 
+sep "zsh completion: /etc/zshrc must source /etc/zshrc.d (else compinit/compdef undefined)"
+# Fedora stock /etc/zshrc does NOT read /etc/zshrc.d; configure.sh appends the loop.
+grep -q "/etc/zshrc.d/\*\.zsh" /etc/zshrc 2>/dev/null \
+	&& echo "OK: /etc/zshrc sources /etc/zshrc.d" \
+	|| echo "!! /etc/zshrc does NOT source /etc/zshrc.d — compinit/compdef will be undefined"
+[ -f /etc/zshrc.d/00-fedora-compinit.zsh ] && echo "OK: compinit drop-in present" || echo "!! compinit drop-in MISSING"
+
 sep "local VT login (getty on tty1)"
 ls -l /usr/lib/systemd/system/getty.target.wants/getty@tty1.service 2>/dev/null \
 	&& echo "OK: getty@tty1 enabled — physical console gets a login prompt" \
