@@ -120,7 +120,7 @@ update-zsh-completions() {
 # --- compinit ---
 fpath=(~/.zsh/completions $fpath)
 autoload -U +X bashcompinit && bashcompinit
-compinit
+autoload -Uz compinit && compinit -u > /dev/null 2>&1
 
 # --- fzf-tab (must load after compinit) ---
 zinit light Aloxaf/fzf-tab
@@ -168,8 +168,7 @@ compdef _gh_run_view_completion gh-run-view
 compdef _gh_pr_checkout_completion gh-pr-checkout
 
 # --- tool completions ---
-[[ -f "${HOME}/.completion/gcloud/completion.zsh.inc" ]] && \
-    source "${HOME}/.completion/gcloud/completion.zsh.inc"
+[[ -f ~/.zsh/completions/gcloud.zsh ]] && source ~/.zsh/completions/gcloud.zsh
 
 command -v gh        > /dev/null && source <(gh completion -s zsh)
 command -v devpod    > /dev/null && source <(devpod completion zsh)

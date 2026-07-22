@@ -1,5 +1,27 @@
 #!/bin/sh
 
+# Completion path: gcloud's zsh completer (gcloud.zsh) re-execs this wrapper
+# with _ARGCOMPLETE=1 and COMP_LINE/COMP_POINT in the env, and reads the
+# results from fd 8. gcloud's bundled argcomplete ignores
+# _ARGCOMPLETE_STDOUT_FILENAME, so fd 8 must reach the container. podman only
+# forwards fds 3..N+2 with --preserve-fds, so open dummies 3-7 and let it pass
+# the caller's fd 8 (numbers are preserved inside the container). fd 9 (debug)
+# is not forwarded on purpose: argcomplete falls back to stderr when it's
+# absent. No -t (no TTY during completion); the completer already sends
+# stdout/stderr to /dev/null, so only fd 8 carries data.
+if [ -n "${_ARGCOMPLETE:-}" ]; then
+  exec 3>/dev/null 4>/dev/null 5>/dev/null 6>/dev/null 7>/dev/null
+  exec podman run --rm -i \
+    --user "$(id -u):$(id -g)" \
+    --userns=keep-id \
+    --volume "$HOME/.config/gcloud:/home/$(whoami)/.config/gcloud:Z" \
+    --env _ARGCOMPLETE --env _ARGCOMPLETE_SHELL --env _ARGCOMPLETE_IFS \
+    --env _ARGCOMPLETE_COMP_WORDBREAKS --env COMP_LINE --env COMP_POINT \
+    --env COMP_TYPE \
+    --preserve-fds=6 \
+    localhost/gcloud:latest "$@"
+fi
+
 podman run --rm -it \
   --user "$(id -u):$(id -g)" \
   --userns=keep-id \
