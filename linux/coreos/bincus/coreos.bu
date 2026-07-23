@@ -1,0 +1,337 @@
+variant: fcos
+version: 1.6.0
+passwd:
+  users:
+    - name: core
+      ssh_authorized_keys: ["ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFlWNFIAoXzlQRhLVB/5RwUIikiHuefpPchd0ePb5tCM", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIADD4LxwIuay/NAuqHkr+tlXzQLJbj9BgQGeSjo5ju7h"]
+
+storage:
+  directories:
+    - path: /etc/wolf
+      mode: 0755
+
+  files:
+    - path: /etc/hostname
+      mode: 0644
+      overwrite: true
+      contents:
+        inline: bincus
+
+    # load br_netfilter and overlay modules for nested kubernetes in lxc containers
+    - path: /etc/modules-load.d/kubernetes.conf
+      mode: 0644
+      overwrite: true
+      contents:
+        inline: |
+          overlay
+          br_netfilter
+
+    # tune this according to https://linuxcontainers.org/incus/docs/main/howto/network_ovn_setup/
+    # or https://andreaskaris.github.io/blog/networking/ovn_standalone_on_fedora/
+    # when using OVN to create an incus cluster
+    - path: /etc/sysconfig/ovn
+      mode: 0644
+      overwrite: true
+      contents:
+        inline: |
+          OVN_NORTHD_OPTS=""
+          OVN_CONTROLLER_OPTS=""
+
+    - path: /etc/sysctl.d/11-max-map-count.conf
+      mode: 0644
+      contents:
+        inline: |
+          vm.max_map_count = 2147483642
+
+    - path: /etc/subuid
+      append:
+        - inline: |
+            root:1065536:65536
+
+    - path: /etc/subgid
+      append:
+        - inline: |
+            root:1065536:65536
+
+    - path: /usr/local/bin/install-packages.sh
+      mode: 0755
+      contents:
+        inline: |
+          #!/bin/bash
+          set -euo pipefail
+
+          # This script installs the required packages on Fedora CoreOS
+          echo "Installing packages via rpm-ostree..."
+          rpm-ostree install -y --apply-live --allow-inactive \
+              incus \
+              incus-client \
+              incus-selinux \
+              incus-tools \
+              ovn \
+              ovn-central \
+              ovn-host \
+              ovn-vtep \
+              cowsql \
+              lxcfs \
+              lxc \
+              vulkan-loader \
+              mesa-vulkan-drivers \
+              mesa-dri-drivers \
+              mesa-va-drivers \
+              libva-utils \
+              vdpauinfo \
+              open-vm-tools \
+              rsync \
+              neovim \
+              zsh \
+              gstreamer1-plugins-base \
+              gstreamer1-plugins-good \
+              gstreamer1-plugins-bad-free \
+              gstreamer1-plugins-bad-free-extras \
+              gstreamer1-vaapi \
+              qemu
+
+          echo
+          echo
+          echo "PACKAGE INSTALLATION COMPLETE. Rebooting the system to apply changes..."
+          systemctl daemon-reload
+          systemctl enable --now incus.socket
+          systemctl enable --now incus.service
+          systemctl enable --now ovn-controller.service
+          systemctl enable --now ovn-northd.service
+          sudo ovs-vsctl set open_vswitch . \
+            external_ids:ovn-remote=unix:/run/ovn/ovnsb_db.sock \
+            external_ids:ovn-encap-type=geneve \
+            external_ids:ovn-encap-ip=127.0.0.1
+          incus admin init --preseed /etc/incus/pre-seed.yaml
+
+    - path: /usr/local/bin/install-minio.sh
+      mode: 0755
+      contents:
+        inline: |
+          #!/bin/sh
+
+          INSTALL_DIR=/usr/local/bin
+          TMP_DIR=$(mktemp -d)
+          
+          if [ -z "${ARCH}" ]; then
+            ARCH=$(uname -m)
+          fi
+          case ${ARCH} in
+            arm|armv6l|armv7l)
+              ARCH=arm
+              ;;
+            arm64|aarch64|armv8l)
+              ARCH=arm64
+              ;;
+            amd64|x86_64)
+              ARCH=amd64
+              ;;
+            *)
+              fatal "Unsupported architecture ${ARCH}"
+              exit 1
+          esac
+          
+          mkdir -p ${INSTALL_DIR}
+
+          OS=$(uname -s | tr '[:upper:]' '[:lower:]')
+          curl -L https://dl.min.io/server/minio/release/${OS}-${ARCH}/minio \
+            --create-dirs \
+            -o ${INSTALL_DIR}/minio
+          chmod +x ${INSTALL_DIR}/minio
+          echo $(which minio)
+
+    - path: /usr/local/bin/install-minio-client.sh
+      mode: 0755
+      contents:
+        inline: |
+          #!/bin/sh
+
+          INSTALL_DIR=/usr/local/bin
+          TMP_DIR=$(mktemp -d)
+          
+          if [ -z "${ARCH}" ]; then
+            ARCH=$(uname -m)
+          fi
+          case ${ARCH} in
+            arm|armv6l|armv7l)
+              ARCH=arm
+              ;;
+            arm64|aarch64|armv8l)
+              ARCH=arm64
+              ;;
+            amd64|x86_64)
+              ARCH=amd64
+              ;;
+            *)
+              fatal "Unsupported architecture ${ARCH}"
+              exit 1
+          esac
+          
+          mkdir -p ${INSTALL_DIR}
+          
+          OS=$(uname -s | tr '[:upper:]' '[:lower:]')
+          curl -L https://dl.min.io/client/mc/release/${OS}-${ARCH}/mc \
+            --create-dirs \
+            -o ${INSTALL_DIR}/mcli
+          chmod +x ${INSTALL_DIR}/mcli
+          echo $(which mcli)
+
+    - path: /etc/incus/pre-seed.yaml
+      contents:
+        inline: |
+          config: 
+            core.https_address: 0.0.0.0:8443
+            core.storage_buckets_address: :8555
+            images.auto_update_interval: 12
+          networks:
+          - config:
+              ipv4.address: 10.0.0.1/8
+              ipv6.address: none
+              ipv4.dhcp.ranges: "10.0.0.2-10.0.0.254"
+              ipv4.ovn.ranges: "10.0.1.0-10.255.255.254"
+              ipv4.nat: true
+            description: ""
+            name: incusbr0
+            type: "bridge"
+            project: default
+          storage_pools:
+          - config:
+              size: 500GiB
+            description: ""
+            name: default
+            driver: btrfs
+          profiles:
+          - config: {}
+            description: "coreos profile"
+            devices:
+              eth0:
+                name: eth0
+                network: incusbr0
+                type: nic
+              root:
+                path: /
+                pool: default
+                type: disk
+            name: default
+          projects: []
+          cluster: null
+
+    # install wolf on the same machine as incus, since running this
+    # in its own incus container ruins performance and is overall
+    # not recommended / problematic
+    - path: /etc/udev/rules.d/85-wolf-virtual-inputs.rules
+      mode: 0644
+      contents:
+        inline: |
+          # Allows Wolf to access /dev/uinput (only needed for joypad support)
+          KERNEL=="uinput", SUBSYSTEM=="misc", MODE=="0660", GROUP=="input", OPTIONS+="static_node=uinput", TAG+="uaccess"
+
+          # Allows Wolf to access /dev/uhid (only needed for DualSense emulation)
+          KERNEL=="uhid", GROUP=="input", MODE=="0660", TAG+="uaccess"
+
+          # Joypads
+          KERNEL=="hidraw*", ATTRS{name}=="Wolf PS5 (virtual) pad", GROUP=="input", MODE=="0660", ENV{ID_SEAT}=="seat9"
+          SUBSYSTEMS=="input", ATTRS{name}=="Wolf X-Box One (virtual) pad", MODE=="0660", ENV{ID_SEAT}=="seat9"
+          SUBSYSTEMS=="input", ATTRS{name}=="Wolf PS5 (virtual) pad", MODE=="0660", ENV{ID_SEAT}=="seat9"
+          SUBSYSTEMS=="input", ATTRS{name}=="Wolf gamepad (virtual) motion sensors", MODE=="0660", ENV{ID_SEAT}=="seat9"
+          SUBSYSTEMS=="input", ATTRS{name}=="Wolf Nintendo (virtual) pad", MODE=="0660", ENV{ID_SEAT}=="seat9"
+
+    - path: /etc/containers/systemd/wolf.container
+      mode: 0644
+      contents:
+        inline: |
+          [Unit]
+          Description=Wolf / Games On Whales
+          Requires=network-online.target podman.socket
+          After=network-online.target podman.socket
+
+          [Service]
+          TimeoutStartSec=900
+          ExecStartPre=-/usr/bin/podman rm --force WolfPulseAudio
+          Restart=on-failure
+          RestartSec=5
+          StartLimitBurst=5
+
+          [Container]
+          AutoUpdate=registry
+          ContainerName=%p
+          HostName=%p
+          Image=ghcr.io/games-on-whales/wolf:stable
+          Network=host
+          SecurityLabelDisable=true
+          PodmanArgs=--ipc=host --device-cgroup-rule "c 13:* rmw"
+          AddDevice=/dev/dri
+          AddDevice=/dev/uinput
+          AddDevice=/dev/uhid
+          Volume=/dev/:/dev/:rw
+          Volume=/run/udev:/run/udev:rw
+          Volume=/etc/wolf/:/etc/wolf:z
+          Volume=/run/podman/podman.sock:/var/run/docker.sock:ro
+          Environment=WOLF_STOP_CONTAINER_ON_EXIT=TRUE
+
+          [Install]
+          WantedBy=multi-user.target
+
+systemd:
+  units:
+    - name: install-packages.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Install packages on first boot
+        Wants=network-online.target
+        After=network-online.target
+        # This service only runs once
+        ConditionPathExists=!/var/lib/%N.stamp
+
+        [Service]
+        Type=oneshot
+        # Create a lock file to prevent this service from running again
+        ExecStart=/usr/local/bin/install-packages.sh
+        ExecStart=/bin/touch /var/lib/%N.stamp
+
+        [Install]
+        WantedBy=multi-user.target
+
+    - name: install-minio.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Layer minio with rpm-ostree
+        Wants=network-online.target
+        After=network-online.target
+        After=install-packages.service
+        Before=zincati.service
+        # This service only runs once
+        ConditionPathExists=!/var/lib/%N.stamp
+
+        [Service]
+        Type=oneshot
+        ExecStart=/usr/local/bin/install-minio-client.sh
+        ExecStart=/usr/local/bin/install-minio.sh
+        ExecStart=/bin/touch /var/lib/%N.stamp
+
+        [Install]
+        WantedBy=multi-user.target
+
+    - name: disable-selinux.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Disable SELinux on first boot
+        # This service should run on first boot to set the kernel arguments.
+        # The change will be effective on the next reboot, which is triggered
+        # by the GPU driver installation service.
+        ConditionPathExists=!/var/lib/selinux-disabled.stamp
+
+        [Service]
+        Type=oneshot
+        RemainAfterExit=yes
+        # Set the kernel argument to disable SELinux
+        ExecStart=/usr/bin/rpm-ostree kargs --append=selinux=0
+        # Create a stamp file to prevent this service from running again
+        ExecStartPost=/usr/bin/touch /var/lib/selinux-disabled.stamp
+
+        [Install]
+        WantedBy=multi-user.target

@@ -1,0 +1,33 @@
+{
+  "ignition": {
+    "version": "3.3.0"
+  },
+  "passwd": {
+    "users": [
+      {
+        "name": "core",
+        "sshAuthorizedKeys": [
+          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFlWNFIAoXzlQRhLVB/5RwUIikiHuefpPchd0ePb5tCM"
+        ]
+      }
+    ]
+  },
+  "systemd": {
+    "units": [
+      {
+        "dropins": [
+          {
+            "contents": "[Service]\nEnvironment=\"REBOOT_STRATEGY=reboot\"\n",
+            "name": "50-reboot-strategy.conf"
+          }
+        ],
+        "name": "locksmithd.service"
+      },
+      {
+        "contents": "[Unit]\nDescription=Enable CPU power saving\n\n[Service]\nType=oneshot\nRemainAfterExit=yes\nExecStart=/usr/sbin/modprobe cpufreq_conservative\nExecStart=/usr/bin/sh -c '/usr/bin/echo \"conservative\" | tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor'\n\n[Install]\nWantedBy=multi-user.target\n",
+        "enabled": true,
+        "name": "cpu-governor.service"
+      }
+    ]
+  }
+}

@@ -1,0 +1,145 @@
+{
+  "ignition": {
+    "version": "3.5.0"
+  },
+  "passwd": {
+    "users": [
+      {
+        "name": "core",
+        "sshAuthorizedKeys": [
+          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFlWNFIAoXzlQRhLVB/5RwUIikiHuefpPchd0ePb5tCM",
+          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIADD4LxwIuay/NAuqHkr+tlXzQLJbj9BgQGeSjo5ju7h"
+        ]
+      }
+    ]
+  },
+  "storage": {
+    "directories": [
+      {
+        "path": "/etc/wolf",
+        "mode": 493
+      }
+    ],
+    "files": [
+      {
+        "overwrite": true,
+        "path": "/etc/hostname",
+        "contents": {
+          "compression": "",
+          "source": "data:,bincus"
+        },
+        "mode": 420
+      },
+      {
+        "overwrite": true,
+        "path": "/etc/modules-load.d/kubernetes.conf",
+        "contents": {
+          "compression": "",
+          "source": "data:,overlay%0Abr_netfilter%0A"
+        },
+        "mode": 420
+      },
+      {
+        "overwrite": true,
+        "path": "/etc/sysconfig/ovn",
+        "contents": {
+          "compression": "",
+          "source": "data:,OVN_NORTHD_OPTS%3D%22%22%0AOVN_CONTROLLER_OPTS%3D%22%22%0A"
+        },
+        "mode": 420
+      },
+      {
+        "path": "/etc/sysctl.d/11-max-map-count.conf",
+        "contents": {
+          "compression": "",
+          "source": "data:,vm.max_map_count%20%3D%202147483642%0A"
+        },
+        "mode": 420
+      },
+      {
+        "path": "/etc/subuid",
+        "append": [
+          {
+            "compression": "",
+            "source": "data:,root%3A1065536%3A65536%0A"
+          }
+        ]
+      },
+      {
+        "path": "/etc/subgid",
+        "append": [
+          {
+            "compression": "",
+            "source": "data:,root%3A1065536%3A65536%0A"
+          }
+        ]
+      },
+      {
+        "path": "/usr/local/bin/install-packages.sh",
+        "contents": {
+          "compression": "gzip",
+          "source": "data:;base64,H4sIAAAAAAAC/4xTQW/bOgy++1fwtWc57bs8oEAPQdE3FOvaYs1xQCFLTExUJlVRVpL9+sGOs6Rbu+5gg/y+j7Yofjz9Z9YQzxqrbaWYwWAvECni0lKoqlNYtKSgLlHMQKzZhqCQW4SELz0l9BCte7YrVBCG/9FLsnAlCe8fK3StwMnNrop4dZAWspBiZ0RzQqzr+qQ6pPv/gNmCMTbGsDWBCg5JCLI2xNblAfhWAQAQu16PY+MCIedXkGIg7jevsCwS9oVS+BAZh5yTDUdIK5qP0pIxTqmTtb7spWHjlnqIp6j04dmyCWI9pgnrUK2ZCJ+oYNJjxid6Cy72FzRQU6zpM/3spPhoe+Kl7I8bkU3pXnWbdMv7wzFKoW5Kvms7RathFrbDdG5i6FfEahqr+D67EvF/qvVmOQz3Q4XBTU5WfxcWayNN8At2fTUa7PCCk4f51ef5p2u4uXtczG9v54ub+zu4uv/ycHu9uK7hKzYieTDiYGDdasYOssBoMXCt5RXqaMYd53IAb7ETNgmH4R3hyLYJgyVZ1js71SruGfMHGkyFHL4nGr0nnJOEgOlv1Cwpt/6g7L2AFDVFB/mw0sP8n4quKbsW6vH+cJMxsQ1P5PVi+ErCTjJe9kybi1nqeSZlfLR58s3Y2Nt1yM5Gk7cRL1fIOK3kOzKKl+f//lef1Wf1ebVbWus7YiCmDMbEhIroYYbZzUZ+FhOaAau3tgvVjwAAAP//tJrFrq0EAAA="
+        },
+        "mode": 493
+      },
+      {
+        "path": "/usr/local/bin/install-minio.sh",
+        "contents": {
+          "compression": "gzip",
+          "source": "data:;base64,H4sIAAAAAAAC/2yQUWvbMBDH3+9T3DxD4w1VDIxXEvpQtocVsnU03VNXiiZfkKhkmZOchsX57sN2WELo051//5/RX3r/Tv6xjYwG4PbH6uFmuXz+ent/LbvI0gWt3BDDw/efI85n/iWRb1HUBYBd4yOKv5jlu5v7L9/2GT4tMBlqAHEA1/msa5QnFL6AtQWtIuHBRTtYin2v2G8qN47PrgDEw8+K/fixWExiVfZKsTbDZL+5OnOr8sT2dVX226vquSpPrQEfrQ9TtFZJOcx+NbFr28CJahyOsYl06vh/4WyUaWsTfgKKSgP4l9oyihbz3cnb7QHuVserR+wxMV48zru2JZ4/XQy7C6/jXoDu2KFYokmpjXMpa3fpbXNpg4zEG2LpbWODZHKkIsl8d7fai0OnKcPfgCiEZlKJRG05TiSc9Zps0MaHGj9u305Jm4D57NVYbXBEBfwLAAD//4YphjYkAgAA"
+        },
+        "mode": 493
+      },
+      {
+        "path": "/usr/local/bin/install-minio-client.sh",
+        "contents": {
+          "compression": "gzip",
+          "source": "data:;base64,H4sIAAAAAAAC/2yQUavaMBTH38+nOOsK127khkHpLsp9kO1hgptD3ZMTydIjCSZtSVKVWb/7SJUpcp/O6e//K/kn79/xP7riXgFMfiyW4+l083Uyf+Wtd9zUUpgYw/L7zx6nA7sLZBtkZQagt7hC9heT9DSef/l2TnA9wqCoAsQIXtNBWwlLyGwGWw1SeMKrizpawtlOOLsvTD8+mwwQrz8LZ/uP0egiFnknhJMqTmf3Lw9ukd/Ztizy7vhSbIr83or4Zn24RFsRhMHkV+XbpqldoBLjMTqQDK37XzjpZTrqgJ+AvJAAdldqh6zB9HT3dmeA2eJ2dY8dBodPq2HbNOSG66e4m/rQ7xnI1hlkU1QhNH7IeWmera6edc2l0VQFbiV3ZEh44ulptjizayFuJf4GRMakIxGIldr5C6kfGnErjQapbF3ix+ObIUlVYzo4KC0VRpLBvwAAAP//G+9BtBsCAAA="
+        },
+        "mode": 493
+      },
+      {
+        "path": "/etc/incus/pre-seed.yaml",
+        "contents": {
+          "compression": "gzip",
+          "source": "data:;base64,H4sIAAAAAAAC/3yR0a7TMAyG7/MUVu9PTzdWNPmSGx4CoSlLvC6sJ44cpwgQ746yNWww6bSqlMSf/7+/4ziewoRgABwL9WfVlA/We6GcEYb++uJ+t/vQkKwsdqLDsbgL6QOM+3EcDUB4sxPl3hblQ0neKh1CVJLFzgibrYmk31kuGc0LrP4GACCkZdf/VdvcvDev+1b8eC9GjnTv8WeXerFxoozQrY3bl7YYd92d5SX+h276oaLbcVy/RzxaRVAp1c1TdhKSBo4IXYWifSOEEF3JRxkMgP5IhNAdJfiJKpGEv5FTBE8nW2Y1bXqJeX6aQA4/CWEchs/h0zuGTQvAS1hIEI4qp2yS8CnM9CgLv34/CdVb5Awr3V3rS3C1r/4E6Xm4rZpfPWkHt7v7J3R9bsFjcNe9MGuTSFbPCK9txzw/Brj3+pAvTwnX8WWEL1+Nm0vWmjaWeTZ/AgAA//9OQTiiugIAAA=="
+        }
+      },
+      {
+        "path": "/etc/udev/rules.d/85-wolf-virtual-inputs.rules",
+        "contents": {
+          "compression": "gzip",
+          "source": "data:;base64,H4sIAAAAAAAC/6yST2vCMBjG7/0UL9lFZ4deJuyQQ8UibrMVU/fnJKF5nRlpUppEJ7LvPlSmDmWD0Q/wPL/f+yRXECllVhaejZqDM8DzHK2FtsBl20tdegcNo9UaNKJAAXNTwbtZl1yA9WVpKtcMHuJJEj9SSvYBEgKb9tgry+IRpaSQNichjNJ+TCnpdLsdEsJgkk7HlJLvQDrOhmnCWpRYx53MZ9oIpIe+LBq0KPF7ORIEv2svpDiX7nuuGGqLgIVX3EmjT80XUlzQ+il9bnG/W8IeexZSVHx1TUKIsmzCNpoX+Ekp2XmO2S00lrJynqsmlPxvYpw8bYb9GYujbNtikbs7EhzWZSfBC7yXm575gFTjGbVOyqWr6ux/4wVuv9uRUZjt64FFbU1la8YlUjvUwvzrpq8AAAD//yvsiyVPAwAA"
+        },
+        "mode": 420
+      },
+      {
+        "path": "/etc/containers/systemd/wolf.container",
+        "contents": {
+          "compression": "gzip",
+          "source": "data:;base64,H4sIAAAAAAAC/4ySQWsbPRCG7/oVIvBdPlCUUnLogg6bxG0NwTa2UxeMMYo0Xg/RStvRyG7668uuEzdtL72I4Zl3Bs07s36IyBtxB9kRdowpmlUKO6nlJ9tCltMoV3sbIIs5fCtIkE0EPiZ6UikGjHDJlhpg2SXf2niZk3sCFvWOgf5JKdYLoAM62IgltpAKL9gSL8CZD1dXYvQd3ABmBEbpkkk/YtSnHpJaqdQukQPZ/3pWQoa6eExiDrmvMimqncVQCF5R3/laDD3vsUW+KZTZXAuxvk2RLUagjagLp4fOWwZD0GBmehbn9MS2YP7rxOeU+TUet7YB0+wdXWLSTe+dSlEdB+/0MYVdldk+BhCTkylmnzKLBbhCyM/39hHCHeZeYZgKiNkwYU1NNkph5wa9VMpDb5ZyDaXSKSoB5IWT795X/0tqjxei9v5ukBjt4aA94Z+oYOwK/0X36MWXFEr7AqrTS8czpRJ18XCofkVvssBumFNX57D68VvtaWn6zf4rfbA05Hx/DXSClMQoHpBSbCGyWU3vP24Xy+lsezudLOvxZDTfTifb0dfx0iznDyMh1uOY2YawESsbGfzNs2lLYFQlA72cnfgZAAD//78ufJ3qAgAA"
+        },
+        "mode": 420
+      }
+    ]
+  },
+  "systemd": {
+    "units": [
+      {
+        "contents": "[Unit]\nDescription=Install packages on first boot\nWants=network-online.target\nAfter=network-online.target\n# This service only runs once\nConditionPathExists=!/var/lib/%N.stamp\n\n[Service]\nType=oneshot\n# Create a lock file to prevent this service from running again\nExecStart=/usr/local/bin/install-packages.sh\nExecStart=/bin/touch /var/lib/%N.stamp\n\n[Install]\nWantedBy=multi-user.target\n",
+        "enabled": true,
+        "name": "install-packages.service"
+      },
+      {
+        "contents": "[Unit]\nDescription=Layer minio with rpm-ostree\nWants=network-online.target\nAfter=network-online.target\nAfter=install-packages.service\nBefore=zincati.service\n# This service only runs once\nConditionPathExists=!/var/lib/%N.stamp\n\n[Service]\nType=oneshot\nExecStart=/usr/local/bin/install-minio-client.sh\nExecStart=/usr/local/bin/install-minio.sh\nExecStart=/bin/touch /var/lib/%N.stamp\n\n[Install]\nWantedBy=multi-user.target\n",
+        "enabled": true,
+        "name": "install-minio.service"
+      },
+      {
+        "contents": "[Unit]\nDescription=Disable SELinux on first boot\n# This service should run on first boot to set the kernel arguments.\n# The change will be effective on the next reboot, which is triggered\n# by the GPU driver installation service.\nConditionPathExists=!/var/lib/selinux-disabled.stamp\n\n[Service]\nType=oneshot\nRemainAfterExit=yes\n# Set the kernel argument to disable SELinux\nExecStart=/usr/bin/rpm-ostree kargs --append=selinux=0\n# Create a stamp file to prevent this service from running again\nExecStartPost=/usr/bin/touch /var/lib/selinux-disabled.stamp\n\n[Install]\nWantedBy=multi-user.target\n",
+        "enabled": true,
+        "name": "disable-selinux.service"
+      }
+    ]
+  }
+}

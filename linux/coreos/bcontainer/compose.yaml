@@ -1,0 +1,213 @@
+services:
+  traefik:
+    image: docker.io/traefik:v3.6.4
+    container_name: traefik-proxy
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.tcp.address=:6443"
+    ports:
+      # Map container port 80 to host port 8080 (for Ingress)
+      - "8080:80"
+      # Map container port 443 to host port 8443 (for Ingress)
+      - "8443:443"
+      # Map container port 6443 to host port 6443 (for API Server)
+      - "6443:6443"
+    volumes:
+      # - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "/run/user/1000/podman/podman.sock:/var/run/docker.sock:ro"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--no-verbose",
+          "--tries=1",
+          "--spider",
+          "http://localhost:8080/api/rawdata",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - traefik-network
+
+  minio:
+    image: docker.io/minio/minio:latest
+    container_name: dost2-minio
+    command: server /data --console-address ":9001"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dost2.rule=PathPrefix(`/dost2-test`)"
+      - "traefik.http.routers.dost2.entrypoints=websecure"
+      - "traefik.http.routers.dost2.tls=true"
+      # Middleware: Strip /dost2-test from the path
+      - "traefik.http.middlewares.dost2-stripprefix.stripprefix.prefixes=/dost2-test"
+      - "traefik.http.routers.dost2.middlewares=dost2-stripprefix"
+      # Service: Forward to container service port
+      - "traefik.http.services.dost2-svc.loadbalancer.server.port=9001"
+    environment:
+      - MINIO_ROOT_USER="admin"
+      - MINIO_ROOT_PASSWORD="changethis"
+    volumes:
+      - minio_data:/data
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--no-verbose",
+          "--tries=1",
+          "--spider",
+          "http://localhost:9000/minio/health/live",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - traefik-network
+
+  fetchit:
+    image: quay.io/fetchit/fetchit:latest
+    container_name: dost2-fetchit
+    volumes:
+      - "./fetchit/config.yaml:/opt/mount/config.yaml:ro"
+      # - "/run/user/1000/podman/podman.sock:/var/run/docker.sock:ro"
+      - "/run/user/1000/podman/podman.sock:/run/podman/podman.sock"
+    healthcheck:
+      test: ["CMD-SHELL", "ps -e || false"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - traefik-network
+
+  # github-runner:
+  #   image: ghcr.io/actions/actions-runner:latest
+  #   container_name: dost2-github-runner
+  #   environment:
+  #     - GITHUB_OWNER=your-github-owner
+  #     - GITHUB_REPOSITORY=your-github-repo
+  #     - GITHUB_REGISTRATION_TOKEN=your-github-registration-token
+  #   volumes:
+  #     - /run/user/1000/podman/podman.sock:/var/run/docker.sock
+  #   networks:
+  #     - k3s-network
+
+  db:
+    restart: always
+    image: docker.io/postgres:18.1-alpine
+    shm_size: 256mb
+    networks:
+      - mastodon-internal
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+    volumes:
+      - postgres14:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+      - POSTGRES_USER=test
+      - POSTGRES_PASSWORD=test
+      - POSTGRES_DB=mastodon
+
+  redis:
+    restart: always
+    image: docker.io/redis:8.4.0-alpine
+    networks:
+      - mastodon-internal
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+    volumes:
+      - redis:/data
+
+  web:
+    image: ghcr.io/mastodon/mastodon:v4.5.3
+    restart: always
+    command: bundle exec puma -C config/puma.rb
+    networks:
+      - traefik-network
+      - mastodon-internal
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -s --noproxy localhost localhost:3000/health | grep -q 'OK' || exit 1",
+        ]
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - mastodon_public_system:/mastodon/public/system
+      - mastodon_public_assets:/mastodon/public/assets # For precompiled assets
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mastodon-web.rule=Host(`/mastodon`)"
+      - "traefik.http.routers.mastodon-web.entrypoints=websecure"
+      - "traefik.http.routers.mastodon-web.tls=true"
+      # Middleware: Strip /mastodon from the path
+      - "traefik.http.middlewares.mastodon-streaming.stripprefix.prefixes=/mastodon"
+      # Service: Forward to container service port
+      - "traefik.http.services.mastodon-web.loadbalancer.server.port=3000"
+
+  streaming:
+    image: ghcr.io/mastodon/mastodon:v4.5.3
+    restart: always
+    command: bundle exec rails s -p 4000
+    networks:
+      - traefik-network
+      - mastodon-internal
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -s --noproxy localhost localhost:4000/health || exit 1",
+        ]
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - mastodon_public_system:/mastodon/public/system
+    labels:
+      - "traefik.http.routers.mastodon-streaming.rule=PathPrefix(`/mastodon/api/v1/streaming`)"
+      # - "traefik.http.routers.mastodon-streaming.rule=(Host(`${MASTODON_DOMAIN}`) && PathPrefix(`/api/v1/streaming`))"
+      - "traefik.http.routers.mastodon-streaming.entrypoints=websecure"
+      - "traefik.http.routers.mastodon-streaming.tls=true"
+      # Middleware: Strip /mastodon from the path
+      - "traefik.http.middlewares.mastodon-streaming.stripprefix.prefixes=/mastodon"
+      # Service: Forward to container service port
+      - "traefik.http.services.mastodon-streaming-svc.loadbalancer.server.port=4000"
+
+  sidekiq:
+    image: ghcr.io/mastodon/mastodon:v4.5.3
+    restart: always
+    command: bundle exec sidekiq
+    networks:
+      - mastodon-internal
+    healthcheck:
+      test: ["CMD-SHELL", "ps aux | grep '[s]idekiq' || false"]
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - mastodon_public_system:/mastodon/public/system
+
+volumes:
+  minio_data:
+  postgres14:
+  redis:
+  mastodon_public_system:
+  mastodon_public_assets:
+
+networks:
+  traefik-network:
+    name: traefik-network
+  mastodon-internal:
+    name: mastodon-internal
+  kuma:
+    name: kuma

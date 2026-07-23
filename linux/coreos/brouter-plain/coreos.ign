@@ -1,0 +1,59 @@
+{
+  "ignition": {
+    "version": "3.5.0"
+  },
+  "passwd": {
+    "users": [
+      {
+        "name": "core",
+        "sshAuthorizedKeys": [
+          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFlWNFIAoXzlQRhLVB/5RwUIikiHuefpPchd0ePb5tCM",
+          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIADD4LxwIuay/NAuqHkr+tlXzQLJbj9BgQGeSjo5ju7h"
+        ]
+      }
+    ]
+  },
+  "storage": {
+    "files": [
+      {
+        "overwrite": true,
+        "path": "/etc/hostname",
+        "contents": {
+          "compression": "",
+          "source": "data:,brouter"
+        },
+        "mode": 420
+      },
+      {
+        "path": "/etc/sysctl.d/11-max-map-count.conf",
+        "contents": {
+          "compression": "",
+          "source": "data:,vm.max_map_count%20%3D%202147483642%0A"
+        },
+        "mode": 420
+      },
+      {
+        "path": "/usr/local/bin/install-packages.sh",
+        "contents": {
+          "compression": "gzip",
+          "source": "data:;base64,H4sIAAAAAAAC/3xSwY4aMQy9z1e423PCbi+VVuKAVqhCpburlmMl5MkYJiJjZ+NMgH59NTAUVG17SPT8/Bw5fv74YVJ7ntSobaWUwVAvEH2kDfpQVeRagbsFa8YQPG8hotvhlhSKR0ixM6I5EVlr76prCP5cAeYIxmAIsjee0WVfCH5WAABS+IqMI84Jww3TiuabsGSKY+hkr28XaTi4jV7xiEofdsgmCDaURq4jRTMmmuQLJb3NNMm/Rxf8iw2+Lmj67MOFKU3E3vNGLu1GYlM6k0X+aJIe+dLcL21H9EZdf57x9YK719nT19mXOSyef6xmy+VstXh5hqeXb6/L+Wpu4TvVInnwIrcEetRMHWQBjDEcwbXIW9KTH+ecywEapE7YJBomcsMTYx0IjGHZn30QzklCoGSVUvGO/qdmSbltrsq+EZCipuggH9ZpmMW66N5n14I9fZsOmRJjWPtGH4dXEnWSadqzPzxOUs8TKaej9bqprYrbvV9H7DCafIw03RLTuFn/kPk4ffj02d7be/tQ/Q4AAP//UHKgTPUCAAA="
+        },
+        "mode": 493
+      }
+    ]
+  },
+  "systemd": {
+    "units": [
+      {
+        "contents": "[Unit]\nDescription=Install packages on first boot\nWants=network-online.target\nAfter=network-online.target\n# This service only runs once\nConditionPathExists=!/var/lib/%N.stamp\n\n[Service]\nType=oneshot\n# Create a lock file to prevent this service from running again\nExecStart=/usr/local/bin/install-packages.sh\nExecStart=/bin/touch /var/lib/%N.stamp\n\n[Install]\nWantedBy=multi-user.target\n",
+        "enabled": true,
+        "name": "install-packages.service"
+      },
+      {
+        "contents": "[Unit]\nDescription=Disable SELinux on first boot\n# This service should run on first boot to set the kernel arguments.\n# The change will be effective on the next reboot, which is triggered\n# by the GPU driver installation service.\nConditionPathExists=!/var/lib/selinux-disabled.stamp\n\n[Service]\nType=oneshot\nRemainAfterExit=yes\n# Set the kernel argument to disable SELinux\nExecStart=/usr/bin/rpm-ostree kargs --append=selinux=0\n# Create a stamp file to prevent this service from running again\nExecStartPost=/usr/bin/touch /var/lib/selinux-disabled.stamp\n\n[Install]\nWantedBy=multi-user.target\n",
+        "enabled": true,
+        "name": "disable-selinux.service"
+      }
+    ]
+  }
+}

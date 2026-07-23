@@ -1,0 +1,100 @@
+variant: fcos
+version: 1.6.0
+passwd:
+  users:
+    - name: core
+      ssh_authorized_keys: ["ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFlWNFIAoXzlQRhLVB/5RwUIikiHuefpPchd0ePb5tCM", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIADD4LxwIuay/NAuqHkr+tlXzQLJbj9BgQGeSjo5ju7h"]
+
+storage:
+  files:
+    - path: /etc/hostname
+      mode: 0644
+      overwrite: true
+      contents:
+        inline: brouter
+
+    - path: /etc/sysctl.d/11-max-map-count.conf
+      mode: 0644
+      contents:
+        inline: |
+          vm.max_map_count = 2147483642
+
+    - path: /usr/local/bin/install-packages.sh
+      mode: 0755
+      contents:
+        inline: |
+          #!/bin/bash
+          set -euo pipefail
+
+          echo "Installing packages via rpm-ostree..."
+          rpm-ostree install -y --allow-inactive \
+              ovn \
+              ovn-central \
+              ovn-host \
+              ovn-vtep \
+              cowsql \
+              lxcfs \
+              lxc \
+              vulkan-loader \
+              mesa-vulkan-drivers \
+              mesa-dri-drivers \
+              mesa-va-drivers \
+              libva-utils \
+              vdpauinfo \
+              open-vm-tools \
+              rsync \
+              zsh \
+              qemu
+
+          echo
+          echo
+          echo "PACKAGE INSTALLATION COMPLETE. Rebooting the system to apply changes..."
+          systemctl daemon-reload
+          systemctl enable --now ovn-controller.service
+          systemctl enable --now ovn-northd.service
+          sudo ovs-vsctl set open_vswitch . \
+            external_ids:ovn-remote=unix:/run/ovn/ovnsb_db.sock \
+            external_ids:ovn-encap-type=geneve \
+            external_ids:ovn-encap-ip=127.0.0.1
+
+systemd:
+  units:
+    - name: install-packages.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Install packages on first boot
+        Wants=network-online.target
+        After=network-online.target
+        # This service only runs once
+        ConditionPathExists=!/var/lib/%N.stamp
+
+        [Service]
+        Type=oneshot
+        # Create a lock file to prevent this service from running again
+        ExecStart=/usr/local/bin/install-packages.sh
+        ExecStart=/bin/touch /var/lib/%N.stamp
+
+        [Install]
+        WantedBy=multi-user.target
+
+    - name: disable-selinux.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Disable SELinux on first boot
+        # This service should run on first boot to set the kernel arguments.
+        # The change will be effective on the next reboot, which is triggered
+        # by the GPU driver installation service.
+        ConditionPathExists=!/var/lib/selinux-disabled.stamp
+
+        [Service]
+        Type=oneshot
+        RemainAfterExit=yes
+        # Set the kernel argument to disable SELinux
+        ExecStart=/usr/bin/rpm-ostree kargs --append=selinux=0
+        # Create a stamp file to prevent this service from running again
+        ExecStartPost=/usr/bin/touch /var/lib/selinux-disabled.stamp
+
+        [Install]
+        WantedBy=multi-user.target

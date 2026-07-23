@@ -1,0 +1,391 @@
+variant: fcos
+version: 1.6.0
+kernel_arguments:
+  should_exist:
+    - net.ifnames=0
+    - biosdevname=0
+passwd:
+  users:
+    - name: core
+      ssh_authorized_keys: ["ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFlWNFIAoXzlQRhLVB/5RwUIikiHuefpPchd0ePb5tCM", "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIADD4LxwIuay/NAuqHkr+tlXzQLJbj9BgQGeSjo5ju7h"]
+
+storage:
+  files:
+    - path: /etc/hostname
+      mode: 0644
+      overwrite: true
+      contents:
+        inline: brouter
+
+    - path: /etc/sysctl.d/11-max-map-count.conf
+      mode: 0644
+      contents:
+        inline: |
+          vm.max_map_count = 2147483642
+
+    # load br_netfilter and overlay modules for nested kubernetes in lxc containers
+    - path: /etc/modules-load.d/kubernetes.conf
+      mode: 0644
+      overwrite: true
+      contents:
+        inline: |
+          overlay
+          br_netfilter
+
+    # tune this according to https://linuxcontainers.org/incus/docs/main/howto/network_ovn_setup/
+    # or https://andreaskaris.github.io/blog/networking/ovn_standalone_on_fedora/
+    # when using OVN to create an incus cluster
+    - path: /etc/sysconfig/ovn
+      mode: 0644
+      overwrite: true
+      contents:
+        inline: |
+          OVN_NORTHD_OPTS=""
+          OVN_CONTROLLER_OPTS=""
+
+    - path: /etc/subuid
+      append:
+        - inline: |
+            root:1065536:65536
+
+    - path: /etc/subgid
+      append:
+        - inline: |
+            root:1065536:65536
+
+    # NetworkManager: br-lan bridge backed by eth1-eth4 for Incus physical network
+    - path: /etc/NetworkManager/system-connections/br-lan.nmconnection
+      mode: 0600
+      contents:
+        inline: |
+          [connection]
+          id=br-lan
+          type=bridge
+          interface-name=br-lan
+          autoconnect=true
+
+          [bridge]
+          stp=false
+
+          [ipv4]
+          method=disabled
+
+          [ipv6]
+          method=disabled
+
+    - path: /etc/NetworkManager/system-connections/eth1-slave.nmconnection
+      mode: 0600
+      contents:
+        inline: |
+          [connection]
+          id=eth1-slave
+          type=ethernet
+          interface-name=eth1
+          master=br-lan
+          slave-type=bridge
+          autoconnect=true
+
+          [ethernet]
+          wake-on-lan=ignore
+
+    - path: /etc/NetworkManager/system-connections/eth2-slave.nmconnection
+      mode: 0600
+      contents:
+        inline: |
+          [connection]
+          id=eth2-slave
+          type=ethernet
+          interface-name=eth2
+          master=br-lan
+          slave-type=bridge
+          autoconnect=true
+
+          [ethernet]
+          wake-on-lan=ignore
+
+    - path: /etc/NetworkManager/system-connections/eth3-slave.nmconnection
+      mode: 0600
+      contents:
+        inline: |
+          [connection]
+          id=eth3-slave
+          type=ethernet
+          interface-name=eth3
+          master=br-lan
+          slave-type=bridge
+          autoconnect=true
+
+          [ethernet]
+          wake-on-lan=ignore
+
+    - path: /etc/NetworkManager/system-connections/eth4-slave.nmconnection
+      mode: 0600
+      contents:
+        inline: |
+          [connection]
+          id=eth4-slave
+          type=ethernet
+          interface-name=eth4
+          master=br-lan
+          slave-type=bridge
+          autoconnect=true
+
+          [ethernet]
+          wake-on-lan=ignore
+
+    # Mark eth5 as unmanaged by NetworkManager so Incus can pass it directly to a container
+    - path: /etc/NetworkManager/conf.d/incus-unmanaged.conf
+      mode: 0644
+      contents:
+        inline: |
+          [keyfile]
+          unmanaged-devices=interface-name:eth5
+
+    - path: /usr/local/bin/install-packages.sh
+      mode: 0755
+      contents:
+        inline: |
+          #!/bin/bash
+          set -euo pipefail
+
+          echo "Installing packages via rpm-ostree..."
+          rpm-ostree install -y --allow-inactive \
+              incus \
+              incus-client \
+              incus-selinux \
+              incus-tools \
+              ovn \
+              ovn-central \
+              ovn-host \
+              ovn-vtep \
+              cowsql \
+              lxcfs \
+              lxc \
+              vulkan-loader \
+              mesa-vulkan-drivers \
+              mesa-dri-drivers \
+              mesa-va-drivers \
+              libva-utils \
+              vdpauinfo \
+              rsync \
+              zsh \
+              qemu
+
+          echo
+          echo
+          echo "PACKAGE INSTALLATION COMPLETE. Rebooting the system to apply changes..."
+          systemctl daemon-reload
+          systemctl enable --now incus.socket
+          systemctl enable --now incus.service
+          systemctl enable --now ovn-controller.service
+          systemctl enable --now ovn-northd.service
+          sudo ovs-vsctl set open_vswitch . \
+            external_ids:ovn-remote=unix:/run/ovn/ovnsb_db.sock \
+            external_ids:ovn-encap-type=geneve \
+            external_ids:ovn-encap-ip=127.0.0.1
+
+          # Open Incus ports in firewalld
+          firewall-cmd --permanent --add-port=8443/tcp
+          firewall-cmd --permanent --add-port=8444/tcp
+          firewall-cmd --permanent --add-port=4789/udp
+          firewall-cmd --reload
+
+          incus admin init --preseed /etc/incus/pre-seed.yaml
+
+    - path: /usr/local/bin/install-minio.sh
+      mode: 0755
+      contents:
+        inline: |
+          #!/bin/sh
+
+          INSTALL_DIR=/usr/local/bin
+          TMP_DIR=$(mktemp -d)
+          
+          if [ -z "${ARCH}" ]; then
+            ARCH=$(uname -m)
+          fi
+          case ${ARCH} in
+            arm|armv6l|armv7l)
+              ARCH=arm
+              ;;
+            arm64|aarch64|armv8l)
+              ARCH=arm64
+              ;;
+            amd64|x86_64)
+              ARCH=amd64
+              ;;
+            *)
+              fatal "Unsupported architecture ${ARCH}"
+              exit 1
+          esac
+          
+          mkdir -p ${INSTALL_DIR}
+
+          OS=$(uname -s | tr '[:upper:]' '[:lower:]')
+          curl -L https://dl.min.io/server/minio/release/${OS}-${ARCH}/minio \
+            --create-dirs \
+            -o ${INSTALL_DIR}/minio
+          chmod +x ${INSTALL_DIR}/minio
+          echo $(which minio)
+
+    - path: /usr/local/bin/install-minio-client.sh
+      mode: 0755
+      contents:
+        inline: |
+          #!/bin/sh
+
+          INSTALL_DIR=/usr/local/bin
+          TMP_DIR=$(mktemp -d)
+          
+          if [ -z "${ARCH}" ]; then
+            ARCH=$(uname -m)
+          fi
+          case ${ARCH} in
+            arm|armv6l|armv7l)
+              ARCH=arm
+              ;;
+            arm64|aarch64|armv8l)
+              ARCH=arm64
+              ;;
+            amd64|x86_64)
+              ARCH=amd64
+              ;;
+            *)
+              fatal "Unsupported architecture ${ARCH}"
+              exit 1
+          esac
+          
+          mkdir -p ${INSTALL_DIR}
+          
+          OS=$(uname -s | tr '[:upper:]' '[:lower:]')
+          curl -L https://dl.min.io/client/mc/release/${OS}-${ARCH}/mc \
+            --create-dirs \
+            -o ${INSTALL_DIR}/mcli
+          chmod +x ${INSTALL_DIR}/mcli
+          echo $(which mcli)
+
+    # when provisioning the gateway container, set `raw.dnsmasq: "dhcp-option=3,10.0.0.254"`
+    # to set the default gateway for the container to the host's incusbr0 IP, which is used 
+    # as the default gateway for containers on that network
+    - path: /etc/incus/pre-seed.yaml
+      contents:
+        inline: |
+          config:
+            core.https_address: 0.0.0.0:8443
+            core.storage_buckets_address: :8555
+            images.auto_update_interval: 12
+          networks:
+          - config:
+              ipv4.address: 10.0.0.1/8
+              ipv6.address: none
+              ipv4.dhcp.ranges: "10.0.0.2-10.0.0.200"
+              ipv4.ovn.ranges: "10.0.1.0-10.255.255.254"
+              ipv4.nat: false
+            description: ""
+            name: incusbr0
+            type: "bridge"
+            project: default
+          - config:
+              parent: br-lan
+            description: "Physical switch network via br-lan (eth1-eth4)"
+            name: physnet
+            type: physical
+            project: default
+          storage_pools:
+          - config:
+              size: 60GiB
+            description: ""
+            name: default
+            driver: btrfs
+          profiles:
+          - config: {}
+            description: "Default profile – internal NAT bridge"
+            devices:
+              eth0:
+                name: eth0
+                network: incusbr0
+                type: nic
+              root:
+                path: /
+                pool: default
+                type: disk
+            name: default
+          - config: {}
+            description: "Physical network profile – connects to br-lan (eth1-eth4)"
+            devices:
+              eth0:
+                name: eth0
+                network: physnet
+                type: nic
+              root:
+                path: /
+                pool: default
+                type: disk
+            name: physnet
+          projects: []
+          cluster: null
+
+systemd:
+  units:
+    - name: install-packages.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Install packages on first boot
+        Wants=network-online.target
+        After=network-online.target
+        ConditionPathExists=!/var/lib/%N.stamp
+
+        [Service]
+        Type=oneshot
+        RemainAfterExit=yes
+        ExecStartPre=/bin/touch /var/lib/%N.stamp
+        ExecStart=/usr/local/bin/install-packages.sh
+
+        [Install]
+        WantedBy=multi-user.target
+
+    - name: incus.socket
+      enabled: true
+
+    - name: disable-selinux.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Disable SELinux on first boot
+        # This service should run on first boot to set the kernel arguments.
+        # The change will be effective on the next reboot, which is triggered
+        # by the GPU driver installation service.
+        ConditionPathExists=!/var/lib/selinux-disabled.stamp
+
+        [Service]
+        Type=oneshot
+        RemainAfterExit=yes
+        # Set the kernel argument to disable SELinux
+        ExecStart=/usr/bin/rpm-ostree kargs --append=selinux=0
+        # Create a stamp file to prevent this service from running again
+        ExecStartPost=/usr/bin/touch /var/lib/selinux-disabled.stamp
+
+        [Install]
+        WantedBy=multi-user.target
+
+    - name: install-minio.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Layer minio with rpm-ostree
+        Wants=network-online.target
+        After=network-online.target
+        After=install-packages.service
+        Before=zincati.service
+        # This service only runs once
+        ConditionPathExists=!/var/lib/%N.stamp
+
+        [Service]
+        Type=oneshot
+        ExecStart=/usr/local/bin/install-minio-client.sh
+        ExecStart=/usr/local/bin/install-minio.sh
+        ExecStart=/bin/touch /var/lib/%N.stamp
+
+        [Install]
+        WantedBy=multi-user.target
