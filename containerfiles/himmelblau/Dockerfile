@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 # Stage 1: Build the Rust application
-FROM rust:1.97-bookworm@sha256:8fa55b2f3ddf97471ab6a767bfa3f37e6bad0986ba823e75fea57e2a2a5c3073 as builder
+FROM rust:1.97-bookworm@sha256:77fac8b98f9f46062bb680b6d25d5bcaabfc400143952ebc572e924bcbedc3fa as builder
 
 WORKDIR /app
 
@@ -25,7 +25,7 @@ RUN git clone https://github.com/himmelblau-idm/himmelblau.git .
 RUN cargo build --release
 
 # Stage 2: Create the final image
-FROM ubuntu:26.10@sha256:a7e5c4bad66bf263642da9a16207ed0fb80668a1f17d2e44c8c5e2cc0ce59346
+FROM ubuntu:26.10@sha256:694b773ee7e0d0b55ca74c095ac3309055589e7cbfaf3100f0b226c38c6936fa
 
 WORKDIR /app
 

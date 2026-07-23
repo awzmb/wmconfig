@@ -3,7 +3,7 @@
 	email = bundschuh.dennis@gmail.com
 
 [core]
-	editor = vim
+	editor = nvim
 
 [merge]
 	tool = vimdiff
@@ -14,7 +14,12 @@
     # git log history with oneline
     gro = log --all --graph --decorate --oneline
 
+[pull]
+  rebase = true
+
+[push]
+  autoSetupRemote = true
+
 # allow local customizations in the .gitconfig_local file
 #[include]
 #	path = ~/.gitconfig_local
-

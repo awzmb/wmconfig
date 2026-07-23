@@ -167,7 +167,6 @@ sshuttle
 fzf
 tmux
 vim-enhanced
-foot
 vifm
 gh
 git-delta
@@ -239,14 +238,11 @@ intel-gpu-tools
 intel-graphics-compiler
 intel-gmmlib
 libva-utils
-radeontop
-nvtop
 mesa-libGL
 mesa-libEGL
 
 # General desktop packages (DE-agnostic: terminals, fonts, applets)
 miller
-alacritty
 brightnessctl
 blueman
 wl-clipboard # generic Wayland clipboard CLI
@@ -255,6 +251,7 @@ pavucontrol
 pass-otp
 fontconfig
 fontawesome-fonts-all
+alacritty
 kitty
 google-noto-emoji-fonts
 
@@ -275,7 +272,6 @@ akmod-v4l2loopback # RPM Fusion
 libcamera
 libcamera-tools
 pipewire-plugin-libcamera
-obs-studio # RPM Fusion
 
 # Networking
 wireguard-tools
