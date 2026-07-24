@@ -162,7 +162,10 @@ xdg-desktop-portal # base portal frontend (backends are per-flavor)
 microcode_ctl # covers intel + amd ucode on Fedora
 
 # Shell and tools
-keyd
+# ponytail: capslock->esc is done natively via a udev hwdb remap (see
+# overlay/usr/lib/udev/hwdb.d/90-keyboard-remap.hwdb), not keyd — keyd isn't in
+# the Fedora repos (only a third-party COPR/Terra), so --skip-unavailable was
+# silently dropping it and leaving a dead keyd.service. hwdb needs no package.
 sshuttle
 fzf
 tmux

@@ -1,0 +1,19 @@
+# Global keyboard remaps, applied at the kernel evdev level by systemd-udev's
+# hwdb builtin. Because the remap happens in the kernel input layer, every
+# consumer sees it: the text console (VTs), X11, and all Wayland compositors
+# (GNOME/Sway/Hyprland/KDE) alike — same coverage keyd gave, with no package.
+#
+# capslock -> esc. AT/laptop keyboards report capslock as scancode 0x3a; USB/BT
+# HID keyboards report it as the HID usage 0x70039. Both are remapped so the
+# rule holds for the built-in keyboard and any external one, hotplug included.
+#
+# ponytail: hwdb over keyd/kmonad/input-remapper. keyd isn't in Fedora (COPR
+# only); kmonad binds to one literal device-file (no all-keyboards/hotplug) and
+# input-remapper is GUI/per-user preset driven — both wrong for a headless
+# image. Add a per-model match block below if one keyboard needs different keys.
+
+evdev:atkbd:dmi:*
+ KEYBOARD_KEY_3a=esc
+
+evdev:input:*
+ KEYBOARD_KEY_70039=esc

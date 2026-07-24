@@ -103,7 +103,6 @@ enable_user_unit() {
 
 printf '\e[1;32m-->\e[0m\e[1m Enabling system services (static /usr enablement)\e[0m\n'
 enable_unit NetworkManager.service
-enable_unit keyd.service
 enable_unit power-profiles-daemon.service
 enable_unit switcheroo-control.service
 enable_unit bluetooth.service
@@ -111,6 +110,17 @@ enable_unit podman.socket sockets.target
 enable_unit fedora-flatpak.service
 enable_unit opensnitchd.service
 enable_unit tailscaled.service
+
+# --- Keyboard remap hwdb -------------------------------------------------
+# overlay ships /usr/lib/udev/hwdb.d/90-keyboard-remap.hwdb (capslock->esc).
+# Compile it into the binary hwdb.bin now so the remap is baked into the
+# immutable image; udev applies it on every device add at boot (no service).
+if command -v systemd-hwdb >/dev/null 2>&1; then
+	printf '\e[1;32m-->\e[0m\e[1m Compiling udev hwdb (keyboard remap)\e[0m\n'
+	systemd-hwdb update 2>/dev/null || echo "!! systemd-hwdb update failed; keyboard remap may not apply"
+else
+	echo "!! systemd-hwdb not found; keyboard remap (hwdb) will not be compiled"
+fi
 
 # --- Virtualization (KVM/libvirt) ----------------------------------------
 # Modern libvirt uses modular, socket-activated daemons. Enable the sockets so
@@ -228,6 +238,16 @@ if command -v curl >/dev/null 2>&1 && curl -fsSL "$terminess_url" -o /tmp/termin
 		--wildcards --no-anchored '*.ttf' 2>/dev/null \
 		|| tar -xJf /tmp/terminess.tar.xz -C "$terminess_dir" || true
 	rm -f /tmp/terminess.tar.xz
+	# Flatpaks only reliably see host fonts via /usr/local/share/fonts (bound to
+	# /run/host/local-fonts); the /usr/share/fonts -> /run/host/fonts mapping is
+	# flaky on ostree. Mirror the faces there so flatpak apps get Terminess too.
+	# ponytail: cp, not symlink — a symlink into /usr/share/fonts would dangle
+	# inside the sandbox where that path is the runtime's own tree. If /usr/local
+	# is the ostree /var/usrlocal symlink, this rides bootc's first-install /var
+	# seed; re-run configure (fedora-update won't re-seed /var) if it goes missing.
+	flatpak_fonts=/usr/local/share/fonts/terminess-nerd-font
+	mkdir -p "$flatpak_fonts"
+	cp -a "$terminess_dir"/. "$flatpak_fonts"/ 2>/dev/null || true
 else
 	echo "!! could not download Terminess Nerd Font from $terminess_url, continuing"
 fi
