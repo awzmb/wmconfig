@@ -32,13 +32,19 @@ else
   WORKSPACE_DIR=$(realpath -- "$PWD")
 fi
 
+# SELinux (Fedora): the Wayland socket is mounted unlabeled and the container
+# runs label-unconfined (--security-opt label=disable) so wl-copy can reach the
+# host compositor. Relabeling the compositor's live socket with :Z does NOT
+# grant a confined container access — this worked unlabeled on Arch (no
+# SELinux) but broke on Fedora Rawhide.
 podman run --rm -it \
   --group-add keep-groups \
   --userns=keep-id \
   --env WAYLAND_DISPLAY \
   --env XDG_RUNTIME_DIR \
   --env XDG_SESSION_TYPE=wayland \
-  --volume "${XDG_RUNTIME_DIR}/${WAYLAND_DISPLAY}:${XDG_RUNTIME_DIR}/${WAYLAND_DISPLAY}:Z" \
+  --security-opt label=disable \
+  --volume "${XDG_RUNTIME_DIR}/${WAYLAND_DISPLAY}:${XDG_RUNTIME_DIR}/${WAYLAND_DISPLAY}" \
   --user "${USER_ID}:${GROUP_ID}" \
   --volume "${WORKSPACE_DIR}:/workspace:Z" \
   --workdir /workspace \
