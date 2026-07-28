@@ -42,8 +42,6 @@ mesa-va-drivers
 mesa-vulkan-drivers
 xorg-x11-server-Xwayland # X11 apps under Wayland; a Recommends, so weak-deps-off drops it — every flavor's compositor (GNOME/Sway/Hyprland/Plasma) needs it
 neovim
-NetworkManager
-NetworkManager-wifi
 openssh-clients
 orca
 plymouth
@@ -249,7 +247,6 @@ miller
 brightnessctl
 blueman
 wl-clipboard # generic Wayland clipboard CLI
-NetworkManager-applet
 pavucontrol
 pass-otp
 fontconfig
@@ -281,6 +278,8 @@ wireguard-tools
 nmap-ncat
 termshark
 opensnitch
+NetworkManager
+NetworkManager-wifi
 NetworkManager-vpnc
 NetworkManager-openconnect
 NetworkManager-openvpn
@@ -289,6 +288,9 @@ NetworkManager-pptp
 NetworkManager-fortisslvpn
 NetworkManager-sstp
 NetworkManager-iodine
+NetworkManager-wwan
+network-manager-applet
+nm-connection-editor
 wireguard-tools # WireGuard is native in NM core; no NM plugin exists, just the wg/wg-quick CLI
 xmlstarlet # i hate cisco with a passion
 nftables
