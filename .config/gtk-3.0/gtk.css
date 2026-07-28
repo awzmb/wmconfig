@@ -1,0 +1,7 @@
+/* flat, square windows to match the tiling look */
+window, .background,
+decoration, headerbar, .titlebar,
+.popup, .menu, popover, tooltip {
+  border-radius: 0;
+  box-shadow: none;
+}

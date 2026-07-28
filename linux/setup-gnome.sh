@@ -31,6 +31,20 @@ set -euo pipefail
 # Disable active window drop shadow
 #gsettings set org.gnome.desktop.wm.preferences has-shadow false
 
+# Kill client-side shadows and rounded corners (no gsettings key exists — GTK CSS override)
+for d in gtk-3.0 gtk-4.0; do
+  mkdir -p "$HOME/.config/$d"
+  cat > "$HOME/.config/$d/gtk.css" <<'CSS'
+/* flat, square windows to match the tiling look */
+window, .background,
+decoration, headerbar, .titlebar,
+.popup, .menu, popover, tooltip {
+  border-radius: 0;
+  box-shadow: none;
+}
+CSS
+done
+
 # Set single-color background
 gsettings set org.gnome.desktop.background picture-options none
 gsettings set org.gnome.desktop.background primary-color '#242933'
@@ -76,6 +90,12 @@ gsettings set org.gnome.desktop.peripherals.touchpad natural-scroll true
 # Mouse — sway: accel_profile flat, pointer_accel 0.0 (GNOME speed 0.0 = neutral)
 gsettings set org.gnome.desktop.peripherals.mouse accel-profile 'flat'
 gsettings set org.gnome.desktop.peripherals.mouse speed 0.0
+# Slow the scroll wheel (sway: scroll_factor 0.4). Key exists on GNOME 47+ only
+gsettings writable org.gnome.desktop.peripherals.mouse scroll-factor 2>/dev/null \
+  && gsettings set org.gnome.desktop.peripherals.mouse scroll-factor 0.4
+
+# Focus follows mouse (sway: focus_follows_mouse yes). 'sloppy' keeps focus over the desktop
+gsettings set org.gnome.desktop.wm.preferences focus-mode 'sloppy'
 
 # Remove default switch to application shortcuts
 for number in {1..9}; do gsettings set org.gnome.shell.keybindings switch-to-application-"${number}" '[]'; done
