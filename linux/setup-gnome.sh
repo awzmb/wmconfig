@@ -54,8 +54,8 @@ gsettings set org.gnome.settings-daemon.plugins.color night-light-enabled true
 gsettings set org.gnome.desktop.interface enable-animations false
 
 # Set GNOME monospace font to Hack Nerd Font Mono 11
-gsettings set org.gnome.desktop.interface monospace-font-name "Terminus 12"
-gsettings set org.gnome.desktop.interface document-font-name "Terminus 12"
+gsettings set org.gnome.desktop.interface monospace-font-name "Terminess Nerd Font Regular 12"
+gsettings set org.gnome.desktop.interface document-font-name "Terminess Nerd Font Regular 12"
 
 # UI tweaks
 gsettings set org.gnome.desktop.interface show-battery-percentage true
@@ -67,12 +67,65 @@ gsettings set org.gnome.desktop.input-sources sources "[('xkb', 'us'), ('xkb', '
 # Deactivate Caps Lock key
 gsettings set org.gnome.desktop.input-sources xkb-options "['caps:escape']"
 
+# Touchpad — mirror sway: accel_profile flat, pointer_accel 0.5, tap disabled, natural_scroll
+gsettings set org.gnome.desktop.peripherals.touchpad accel-profile 'flat'
+gsettings set org.gnome.desktop.peripherals.touchpad speed 0.5
+gsettings set org.gnome.desktop.peripherals.touchpad tap-to-click false
+gsettings set org.gnome.desktop.peripherals.touchpad natural-scroll true
+
+# Mouse — sway: accel_profile flat, pointer_accel 0.0 (GNOME speed 0.0 = neutral)
+gsettings set org.gnome.desktop.peripherals.mouse accel-profile 'flat'
+gsettings set org.gnome.desktop.peripherals.mouse speed 0.0
+
 # Remove default switch to application shortcuts
 for number in {1..9}; do gsettings set org.gnome.shell.keybindings switch-to-application-"${number}" '[]'; done
 
 # Set shortcuts for workspace switching and moving windows to workspaces
 for number in {1..9}; do gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-"${number}" "['<Super>$number']"; done
 for number in {1..9}; do gsettings set org.gnome.desktop.wm.keybindings move-to-workspace-"${number}" "['<Super><Shift>$number']"; done
+
+# Close focused window (sway: $mod+Shift+Q kill)
+gsettings set org.gnome.desktop.wm.keybindings close "['<Shift><Super>q']"
+
+# Free GNOME's screensaver lock so Forge's <Super>l (focus-right) works
+gsettings set org.gnome.settings-daemon.plugins.media-keys screensaver "@as []"
+
+# Free GNOME shortcuts that collide with the i3/sway-style Forge keys
+gsettings set org.gnome.desktop.wm.keybindings minimize '[]'                         # <Super>h
+gsettings set org.gnome.desktop.wm.keybindings switch-input-source '[]'              # <Super>space
+gsettings set org.gnome.desktop.wm.keybindings switch-input-source-backward '[]'     # <Shift><Super>space
+
+# i3/sway-style window management for the Forge extension.
+# Forge's schema is relocatable, so gsettings can't reach it by name — use dconf.
+# focus / move (h j k l) already match sway defaults; the rest mirror config.sway.
+dconf write /org/gnome/shell/extensions/forge/keybindings/window-focus-left    "['<Super>h']"
+dconf write /org/gnome/shell/extensions/forge/keybindings/window-focus-down    "['<Super>j']"
+dconf write /org/gnome/shell/extensions/forge/keybindings/window-focus-up      "['<Super>k']"
+dconf write /org/gnome/shell/extensions/forge/keybindings/window-focus-right   "['<Super>l']"
+dconf write /org/gnome/shell/extensions/forge/keybindings/window-move-left     "['<Shift><Super>h']"
+dconf write /org/gnome/shell/extensions/forge/keybindings/window-move-down     "['<Shift><Super>j']"
+dconf write /org/gnome/shell/extensions/forge/keybindings/window-move-up       "['<Shift><Super>k']"
+dconf write /org/gnome/shell/extensions/forge/keybindings/window-move-right    "['<Shift><Super>l']"
+dconf write /org/gnome/shell/extensions/forge/keybindings/con-split-horizontal "['<Shift><Super>b']"   # sway: split h
+dconf write /org/gnome/shell/extensions/forge/keybindings/con-split-vertical   "['<Shift><Super>v']"   # sway: split v
+dconf write /org/gnome/shell/extensions/forge/keybindings/window-toggle-float  "['<Shift><Super>space']" # sway: floating toggle
+dconf write /org/gnome/shell/extensions/forge/keybindings/window-swap-last-active "['<Super>Return']"
+
+# disable window wiggling
+dconf write /org/gnome/shell/extensions/forge/keybindings/prefs-tiling-toggle "@as []"
+dconf write /org/gnome/shell/extensions/forge/keybindings/focus-border-toggle "@as []"
+
+# Resize on a Ctrl+Super h/j/k/l row (overrides Forge's swap defaults on this combo)
+dconf write /org/gnome/shell/extensions/forge/keybindings/window-resize-right-decrease  "['<Control><Super>h']"   # shrink width
+dconf write /org/gnome/shell/extensions/forge/keybindings/window-resize-bottom-increase "['<Control><Super>j']"   # grow height
+dconf write /org/gnome/shell/extensions/forge/keybindings/window-resize-bottom-decrease "['<Control><Super>k']"   # shrink height
+dconf write /org/gnome/shell/extensions/forge/keybindings/window-resize-right-increase  "['<Control><Super>l']"   # grow width
+
+# Clear Forge's swap defaults that used to own the Ctrl+Super h/j/k/l row
+dconf write /org/gnome/shell/extensions/forge/keybindings/window-swap-left  "@as []"
+dconf write /org/gnome/shell/extensions/forge/keybindings/window-swap-down  "@as []"
+dconf write /org/gnome/shell/extensions/forge/keybindings/window-swap-up    "@as []"
+dconf write /org/gnome/shell/extensions/forge/keybindings/window-swap-right "@as []"
 
 # Make Alacritty the default terminal
 gsettings set org.gnome.desktop.default-applications.terminal exec '/usr/bin/alacritty'
