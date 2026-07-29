@@ -3,10 +3,10 @@
 podman run --rm -it \
   --user "$(id -u):$(id -g)" \
   --userns=keep-id \
-  --volume "$HOME/.config/gcloud:/home/$(whoami)/.config/gcloud:Z" \
-  --volume "$HOME/.kube:/home/$(whoami)/.kube:Z" \
-  --volume "$HOME/.config/helm:/home/$(whoami)/.config/helm:Z" \
-  --volume "$HOME/.cache/helm:/home/$(whoami)/.cache/helm:Z" \
+  --volume "$HOME/.config/gcloud:/home/$(whoami)/.config/gcloud:z" \
+  --volume "$HOME/.kube:/home/$(whoami)/.kube:z" \
+  --volume "$HOME/.config/helm:/home/$(whoami)/.config/helm:z" \
+  --volume "$HOME/.cache/helm:/home/$(whoami)/.cache/helm:z" \
   --volume "$(pwd):/workspace" \
   --volume "${HOME}/.docker/config.json:/home/$(whoami)/.docker/config.json:ro" \
   --workdir "/workspace" \

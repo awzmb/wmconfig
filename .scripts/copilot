@@ -4,8 +4,8 @@
 podman run --rm -it \
   --user "$(id -u):$(id -g)" \
   --userns=keep-id \
-  --volume "$HOME/.config/copilot:/home/$(whoami)/.copilot:Z" \
-  --volume "$(pwd):/home/$(whoami)/workspace:Z" \
+  --volume "$HOME/.config/copilot:/home/$(whoami)/.copilot:z" \
+  --volume "$(pwd):/home/$(whoami)/workspace:z" \
   --workdir "/home/$(whoami)/workspace" \
   --env=TERM=$(echo ${TERM}) \
   localhost/copilot:latest "$@"

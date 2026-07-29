@@ -3,8 +3,8 @@
 podman run --rm -i \
   --user "$(id -u):$(id -g)" \
   --userns=keep-id \
-  --volume "$HOME/.config/gcloud:/home/$(whoami)/.config/gcloud:Z" \
-  --volume "$HOME/.kube:/home/$(whoami)/.kube:Z" \
+  --volume "$HOME/.config/gcloud:/home/$(whoami)/.config/gcloud:z" \
+  --volume "$HOME/.kube:/home/$(whoami)/.kube:z" \
   --volume "$(pwd):/workspace" \
   --workdir "/workspace" \
   --env=KUBECONFIG=/home/$(whoami)/.kube/config \

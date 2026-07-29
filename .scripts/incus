@@ -2,7 +2,7 @@
 
 podman run --rm -it \
   --volume "$(pwd):/workspace" \
-  --volume "${HOME}/.config/incus:/root/.config/incus:Z" \
-  --volume "${HOME}/.mc:/root/.mc:Z" \
+  --volume "${HOME}/.config/incus:/root/.config/incus:z" \
+  --volume "${HOME}/.mc:/root/.mc:z" \
   --workdir "/workspace" \
   localhost/incus-client:latest "$@"

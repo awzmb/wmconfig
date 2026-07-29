@@ -14,7 +14,7 @@ if [ -n "${_ARGCOMPLETE:-}" ]; then
   exec podman run --rm -i \
     --user "$(id -u):$(id -g)" \
     --userns=keep-id \
-    --volume "$HOME/.config/gcloud:/home/$(whoami)/.config/gcloud:Z" \
+    --volume "$HOME/.config/gcloud:/home/$(whoami)/.config/gcloud:z" \
     --env _ARGCOMPLETE --env _ARGCOMPLETE_SHELL --env _ARGCOMPLETE_IFS \
     --env _ARGCOMPLETE_COMP_WORDBREAKS --env COMP_LINE --env COMP_POINT \
     --env COMP_TYPE \
@@ -25,10 +25,10 @@ fi
 podman run --rm -it \
   --user "$(id -u):$(id -g)" \
   --userns=keep-id \
-  --volume "$HOME/.config/gcloud:/home/$(whoami)/.config/gcloud:Z" \
-  --volume "$HOME/.kube:/home/$(whoami)/.kube:Z" \
-  --volume "$HOME/.ssh:/home/$(whoami)/.ssh:Z" \
+  --volume "$HOME/.config/gcloud:/home/$(whoami)/.config/gcloud:z" \
+  --volume "$HOME/.kube:/home/$(whoami)/.kube:z" \
+  --volume "$HOME/.ssh:/home/$(whoami)/.ssh:z" \
   --volume "$(pwd):/workspace" \
-  --volume "${HOME}/.docker/config.json:/home/$(whoami)/.docker/config.json:Z" \
+  --volume "${HOME}/.docker/config.json:/home/$(whoami)/.docker/config.json:z" \
   --workdir "/workspace" \
   localhost/gcloud:latest "$@"

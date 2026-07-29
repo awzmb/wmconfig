@@ -4,8 +4,8 @@ podman run --rm -it --interactive \
   --userns=keep-id \
   --env GOOGLE_API_KEY=$(pass private/google/vertex-api-key) \
   --env GOOGLE_GENAI_USE_VERTEXAI=true \
-  --volume ~/.config/gemini:/home/$(whoami)/.gemini:Z \
-  --volume "$(pwd):/home/$(whoami)/workspace:Z" \
+  --volume ~/.config/gemini:/home/$(whoami)/.gemini:z \
+  --volume "$(pwd):/home/$(whoami)/workspace:z" \
   --workdir "/home/$(whoami)/workspace" \
   --env=TERM=$(echo ${TERM}) \
   localhost/gemini-cli:latest

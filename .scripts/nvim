@@ -46,6 +46,6 @@ podman run --rm -it \
   --security-opt label=disable \
   --volume "${XDG_RUNTIME_DIR}/${WAYLAND_DISPLAY}:${XDG_RUNTIME_DIR}/${WAYLAND_DISPLAY}" \
   --user "${USER_ID}:${GROUP_ID}" \
-  --volume "${WORKSPACE_DIR}:/workspace:Z" \
+  --volume "${WORKSPACE_DIR}:/workspace:z" \
   --workdir /workspace \
   "${IMAGE_NAME}" nvim "$@"
