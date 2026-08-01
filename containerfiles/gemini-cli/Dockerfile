@@ -1,4 +1,4 @@
-FROM docker.io/node:26.5.0-alpine3.23@sha256:0473b6671ff22c8eeb570c0e1e51408595d3171e73f8002c269b763f0a943149 AS build
+FROM docker.io/node:26.5.1-alpine3.23@sha256:2a633e101381371ba148c7c212bf447c00cd267d814b708a9fe52c4984204729 AS build
 
 WORKDIR /app
 
@@ -7,7 +7,7 @@ RUN apk add --no-cache pnpm \
   && pnpm init \
   && pnpm add @google/gemini-cli@0.50.0
 
-FROM cgr.dev/chainguard/wolfi-base:latest@sha256:02dab76bd852a70556b5b2002195c8a5fdab77d323c433bf6642aab080489795
+FROM cgr.dev/chainguard/wolfi-base:latest@sha256:003627df3c1e1bba0c4116afcddb314aca9594ee2328c7e876a8081a6c988b2e
 
 RUN apk add --no-cache \
   nodejs \
