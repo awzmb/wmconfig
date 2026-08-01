@@ -88,6 +88,9 @@
     ~/.config/sway:
       if: "[ `uname` = Linux ]"
       path: .config/sway
+    ~/.config/systemd/user/sway-session.target:
+      if: "[ `uname` = Linux ]"
+      path: .config/systemd/user/sway-session.target
     ~/.config/polybar:
       if: "[ `uname` = Linux ]"
       path: .config/polybar

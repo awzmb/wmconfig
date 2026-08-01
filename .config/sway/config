@@ -6,8 +6,10 @@
 # adapted from xorg's 50-systemd-user.sh, which achieves a similar goal.
 exec systemctl --user import-environment DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP
 # import environment variables into dbus (screen sharing)
-exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP=sway
-# exec dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP=sway XDG_SESSION_DESKTOP=sway
+exec dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP
+# bring up graphical-session.target so xdg-desktop-portal (Requisite= on it) can
+# D-Bus-activate; without this, screencast portals fail and slurp never runs.
+exec systemctl --user start sway-session.target
 # bluetooth manager
 exec --no-startup-id blueman-applet
 # clipboard

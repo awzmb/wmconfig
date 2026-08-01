@@ -1,0 +1,9 @@
+[Unit]
+Description=sway compositor session
+Documentation=man:systemd.special(7)
+# Activating this pulls graphical-session.target up, which xdg-desktop-portal
+# and its backends declare Requisite= on. Without it screencast portals fail to
+# D-Bus-activate ("startup job failed") and slurp is never run.
+BindsTo=graphical-session.target
+Wants=graphical-session-pre.target
+After=graphical-session-pre.target
