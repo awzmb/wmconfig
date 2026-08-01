@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# sway-flashfocus: flash windows on focus, a minimal flashfocus clone.
+# Subscribes to sway window events and briefly dims then fades each newly
+# focused window back to its default opacity.
+#
+# Tune via env vars: FLASH_OPACITY, DEFAULT_OPACITY, FLASH_TIME (ms), STEPS.
+set -euo pipefail
+
+FLASH_OPACITY="${FLASH_OPACITY:-0.8}"
+DEFAULT_OPACITY="${DEFAULT_OPACITY:-1.0}"
+FLASH_TIME="${FLASH_TIME:-300}" # total fade time in ms
+STEPS="${STEPS:-10}"
+
+opacity_at() { # step -> interpolated opacity
+	awk "BEGIN{printf \"%.3f\", $FLASH_OPACITY+($DEFAULT_OPACITY-$FLASH_OPACITY)*$1/$STEPS}"
+}
+
+flash() {
+	local id=$1 delay i
+	delay=$(awk "BEGIN{print $FLASH_TIME/1000/$STEPS}")
+	swaymsg "[con_id=$id]" opacity "$FLASH_OPACITY" >/dev/null 2>&1 || return
+	for ((i = 1; i <= STEPS; i++)); do
+		sleep "$delay"
+		swaymsg "[con_id=$id]" opacity "$(opacity_at "$i")" >/dev/null 2>&1 || return
+	done
+}
+
+if [[ "${1:-}" == "selfcheck" ]]; then
+	last=$(opacity_at "$STEPS")
+	first=$(opacity_at 1)
+	[[ "$last" == "$(printf '%.3f' "$DEFAULT_OPACITY")" ]] || { echo "FAIL: last step != default"; exit 1; }
+	awk "BEGIN{exit !($first > $FLASH_OPACITY)}" || { echo "FAIL: fade not increasing"; exit 1; }
+	echo ok; exit 0
+fi
+
+# Subscribe to window focus changes
+swaymsg -t subscribe -m '["window"]' |
+	jq --unbuffered -r 'select(.change=="focus") | .container.id' |
+	while read -r id; do
+		flash "$id" &
+	done
