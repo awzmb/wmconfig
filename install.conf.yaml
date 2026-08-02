@@ -91,6 +91,9 @@
     ~/.config/systemd/user/sway-session.target:
       if: "[ `uname` = Linux ]"
       path: .config/systemd/user/sway-session.target
+    ~/.config/obs-studio/basic/scenes/Sway_Window_Share.json:
+      if: "[ `uname` = Linux ]"
+      path: .config/obs-studio/basic/scenes/Sway_Window_Share.json
     ~/.config/polybar:
       if: "[ `uname` = Linux ]"
       path: .config/polybar

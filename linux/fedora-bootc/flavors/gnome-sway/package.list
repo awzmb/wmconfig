@@ -66,3 +66,11 @@ slurp
 blueman
 gammastep
 gammastep-indicator
+
+# Screen sharing: wlroots portal can't share single windows, only whole outputs.
+# OBS + v4l2loopback virtual camera is the sway workaround — crop an output to a
+# window in OBS, "Start Virtual Camera", then pick it as a webcam in the meeting
+# app. OBS captures via the PipeWire screencast portal. akmod-v4l2loopback (base)
+# builds the kernel module; it's loaded + configured via the overlay modprobe.d/
+# modules-load.d drop-ins.
+obs-studio
