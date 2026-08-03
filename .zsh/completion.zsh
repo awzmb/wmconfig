@@ -84,29 +84,26 @@ update-zsh-completions() {
     tfsec     'completion zsh'
   )
   local dir=~/.zsh/completions t out cmd
-  # timeout must run INSIDE the pty (guarding the tool), not around `script`:
-  # wrapping `script` itself in timeout breaks its pty and yields no output.
+  # timeout must run INSIDE the pty (guarding the tool), not around the pty:
+  # wrapping the spawner itself in timeout breaks its pty and yields no output.
   local tguard=''; (( $+commands[timeout] )) && tguard='timeout 30 '
   # The wrappers run `podman run -it`; the -t needs a real TTY, which a
-  # $(...) capture (a pipe) is not, so podman bails with no output. `script`
-  # gives it a pseudo-TTY. util-linux and BSD `script` take different args.
-  local pty=''
-  if (( $+commands[script] )); then
-    if script --version 2>&1 | grep -qi util-linux; then pty=uxlinux; else pty=bsd; fi
+  # $(...) capture (a pipe) is not, so podman bails with no output.
+  # python3's pty.spawn gives a pseudo-TTY on any OS, so no util-linux/BSD
+  # `script` arg-forking. ponytail: python3 over script; ships on Fedora.
+  local -a pty=()
+  if (( $+commands[python3] )); then
+    pty=(python3 -c 'import pty,sys; sys.exit(pty.spawn(sys.argv[1:]))')
   else
-    print -r -- "warning: 'script' not found; -t tools may fail. Install util-linux."
+    print -r -- "warning: 'python3' not found; -t tools may fail."
   fi
   mkdir -p $dir
   for t in ${(k)tools}; do
     (( $+commands[$t] )) || { print -r -- "skip  $t (no command)"; continue }
     cmd="$tguard$t ${tools[$t]}"
-    case $pty in
-      uxlinux) out=$(script -qec "$cmd" /dev/null 2>/dev/null) ;;
-      bsd)     out=$(script -q /dev/null ${=cmd} 2>/dev/null) ;;
-      *)       out=$(${=cmd} 2>/dev/null) ;;
-    esac
+    if (( $#pty )); then out=$($pty ${=cmd} 2>/dev/null); else out=$(${=cmd} 2>/dev/null); fi
     out=${out//$'\r'/}
-    # keep from the first #compdef line so any TTY/script preamble is dropped;
+    # keep from the first #compdef line so any TTY/pty preamble is dropped;
     # never cache a container error or completion-directive noise.
     if [[ $out == *'#compdef'* ]]; then
       print -r -- "#compdef${out#*'#compdef'}" > $dir/_$t && print -r -- "ok    $t"
