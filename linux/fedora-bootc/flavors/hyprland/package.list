@@ -1,8 +1,9 @@
-# gnome-sway flavor packages — layered on top of the shared base image.
+# hyprland flavor packages — layered on top of the shared base image.
 #
-# The full daily-driver desktop: GNOME (GDM greeter + GNOME session) with Sway as
-# the default session and Hyprland also available. DE-agnostic bits (terminals,
-# fonts, media, dev, gaming, virt, CLI, tailscale, ...) come from the base image.
+# GNOME (GDM greeter) + a from-git Hyprland session. The compositor, hyprlock,
+# hypridle, xdg-desktop-portal-hyprland and the hy3 plugin are built from source
+# in the hypr-builder stage (scripts/build-hyprland.sh); this list is the Fedora
+# packages layered around them. DE-agnostic bits come from the base image.
 #
 # Lines beginning with '#' and blank lines are ignored. Installed with
 # `dnf install --skip-unavailable --skip-broken`.
@@ -60,14 +61,46 @@ grim
 slurp
 blueman
 
-# Hyprland (Fedora ships hyprland in repos on recent releases / COPR otherwise)
-hyprland
-hyprlock
-hypridle
-hyprpicker
-hyprcursor
-hyprlang
-xdg-desktop-portal-hyprland
-# hyprpolkitagent # COPR if unavailable
-# hyprsunset # COPR if unavailable
-# hy3 # COPR/build (hyprland plugin)
+# Hyprland session tools referenced by .config/hypr/* (the compositor itself,
+# hyprlock, hypridle, xdg-desktop-portal-hyprland and hy3 are built from git in
+# the hypr-builder stage — see scripts/build-hyprland.sh — so they are NOT listed
+# here). These are the extra Fedora tools the hypr configs invoke.
+Thunar        # $fileManager in hyprland.conf
+tumbler       # Thunar thumbnails
+playerctl     # XF86Audio* media keys
+polkit-gnome  # polkit-gnome-authentication-agent-1 (exec-once)
+swaylock      # hypridle on-timeout locker
+libnotify     # notify-send, used by grimshot
+
+# Hyprland runtime shared libraries (the git-built binaries link these; the
+# -devel headers live only in the throwaway builder stage). Most are already
+# pulled by the desktop packages above, listed explicitly so a slimmer future
+# package set can't silently drop them.
+mesa-libEGL
+mesa-libGL
+mesa-libgbm
+libdrm
+libinput
+libseat
+libxkbcommon
+pixman
+cairo
+pango
+libdisplay-info
+libliftoff
+pugixml
+librsvg2
+libzip
+libjpeg-turbo
+libwebp
+libspng
+file-libs
+sdbus-cpp
+hwdata
+pam
+pipewire
+xorg-x11-server-Xwayland
+
+# Qt6 runtime for xdph hyprland-share-picker
+qt6-qtbase-gui
+qt6-qtwayland

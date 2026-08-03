@@ -1,15 +1,32 @@
-# Containerfile — the gnome-sway flavor (GNOME + Sway + Hyprland).
+# Containerfile — the hyprland flavor (GNOME greeter + a from-git Hyprland session).
 #
 # Layers the desktop on top of the shared base image (localhost/fedora-base).
 # ./fedora-build builds the base first and passes it as --build-arg BASE.
 # The base already carries the Fedora/RPM Fusion/Tailscale repos, so this layer
 # only adds the desktop packages, overlay and enablement.
 #
-#   package.list         desktop packages (GNOME shell, GDM, Sway, Hyprland, ...)
-#   overlay/             desktop overlay (seatd, portals, suspend hook)
-#   scripts/configure.sh GDM + Sway default session + seat/suspend services
+#   scripts/build-hyprland.sh  builds Hyprland + hy3 + Hypr* stack from git
+#   package.list               Fedora packages layered around the git build
+#   overlay/                   desktop overlay (seatd, portals, suspend hook)
+#   scripts/configure.sh       GDM + session + seat/suspend services
 ARG BASE=localhost/fedora-base:latest
+
+# --- hypr-builder stage --------------------------------------------------
+# Compiles the latest Hyprland release + hy3 (and the Hypr* libs/apps they need)
+# FROM GIT into /staging. The whole toolchain + sources live only in this throw-
+# away stage; the final image copies just /staging, so none of the build bloat
+# ships. See scripts/build-hyprland.sh for the scope + version-pinning notes.
+FROM ${BASE} AS hypr-builder
+COPY scripts/build-hyprland.sh /tmp/build-hyprland.sh
+RUN bash /tmp/build-hyprland.sh
+
+# --- final image ---------------------------------------------------------
 FROM ${BASE}
+
+# Drop the git-built Hyprland stack (compositor, hyprlock, hypridle, xdph, hy3,
+# and the Hypr* libs) in first, so the package RUN below (configure.sh's sanity
+# checks, ldconfig) sees /usr/bin/Hyprland and its shared libraries.
+COPY --from=hypr-builder /staging/ /
 
 # One layer, bind-mounted context (see flavors/base/Containerfile for why): the
 # desktop packages, overlay, configure and cleanup all share a single RUN so no
@@ -27,6 +44,7 @@ RUN --mount=type=bind,source=.,target=/run/fedora/variant \
     fi; \
     cp -a "$HB/overlay/." / 2>/dev/null || true; \
     chmod -R a+rx /usr/local/bin 2>/dev/null || true; \
+    ldconfig; \
     bash "$HB/scripts/configure.sh"; \
     dnf clean all; \
     rm -rf /var/cache/* /var/lib/dnf/history* /var/log/* /tmp/* /var/tmp/* 2>/dev/null || true
