@@ -88,6 +88,9 @@
     ~/.config/sway:
       if: "[ `uname` = Linux ]"
       path: .config/sway
+    ~/.config/pipewire/pipewire-pulse.conf.d/99-block-source-volume.conf:
+      if: "[ `uname` = Linux ]"
+      path: .config/pipewire/pipewire-pulse.conf.d/99-block-source-volume.conf
     ~/.config/systemd/user/sway-session.target:
       if: "[ `uname` = Linux ]"
       path: .config/systemd/user/sway-session.target
