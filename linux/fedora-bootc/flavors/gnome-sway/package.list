@@ -39,6 +39,7 @@ gvfs-gphoto2
 gvfs-mtp
 gvfs-nfs
 gvfs-smb
+xdg-desktop-portal-gtk # owns FileChooser; the gnome backend only delegates it to Nautilus
 xdg-desktop-portal-gnome
 
 # wlroots session helpers (launcher, notifications, clipboard, night light)

@@ -40,6 +40,7 @@ gvfs-gphoto2
 gvfs-mtp
 gvfs-nfs
 gvfs-smb
+xdg-desktop-portal-gtk # FileChooser/Settings backend (hyprland-portals.conf: default=hyprland;gtk)
 xdg-desktop-portal-gnome
 
 # wlroots session helpers (launcher, notifications, clipboard, night light)
