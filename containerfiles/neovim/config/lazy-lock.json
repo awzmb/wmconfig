@@ -39,6 +39,5 @@
   "vim-docker": { "branch": "master", "commit": "19683da4212418dab327ef6314bce94238e08b44" },
   "vim-fugitive": { "branch": "master", "commit": "3b753cf8c6a4dcde6edee8827d464ba9b8c4a6f0" },
   "vim-helm": { "branch": "master", "commit": "2c8525fd98e57472769d137317bca83e477858ce" },
-  "vim-terraform": { "branch": "master", "commit": "520498fab16a3a11f2ae1b8cb65e0a1684bc317a" },
-  "vim-wayland-clipboard": { "branch": "master", "commit": "f1f964a08798f78bc821e0cb155987864cb039d9" }
+  "vim-terraform": { "branch": "master", "commit": "520498fab16a3a11f2ae1b8cb65e0a1684bc317a" }
 }

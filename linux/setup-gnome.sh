@@ -53,6 +53,18 @@ gsettings set org.gnome.desktop.background color-shading-type 'solid'
 # Disable extension validation
 gsettings set org.gnome.shell disable-extension-version-validation true
 
+# Enabled GNOME shell extensions
+# launch-new-instance: activating a running app opens a NEW window instead of
+# focusing the existing one (ships with the gnome-shell-extensions package).
+gsettings set org.gnome.shell enabled-extensions "['paperwm@paperwm.github.com', 'space-bar@luchrioh', 'launch-new-instance@gnome-shell-extensions.gcampax.github.com']"
+
+# Favorite (dash) apps
+gsettings set org.gnome.shell favorite-apps "['org.chromium.Chromium.desktop', 'org.gnome.Calendar.desktop', 'io.bassi.Amberol.desktop', 'org.gnome.Nautilus.desktop', 'org.gnome.Software.desktop']"
+
+# Set Chromium as the default web browser (http/https + html)
+xdg-settings set default-web-browser org.chromium.Chromium.desktop || true
+xdg-mime default org.chromium.Chromium.desktop x-scheme-handler/http x-scheme-handler/https text/html
+
 # Set GNOME theme to Adwaita-dark
 gsettings set org.gnome.desktop.interface gtk-theme "Qogir-Dark"
 gsettings set org.gnome.desktop.interface icon-theme "Paper"
@@ -67,9 +79,9 @@ gsettings set org.gnome.settings-daemon.plugins.color night-light-enabled true
 # Disable GNOME animations
 gsettings set org.gnome.desktop.interface enable-animations false
 
-# Set GNOME monospace font to Hack Nerd Font Mono 11
-gsettings set org.gnome.desktop.interface monospace-font-name "Terminess Nerd Font Regular 12"
-gsettings set org.gnome.desktop.interface document-font-name "Terminess Nerd Font Regular 12"
+# Set GNOME monospace/document font
+gsettings set org.gnome.desktop.interface monospace-font-name "Terminess Nerd Font Medium 12"
+gsettings set org.gnome.desktop.interface document-font-name "Terminess Nerd Font Medium 12"
 
 # UI tweaks
 gsettings set org.gnome.desktop.interface show-battery-percentage true
@@ -116,42 +128,73 @@ gsettings set org.gnome.desktop.wm.keybindings switch-input-source '[]'         
 gsettings set org.gnome.desktop.wm.keybindings switch-input-source-backward '[]'     # <Shift><Super>space
 
 # i3/sway-style window management for the Forge extension.
-# Forge's schema is relocatable, so gsettings can't reach it by name — use dconf.
-# focus / move (h j k l) already match sway defaults; the rest mirror config.sway.
-dconf write /org/gnome/shell/extensions/forge/keybindings/window-focus-left    "['<Super>h']"
-dconf write /org/gnome/shell/extensions/forge/keybindings/window-focus-down    "['<Super>j']"
-dconf write /org/gnome/shell/extensions/forge/keybindings/window-focus-up      "['<Super>k']"
-dconf write /org/gnome/shell/extensions/forge/keybindings/window-focus-right   "['<Super>l']"
-dconf write /org/gnome/shell/extensions/forge/keybindings/window-move-left     "['<Shift><Super>h']"
-dconf write /org/gnome/shell/extensions/forge/keybindings/window-move-down     "['<Shift><Super>j']"
-dconf write /org/gnome/shell/extensions/forge/keybindings/window-move-up       "['<Shift><Super>k']"
-dconf write /org/gnome/shell/extensions/forge/keybindings/window-move-right    "['<Shift><Super>l']"
-dconf write /org/gnome/shell/extensions/forge/keybindings/con-split-horizontal "['<Shift><Super>b']"   # sway: split h
-dconf write /org/gnome/shell/extensions/forge/keybindings/con-split-vertical   "['<Shift><Super>v']"   # sway: split v
-dconf write /org/gnome/shell/extensions/forge/keybindings/window-toggle-float  "['<Shift><Super>space']" # sway: floating toggle
-dconf write /org/gnome/shell/extensions/forge/keybindings/window-swap-last-active "['<Super>Return']"
+# Full config captured via `dconf dump /org/gnome/shell/extensions/forge/`.
+# focus / move (h j k l) mirror sway defaults; resize rides Ctrl+Super h/j/k/l;
+# swap defaults on that row are cleared; window wiggling/focus-border disabled;
+# gaps set to 0 for the flat tiling look.
 
-# disable window wiggling
-dconf write /org/gnome/shell/extensions/forge/keybindings/prefs-tiling-toggle "@as []"
-dconf write /org/gnome/shell/extensions/forge/keybindings/focus-border-toggle "@as []"
+# General settings
+gsettings set org.gnome.shell.extensions.forge focus-border-toggle false
+gsettings set org.gnome.shell.extensions.forge preview-hint-enabled false
+gsettings set org.gnome.shell.extensions.forge window-gap-size 0
+gsettings set org.gnome.shell.extensions.forge window-gap-size-increment 0
 
-# Resize on a Ctrl+Super h/j/k/l row (overrides Forge's swap defaults on this combo)
-dconf write /org/gnome/shell/extensions/forge/keybindings/window-resize-right-decrease  "['<Control><Super>h']"   # shrink width
-dconf write /org/gnome/shell/extensions/forge/keybindings/window-resize-bottom-increase "['<Control><Super>j']"   # grow height
-dconf write /org/gnome/shell/extensions/forge/keybindings/window-resize-bottom-decrease "['<Control><Super>k']"   # shrink height
-dconf write /org/gnome/shell/extensions/forge/keybindings/window-resize-right-increase  "['<Control><Super>l']"   # grow width
-
-# Clear Forge's swap defaults that used to own the Ctrl+Super h/j/k/l row
-dconf write /org/gnome/shell/extensions/forge/keybindings/window-swap-left  "@as []"
-dconf write /org/gnome/shell/extensions/forge/keybindings/window-swap-down  "@as []"
-dconf write /org/gnome/shell/extensions/forge/keybindings/window-swap-up    "@as []"
-dconf write /org/gnome/shell/extensions/forge/keybindings/window-swap-right "@as []"
+# Keybindings
+gsettings set org.gnome.shell.extensions.forge.keybindings con-split-horizontal "['<Shift><Super>b']"
+gsettings set org.gnome.shell.extensions.forge.keybindings con-split-layout-toggle "['<Super>g']"
+gsettings set org.gnome.shell.extensions.forge.keybindings con-split-vertical "['<Shift><Super>v']"
+gsettings set org.gnome.shell.extensions.forge.keybindings con-stacked-layout-toggle "['<Shift><Super>s']"
+gsettings set org.gnome.shell.extensions.forge.keybindings con-tabbed-layout-toggle "['<Shift><Super>t']"
+gsettings set org.gnome.shell.extensions.forge.keybindings con-tabbed-showtab-decoration-toggle "['<Control><Alt>y']"
+gsettings set org.gnome.shell.extensions.forge.keybindings focus-border-toggle "[]"
+gsettings set org.gnome.shell.extensions.forge.keybindings prefs-tiling-toggle "[]"
+gsettings set org.gnome.shell.extensions.forge.keybindings window-focus-down "['<Super>j']"
+gsettings set org.gnome.shell.extensions.forge.keybindings window-focus-left "['<Super>h']"
+gsettings set org.gnome.shell.extensions.forge.keybindings window-focus-right "['<Super>l']"
+gsettings set org.gnome.shell.extensions.forge.keybindings window-focus-up "['<Super>k']"
+gsettings set org.gnome.shell.extensions.forge.keybindings window-gap-size-decrease "['<Control><Super>minus']"
+gsettings set org.gnome.shell.extensions.forge.keybindings window-gap-size-increase "['<Control><Super>plus']"
+gsettings set org.gnome.shell.extensions.forge.keybindings window-move-down "['<Shift><Super>j']"
+gsettings set org.gnome.shell.extensions.forge.keybindings window-move-left "['<Shift><Super>h']"
+gsettings set org.gnome.shell.extensions.forge.keybindings window-move-right "['<Shift><Super>l']"
+gsettings set org.gnome.shell.extensions.forge.keybindings window-move-up "['<Shift><Super>k']"
+gsettings set org.gnome.shell.extensions.forge.keybindings window-resize-bottom-decrease "['<Control><Super>k']"
+gsettings set org.gnome.shell.extensions.forge.keybindings window-resize-bottom-increase "['<Control><Super>j']"
+gsettings set org.gnome.shell.extensions.forge.keybindings window-resize-left-decrease "['<Shift><Control><Super>o']"
+gsettings set org.gnome.shell.extensions.forge.keybindings window-resize-left-increase "['<Control><Super>y']"
+gsettings set org.gnome.shell.extensions.forge.keybindings window-resize-right-decrease "['<Control><Super>h']"
+gsettings set org.gnome.shell.extensions.forge.keybindings window-resize-right-increase "['<Control><Super>l']"
+gsettings set org.gnome.shell.extensions.forge.keybindings window-resize-top-decrease "['<Shift><Control><Super>u']"
+gsettings set org.gnome.shell.extensions.forge.keybindings window-resize-top-increase "['<Control><Super>i']"
+gsettings set org.gnome.shell.extensions.forge.keybindings window-snap-center "['<Control><Alt>c']"
+gsettings set org.gnome.shell.extensions.forge.keybindings window-snap-one-third-left "['<Control><Alt>d']"
+gsettings set org.gnome.shell.extensions.forge.keybindings window-snap-one-third-right "['<Control><Alt>g']"
+gsettings set org.gnome.shell.extensions.forge.keybindings window-snap-two-third-left "['<Control><Alt>e']"
+gsettings set org.gnome.shell.extensions.forge.keybindings window-snap-two-third-right "['<Control><Alt>t']"
+gsettings set org.gnome.shell.extensions.forge.keybindings window-swap-down "[]"
+gsettings set org.gnome.shell.extensions.forge.keybindings window-swap-last-active "['<Super>Return']"
+gsettings set org.gnome.shell.extensions.forge.keybindings window-swap-left "[]"
+gsettings set org.gnome.shell.extensions.forge.keybindings window-swap-right "[]"
+gsettings set org.gnome.shell.extensions.forge.keybindings window-swap-up "[]"
+gsettings set org.gnome.shell.extensions.forge.keybindings window-toggle-always-float "['<Shift><Super>c']"
+gsettings set org.gnome.shell.extensions.forge.keybindings window-toggle-float "['<Shift><Super>space']"
+gsettings set org.gnome.shell.extensions.forge.keybindings workspace-active-tile-toggle "['<Shift><Super>w']"
 
 # Make Alacritty the default terminal
 gsettings set org.gnome.desktop.default-applications.terminal exec '/usr/bin/alacritty'
 gsettings set org.gnome.desktop.default-applications.terminal exec-arg "--working-directory"
 #gsettings set org.gnome.nautilus.desktop terminal-prefers-external-terminal true
 #gsettings set org.gnome.nautilus.desktop preferred-executable '/usr/bin/alacritty'
+
+# Super+Shift+Return launches the terminal (sway: $mod+Shift+Return).
+# GNOME has no built-in "spawn terminal" key, so use a custom keybinding.
+# Set name/command/binding BEFORE adding the path to the list so gnome-settings-
+# daemon doesn't first register an empty (ungrabbed) accelerator.
+term_kb='/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/terminal/'
+gsettings set "org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:$term_kb" name 'Terminal'
+gsettings set "org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:$term_kb" command '/usr/bin/alacritty'
+gsettings set "org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:$term_kb" binding '<Shift><Super>Return'
+gsettings set org.gnome.settings-daemon.plugins.media-keys custom-keybindings "['$term_kb']"
 
 # Set a solid color (#242933) as the background
 gsettings set org.gnome.desktop.background picture-uri ''

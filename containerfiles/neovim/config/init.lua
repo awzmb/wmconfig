@@ -58,7 +58,20 @@ vim.opt.autoindent = true
 vim.opt.completeopt = { "menuone", "noselect", "noinsert" }
 
 -- Clipboard
+-- Copy via OSC 52 (goes through the terminal, no Wayland surface) and paste via
+-- wl-paste. On GNOME/Mutter (no wlr-data-control) wl-copy spawns a transient
+-- window that Mutter maps+focuses, flashing the screen on every yank; OSC 52
+-- avoids it. Reads never flash, so wl-paste keeps full system-clipboard paste.
 vim.opt.clipboard = "unnamedplus"
+local osc52 = require("vim.ui.clipboard.osc52")
+vim.g.clipboard = {
+  name = "osc52-copy-wlpaste",
+  copy = { ["+"] = osc52.copy("+"), ["*"] = osc52.copy("*") },
+  paste = {
+    ["+"] = { "wl-paste", "--no-newline" },
+    ["*"] = { "wl-paste", "--no-newline", "--primary" },
+  },
+}
 
 -- =============================================================================
 -- MASON PACKAGE LISTS
@@ -603,7 +616,6 @@ require("lazy").setup({
   -- ===================================
   --  Other
   -- ===================================
-  { "jasonccox/vim-wayland-clipboard" },
   { 'norcalli/nvim-colorizer.lua',    config = function() require 'colorizer'.setup() end },
 })
 
