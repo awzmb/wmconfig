@@ -340,8 +340,8 @@ hl.define_submap("system_mode", function()
   -- ponytail: chained via hyprctl because one bind takes one dispatcher
   hl.bind("l", hl.dsp.exec_cmd(locker .. " && hyprctl dispatch submap reset"))
   hl.bind("e", hl.dsp.exec_cmd("hyprctl dispatch exit && hyprctl dispatch submap reset"))
-  hl.bind("s",
-    hl.dsp.exec_cmd(locker .. ' && hyprctl dispatch exec "systemctl suspend" && hyprctl dispatch submap reset'))
+  -- ponytail: no explicit locker here — hypridle's before_sleep_cmd locks on suspend.
+  hl.bind("s", hl.dsp.exec_cmd('hyprctl dispatch submap reset && systemctl suspend'))
   hl.bind("r", hl.dsp.exec_cmd('hyprctl dispatch exec "systemctl reboot" && hyprctl dispatch submap reset'))
   hl.bind("SHIFT + s", hl.dsp.exec_cmd('hyprctl dispatch exec "systemctl poweroff" && hyprctl dispatch submap reset'))
   hl.bind("escape", hl.dsp.submap("reset"))
