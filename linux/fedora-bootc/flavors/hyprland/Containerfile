@@ -5,14 +5,14 @@
 # The base already carries the Fedora/RPM Fusion/Tailscale repos, so this layer
 # only adds the desktop packages, overlay and enablement.
 #
-#   scripts/build-hyprland.sh  builds Hyprland + hy3 + Hypr* stack from git
+#   scripts/build-hyprland.sh  builds Hyprland + hy3 + hyprfocus + Hypr* stack
 #   package.list               Fedora packages layered around the git build
 #   overlay/                   desktop overlay (seatd, portals, suspend hook)
 #   scripts/configure.sh       GDM + session + seat/suspend services
 ARG BASE=localhost/fedora-base:latest
 
 # --- hypr-builder stage --------------------------------------------------
-# Compiles the latest Hyprland release + hy3 (and the Hypr* libs/apps they need)
+# Compiles the latest Hyprland release + the hy3 and hyprfocus plugins (and the Hypr* libs it needs)
 # FROM GIT into /staging. The whole toolchain + sources live only in this throw-
 # away stage; the final image copies just /staging, so none of the build bloat
 # ships. See scripts/build-hyprland.sh for the scope + version-pinning notes.
@@ -23,7 +23,7 @@ RUN bash /tmp/build-hyprland.sh
 # --- final image ---------------------------------------------------------
 FROM ${BASE}
 
-# Drop the git-built Hyprland stack (compositor, hyprlock, hypridle, xdph, hy3,
+# Drop the git-built Hyprland stack (compositor, hyprlock, hypridle, xdph, hy3, hyprfocus,
 # and the Hypr* libs) in first, so the package RUN below (configure.sh's sanity
 # checks, ldconfig) sees /usr/bin/Hyprland and its shared libraries.
 COPY --from=hypr-builder /staging/ /

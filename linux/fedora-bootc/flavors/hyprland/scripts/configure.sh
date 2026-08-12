@@ -93,7 +93,8 @@ done
 # the throwaway builder stage; a missing runtime lib makes Hyprland exit instantly
 # at exec and GDM just bounces you back to the greeter. Fail the BUILD instead.
 missing=$(ldd /usr/bin/Hyprland /usr/bin/start-hyprland /usr/bin/hyprlock \
-	/usr/bin/hypridle /usr/bin/hyprland-dialog /usr/lib/libhy3.so 2>/dev/null | grep 'not found' | sort -u || true)
+	/usr/bin/hypridle /usr/bin/hyprland-dialog /usr/lib/libhy3.so \
+	/usr/lib/libhyprfocus.so 2>/dev/null | grep 'not found' | sort -u || true)
 if [[ -n $missing ]]; then
 	echo "!! unresolved shared libraries in the hypr stack:"
 	echo "$missing"

@@ -115,5 +115,22 @@ cmake --build "$SRC/hy3/build" -j"$JOBS"
 install -Dm755 "$SRC/hy3/build/libhy3.so" /usr/lib/libhy3.so
 install -Dm755 "$SRC/hy3/build/libhy3.so" "$STAGING/usr/lib/libhy3.so"
 
+# --- hyprfocus plugin ----------------------------------------------------
+# Focus/flash animation plugin. The repo publishes NO tags, so clone_latest can't
+# be used — it tracks master, exactly like hyprpm does.
+# ponytail: best-effort. It's cosmetic and lags Hyprland's plugin ABI, so a
+# compile failure warns instead of killing the whole image build; Hyprland just
+# logs a config error for the missing plugin and still starts. Pin HYPRFOCUS_REF
+# to a known-good commit if master breaks.
+if git clone "$(gh pyt0xic/hyprfocus)" "$SRC/hyprfocus" \
+	&& { [[ -z ${HYPRFOCUS_REF:-} ]] || git -C "$SRC/hyprfocus" checkout "$HYPRFOCUS_REF"; } \
+	&& cmake -S "$SRC/hyprfocus" -B "$SRC/hyprfocus/build" -G Ninja -DCMAKE_BUILD_TYPE=Release \
+	&& cmake --build "$SRC/hyprfocus/build" -j"$JOBS"; then
+	install -Dm755 "$SRC/hyprfocus/build/libhyprfocus.so" /usr/lib/libhyprfocus.so
+	install -Dm755 "$SRC/hyprfocus/build/libhyprfocus.so" "$STAGING/usr/lib/libhyprfocus.so"
+else
+	echo "!! hyprfocus FAILED to build against this Hyprland — plugin not shipped"
+fi
+
 echo "==> hypr stack built:"
 "$STAGING/usr/bin/Hyprland" --version || true

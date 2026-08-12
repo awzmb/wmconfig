@@ -1,7 +1,7 @@
 # hyprland flavor packages — layered on top of the shared base image.
 #
 # GNOME (GDM greeter) + a from-git Hyprland session. The compositor, hyprlock,
-# hypridle, xdg-desktop-portal-hyprland, hyprland-guiutils and the hy3 plugin are
+# hypridle, xdg-desktop-portal-hyprland, hyprland-guiutils and the hy3 + hyprfocus plugins are
 # built from source in the hypr-builder stage (scripts/build-hyprland.sh); this
 # list is the Fedora packages layered around them. DE-agnostic bits come from the
 # base image.
@@ -63,7 +63,7 @@ slurp
 blueman
 
 # Hyprland session tools referenced by .config/hypr/* (the compositor itself,
-# hyprlock, hypridle, xdg-desktop-portal-hyprland and hy3 are built from git in
+# hyprlock, hypridle, xdg-desktop-portal-hyprland, hy3 and hyprfocus are built from git in
 # the hypr-builder stage — see scripts/build-hyprland.sh — so they are NOT listed
 # here). These are the extra Fedora tools the hypr configs invoke.
 Thunar        # $fileManager in hyprland.conf
