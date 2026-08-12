@@ -1,4 +1,4 @@
-FROM docker.io/golang:1.26.5-trixie@sha256:4ee9ffa999b4583ce281939cdff828763083610292f252279a0cee77473bd9a7 AS build
+FROM docker.io/golang:1.26.5-trixie@sha256:98988b42f3293b627bf07c884ff17181a59501769cd8c06c7ba901e0ce2c9853 AS build
 
 RUN git clone https://github.com/mk-5/fjira.git /go/src/fjira
 

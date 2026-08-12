@@ -10,6 +10,8 @@ exec dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSO
 # bring up graphical-session.target so xdg-desktop-portal (Requisite= on it) can
 # D-Bus-activate; without this, screencast portals fail and slurp never runs.
 exec systemctl --user start sway-session.target
+# dynamic display configuration (profiles in ~/.config/kanshi/config)
+exec systemctl --user start kanshi.service
 # bluetooth manager
 exec --no-startup-id blueman-applet
 # clipboard

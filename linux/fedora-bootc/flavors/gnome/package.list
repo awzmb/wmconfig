@@ -36,6 +36,7 @@ gvfs-mtp
 gvfs-nfs
 gvfs-smb
 xdg-desktop-portal-gnome
+xdg-desktop-portal-gtk
 
 # Gnome Shell Extensions
 gnome-extensions-app
