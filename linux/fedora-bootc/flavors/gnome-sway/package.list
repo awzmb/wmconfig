@@ -39,7 +39,12 @@ gvfs-gphoto2
 gvfs-mtp
 gvfs-nfs
 gvfs-smb
-xdg-desktop-portal-gtk # owns FileChooser; the gnome backend only delegates it to Nautilus
+# Portal backends. sway ships /usr/share/xdg-desktop-portal/sway-portals.conf
+# (default=gtk, ScreenCast/Screenshot=wlr) which is already correct -- do NOT
+# add an /etc override: pointing default at gnome breaks FileChooser, since the
+# gnome backend dropped it (it delegates to Nautilus, dead in a sway session)
+# and downloads in flatpak browsers silently fail.
+xdg-desktop-portal-gtk
 xdg-desktop-portal-gnome
 
 # wlroots session helpers (launcher, notifications, clipboard, night light)

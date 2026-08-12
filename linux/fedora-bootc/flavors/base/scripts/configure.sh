@@ -111,6 +111,13 @@ enable_unit fedora-flatpak.service
 enable_unit opensnitchd.service
 enable_unit tailscaled.service
 
+# --- Flatpak: Flathub only ------------------------------------------------
+# Fedora's flatpak remotes ship browser builds that can't write downloads.
+# Remove the repo definitions so flatpak never registers them; first boot
+# (fedora-flatpak.service) adds Flathub and cleans up any leftover refs.
+rm -f /etc/flatpak/remotes.d/fedora*.flatpakrepo \
+	/usr/share/flatpak/remotes.d/fedora*.flatpakrepo
+
 # --- Keyboard remap hwdb -------------------------------------------------
 # overlay ships /usr/lib/udev/hwdb.d/90-keyboard-remap.hwdb (capslock->esc).
 # Compile it into the binary hwdb.bin now so the remap is baked into the

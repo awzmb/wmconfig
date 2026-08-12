@@ -9,6 +9,19 @@ list=/usr/share/fedora/flatpak.list
 flatpak remote-add --if-not-exists flathub \
 	https://dl.flathub.org/repo/flathub.flatpakrepo
 
+# Fedora's own flatpak remotes ship browsers whose portal/filesystem setup
+# breaks downloads. Drop anything installed from them, then drop the remotes.
+for remote in fedora fedora-testing; do
+	flatpak remotes --system --columns=name | grep -qx "$remote" || continue
+	refs=$(flatpak list --system --columns=ref,origin | \
+		awk -v r="$remote" '$2 == r { print $1 }')
+	# ponytail: uninstall one-by-one, list is a handful of refs
+	for ref in $refs; do
+		flatpak uninstall --system --noninteractive "$ref" || true
+	done
+	flatpak remote-delete --system --force "$remote" || true
+done
+
 while read -r ref; do
 	# strip comments and whitespace
 	ref=${ref%%#*}
