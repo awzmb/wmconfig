@@ -94,6 +94,9 @@
     ~/.config/systemd/user/sway-session.target:
       if: "[ `uname` = Linux ]"
       path: .config/systemd/user/sway-session.target
+    ~/.config/systemd/user/hyprland-session.target:
+      if: "[ `uname` = Linux ]"
+      path: .config/systemd/user/hyprland-session.target
     ~/.config/obs-studio/basic/scenes/Sway_Window_Share.json:
       if: "[ `uname` = Linux ]"
       path: .config/obs-studio/basic/scenes/Sway_Window_Share.json

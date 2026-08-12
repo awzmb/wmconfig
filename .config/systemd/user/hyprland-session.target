@@ -1,0 +1,9 @@
+[Unit]
+Description=hyprland compositor session
+Documentation=man:systemd.special(7)
+# Same reason as sway-session.target: graphical-session.target has
+# RefuseManualStart=yes, and xdg-desktop-portal declares Requisite= on it.
+# Without this, screencast portals never D-Bus-activate ("dependency failed").
+BindsTo=graphical-session.target
+Wants=graphical-session-pre.target
+After=graphical-session-pre.target

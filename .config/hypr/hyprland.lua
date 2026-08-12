@@ -17,7 +17,8 @@ hl.monitor({ output = "", mode = "preferred", position = "auto", scale = "auto" 
 -- from kanshi profile "home". desc: is a prefix match — kanshi's trailing
 -- "Unknown" serial is not part of Hyprland's description string.
 hl.monitor({ output = "desc:QHX GF340H", mode = "highres", position = "0x0", scale = "1", transform = 3 })
-hl.monitor({ output = "desc:Samsung Electric Company LS49AG95 HNTW800039", mode = "3840x1080@120", position = "2560x0", scale = "1" })
+hl.monitor({ output = "desc:Samsung Electric Company LS49AG95 HNTW800039", mode = "3840x1080@120", position = "2560x0", scale =
+"1" })
 hl.monitor({ output = "desc:BOE YHB0AP23", mode = "1600x2560@120", position = "6400x0", scale = "1.66667", transform = 1 })
 
 ----------------------------------------------------------------------
@@ -34,7 +35,7 @@ local cursorTheme = "gnome"
 local cursorSize  = "24"
 local gtkTheme    = "Qogir-Dark"
 local iconTheme   = "Papirus"
-local font        = "TerminessNerdFont 10.5"
+local font        = "TerminessNerdFont 11"
 
 ----------------------------------------------------------------------
 -- ENVIRONMENT
@@ -62,38 +63,46 @@ hl.env("TERMINAL", terminal)
 ----------------------------------------------------------------------
 
 hl.on("hyprland.start", function()
-    hl.exec_cmd("waybar")
-    hl.exec_cmd("hypridle")
-    hl.exec_cmd("nm-applet --indicator")
-    hl.exec_cmd("/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1")
-    hl.exec_cmd("cliphist")
-    hl.exec_cmd("wl-paste --watch cliphist store")
-    hl.exec_cmd("blueman-applet")
-    hl.exec_cmd("hyprland-deactivate-touchscreen")
-    hl.exec_cmd("gammastep-indicator -l 52:13")
+  hl.exec_cmd("waybar")
+  hl.exec_cmd("hypridle")
+  hl.exec_cmd("nm-applet --indicator")
+  hl.exec_cmd("/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1")
+  hl.exec_cmd("cliphist")
+  hl.exec_cmd("wl-paste --watch cliphist store")
+  hl.exec_cmd("blueman-applet")
+  hl.exec_cmd("hyprland-deactivate-touchscreen")
+  hl.exec_cmd("gammastep-indicator -l 52:13")
 
-    -- screenshare / systemd session environment
-    hl.exec_cmd("dbus-update-activation-environment --systemd --all")
-    hl.exec_cmd("systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP")
+  -- screenshare / systemd session environment
+  hl.exec_cmd("dbus-update-activation-environment --systemd --all")
+  hl.exec_cmd("systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP")
+  -- xdg-desktop-portal.service has Requisite=graphical-session.target; launching
+  -- Hyprland straight from a TTY never starts it, so screensharing silently dies.
+  -- ponytail: plain `systemctl start`, switch to uwsm if we ever want a real session unit.
+  hl.exec_cmd("systemctl --user start hyprland-session.target")
 
-    hl.exec_cmd("hyprctl setcursor " .. cursorTheme .. " " .. cursorSize)
+  hl.exec_cmd("hyprctl setcursor " .. cursorTheme .. " " .. cursorSize)
 
-    -- gtk theming. gtk reads antialiasing/hinting from gsettings, not fontconfig.
-    local schema = "org.gnome.desktop.interface"
-    for _, kv in ipairs({
-        { "gtk-theme", gtkTheme },
-        { "icon-theme", iconTheme },
-        { "cursor-theme", cursorTheme },
-        { "cursor-size", cursorSize },
-        { "font-name", font },
-        { "monospace-font-name", font },
-        { "document-font-name", font },
-        { "color-scheme", "prefer-dark" },
-        { "font-antialiasing", "rgba" },
-        { "font-hinting", "slight" },
-    }) do
-        hl.exec_cmd(("gsettings set %s %s '%s'"):format(schema, kv[1], kv[2]))
-    end
+  -- gtk theming. gtk reads antialiasing/hinting from gsettings, not fontconfig.
+  local schema = "org.gnome.desktop.interface"
+  for _, kv in ipairs({
+    { "gtk-theme",           gtkTheme },
+    { "icon-theme",          iconTheme },
+    { "cursor-theme",        cursorTheme },
+    { "cursor-size",         cursorSize },
+    { "font-name",           font },
+    { "monospace-font-name", font },
+    { "document-font-name",  font },
+    { "color-scheme",        "prefer-dark" },
+    { "font-antialiasing",   "rgba" },
+    { "font-hinting",        "slight" },
+  }) do
+    hl.exec_cmd(("gsettings set %s %s '%s'"):format(schema, kv[1], kv[2]))
+  end
+end)
+
+hl.on("hyprland.shutdown", function()
+  hl.exec_cmd("systemctl --user stop hyprland-session.target")
 end)
 
 ----------------------------------------------------------------------
@@ -101,114 +110,114 @@ end)
 ----------------------------------------------------------------------
 
 hl.config({
-    general = {
-        gaps_in          = 0,
-        gaps_out         = 0,
-        border_size      = 0,
-        col = {
-            active_border   = "rgba(242933ff)",
-            inactive_border = "rgba(242933ff)",
+  general = {
+    gaps_in          = 0,
+    gaps_out         = 0,
+    border_size      = 0,
+    col              = {
+      active_border   = "rgba(242933ff)",
+      inactive_border = "rgba(242933ff)",
+    },
+    layout           = "hy3",
+    allow_tearing    = true,
+    resize_on_border = false,
+  },
+
+  decoration = {
+    rounding = 0,
+    blur     = { enabled = false, size = 3, passes = 1 },
+    shadow   = { enabled = false },
+  },
+
+  animations = { enabled = true },
+
+  xwayland = {
+    force_zero_scaling   = true,
+    use_nearest_neighbor = true,
+  },
+
+  dwindle = {
+    preserve_split        = true,
+    smart_resizing        = false,
+    use_active_for_splits = true,
+    force_split           = 2,     -- always split to the right
+  },
+
+  master = { new_status = "master" },
+
+  -- hy3. autotile reproduces sway's "split along the longer axis" behaviour,
+  -- so manual make_group is only needed to override it.
+  plugin = {
+    hy3 = {
+      tab_first_window = true,
+      autotile = {
+        enable           = true,
+        ephemeral_groups = true,
+        trigger_width    = 0,
+        trigger_height   = 0,
+      },
+      tabs = {
+        height    = 22,
+        padding   = 4,
+        from_top  = true,
+        radius    = 0,
+        text_font = "TerminessNerdFontMono",
+        colors    = {
+          active          = "rgba(2e3440ff)",
+          active_border   = "rgba(88c0d0ff)",
+          active_text     = "rgba(d8dee9ff)",
+          focused         = "rgba(2e3440ff)",
+          focused_border  = "rgba(4c566aff)",
+          focused_text    = "rgba(d8dee9ff)",
+          inactive        = "rgba(242933ff)",
+          inactive_border = "rgba(242933ff)",
+          inactive_text   = "rgba(4c566aff)",
+          urgent          = "rgba(bf616aff)",
+          urgent_border   = "rgba(bf616aff)",
+          urgent_text     = "rgba(eceff4ff)",
         },
-        layout           = "hy3",
-        allow_tearing    = true,
-        resize_on_border = false,
+      },
     },
+  },
 
-    decoration = {
-        rounding = 0,
-        blur   = { enabled = false, size = 3, passes = 1 },
-        shadow = { enabled = false },
-    },
+  ecosystem = {
+    no_donation_nag = true,
+    no_update_news  = true,
+  },
 
-    animations = { enabled = true },
+  misc = {
+    focus_on_activate        = true,
+    animate_manual_resizes   = true,
+    force_default_wallpaper  = 0,
+    disable_hyprland_logo    = true,
+    disable_splash_rendering = true,
+    splash_font_family       = "Terminus",
+    background_color         = 0xff242933,
+    middle_click_paste       = false,
+  },
 
-    xwayland = {
-        force_zero_scaling   = true,
-        use_nearest_neighbor = true,
-    },
+  debug = { vfr = true },
 
-    dwindle = {
-        preserve_split        = true,
-        smart_resizing        = false,
-        use_active_for_splits = true,
-        force_split           = 2, -- always split to the right
-    },
-
-    master = { new_status = "master" },
-
-    -- hy3. autotile reproduces sway's "split along the longer axis" behaviour,
-    -- so manual make_group is only needed to override it.
-    plugin = {
-        hy3 = {
-            tab_first_window = true,
-            autotile = {
-                enable           = true,
-                ephemeral_groups = true,
-                trigger_width    = 0,
-                trigger_height   = 0,
-            },
-            tabs = {
-                height    = 22,
-                padding   = 4,
-                from_top  = true,
-                radius    = 0,
-                text_font = "TerminessNerdFontMono",
-                colors = {
-                    active         = "rgba(2e3440ff)",
-                    active_border  = "rgba(88c0d0ff)",
-                    active_text    = "rgba(d8dee9ff)",
-                    focused        = "rgba(2e3440ff)",
-                    focused_border = "rgba(4c566aff)",
-                    focused_text   = "rgba(d8dee9ff)",
-                    inactive        = "rgba(242933ff)",
-                    inactive_border = "rgba(242933ff)",
-                    inactive_text   = "rgba(4c566aff)",
-                    urgent         = "rgba(bf616aff)",
-                    urgent_border  = "rgba(bf616aff)",
-                    urgent_text    = "rgba(eceff4ff)",
-                },
-            },
-        },
-    },
-
-    ecosystem = {
-        no_donation_nag = true,
-        no_update_news  = true,
-    },
-
-    misc = {
-        focus_on_activate       = true,
-        animate_manual_resizes  = true,
-        force_default_wallpaper = 0,
-        disable_hyprland_logo   = true,
-        disable_splash_rendering = true,
-        splash_font_family      = "Terminus",
-        background_color        = 0xff242933,
-        middle_click_paste      = false,
-    },
-
-    debug = { vfr = true },
-
-    input = {
-        kb_layout    = "us",
-        kb_variant   = "altgr-intl",
-        kb_options   = "caps:escape",
-        follow_mouse = 1,
-        force_no_accel = false,
-        accel_profile  = "flat",
-        sensitivity    = 0, -- -1.0 to 1.0, 0 means no modification
-        touchpad = { natural_scroll = true },
-    },
+  input = {
+    kb_layout      = "us",
+    kb_variant     = "altgr-intl",
+    kb_options     = "caps:escape",
+    follow_mouse   = 1,
+    force_no_accel = false,
+    accel_profile  = "flat",
+    sensitivity    = 0,     -- -1.0 to 1.0, 0 means no modification
+    touchpad       = { natural_scroll = true },
+  },
 })
 
 hl.curve("myBezier", { type = "bezier", points = { { 0.05, 0.9 }, { 0.1, 1.05 } } })
 
-hl.animation({ leaf = "windows",     enabled = true, speed = 2, bezier = "default" })
-hl.animation({ leaf = "windowsOut",  enabled = true, speed = 2, bezier = "default", style = "popin 80%" })
-hl.animation({ leaf = "border",      enabled = true, speed = 4, bezier = "default" })
+hl.animation({ leaf = "windows", enabled = true, speed = 2, bezier = "default" })
+hl.animation({ leaf = "windowsOut", enabled = true, speed = 2, bezier = "default", style = "popin 80%" })
+hl.animation({ leaf = "border", enabled = true, speed = 4, bezier = "default" })
 hl.animation({ leaf = "borderangle", enabled = true, speed = 2, bezier = "default" })
-hl.animation({ leaf = "fade",        enabled = true, speed = 2, bezier = "default" })
-hl.animation({ leaf = "workspaces",  enabled = true, speed = 2, bezier = "default" })
+hl.animation({ leaf = "fade", enabled = true, speed = 2, bezier = "default" })
+hl.animation({ leaf = "workspaces", enabled = true, speed = 2, bezier = "default" })
 
 ----------------------------------------------------------------------
 -- KEYBINDS (sway-like, via hy3)
@@ -217,26 +226,26 @@ hl.animation({ leaf = "workspaces",  enabled = true, speed = 2, bezier = "defaul
 local hy3 = hl.plugin.hy3
 
 hl.bind(mainMod .. " + SHIFT + return", hl.dsp.exec_cmd(terminal))
-hl.bind(mainMod .. " + SHIFT + Q",      hy3.kill_active())
-hl.bind(mainMod .. " + SHIFT + E",      hl.dsp.exit())
-hl.bind(mainMod .. " + F1",             hl.dsp.exec_cmd(fileManager))
-hl.bind(mainMod .. " + SHIFT + space",  hl.dsp.window.float({ action = "toggle" }))
-hl.bind(mainMod .. " + SHIFT + d",      hl.dsp.exec_cmd(menu))
-hl.bind(mainMod .. " + SHIFT + C",      hl.dsp.exec_cmd("hyprctl reload"))
-hl.bind(mainMod .. " + SHIFT + S",      hl.dsp.exec_cmd("grimshot save active ~/screenshot_$(date +%Y-%m-%d_%H-%M-%S).png"))
+hl.bind(mainMod .. " + SHIFT + Q", hy3.kill_active())
+hl.bind(mainMod .. " + SHIFT + E", hl.dsp.exit())
+hl.bind(mainMod .. " + F1", hl.dsp.exec_cmd(fileManager))
+hl.bind(mainMod .. " + SHIFT + space", hl.dsp.window.float({ action = "toggle" }))
+hl.bind(mainMod .. " + SHIFT + d", hl.dsp.exec_cmd(menu))
+hl.bind(mainMod .. " + SHIFT + C", hl.dsp.exec_cmd("hyprctl reload"))
+hl.bind(mainMod .. " + SHIFT + S", hl.dsp.exec_cmd("grimshot save active ~/screenshot_$(date +%Y-%m-%d_%H-%M-%S).png"))
 
 -- sway "split h/v": the next window opens beside/below instead of following
 -- dwindle's automatic split. toggle = pressing again undoes the pending split.
-hl.bind(mainMod .. " + SHIFT + b", hy3.make_group("h",   { toggle = true }))
-hl.bind(mainMod .. " + SHIFT + v", hy3.make_group("v",   { toggle = true }))
-hl.bind(mainMod .. " + w",         hy3.make_group("tab", { toggle = true }))
+hl.bind(mainMod .. " + SHIFT + b", hy3.make_group("h", { toggle = true }))
+hl.bind(mainMod .. " + SHIFT + v", hy3.make_group("v", { toggle = true }))
+hl.bind(mainMod .. " + w", hy3.make_group("tab", { toggle = true }))
 
 -- sway "layout toggle split" / tabbed
 hl.bind(mainMod .. " + e", hy3.change_group("opposite"))
 hl.bind(mainMod .. " + s", hy3.change_group("toggletab"))
 
 -- sway "focus parent" / "focus child"
-hl.bind(mainMod .. " + a",         hy3.change_focus("raise"))
+hl.bind(mainMod .. " + a", hy3.change_focus("raise"))
 hl.bind(mainMod .. " + SHIFT + a", hy3.change_focus("lower"))
 
 hl.bind(mainMod .. " + f", hl.dsp.window.fullscreen())
@@ -246,68 +255,110 @@ hl.bind(mainMod .. " + o", hy3.equalize())
 -- focus / move. hy3's variants are group-aware; the built-ins are not.
 local dirs = { h = "left", j = "down", k = "up", l = "right" }
 for key, dir in pairs(dirs) do
-    hl.bind(mainMod .. " + " .. key,         hy3.move_focus(dir))
-    hl.bind(mainMod .. " + SHIFT + " .. key, hy3.move_window(dir))
+  hl.bind(mainMod .. " + " .. key, hy3.move_focus(dir))
+  hl.bind(mainMod .. " + SHIFT + " .. key, hy3.move_window(dir))
 end
 
 -- tab cycling within a hy3 tab group
-hl.bind(mainMod .. " + tab",         hy3.focus_tab({ direction = "right", wrap = true }))
-hl.bind(mainMod .. " + SHIFT + tab", hy3.focus_tab({ direction = "left",  wrap = true }))
+hl.bind(mainMod .. " + tab", hy3.focus_tab({ direction = "right", wrap = true }))
+hl.bind(mainMod .. " + SHIFT + tab", hy3.focus_tab({ direction = "left", wrap = true }))
 
 -- workspaces
 for i = 1, 10 do
-    local key = i % 10 -- 10 maps to key 0
-    hl.bind(mainMod .. " + " .. key,         hl.dsp.focus({ workspace = i }))
-    hl.bind(mainMod .. " + SHIFT + " .. key, hy3.move_to_workspace(tostring(i)))
+  local key = i % 10   -- 10 maps to key 0
+  hl.bind(mainMod .. " + " .. key, hl.dsp.focus({ workspace = i }))
+  hl.bind(mainMod .. " + SHIFT + " .. key, hy3.move_to_workspace(tostring(i)))
 end
 
 -- laptop lid
-hl.bind("switch:off:Lid Switch", hl.dsp.exec_cmd('hyprctl keyword monitor "eDP-1, preferred, auto, auto"'), { locked = true })
-hl.bind("switch:on:Lid Switch",  hl.dsp.exec_cmd('hyprctl keyword monitor "eDP-1, disable"'),               { locked = true })
+hl.bind("switch:off:Lid Switch", hl.dsp.exec_cmd('hyprctl keyword monitor "eDP-1, preferred, auto, auto"'),
+  { locked = true })
+hl.bind("switch:on:Lid Switch", hl.dsp.exec_cmd('hyprctl keyword monitor "eDP-1, disable"'), { locked = true })
 
 -- touchscreen
 hl.bind(mainMod .. " + SHIFT + t", hl.dsp.exec_cmd("hyprland-activate-touchscreen"))
-hl.bind(mainMod .. " + t",         hl.dsp.exec_cmd("hyprland-deactivate-touchscreen"))
+hl.bind(mainMod .. " + t", hl.dsp.exec_cmd("hyprland-deactivate-touchscreen"))
 
--- resize submap, sway semantics: h/l shrink/grow width, k/j shrink/grow height
+-- resize submap, sway semantics: h/j/k/l shrink the named edge, CTRL grows it.
+--
+-- hy3 only ever resizes the right/bottom edge from a keybind (its resizeTarget
+-- gets CORNER_NONE and picks Right/Down), so left/top edges are done by hopping
+-- focus to the neighbour and moving *its* right/bottom edge instead.
+-- ponytail: focus hop is the cheap route; drop it if hy3 ever takes an edge arg.
+local OPPOSITE = { left = "right", up = "down" }
+
+-- `amount` is outward growth of `edge`: positive grows the window, negative shrinks it.
+local function resize_edge(edge, amount)
+  return function()
+    if edge == "right" then
+      hl.dispatch(hl.dsp.window.resize({ x = amount, y = 0, relative = true }))
+      return
+    elseif edge == "down" then
+      hl.dispatch(hl.dsp.window.resize({ x = 0, y = amount, relative = true }))
+      return
+    end
+
+    local before = hl.get_active_window()
+    hl.dispatch(hy3.move_focus(edge, { warp = false }))
+    local after = hl.get_active_window()
+
+    -- no neighbour that way: focus didn't move, so resizing would hit ourselves
+    if not before or not after or before.address == after.address then return end
+
+    -- our left/top edge is the neighbour's right/bottom edge, hence the sign flip
+    if edge == "left" then
+      hl.dispatch(hl.dsp.window.resize({ x = -amount, y = 0, relative = true }))
+    else
+      hl.dispatch(hl.dsp.window.resize({ x = 0, y = -amount, relative = true }))
+    end
+
+    hl.dispatch(hy3.move_focus(OPPOSITE[edge], { warp = false }))
+  end
+end
+
 hl.bind(mainMod .. " + R", hl.dsp.submap("resize"))
 hl.define_submap("resize", function()
-    for _, s in ipairs({ { "", 30 }, { "SHIFT + ", 120 } }) do
-        local mod, n = s[1], s[2]
-        hl.bind(mod .. "h", hl.dsp.window.resize({ x = -n, y = 0,  relative = true }))
-        hl.bind(mod .. "l", hl.dsp.window.resize({ x = n,  y = 0,  relative = true }))
-        hl.bind(mod .. "k", hl.dsp.window.resize({ x = 0,  y = -n, relative = true }))
-        hl.bind(mod .. "j", hl.dsp.window.resize({ x = 0,  y = n,  relative = true }))
-    end
-    hl.bind("escape", hl.dsp.submap("reset"))
-    hl.bind("return", hl.dsp.submap("reset"))
+  local edges = { h = "left", j = "down", k = "up", l = "right" }
+  for key, edge in pairs(edges) do
+    hl.bind(key, resize_edge(edge, -30))                  -- shrink that edge inward
+    hl.bind("SHIFT + " .. key, resize_edge(edge, 30))     -- extend that edge outward
+    hl.bind("CTRL + " .. key, resize_edge(edge, -120))
+    hl.bind("CTRL + SHIFT + " .. key, resize_edge(edge, 120))
+  end
+  hl.bind("escape", hl.dsp.submap("reset"))
+  hl.bind("return", hl.dsp.submap("reset"))
 end)
 
 -- system mode submap
 hl.bind(mainMod .. " + SHIFT + escape", hl.dsp.submap("system_mode"))
 hl.define_submap("system_mode", function()
-    -- ponytail: chained via hyprctl because one bind takes one dispatcher
-    hl.bind("l",         hl.dsp.exec_cmd(locker .. " && hyprctl dispatch submap reset"))
-    hl.bind("e",         hl.dsp.exec_cmd("hyprctl dispatch exit && hyprctl dispatch submap reset"))
-    hl.bind("s",         hl.dsp.exec_cmd(locker .. ' && hyprctl dispatch exec "systemctl suspend" && hyprctl dispatch submap reset'))
-    hl.bind("r",         hl.dsp.exec_cmd('hyprctl dispatch exec "systemctl reboot" && hyprctl dispatch submap reset'))
-    hl.bind("SHIFT + s", hl.dsp.exec_cmd('hyprctl dispatch exec "systemctl poweroff" && hyprctl dispatch submap reset'))
-    hl.bind("escape", hl.dsp.submap("reset"))
-    hl.bind("return", hl.dsp.submap("reset"))
+  -- ponytail: chained via hyprctl because one bind takes one dispatcher
+  hl.bind("l", hl.dsp.exec_cmd(locker .. " && hyprctl dispatch submap reset"))
+  hl.bind("e", hl.dsp.exec_cmd("hyprctl dispatch exit && hyprctl dispatch submap reset"))
+  hl.bind("s",
+    hl.dsp.exec_cmd(locker .. ' && hyprctl dispatch exec "systemctl suspend" && hyprctl dispatch submap reset'))
+  hl.bind("r", hl.dsp.exec_cmd('hyprctl dispatch exec "systemctl reboot" && hyprctl dispatch submap reset'))
+  hl.bind("SHIFT + s", hl.dsp.exec_cmd('hyprctl dispatch exec "systemctl poweroff" && hyprctl dispatch submap reset'))
+  hl.bind("escape", hl.dsp.submap("reset"))
+  hl.bind("return", hl.dsp.submap("reset"))
 end)
 
 -- volume / brightness
-hl.bind("XF86AudioRaiseVolume",  hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+"),   { locked = true, repeating = true })
-hl.bind("XF86AudioLowerVolume",  hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"),   { locked = true, repeating = true })
-hl.bind("XF86AudioMute",         hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"),  { locked = true, repeating = true })
-hl.bind("XF86AudioMicMute",      hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"),{ locked = true, repeating = true })
-hl.bind("XF86MonBrightnessUp",   hl.dsp.exec_cmd("brightnessctl s 10%+"),                        { locked = true, repeating = true })
-hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("brightnessctl s 10%-"),                        { locked = true, repeating = true })
+hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+"),
+  { locked = true, repeating = true })
+hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"),
+  { locked = true, repeating = true })
+hl.bind("XF86AudioMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"),
+  { locked = true, repeating = true })
+hl.bind("XF86AudioMicMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"),
+  { locked = true, repeating = true })
+hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("brightnessctl s 10%+"), { locked = true, repeating = true })
+hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("brightnessctl s 10%-"), { locked = true, repeating = true })
 
 -- playerctl
-hl.bind("XF86AudioNext",  hl.dsp.exec_cmd("playerctl next"),       { locked = true })
+hl.bind("XF86AudioNext", hl.dsp.exec_cmd("playerctl next"), { locked = true })
 hl.bind("XF86AudioPause", hl.dsp.exec_cmd("playerctl play-pause"), { locked = true })
-hl.bind("XF86AudioPlay",  hl.dsp.exec_cmd("playerctl play-pause"), { locked = true })
-hl.bind("XF86AudioPrev",  hl.dsp.exec_cmd("playerctl previous"),   { locked = true })
+hl.bind("XF86AudioPlay", hl.dsp.exec_cmd("playerctl play-pause"), { locked = true })
+hl.bind("XF86AudioPrev", hl.dsp.exec_cmd("playerctl previous"), { locked = true })
 hl.bind(mainMod .. " + SHIFT + p", hl.dsp.exec_cmd("playerctl play-pause"))
 hl.bind(mainMod .. " + SHIFT + n", hl.dsp.exec_cmd("playerctl next"))
