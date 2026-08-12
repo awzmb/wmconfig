@@ -1,11 +1,19 @@
 [Unit]
-Description=Suspend hyprland
+Description=Freeze Hyprland across suspend/hibernate
+# ExecStart runs before the machine goes down, ExecStop once it is back up.
+# ponytail: one RemainAfterExit unit instead of a suspend + a resume unit. The
+# old plain oneshot only ever ran the suspend half, so Hyprland stayed
+# SIGSTOPped after every wake — which also hung shutdown, since a stopped
+# process cannot answer SIGTERM.
 Before=systemd-suspend.service
 Before=systemd-hibernate.service
+StopWhenUnneeded=yes
 
 [Service]
 Type=oneshot
+RemainAfterExit=yes
 ExecStart=/usr/local/bin/suspend-hyprland suspend
+ExecStop=/usr/local/bin/suspend-hyprland resume
 
 [Install]
 WantedBy=systemd-suspend.service
