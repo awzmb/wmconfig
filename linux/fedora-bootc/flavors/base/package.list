@@ -16,6 +16,8 @@ binutils
 btrfs-progs
 cryptsetup # LUKS management (luksChangeKey, luksAddKey, etc.)
 systemd-cryptsetup # /usr/lib/systemd/systemd-cryptsetup + @.service — REQUIRED to unlock the encrypted root at boot; split out of systemd, absent from the minimal bootc base, so the initramfs's `systemctl start systemd-cryptsetup@luks-…` fails without it
+systemd
+systemd-oomd-defaults
 debugedit
 diffutils
 distrobox
@@ -153,6 +155,7 @@ spice-vdagent
 switcheroo-control
 webp-pixbuf-loader
 wireplumber
+playerctl # XF86Audio* media keys
 xdg-user-dirs
 xdg-utils
 xdg-desktop-portal # base portal frontend (backends are per-flavor)

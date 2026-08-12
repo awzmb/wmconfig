@@ -47,6 +47,7 @@ xdg-desktop-portal-gnome
 fuzzel
 cliphist
 gammastep
+gammastep-indicator
 rofi-wayland
 dunst
 wl-mirror
@@ -54,8 +55,6 @@ seatd # seat management for the wlroots sessions
 
 # Sway packages
 kanshi
-nwg-displays
-nwg-look
 waybar
 wlr-randr
 grim
@@ -68,7 +67,6 @@ blueman
 # here). These are the extra Fedora tools the hypr configs invoke.
 Thunar        # $fileManager in hyprland.conf
 tumbler       # Thunar thumbnails
-playerctl     # XF86Audio* media keys
 polkit-gnome  # polkit-gnome-authentication-agent-1 (exec-once)
 swaylock      # hypridle on-timeout locker
 libnotify     # notify-send, used by grimshot

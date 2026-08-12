@@ -58,8 +58,6 @@ seatd # seat management for the wlroots sessions
 
 # Sway packages
 kanshi
-nwg-displays
-nwg-look
 sway
 swayidle
 swaylock
