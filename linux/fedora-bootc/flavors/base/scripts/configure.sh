@@ -54,6 +54,15 @@ if [[ -f $variant/package-remove.list ]]; then
 	fi
 fi
 
+# --- v4l2loopback: keep it, don't auto-load it ---------------------------
+# akmod-v4l2loopback ships /usr/lib/modules-load.d/v4l2loopback.conf, but the
+# akmod-built module is UNSIGNED: under Secure Boot the kernel rejects it ("Key
+# was rejected by service") and systemd-modules-load.service fails on every boot.
+# ponytail: drop the autoload drop-in; the module and its modprobe.d options
+# stay, so `sudo modprobe v4l2loopback` still works with Secure Boot off (or
+# after signing the module with an enrolled MOK).
+rm -f /usr/lib/modules-load.d/v4l2loopback.conf
+
 # --- Compile dconf databases shipped via the overlay --------------------
 printf '\e[1;32m-->\e[0m\e[1m Updating dconf databases\e[0m\n'
 dconf update || true

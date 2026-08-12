@@ -17,8 +17,13 @@ hl.monitor({ output = "", mode = "preferred", position = "auto", scale = "auto" 
 -- from kanshi profile "home". desc: is a prefix match — kanshi's trailing
 -- "Unknown" serial is not part of Hyprland's description string.
 hl.monitor({ output = "desc:QHX GF340H", mode = "highres", position = "0x0", scale = "1", transform = 3 })
-hl.monitor({ output = "desc:Samsung Electric Company LS49AG95 HNTW800039", mode = "3840x1080@120", position = "2560x0", scale =
-"1" })
+hl.monitor({
+  output = "desc:Samsung Electric Company LS49AG95 HNTW800039",
+  mode = "3840x1080@120",
+  position = "2560x0",
+  scale =
+  "1"
+})
 hl.monitor({ output = "desc:BOE YHB0AP23", mode = "1600x2560@120", position = "6400x0", scale = "1.66667", transform = 1 })
 
 ----------------------------------------------------------------------
@@ -35,7 +40,7 @@ local cursorTheme = "gnome"
 local cursorSize  = "24"
 local gtkTheme    = "Qogir-Dark"
 local iconTheme   = "Papirus"
-local font        = "TerminessNerdFont 11"
+local font        = "TerminessNerdFont 12"
 
 ----------------------------------------------------------------------
 -- ENVIRONMENT
@@ -140,7 +145,7 @@ hl.config({
     preserve_split        = true,
     smart_resizing        = false,
     use_active_for_splits = true,
-    force_split           = 2,     -- always split to the right
+    force_split           = 2, -- always split to the right
   },
 
   master = { new_status = "master" },
@@ -205,7 +210,7 @@ hl.config({
     follow_mouse   = 1,
     force_no_accel = false,
     accel_profile  = "flat",
-    sensitivity    = 0,     -- -1.0 to 1.0, 0 means no modification
+    sensitivity    = 0, -- -1.0 to 1.0, 0 means no modification
     touchpad       = { natural_scroll = true },
   },
 })
@@ -265,7 +270,7 @@ hl.bind(mainMod .. " + SHIFT + tab", hy3.focus_tab({ direction = "left", wrap = 
 
 -- workspaces
 for i = 1, 10 do
-  local key = i % 10   -- 10 maps to key 0
+  local key = i % 10 -- 10 maps to key 0
   hl.bind(mainMod .. " + " .. key, hl.dsp.focus({ workspace = i }))
   hl.bind(mainMod .. " + SHIFT + " .. key, hy3.move_to_workspace(tostring(i)))
 end
@@ -320,8 +325,8 @@ hl.bind(mainMod .. " + R", hl.dsp.submap("resize"))
 hl.define_submap("resize", function()
   local edges = { h = "left", j = "down", k = "up", l = "right" }
   for key, edge in pairs(edges) do
-    hl.bind(key, resize_edge(edge, -30))                  -- shrink that edge inward
-    hl.bind("SHIFT + " .. key, resize_edge(edge, 30))     -- extend that edge outward
+    hl.bind(key, resize_edge(edge, -30))              -- shrink that edge inward
+    hl.bind("SHIFT + " .. key, resize_edge(edge, 30)) -- extend that edge outward
     hl.bind("CTRL + " .. key, resize_edge(edge, -120))
     hl.bind("CTRL + SHIFT + " .. key, resize_edge(edge, 120))
   end

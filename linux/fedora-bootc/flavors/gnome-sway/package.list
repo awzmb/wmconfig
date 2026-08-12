@@ -75,6 +75,8 @@ gammastep-indicator
 # OBS + v4l2loopback virtual camera is the sway workaround — crop an output to a
 # window in OBS, "Start Virtual Camera", then pick it as a webcam in the meeting
 # app. OBS captures via the PipeWire screencast portal. akmod-v4l2loopback (base)
-# builds the kernel module; it's loaded + configured via the overlay modprobe.d/
-# modules-load.d drop-ins.
+# builds the kernel module and overlay modprobe.d sets its options, but it is NOT
+# auto-loaded: the akmod build is unsigned and Secure Boot rejects it, which made
+# systemd-modules-load.service fail every boot. `sudo modprobe v4l2loopback`
+# first (Secure Boot off, or module signed with an enrolled MOK).
 obs-studio
