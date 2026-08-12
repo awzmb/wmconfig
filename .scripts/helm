@@ -3,7 +3,8 @@
 podman run --rm -it \
   --user "$(id -u):$(id -g)" \
   --userns=keep-id \
-  --volume "$HOME/.config/gcloud:/home/$(whoami)/.config/gcloud:z" \
+  --volume "gcloud-config:/gcloud-config" \
+  --env=CLOUDSDK_CONFIG=/gcloud-config \
   --volume "$HOME/.kube:/home/$(whoami)/.kube:z" \
   --volume "$HOME/.config/helm:/home/$(whoami)/.config/helm:z" \
   --volume "$HOME/.cache/helm:/home/$(whoami)/.cache/helm:z" \

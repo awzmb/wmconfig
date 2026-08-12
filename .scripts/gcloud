@@ -9,12 +9,20 @@
 # is not forwarded on purpose: argcomplete falls back to stderr when it's
 # absent. No -t (no TTY during completion); the completer already sends
 # stdout/stderr to /dev/null, so only fd 8 carries data.
+# Credentials live in the named podman volume "gcloud-config", mounted at a
+# fixed path with CLOUDSDK_CONFIG pointing at it. Previously the mount target
+# was guessed from the host username (/home/$(whoami)/.config/gcloud); with
+# --userns=keep-id the container user's homedir need not match, so gcloud wrote
+# its creds outside the mount and --rm discarded them on every exit -> "gcloud
+# auth login" once a day. The same volume is shared by flux/k9s/helm/istioctl/
+# kubectl. ponytail: named volume, no host path, nothing to keep in sync.
 if [ -n "${_ARGCOMPLETE:-}" ]; then
   exec 3>/dev/null 4>/dev/null 5>/dev/null 6>/dev/null 7>/dev/null
   exec podman run --rm -i \
     --user "$(id -u):$(id -g)" \
     --userns=keep-id \
-    --volume "$HOME/.config/gcloud:/home/$(whoami)/.config/gcloud:z" \
+    --volume "gcloud-config:/gcloud-config" \
+    --env=CLOUDSDK_CONFIG=/gcloud-config \
     --env _ARGCOMPLETE --env _ARGCOMPLETE_SHELL --env _ARGCOMPLETE_IFS \
     --env _ARGCOMPLETE_COMP_WORDBREAKS --env COMP_LINE --env COMP_POINT \
     --env COMP_TYPE \
@@ -25,7 +33,8 @@ fi
 podman run --rm -it \
   --user "$(id -u):$(id -g)" \
   --userns=keep-id \
-  --volume "$HOME/.config/gcloud:/home/$(whoami)/.config/gcloud:z" \
+  --volume "gcloud-config:/gcloud-config" \
+  --env=CLOUDSDK_CONFIG=/gcloud-config \
   --volume "$HOME/.kube:/home/$(whoami)/.kube:z" \
   --volume "$HOME/.ssh:/home/$(whoami)/.ssh:z" \
   --volume "$(pwd):/workspace" \
