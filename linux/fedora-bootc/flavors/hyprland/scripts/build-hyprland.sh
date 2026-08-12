@@ -45,6 +45,7 @@ dnf -y install --skip-unavailable \
 	libuuid-devel libXcursor-devel libeis-devel re2-devel muParser-devel \
 	libjpeg-turbo-devel libwebp-devel libspng-devel file-devel \
 	sdbus-cpp-devel sdbus-c++-devel pipewire-devel pam-devel glaze-devel \
+	iniparser-devel abseil-cpp-devel \
 	libxcb-devel xcb-util-devel xcb-util-wm-devel xcb-util-errors-devel \
 	xcb-util-renderutil-devel xcb-util-keysyms-devel xcb-util-cursor-devel \
 	xorg-x11-server-Xwayland-devel
@@ -90,6 +91,7 @@ clone_latest "$(gh hyprwm/hyprcursor)"          hyprcursor;          build_cmake
 clone_latest "$(gh hyprwm/hyprgraphics)"        hyprgraphics;        build_cmake hyprgraphics
 clone_latest "$(gh hyprwm/hyprwire)"            hyprwire;            build_cmake hyprwire
 clone_latest "$(gh hyprwm/aquamarine)"          aquamarine;          build_cmake aquamarine
+clone_latest "$(gh hyprwm/hyprtoolkit)"         hyprtoolkit;         build_cmake hyprtoolkit
 clone_latest "$(gh hyprwm/hyprland-protocols)"  hyprland-protocols;  build_meson hyprland-protocols
 
 # --- Hyprland compositor -------------------------------------------------
@@ -100,6 +102,9 @@ build_cmake Hyprland
 clone_latest "$(gh hyprwm/hyprlock)" hyprlock; build_cmake hyprlock
 clone_latest "$(gh hyprwm/hypridle)" hypridle; build_cmake hypridle
 clone_latest "$(gh hyprwm/xdg-desktop-portal-hyprland)" xdph; build_cmake xdph
+# hyprland-dialog & co. Hyprland >=0.5x execs hyprland-dialog for its error/
+# crash/update dialogs and logs "hyprland-guiutils not installed" without it.
+clone_latest "$(gh hyprwm/hyprland-guiutils)" hyprland-guiutils; build_cmake hyprland-guiutils
 
 # --- hy3 layout plugin ---------------------------------------------------
 # Built against the just-installed Hyprland (found via pkg-config). It produces a

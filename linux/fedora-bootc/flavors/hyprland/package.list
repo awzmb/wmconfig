@@ -1,9 +1,10 @@
 # hyprland flavor packages — layered on top of the shared base image.
 #
 # GNOME (GDM greeter) + a from-git Hyprland session. The compositor, hyprlock,
-# hypridle, xdg-desktop-portal-hyprland and the hy3 plugin are built from source
-# in the hypr-builder stage (scripts/build-hyprland.sh); this list is the Fedora
-# packages layered around them. DE-agnostic bits come from the base image.
+# hypridle, xdg-desktop-portal-hyprland, hyprland-guiutils and the hy3 plugin are
+# built from source in the hypr-builder stage (scripts/build-hyprland.sh); this
+# list is the Fedora packages layered around them. DE-agnostic bits come from the
+# base image.
 #
 # Lines beginning with '#' and blank lines are ignored. Installed with
 # `dnf install --skip-unavailable --skip-broken`.
@@ -87,6 +88,10 @@ cairo
 pango
 libdisplay-info
 libliftoff
+xcb-util-errors # libxcb-errors.so — Hyprland's Xwayland/XWM error reporting
+re2
+muParser
+tomlplusplus
 pugixml
 librsvg2
 libzip
@@ -98,6 +103,8 @@ sdbus-cpp
 hwdata
 pam
 pipewire
+iniparser   # hyprtoolkit (hyprland-dialog) runtime
+abseil-cpp  # hyprtoolkit (hyprland-dialog) runtime
 xorg-x11-server-Xwayland
 
 # Qt6 runtime for xdph hyprland-share-picker

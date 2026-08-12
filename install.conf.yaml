@@ -103,6 +103,9 @@
     ~/.config/waybar:
       if: "[ `uname` = Linux ]"
       path: .config/waybar
+    ~/.config/fontconfig:
+      if: "[ `uname` = Linux ]"
+      path: .config/fontconfig
     ~/.config/rofi:
       if: "[ `uname` = Linux ]"
       path: .config/rofi

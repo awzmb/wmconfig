@@ -84,9 +84,21 @@ enable_unit suspend-hyprland.service systemd-hibernate.service
 dconf update || true
 
 # --- Sanity: warn loudly about missing critical desktop components -------
-for chk in "gdm:/usr/bin/gdm" "hyprland:/usr/bin/Hyprland"; do
+for chk in "gdm:/usr/bin/gdm" "hyprland:/usr/bin/Hyprland" "hyprland-guiutils:/usr/bin/hyprland-dialog"; do
 	name=${chk%%:*}; path=${chk#*:}
 	[[ -e $path ]] || echo "!! MISSING: $name ($path) — likely dropped by 'dnf --skip-broken'; check the install log above"
 done
+
+# The git-built hypr binaries link libs whose -devel counterparts existed only in
+# the throwaway builder stage; a missing runtime lib makes Hyprland exit instantly
+# at exec and GDM just bounces you back to the greeter. Fail the BUILD instead.
+missing=$(ldd /usr/bin/Hyprland /usr/bin/start-hyprland /usr/bin/hyprlock \
+	/usr/bin/hypridle /usr/bin/hyprland-dialog /usr/lib/libhy3.so 2>/dev/null | grep 'not found' | sort -u || true)
+if [[ -n $missing ]]; then
+	echo "!! unresolved shared libraries in the hypr stack:"
+	echo "$missing"
+	echo "!! add the owning package to flavors/hyprland/package.list"
+	exit 1
+fi
 
 printf '\e[1;32m-->\e[0m\e[1m gnome-sway configure complete\e[0m\n'
