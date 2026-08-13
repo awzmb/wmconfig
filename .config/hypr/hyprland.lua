@@ -325,10 +325,10 @@ hl.bind(mainMod .. " + R", hl.dsp.submap("resize"))
 hl.define_submap("resize", function()
   local edges = { h = "left", j = "down", k = "up", l = "right" }
   for key, edge in pairs(edges) do
-    hl.bind(key, resize_edge(edge, -30))              -- shrink that edge inward
-    hl.bind("SHIFT + " .. key, resize_edge(edge, 30)) -- extend that edge outward
-    hl.bind("CTRL + " .. key, resize_edge(edge, -120))
-    hl.bind("CTRL + SHIFT + " .. key, resize_edge(edge, 120))
+    hl.bind(key, resize_edge(edge, -80))              -- shrink that edge inward
+    hl.bind("SHIFT + " .. key, resize_edge(edge, 80)) -- extend that edge outward
+    hl.bind("CTRL + " .. key, resize_edge(edge, -30))
+    hl.bind("CTRL + SHIFT + " .. key, resize_edge(edge, 30))
   end
   hl.bind("escape", hl.dsp.submap("reset"))
   hl.bind("return", hl.dsp.submap("reset"))
