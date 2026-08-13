@@ -84,7 +84,8 @@ enable_unit suspend-hyprland.service systemd-hibernate.service
 dconf update || true
 
 # --- Sanity: warn loudly about missing critical desktop components -------
-for chk in "gdm:/usr/bin/gdm" "hyprland:/usr/bin/Hyprland" "hyprland-guiutils:/usr/bin/hyprland-dialog"; do
+for chk in "gdm:/usr/bin/gdm" "hyprland:/usr/bin/Hyprland" "hyprland-guiutils:/usr/bin/hyprland-dialog" \
+	"hy3:/usr/lib/libhy3.so" "hyprfocus:/usr/lib/libhyprfocus.so"; do
 	name=${chk%%:*}; path=${chk#*:}
 	[[ -e $path ]] || echo "!! MISSING: $name ($path) — likely dropped by 'dnf --skip-broken'; check the install log above"
 done
@@ -93,8 +94,8 @@ done
 # the throwaway builder stage; a missing runtime lib makes Hyprland exit instantly
 # at exec and GDM just bounces you back to the greeter. Fail the BUILD instead.
 missing=$(ldd /usr/bin/Hyprland /usr/bin/start-hyprland /usr/bin/hyprlock \
-	/usr/bin/hypridle /usr/bin/hyprland-dialog /usr/lib/libhy3.so \
-	/usr/lib/libhyprfocus.so 2>/dev/null | grep 'not found' | sort -u || true)
+	/usr/bin/hypridle /usr/bin/hyprland-dialog /usr/lib/libhy3.so /usr/lib/libhyprfocus.so \
+	2>/dev/null | grep 'not found' | sort -u || true)
 if [[ -n $missing ]]; then
 	echo "!! unresolved shared libraries in the hypr stack:"
 	echo "$missing"

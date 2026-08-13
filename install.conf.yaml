@@ -82,6 +82,9 @@
     ~/.config/dunst:
       if: "[ `uname` = Linux ]"
       path: .config/dunst
+    ~/.config/swaync:
+      if: "[ `uname` = Linux ]"
+      path: .config/swaync
     ~/.config/i3:
       if: "[ `uname` = Linux ]"
       path: .config/i3

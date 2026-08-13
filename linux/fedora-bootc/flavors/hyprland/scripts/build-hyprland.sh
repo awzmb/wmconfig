@@ -33,7 +33,7 @@ mkdir -p "$STAGING" "$SRC"
 # repos and aborts when any hypr* srpm name doesn't match. --skip-unavailable
 # tolerates a rawhide package rename — a genuinely missing dep then surfaces as a
 # clear compile error rather than a mysterious depsolve abort.
-dnf -y install gcc gcc-c++ cmake ninja-build meson pkgconf-pkg-config git jq
+dnf -y install gcc gcc-c++ cmake make ninja-build meson pkgconf-pkg-config git jq
 dnf -y install --skip-unavailable \
 	wayland-devel wayland-protocols-devel libdrm-devel libinput-devel \
 	libxkbcommon-devel pixman-devel cairo-devel pango-devel \
@@ -116,20 +116,28 @@ install -Dm755 "$SRC/hy3/build/libhy3.so" /usr/lib/libhy3.so
 install -Dm755 "$SRC/hy3/build/libhy3.so" "$STAGING/usr/lib/libhy3.so"
 
 # --- hyprfocus plugin ----------------------------------------------------
-# Focus/flash animation plugin. The repo publishes NO tags, so clone_latest can't
-# be used — it tracks master, exactly like hyprpm does.
-# ponytail: best-effort. It's cosmetic and lags Hyprland's plugin ABI, so a
-# compile failure warns instead of killing the whole image build; Hyprland just
-# logs a config error for the missing plugin and still starts. Pin HYPRFOCUS_REF
-# to a known-good commit if master breaks.
-if git clone "$(gh pyt0xic/hyprfocus)" "$SRC/hyprfocus" \
-	&& { [[ -z ${HYPRFOCUS_REF:-} ]] || git -C "$SRC/hyprfocus" checkout "$HYPRFOCUS_REF"; } \
-	&& cmake -S "$SRC/hyprfocus" -B "$SRC/hyprfocus/build" -G Ninja -DCMAKE_BUILD_TYPE=Release \
-	&& cmake --build "$SRC/hyprfocus/build" -j"$JOBS"; then
-	install -Dm755 "$SRC/hyprfocus/build/libhyprfocus.so" /usr/lib/libhyprfocus.so
-	install -Dm755 "$SRC/hyprfocus/build/libhyprfocus.so" "$STAGING/usr/lib/libhyprfocus.so"
+# Flashfocus-style focus animation, from the OFFICIAL hyprwm/hyprland-plugins
+# monorepo (kept in lockstep with Hyprland releases), not the pyt0xic fork —
+# that fork stalled on the pre-0.56 plugin API (Debug::log, g_pConfigManager->
+# getAnimationPropertyConfig, window->m_alpha) and no longer compiles.
+# Built with its Makefile, NOT cmake: only the Makefile passes --no-gnu-unique,
+# without which Hyprland refuses to dlopen the plugin.
+# ponytail: tracks main (the repo tags nothing useful per-plugin), so a Hyprland
+# bump that lands before the plugins repo catches up fails the build loudly —
+# pin HYPRFOCUS_REF to a known-good commit, or HYPRFOCUS_OPTIONAL=1 to ship
+# without the plugin (cosmetic; Hyprland just logs a config error and starts).
+git clone "$(gh hyprwm/hyprland-plugins)" "$SRC/hyprland-plugins"
+[[ -z ${HYPRFOCUS_REF:-} ]] || git -C "$SRC/hyprland-plugins" checkout "$HYPRFOCUS_REF"
+if make -C "$SRC/hyprland-plugins/hyprfocus" all 2>&1 | tee "$SRC/hyprfocus.log"; then
+	install -Dm755 "$SRC/hyprland-plugins/hyprfocus/hyprfocus.so" /usr/lib/libhyprfocus.so
+	install -Dm755 "$SRC/hyprland-plugins/hyprfocus/hyprfocus.so" "$STAGING/usr/lib/libhyprfocus.so"
 else
-	echo "!! hyprfocus FAILED to build against this Hyprland — plugin not shipped"
+	echo "!! hyprfocus FAILED to build against this Hyprland; last 40 lines:"
+	tail -40 "$SRC/hyprfocus.log"
+	[[ ${HYPRFOCUS_OPTIONAL:-0} == 1 ]] || {
+		echo "!! pin HYPRFOCUS_REF to a known-good hyprland-plugins commit, or rebuild with HYPRFOCUS_OPTIONAL=1"
+		exit 1
+	}
 fi
 
 echo "==> hypr stack built:"

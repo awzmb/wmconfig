@@ -1,0 +1,104 @@
+/* ponytail: import upstream, override theming only.
+   If /etc/xdg/swaync/style.css moves, notifications fall back to unstyled GTK. */
+@import url("file:///etc/xdg/swaync/style.css");
+
+* {
+  border-radius: 0;
+  box-shadow: none;
+  font-family: TerminessNerdFont, monospace;
+  font-size: 14px;
+}
+
+.notification-row,
+.notification-background,
+.notification-background .notification,
+.notification-content,
+.notification-group,
+.control-center,
+.control-center-list,
+.floating-notifications {
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.notification-background {
+  background: transparent;
+}
+
+.notification-background .notification {
+  background: #242933;
+  border: 1px solid #4c566a;
+  color: #eceff4;
+  margin: 4px;
+  padding: 0;
+}
+
+.notification-background .notification .notification-content {
+  background: transparent;
+  padding: 8px;
+}
+
+.notification-background .notification .notification-content .summary {
+  color: #eceff4;
+  font-weight: bold;
+}
+
+.notification-background .notification .notification-content .body,
+.notification-background .notification .notification-content .time {
+  color: #d8dee9;
+}
+
+.notification-background .notification .notification-action,
+.notification-background .notification .close-button,
+.notification-action {
+  background: #242933;
+  border: 1px solid #4c566a;
+  color: #eceff4;
+  box-shadow: none;
+  text-shadow: none;
+  margin: 0;
+  padding: 4px;
+}
+
+.notification-background .notification .notification-action:hover,
+.notification-background .notification .close-button:hover {
+  background: #4c566a;
+}
+
+.control-center {
+  background: #242933;
+  border: 1px solid #4c566a;
+  color: #eceff4;
+}
+
+.control-center .notification-background .notification {
+  background: #2e3440;
+}
+
+.widget-title,
+.widget-title button,
+.widget-dnd,
+.widget-label,
+.widget-mpris,
+.widget-buttons-grid,
+.widget-buttons-grid > flowbox > flowboxchild > button {
+  background: #242933;
+  color: #eceff4;
+  border-radius: 0;
+}
+
+.widget-title button,
+.widget-buttons-grid > flowbox > flowboxchild > button {
+  border: 1px solid #4c566a;
+}
+
+.widget-dnd > switch,
+.widget-dnd > switch slider {
+  border-radius: 0;
+  background: #4c566a;
+  border: 1px solid #4c566a;
+}
+
+.widget-dnd > switch:checked {
+  background: #5e81ac;
+}
