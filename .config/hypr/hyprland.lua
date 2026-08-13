@@ -6,6 +6,7 @@
 ----------------------------------------------------------------------
 
 hl.plugin.load("/usr/lib/libhy3.so")
+hl.plugin.load("/usr/lib/libhyprfocus.so")
 
 ----------------------------------------------------------------------
 -- MONITORS
@@ -83,7 +84,6 @@ hl.on("hyprland.start", function()
   hl.exec_cmd("systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP")
   -- xdg-desktop-portal.service has Requisite=graphical-session.target; launching
   -- Hyprland straight from a TTY never starts it, so screensharing silently dies.
-  -- ponytail: plain `systemctl start`, switch to uwsm if we ever want a real session unit.
   hl.exec_cmd("systemctl --user start hyprland-session.target")
 
   hl.exec_cmd("hyprctl setcursor " .. cursorTheme .. " " .. cursorSize)
@@ -150,9 +150,20 @@ hl.config({
 
   master = { new_status = "master" },
 
-  -- hy3. autotile reproduces sway's "split along the longer axis" behaviour,
-  -- so manual make_group is only needed to override it.
   plugin = {
+    -- flashfocus-like focus feedback. flash, not shrink/slide: border_size and
+    -- rounding are 0, so a geometry wobble reads as noise.
+    -- flash on every pointer cross.
+    hyprfocus = {
+      enable                   = true,
+      animate_floating         = true,
+      only_on_monitor_change   = false,
+      keyboard_focus_animation = "flash",
+      fade_opacity             = 0.8,
+    },
+
+    -- hy3. autotile reproduces sway's "split along the longer axis" behaviour,
+    -- so manual make_group is only needed to override it.
     hy3 = {
       tab_first_window = true,
       autotile = {
@@ -223,6 +234,9 @@ hl.animation({ leaf = "border", enabled = true, speed = 4, bezier = "default" })
 hl.animation({ leaf = "borderangle", enabled = true, speed = 2, bezier = "default" })
 hl.animation({ leaf = "fade", enabled = true, speed = 2, bezier = "default" })
 hl.animation({ leaf = "workspaces", enabled = true, speed = 2, bezier = "default" })
+-- speed is in 100ms units, so lower = snappier
+hl.animation({ leaf = "hyprfocusIn", enabled = true, speed = 0.8, bezier = "default" })
+hl.animation({ leaf = "hyprfocusOut", enabled = true, speed = 0.8, bezier = "default" })
 
 ----------------------------------------------------------------------
 -- KEYBINDS (sway-like, via hy3)
@@ -289,7 +303,6 @@ hl.bind(mainMod .. " + t", hl.dsp.exec_cmd("hyprland-deactivate-touchscreen"))
 -- hy3 only ever resizes the right/bottom edge from a keybind (its resizeTarget
 -- gets CORNER_NONE and picks Right/Down), so left/top edges are done by hopping
 -- focus to the neighbour and moving *its* right/bottom edge instead.
--- ponytail: focus hop is the cheap route; drop it if hy3 ever takes an edge arg.
 local OPPOSITE = { left = "right", up = "down" }
 
 -- `amount` is outward growth of `edge`: positive grows the window, negative shrinks it.
@@ -337,10 +350,8 @@ end)
 -- system mode submap
 hl.bind(mainMod .. " + SHIFT + escape", hl.dsp.submap("system_mode"))
 hl.define_submap("system_mode", function()
-  -- ponytail: chained via hyprctl because one bind takes one dispatcher
   hl.bind("l", hl.dsp.exec_cmd(locker .. " && hyprctl dispatch submap reset"))
   hl.bind("e", hl.dsp.exec_cmd("hyprctl dispatch exit && hyprctl dispatch submap reset"))
-  -- ponytail: no explicit locker here — hypridle's before_sleep_cmd locks on suspend.
   hl.bind("s", hl.dsp.exec_cmd('hyprctl dispatch submap reset && systemctl suspend'))
   hl.bind("r", hl.dsp.exec_cmd('hyprctl dispatch exec "systemctl reboot" && hyprctl dispatch submap reset'))
   hl.bind("SHIFT + s", hl.dsp.exec_cmd('hyprctl dispatch exec "systemctl poweroff" && hyprctl dispatch submap reset'))
