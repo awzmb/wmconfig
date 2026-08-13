@@ -202,7 +202,9 @@ hl.config({
   },
 
   misc = {
-    focus_on_activate        = true,
+    -- false: xdg-activation requests (telegram et al on a new message) only mark
+    -- the window urgent instead of yanking focus/workspace
+    focus_on_activate        = false,
     animate_manual_resizes   = true,
     force_default_wallpaper  = 0,
     disable_hyprland_logo    = true,
@@ -289,10 +291,19 @@ for i = 1, 10 do
   hl.bind(mainMod .. " + SHIFT + " .. key, hy3.move_to_workspace(tostring(i)))
 end
 
--- laptop lid
-hl.bind("switch:off:Lid Switch", hl.dsp.exec_cmd('hyprctl keyword monitor "eDP-1, preferred, auto, auto"'),
-  { locked = true })
-hl.bind("switch:on:Lid Switch", hl.dsp.exec_cmd('hyprctl keyword monitor "eDP-1, disable"'), { locked = true })
+-- laptop lid. `hyprctl keyword` is gone in 0.57; hl.monitor() works at runtime and
+-- merges into the existing rule, so re-enabling keeps mode/position/scale/transform.
+local laptopPanel = "desc:BOE YHB0AP23"
+
+local function setLaptopPanel(disabled)
+  -- hl.get_monitors() lists only enabled, non-mirror monitors: undocked it's just
+  -- the panel, and blanking the last screen leaves nowhere to put the windows.
+  if disabled and #hl.get_monitors() < 2 then return end
+  hl.monitor({ output = laptopPanel, disabled = disabled })
+end
+
+hl.bind("switch:off:Lid Switch", function() setLaptopPanel(false) end, { locked = true })
+hl.bind("switch:on:Lid Switch", function() setLaptopPanel(true) end, { locked = true })
 
 -- touchscreen
 hl.bind(mainMod .. " + SHIFT + t", hl.dsp.exec_cmd("hyprland-activate-touchscreen"))
