@@ -163,7 +163,7 @@ hl.config({
     -- hy3. autotile reproduces sway's "split along the longer axis" behaviour,
     -- so manual make_group is only needed to override it.
     hy3 = {
-      tab_first_window = true,
+      tab_first_window = false,
       autotile = {
         enable           = true,
         ephemeral_groups = true,
@@ -311,7 +311,7 @@ for i = 1, 10 do
     hl.workspace_rule({ workspace = tostring(i), monitor = monitorDefaults[i], default = true })
   end
   hl.bind(mainMod .. " + " .. key, hl.dsp.focus({ workspace = i }))
-  hl.bind(mainMod .. " + SHIFT + " .. key, hy3.move_to_workspace(tostring(i)))
+  hl.bind(mainMod .. " + SHIFT + " .. key, hy3.move_to_workspace(tostring(i), { follow = true }))
 end
 
 -- laptop lid. `hyprctl keyword` is gone in 0.57; hl.monitor() works at runtime and
