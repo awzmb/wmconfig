@@ -295,11 +295,21 @@ hl.bind(mainMod .. " + tab", hy3.focus_tab({ direction = "right", wrap = true })
 hl.bind(mainMod .. " + SHIFT + tab", hy3.focus_tab({ direction = "left", wrap = true }))
 
 -- workspaces
--- all workspaces live on the primary display. If it's not connected Hyprland
--- falls back to the focused monitor (the laptop panel) on its own.
+-- one default workspace per monitor, nothing pinned beyond that: an unpinned
+-- workspace opens on whatever monitor has focus, so 4-10 follow you around and
+-- no monitor ever needs an invented 11/12. Missing monitor -> its default lands
+-- on the focused one.
+local monitorDefaults = {
+  [1] = primaryMonitor,
+  [2] = "desc:QHX GF340H",
+  [3] = "desc:BOE YHB0AP23",
+}
+
 for i = 1, 10 do
   local key = i % 10 -- 10 maps to key 0
-  hl.workspace_rule({ workspace = tostring(i), monitor = primaryMonitor, default = (i == 1) })
+  if monitorDefaults[i] then
+    hl.workspace_rule({ workspace = tostring(i), monitor = monitorDefaults[i], default = true })
+  end
   hl.bind(mainMod .. " + " .. key, hl.dsp.focus({ workspace = i }))
   hl.bind(mainMod .. " + SHIFT + " .. key, hy3.move_to_workspace(tostring(i)))
 end
