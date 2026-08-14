@@ -12,20 +12,18 @@ hl.plugin.load("/usr/lib/libhyprfocus.so")
 -- MONITORS
 ----------------------------------------------------------------------
 
+-- primary display: workspaces default here, laptop panel is the fallback
+local primaryMonitor = "desc:Samsung Electric Company LS49AG95 HNTW800039"
+
 -- fallback for anything not matched below
 hl.monitor({ output = "", mode = "preferred", position = "auto", scale = "auto" })
-
--- from kanshi profile "home". desc: is a prefix match — kanshi's trailing
--- "Unknown" serial is not part of Hyprland's description string.
-hl.monitor({ output = "desc:QHX GF340H", mode = "highres", position = "0x0", scale = "1", transform = 3 })
-hl.monitor({
-  output = "desc:Samsung Electric Company LS49AG95 HNTW800039",
-  mode = "3840x1080@120",
-  position = "2560x0",
-  scale =
-  "1"
-})
-hl.monitor({ output = "desc:BOE YHB0AP23", mode = "1600x2560@120", position = "6400x0", scale = "1.66667", transform = 1 })
+-- monitor configuration
+-- layout: QHX left of primary, laptop panel below it. auto-* placement lets
+-- Hyprland compute the offsets from the real (rotated, scaled) sizes, so the
+-- edges actually touch - directional monitor moves only work when they do.
+hl.monitor({ output = primaryMonitor, mode = "3840x1080@120", position = "0x0", scale = "1" })
+hl.monitor({ output = "desc:QHX GF340H", mode = "highres", position = "auto-left", scale = "1", transform = 3 })
+hl.monitor({ output = "desc:BOE YHB0AP23", mode = "1600x2560@120", position = "auto-down", scale = "2", transform = 1 })
 
 ----------------------------------------------------------------------
 -- PROGRAMS
@@ -277,7 +275,19 @@ hl.bind(mainMod .. " + o", hy3.equalize())
 local dirs = { h = "left", j = "down", k = "up", l = "right" }
 for key, dir in pairs(dirs) do
   hl.bind(mainMod .. " + " .. key, hy3.move_focus(dir))
-  hl.bind(mainMod .. " + SHIFT + " .. key, hy3.move_window(dir))
+  -- hy3:movewindow stops at the workspace edge. ponytail: no edge detection,
+  -- just move and see if the window budged; if not, hand it to the neighbouring
+  -- monitor (a no-op warning when there is none).
+  hl.bind(mainMod .. " + SHIFT + " .. key, function()
+    local w = hl.get_active_window()
+    if not w then return end
+    local before = w.at
+    hl.dispatch(hy3.move_window(dir))
+    local after = w.at
+    if before.x == after.x and before.y == after.y then
+      hl.dispatch(hl.dsp.window.move({ monitor = dir:sub(1, 1) }))
+    end
+  end)
 end
 
 -- tab cycling within a hy3 tab group
@@ -285,8 +295,11 @@ hl.bind(mainMod .. " + tab", hy3.focus_tab({ direction = "right", wrap = true })
 hl.bind(mainMod .. " + SHIFT + tab", hy3.focus_tab({ direction = "left", wrap = true }))
 
 -- workspaces
+-- all workspaces live on the primary display. If it's not connected Hyprland
+-- falls back to the focused monitor (the laptop panel) on its own.
 for i = 1, 10 do
   local key = i % 10 -- 10 maps to key 0
+  hl.workspace_rule({ workspace = tostring(i), monitor = primaryMonitor, default = (i == 1) })
   hl.bind(mainMod .. " + " .. key, hl.dsp.focus({ workspace = i }))
   hl.bind(mainMod .. " + SHIFT + " .. key, hy3.move_to_workspace(tostring(i)))
 end
@@ -349,8 +362,8 @@ hl.bind(mainMod .. " + R", hl.dsp.submap("resize"))
 hl.define_submap("resize", function()
   local edges = { h = "left", j = "down", k = "up", l = "right" }
   for key, edge in pairs(edges) do
-    hl.bind(key, resize_edge(edge, -80))              -- shrink that edge inward
-    hl.bind("SHIFT + " .. key, resize_edge(edge, 80)) -- extend that edge outward
+    hl.bind(key, resize_edge(edge, -100))              -- shrink that edge inward
+    hl.bind("SHIFT + " .. key, resize_edge(edge, 100)) -- extend that edge outward
     hl.bind("CTRL + " .. key, resize_edge(edge, -30))
     hl.bind("CTRL + SHIFT + " .. key, resize_edge(edge, 30))
   end
@@ -361,11 +374,22 @@ end)
 -- system mode submap
 hl.bind(mainMod .. " + SHIFT + escape", hl.dsp.submap("system_mode"))
 hl.define_submap("system_mode", function()
-  hl.bind("l", hl.dsp.exec_cmd(locker .. " && hyprctl dispatch submap reset"))
-  hl.bind("e", hl.dsp.exec_cmd("hyprctl dispatch exit && hyprctl dispatch submap reset"))
-  hl.bind("s", hl.dsp.exec_cmd('hyprctl dispatch submap reset && systemctl suspend'))
-  hl.bind("r", hl.dsp.exec_cmd('hyprctl dispatch exec "systemctl reboot" && hyprctl dispatch submap reset'))
-  hl.bind("SHIFT + s", hl.dsp.exec_cmd('hyprctl dispatch exec "systemctl poweroff" && hyprctl dispatch submap reset'))
+  -- ponytail: lua lambda dispatches both in-process; no hyprctl subshell,
+  -- so a blocking command can't keep us stuck in the submap
+  local function leave_and_run(cmd)
+    return function()
+      hl.dispatch(hl.dsp.submap("reset"))
+      hl.dispatch(hl.dsp.exec_cmd(cmd))
+    end
+  end
+  hl.bind("l", leave_and_run(locker))
+  hl.bind("e", function()
+    hl.dispatch(hl.dsp.submap("reset"))
+    hl.dispatch(hl.dsp.exit())
+  end)
+  hl.bind("s", leave_and_run("systemctl suspend"))
+  hl.bind("r", leave_and_run("systemctl reboot"))
+  hl.bind("SHIFT + s", leave_and_run("systemctl poweroff"))
   hl.bind("escape", hl.dsp.submap("reset"))
   hl.bind("return", hl.dsp.submap("reset"))
 end)
