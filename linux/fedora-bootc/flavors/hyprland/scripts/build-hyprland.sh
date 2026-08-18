@@ -141,4 +141,5 @@ else
 fi
 
 echo "==> hypr stack built:"
-"$STAGING/usr/bin/Hyprland" --version || true
+# ponytail: Hyprland --version still constructs its runtime dir; give it a throwaway one.
+XDG_RUNTIME_DIR=$(mktemp -d) "$STAGING/usr/bin/Hyprland" --version || true
