@@ -17,4 +17,3 @@ read_only = "true"
 a = "gmail_local"
 b = "gmail_remote"
 collections = [ "from b" ]
-
