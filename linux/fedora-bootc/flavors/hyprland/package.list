@@ -91,6 +91,7 @@ libliftoff
 xcb-util-errors # libxcb-errors.so — Hyprland's Xwayland/XWM error reporting
 re2
 muParser
+lcms2       # Hyprland color management (CM protocol)
 tomlplusplus
 pugixml
 librsvg2

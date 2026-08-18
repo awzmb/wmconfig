@@ -52,5 +52,16 @@ gpgcheck=0
 gpgkey=https://pkgs.tailscale.com/stable/fedora/repo.gpg
 EOF
 
+# --- Cisco OpenH264 ------------------------------------------------------
+# We WANT H.264, so the repo stays enabled — but its packages are still built
+# for an older Fedora (openh264-…fc45 while rawhide is already 46/47) and are
+# therefore signed with THAT release's key, which the repo's own
+# gpgkey=…-$releasever-… never points at ("Import of the key didn't help, wrong
+# key?"). fedora-gpg-keys ships every supported release key in the image, so
+# import them all into the rpmdb; dnf then verifies against the right one.
+printf '\e[1;32m-->\e[0m\e[1m Importing all shipped Fedora signing keys (for fedora-cisco-openh264)\e[0m\n'
+rpm --import /usr/share/pki/rpm-gpg/RPM-GPG-KEY-fedora-* \
+       || echo "!! could not import the Fedora signing keys, openh264 may fail signature checks"
+
 # --- Refresh metadata after all repos are configured ---------------------
 dnf -y makecache --refresh || true

@@ -42,7 +42,7 @@ dnf -y install --skip-unavailable \
 	tomlplusplus-devel pugixml-devel librsvg2-devel libzip-devel \
 	zlib-devel zlib-ng-devel glslang-devel readline-devel lua-devel \
 	qt6-qtbase-devel qt6-qtwayland-devel \
-	libuuid-devel libXcursor-devel libeis-devel re2-devel muParser-devel \
+	libuuid-devel libXcursor-devel libeis-devel re2-devel muParser-devel lcms2-devel \
 	libjpeg-turbo-devel libwebp-devel libspng-devel file-devel \
 	sdbus-cpp-devel sdbus-c++-devel pipewire-devel pam-devel glaze-devel \
 	iniparser-devel abseil-cpp-devel \
