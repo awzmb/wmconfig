@@ -14,7 +14,7 @@ GROUP_ID=$(id -g)
 # to your user via --userns=keep-id), so nvim can write ~/.local/state etc.
 # Your actual work persists via the /workspace bind mount.
 #
-# Want shada/undo history to survive `--rm`? Add ONLY a state volume (it
+# Want shada history to survive `--rm` too? Add ONLY a state volume (it
 # holds no baked content, so nothing is hidden and no seeding is needed):
 #   --volume neovim_state:/home/${USERNAME}/.local/state:U,Z \
 # If the first arg is a directory, mount it as /workspace and drop it from
@@ -47,5 +47,6 @@ podman run --rm -it \
   --volume "${XDG_RUNTIME_DIR}/${WAYLAND_DISPLAY}:${XDG_RUNTIME_DIR}/${WAYLAND_DISPLAY}" \
   --user "${USER_ID}:${GROUP_ID}" \
   --volume "${WORKSPACE_DIR}:/workspace:z" \
+  --volume "neovim_undo:/home/${USERNAME}/.local/share/nvim/undo:U,Z" \
   --workdir /workspace \
   "${IMAGE_NAME}" nvim "$@"

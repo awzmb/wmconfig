@@ -6,4 +6,4 @@ podman run --rm --interactive \
   --volume $HOME/.rustup:/rustup \
   --volume "${PWD}":/workspace \
   --workdir /workspace \
-  docker.io/library/rust cargo $@
+  docker.io/library/rust cargo $@ 

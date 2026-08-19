@@ -281,7 +281,6 @@ pipewire-plugin-libcamera
 wireguard-tools
 nmap-ncat
 termshark
-opensnitch
 NetworkManager
 NetworkManager-wifi
 NetworkManager-vpnc
