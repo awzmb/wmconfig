@@ -6,7 +6,6 @@
 ----------------------------------------------------------------------
 
 hl.plugin.load("/usr/lib/libhy3.so")
-hl.plugin.load("/usr/lib/libhyprfocus.so")
 
 ----------------------------------------------------------------------
 -- MONITORS
@@ -68,6 +67,7 @@ hl.env("TERMINAL", terminal)
 
 hl.on("hyprland.start", function()
   hl.exec_cmd("waybar")
+  hl.exec_cmd("dunst")
   hl.exec_cmd("hypridle")
   hl.exec_cmd("nm-applet --indicator")
   hl.exec_cmd("/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1")
@@ -149,17 +149,6 @@ hl.config({
   master = { new_status = "master" },
 
   plugin = {
-    -- flashfocus-like focus feedback. flash, not shrink/slide: border_size and
-    -- rounding are 0, so a geometry wobble reads as noise.
-    -- flash on every pointer cross.
-    hyprfocus = {
-      enable                   = true,
-      animate_floating         = true,
-      only_on_monitor_change   = false,
-      keyboard_focus_animation = "flash",
-      fade_opacity             = 0.8,
-    },
-
     -- hy3. autotile reproduces sway's "split along the longer axis" behaviour,
     -- so manual make_group is only needed to override it.
     hy3 = {
@@ -233,10 +222,11 @@ hl.animation({ leaf = "windowsOut", enabled = true, speed = 2, bezier = "default
 hl.animation({ leaf = "border", enabled = true, speed = 4, bezier = "default" })
 hl.animation({ leaf = "borderangle", enabled = true, speed = 2, bezier = "default" })
 hl.animation({ leaf = "fade", enabled = true, speed = 2, bezier = "default" })
+-- setprop opacity animates through fadeSwitch, so this governs the focus flash
+-- below: 50ms in, restored at 60ms.
+hl.animation({ leaf = "fadeSwitch", enabled = true, speed = 0.5, bezier = "default" })
 hl.animation({ leaf = "workspaces", enabled = true, speed = 2, bezier = "default" })
--- speed is in 100ms units, so lower = snappier
-hl.animation({ leaf = "hyprfocusIn", enabled = true, speed = 0.8, bezier = "default" })
-hl.animation({ leaf = "hyprfocusOut", enabled = true, speed = 0.8, bezier = "default" })
+-- speed is in 100ms units, so lower = snappier.
 
 ----------------------------------------------------------------------
 -- KEYBINDS (sway-like, via hy3)
@@ -270,6 +260,18 @@ hl.bind(mainMod .. " + SHIFT + a", hy3.change_focus("lower"))
 hl.bind(mainMod .. " + f", hl.dsp.window.fullscreen())
 hl.bind(mainMod .. " + p", hy3.expand("expand"))
 hl.bind(mainMod .. " + o", hy3.equalize())
+
+-- hyprfocus never actually flashed here, so it is gone; window.active does the
+-- same job natively and covers mouse focus too. ponytail: opacity dip, the
+-- fadeSwitch animation makes it a flash. Restores to 1 rather than "unset"
+-- because no opacity window rules exist here; use "unset" if that changes.
+hl.on("window.active", function(w)
+  if not w then return end
+  hl.dispatch(hl.dsp.window.set_prop({ prop = "opacity", value = "0.8", window = w }))
+  hl.timer(function()
+    hl.dispatch(hl.dsp.window.set_prop({ prop = "opacity", value = "1", window = w }))
+  end, { timeout = 60, type = "oneshot" })
+end)
 
 -- focus / move. hy3's variants are group-aware; the built-ins are not.
 local dirs = { h = "left", j = "down", k = "up", l = "right" }
