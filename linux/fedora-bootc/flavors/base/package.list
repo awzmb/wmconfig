@@ -162,6 +162,7 @@ xdg-desktop-portal # base portal frontend (backends are per-flavor)
 
 # Hardware / microcode
 microcode_ctl # covers intel + amd ucode on Fedora
+amd-ucode-firmware
 
 # Shell and tools
 # ponytail: capslock->esc is done natively via a udev hwdb remap (see

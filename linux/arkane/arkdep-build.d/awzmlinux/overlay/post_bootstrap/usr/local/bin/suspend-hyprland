@@ -1,10 +1,59 @@
 #!/bin/bash
 
+# Freeze Hyprland across suspend so it cannot react to half-initialised displays.
+#
+# On this box (Ryzen AI 9 HX, both ultrawides on USB4 DP-tunnelled links) the
+# GPU comes back before the USB4 routers do: amdgpu logs a burst of
+# "DPIA AUX failed ... error 7" and the real HPD arrives ~9s after resume. Any
+# layout applied in that window sees empty EDIDs, so the desc: rules in
+# hyprland.lua do not match and the catch-all monitor rule claims the screens
+# with preferred/auto and no transform.
+#
+# So: hold the freeze until the pre-suspend connectors are back, then reload to
+# re-assert the desc: rules against EDIDs that actually exist.
+
+connected() {
+    # ponytail: sysfs beats parsing hyprctl here — it works while Hyprland is
+    # SIGSTOPped and needs no session env.
+    cat /sys/class/drm/card*-*/status 2>/dev/null | grep -c '^connected$'
+}
+
+STATE=/run/suspend-hyprland.connectors
+
+# Wait until as many connectors are back as we had before suspending. A plain
+# "has it gone quiet" check is not enough: the DPIA links are quiet-but-absent
+# for the first ~9s, which looks identical to settled.
+wait_for_displays() {
+    local want deadline=$((SECONDS + 30))
+    want=$(cat "$STATE" 2>/dev/null) || want=0
+    ((want > 0)) || return 0
+
+    while ((SECONDS < deadline)); do
+        (($(connected) >= want)) && { sleep 2; return 0; }
+        sleep 1
+    done
+    # ponytail: timeout falls through and resumes anyway — a wrong layout beats a
+    # machine that never wakes up. Bump the deadline if a dock is slower than 30s.
+}
+
+reload_as_user() {
+    local pid uid user
+    pid=$(pgrep -x Hyprland | head -1) || return 0
+    [[ -n $pid ]] || return 0
+    uid=$(stat -c %u "/proc/$pid") || return 0
+    user=$(id -nu "$uid") || return 0
+    runuser -u "$user" -- env "XDG_RUNTIME_DIR=/run/user/$uid" hyprctl reload
+}
+
 case "$1" in
     suspend)
+        connected > "$STATE"
         killall -STOP Hyprland
         ;;
     resume)
+        wait_for_displays
         killall -CONT Hyprland
+        sleep 1
+        reload_as_user
         ;;
 esac
