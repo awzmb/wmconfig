@@ -1,4 +1,4 @@
-FROM docker.io/golang:1.27.0-trixie@sha256:22b64c486d44847387a2d9591bb705dc4b3a1227bb393d76a9d4ae176d046327 AS build
+FROM docker.io/golang:1.27.0-trixie@sha256:ae28539d2ef595b9a2930dd7f031d9592376829dc0eae7cb869559f7d5812c3a AS build
 
 RUN git clone https://github.com/kubernetes/kompose.git /go/src/kompose
 

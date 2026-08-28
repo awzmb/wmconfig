@@ -154,8 +154,10 @@ sudo ./fedora-update [--apply] [flavor]   # default flavor: gnome-sway
 This rebuilds `localhost/fedora-<flavor>:latest` into root's podman storage
 (`fedora-build`) and then runs
 `bootc switch --transport containers-storage localhost/fedora-<flavor>:latest`
-to deploy it for the next boot. It's rootful because `bootc` runs as root and
-reads root's storage.
+(or `bootc upgrade`, when the origin already points there and `switch` reports
+"Image specification is unchanged") to deploy it for the next boot, then
+finalizes that deployment into the bootloader immediately rather than at
+shutdown. It's rootful because `bootc` runs as root and reads root's storage.
 
 - **Apply:** reboot to boot the new image, or pass `--apply` to reboot
   automatically once staged.

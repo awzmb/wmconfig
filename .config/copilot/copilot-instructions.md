@@ -21,7 +21,7 @@ Only these are installed (from the Dockerfile). Assume nothing else exists:
 `bash`, `curl`, `ca-certificates`, `openssl`, `git`, `gh`, `copilot`,
 `make`, `cmake`, `gcc`, `glibc`, `go`, `golangci-lint`,
 `rust` (`cargo`, `rustc`), `rust-analyzer`,
-`nodejs` (`node`, `npm`), `yarn`, `uv`,
+`nodejs` (`node`, `npm`), `yarn`, `uv`, `python3`
 `helm`, `helm-docs`, `kustomize`, `opentofu` (`tofu`), `terragrunt`,
 `jq`, `yq`, `tzdata`, `shadow`.
 

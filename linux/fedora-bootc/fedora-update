@@ -10,9 +10,11 @@
 #   1. `fedora-build <flavor>` rebuilds localhost/fedora-<flavor>:latest into
 #      ROOT's podman storage — that's the store bootc reads from.
 #   2. `bootc switch --transport containers-storage localhost/fedora-<flavor>:latest`
+#      (falling back to `bootc upgrade` when the origin already points there)
 #      re-reads the freshly built image from local storage and deploys it for the
-#      next boot. Reboot (or pass --apply) to activate; `bootc rollback` reverts
-#      to the previous deployment if something's wrong.
+#      next boot, then the staged deployment is finalized into the bootloader
+#      immediately instead of at shutdown. Reboot (or pass --apply) to activate;
+#      `bootc rollback` reverts to the previous deployment if something's wrong.
 #
 # Must run as root: both the rootful build (so the image lands where bootc looks)
 # and bootc itself need privilege. Requires this repo (flavors/ + fedora-build),
@@ -22,7 +24,7 @@
 #   sudo ./fedora-update [--apply] [flavor]
 #
 # Options:
-#   --apply     reboot immediately after staging (bootc switch --apply)
+#   --apply     reboot immediately after staging
 #   -h, --help  show this help
 #
 # Examples:
@@ -67,15 +69,35 @@ info "building $image locally"
 #    later run must go through `upgrade`, which re-reads the rebuilt image.
 #    ponytail: run switch, detect the no-op, fall through to upgrade.
 info "staging $image for next boot (containers-storage)"
-apply_args=()
-[[ $apply -eq 1 ]] && apply_args+=(--apply)
-out=$(bootc switch --transport containers-storage "${apply_args[@]}" "$image" 2>&1 | tee /dev/stderr)
+out=$(bootc switch --transport containers-storage "$image" 2>&1 | tee /dev/stderr)
 if grep -qi 'specification is unchanged' <<<"$out"; then
 	info "origin already set — pulling the rebuilt image with bootc upgrade"
-	bootc upgrade "${apply_args[@]}"
+	bootc upgrade
 fi
 
-if [[ $apply -eq 0 ]]; then
+# 3. Prove something was actually staged. Both switch and upgrade exit 0 when
+#    they decide there is nothing to do, which silently boots the OLD image.
+staged=$(bootc status --format=json 2>/dev/null | grep -o '"staged":[[:space:]]*null' || true)
+if [[ -n $staged ]]; then
+	die "nothing staged — bootc considers the running deployment up to date (check: bootc status)"
+fi
+
+# 4. Finalize NOW instead of at shutdown. ostree writes the new bootloader entry
+#    only in ostree-finalize-staged.service's ExecStop; a hung or power-button
+#    shutdown throws the update away and you boot the old image again.
+#    ponytail: gives up ostree's "commit only on a clean shutdown" safety net —
+#    the trade is deliberate, an unfinalized update is the thing biting here.
+info "finalizing staged deployment now (surviving an unclean shutdown)"
+systemctl stop ostree-finalize-staged.service || ostree admin finalize-staged
+
+# 5. Release container-storage mounts the rebuild left behind; they are what
+#    systemd-shutdown reports as "Failed to umount /run/shutdown/mounts/…".
+podman unmount --all >/dev/null 2>&1 || true
+
+if [[ $apply -eq 1 ]]; then
+	info "rebooting"
+	systemctl reboot
+else
 	cat <<EOF
 
 Staged for next boot. Reboot to apply:

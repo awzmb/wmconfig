@@ -143,10 +143,17 @@ reason about the Containerfiles.
 - **`fedora-update` is the day-2 path** (in-place update of an installed system):
   it runs `fedora-build` ROOTFUL (must be root so the rebuilt image lands in the
   store bootc reads) then `bootc switch --transport containers-storage
-  localhost/fedora-<flavor>:latest` to stage it for the next boot. `switch`
-  re-reads the freshly built image each run, so it doubles as the re-deploy
-  command; `--apply` reboots; `bootc rollback` reverts. bootc has no rootless
-  mode — same root requirement as `fedora-usb`.
+  localhost/fedora-<flavor>:latest` to stage it for the next boot. `switch` only
+  sets the ORIGIN: once it already points at that ref it exits 0 with "Image
+  specification is unchanged" and stages NOTHING (it compares the spec, not the
+  image), so every later run falls through to `bootc upgrade`, which re-reads the
+  rebuilt image. Both commands exit 0 when they no-op, hence the `bootc status`
+  check that dies if `"staged": null`. The staged deployment is then finalized
+  right away (`systemctl stop ostree-finalize-staged.service`) because ostree
+  otherwise writes the new bootloader entry only in that unit's ExecStop at
+  shutdown — a hung or power-button shutdown silently discards the update and the
+  OLD image boots again. `--apply` reboots after finalizing; `bootc rollback`
+  reverts. bootc has no rootless mode — same root requirement as `fedora-usb`.
 - **Plymouth runs in USERSPACE, not the initramfs**: the initramfs carries only
   `ostree crypt systemd-cryptsetup lvm dm` (declared in `base/overlay/etc/dracut.conf.d/fedora.conf`
   via `add_dracutmodules`); base `configure.sh` selects a Plymouth theme, writes
