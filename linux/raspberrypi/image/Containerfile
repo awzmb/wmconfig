@@ -1,0 +1,41 @@
+# Containerfile — minimal Fedora bootc image for a Raspberry Pi 5 (aarch64).
+#
+# Everything the image needs lives next to this file:
+#   package.list         dnf packages to layer
+#   overlay/             rootfs overlay (/etc config)
+#   scripts/configure.sh Pi firmware relocation, services, user, kargs, initramfs
+#   authorized_keys      OPTIONAL: SSH public keys for the `fedora` user
+#
+# Base: standard Fedora bootc, aarch64. Override with `--build-arg BASE=<ref>`.
+ARG BASE=quay.io/fedora/fedora-bootc:rawhide
+FROM ${BASE}
+
+# ONE RUN over a bind-mounted context (never COPY), so no build cruft — dnf
+# caches, logs, the context dir — is ever baked into a layer. Deleting files in a
+# LATER layer does not reclaim their space, so install + overlay + configure +
+# cleanup must share this single RUN.
+#
+# --setopt=install_weak_deps=False drops non-essential recommends (the biggest
+# size lever); --skip-unavailable/--skip-broken keep the build resilient across
+# Fedora releases.
+#
+# CACHEBUST is a content hash of the build context passed by ./fedora-build.
+# podman does NOT hash bind-mounted files, so without referencing it here an edit
+# to scripts/, package.list or overlay/ would silently reuse a stale layer.
+ARG CACHEBUST
+RUN --mount=type=bind,source=.,target=/run/fedora/image \
+    set -eu; \
+    : "cachebust ${CACHEBUST:-}"; \
+    HB=/run/fedora/image; export HB; \
+    if [ ! -L /opt ]; then rmdir /opt 2>/dev/null && ln -sfn var/opt /opt || true; fi; \
+    mkdir -p /var/opt /var/roothome; \
+    pkgs=$(sed -e 's/#.*//' "$HB/package.list" | tr -s ' \t' '\n' | awk 'NF'); \
+    dnf -y install --setopt=install_weak_deps=False \
+        --skip-unavailable --skip-broken $pkgs; \
+    cp -a "$HB/overlay/." /; \
+    bash "$HB/scripts/configure.sh"; \
+    dnf clean all; \
+    rm -rf /var/cache/* /var/lib/dnf/history* /var/log/* /tmp/* /var/tmp/* 2>/dev/null || true
+
+# bootc images must pass the container lint.
+RUN bootc container lint

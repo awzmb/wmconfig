@@ -1,0 +1,106 @@
+#!/usr/bin/env bash
+#
+# fedora-build
+#
+# Build the minimal Fedora bootc image for a Raspberry Pi 5 (aarch64).
+#
+# image/Containerfile is the base and the driver; an optional flavor layer from
+# flavors/<flavor>/ is built FROM it. This script just resolves the tags, forces
+# the arm64 platform and passes a content hash of each build context through as a
+# cache-buster.
+#
+#   ./fedora-build          -> localhost/fedora-rpi5:latest        (base only)
+#   ./fedora-build cephfs   -> localhost/fedora-rpi5-cephfs:latest (base + Ceph)
+#
+# On an x86_64 host this is a cross-build: podman runs the aarch64 dnf under
+# qemu-user-static via binfmt_misc (~10x slower). Install qemu-user-static (or
+# run `podman run --privileged docker.io/multiarch/qemu-user-static --reset -p yes`)
+# first, or just build on the Pi itself.
+#
+# Usage:
+#   ./fedora-build [flavor]
+#
+# Environment overrides:
+#   FEDORA_BASE       FROM of the base image (default: image/Containerfile's)
+#   FEDORA_TAG        built image tag (default localhost/fedora-rpi5[-<flavor>]:latest)
+#   FEDORA_BASE_TAG   base image tag (default localhost/fedora-rpi5:latest)
+#   FEDORA_SKIP_BASE  set to 1 to reuse an existing base image (faster iteration)
+#   FEDORA_PLATFORM   build platform (default linux/arm64)
+#   PODMAN            podman binary to use (default: podman)
+#
+set -euo pipefail
+
+self_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+imagedir="$self_dir/image"
+PODMAN=${PODMAN:-podman}
+platform=${FEDORA_PLATFORM:-linux/arm64}
+base_tag=${FEDORA_BASE_TAG:-localhost/fedora-rpi5:latest}
+
+die() { printf '\e[1;31m==> error:\e[0m %s\n' "$*" >&2; exit 1; }
+info() { printf '\e[1;32m==>\e[0m\e[1m %s\e[0m\n' "$*"; }
+warn() { printf '\e[1;33m==> warning:\e[0m %s\n' "$*" >&2; }
+
+flavor=${1:-}
+flavordir="$self_dir/flavors/$flavor"
+if [[ -n $flavor ]]; then
+	[[ -f $flavordir/Containerfile ]] \
+		|| die "no flavor '$flavor' — expected $flavordir/Containerfile (have: $(ls "$self_dir/flavors" 2>/dev/null | tr '\n' ' '))"
+	image_tag=${FEDORA_TAG:-localhost/fedora-rpi5-${flavor}:latest}
+else
+	image_tag=${FEDORA_TAG:-$base_tag}
+fi
+
+[[ -f $imagedir/Containerfile ]] || die "missing $imagedir/Containerfile"
+command -v "$PODMAN" >/dev/null 2>&1 || die "$PODMAN not found; install podman/buildah"
+
+# Cross-building aarch64 on x86_64 needs binfmt_misc + qemu-user-static, and the
+# failure mode without it ("exec format error" deep inside dnf) is unhelpful.
+if [[ $platform == linux/arm64 && $(uname -m) != aarch64 ]]; then
+	if [[ ! -e /proc/sys/fs/binfmt_misc/qemu-aarch64 ]]; then
+		warn "cross-building arm64 on $(uname -m) but no qemu-aarch64 binfmt handler is registered"
+		warn "install qemu-user-static (or run the multiarch/qemu-user-static --reset -p yes container) first"
+	fi
+	info "cross-building for $platform — expect this to be slow"
+fi
+
+# podman does NOT hash the files bind-mounted by the Containerfile's RUN (unlike
+# COPY), so an edit to scripts/, package.list or overlay/ would reuse the cached
+# (stale) layer. Feed it a content hash the RUN references instead.
+ctx_hash() {
+	find "$1" -type f -not -path '*/.git/*' -exec sha256sum {} + 2>/dev/null \
+		| sort | sha256sum | cut -d' ' -f1
+}
+
+pkg_count=$(sed -e 's/#.*//' "$imagedir/package.list" | tr -s ' \t' '\n' | awk 'NF' | wc -l)
+info "base image   : $base_tag ($pkg_count packages, $platform)"
+[[ -n $flavor ]] && info "target image : $image_tag (+$(sed -e 's/#.*//' "$flavordir/package.list" | tr -s ' \t' '\n' | awk 'NF' | wc -l) $flavor packages)"
+
+# --- 1. base layer --------------------------------------------------------
+if [[ ${FEDORA_SKIP_BASE:-0} == 1 ]]; then
+	info "FEDORA_SKIP_BASE=1 — reusing existing base image $base_tag"
+	"$PODMAN" image exists "$base_tag" || die "base image $base_tag not found; build it once without FEDORA_SKIP_BASE"
+else
+	base_args=()
+	[[ -n ${FEDORA_BASE:-} ]] && base_args=(--build-arg "BASE=$FEDORA_BASE")
+	"$PODMAN" build --pull=newer --platform "$platform" "${base_args[@]}" \
+		--build-arg "CACHEBUST=$(ctx_hash "$imagedir")" \
+		-t "$base_tag" -f "$imagedir/Containerfile" "$imagedir"
+fi
+
+# --- 2. flavor layer ------------------------------------------------------
+if [[ -n $flavor ]]; then
+	info "building flavor layer ($flavor) FROM $base_tag"
+	"$PODMAN" build --platform "$platform" \
+		--build-arg "BASE=$base_tag" \
+		--build-arg "CACHEBUST=$(ctx_hash "$flavordir")" \
+		-t "$image_tag" -f "$flavordir/Containerfile" "$flavordir"
+fi
+
+info "built: $image_tag"
+cat <<EOF
+
+Next steps:
+  * Write an SD card / NVMe:  sudo ./fedora-image ${flavor:+$flavor }--device /dev/sdX
+  * Inspect the image:        sudo ./test.sh $image_tag
+  * Push to a registry:       $PODMAN push $image_tag <registry>/<repo>:<tag>
+EOF

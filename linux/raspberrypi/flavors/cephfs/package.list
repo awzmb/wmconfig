@@ -1,0 +1,23 @@
+# Packages for the cephfs flavor (Ceph node with an NVMe OSD).
+#
+# Deliberately NO ceph-mon/ceph-osd/ceph-mgr/ceph-mds RPMs: cephadm deploys those
+# as podman containers from quay.io/ceph/ceph (arm64 manifest available). The host
+# only needs the bootstrap tool, the client CLI and LVM.
+
+# --- Ceph ----------------------------------------------------------------
+cephadm # bootstrap + orchestrate the containerized daemons
+ceph-common # ceph/rados/rbd CLI + /usr/bin/mount.ceph (kernel CephFS mounts)
+ceph-fuse # FUSE fallback when the kernel client can't be used
+ceph-selinux # SELinux policy; Fedora runs enforcing
+lvm2 # ceph-volume provisions OSDs as LVM logical volumes
+chrony # mon clock skew is a hard failure — time sync is REQUIRED
+
+# --- NVMe / disk tooling -------------------------------------------------
+nvme-cli # namespace/format/smart-log for the OSD device
+smartmontools # SMART health of the NVMe backing the OSD
+gdisk # wipe/inspect GPT before handing a disk to ceph-volume
+util-linux # lsblk/wipefs/blkdiscard
+
+# --- Diagnostics you will want at 3am on a storage node ------------------
+iotop
+sysstat # iostat, mpstat, sar

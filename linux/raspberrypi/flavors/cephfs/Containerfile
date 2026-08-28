@@ -1,0 +1,29 @@
+# Containerfile — CephFS / distributed-storage layer.
+#
+# FROM the minimal Pi 5 base image; adds only what a Ceph node needs. The Ceph
+# DAEMONS are NOT installed: cephadm runs mon/mgr/osd/mds as podman containers
+# (quay.io/ceph/ceph, multi-arch, arm64 included), which is the upstream-supported
+# path and keeps this image small and independent of Fedora's ceph RPM cadence.
+#
+#   package.list         packages to layer
+#   overlay/             rootfs overlay (sysctl tuning)
+#   scripts/configure.sh time sync, /etc/ceph, kernel modules
+#
+# ./fedora-build cephfs passes BASE + CACHEBUST for you.
+ARG BASE=localhost/fedora-rpi5:latest
+FROM ${BASE}
+
+ARG CACHEBUST
+RUN --mount=type=bind,source=.,target=/run/fedora/flavor \
+    set -eu; \
+    : "cachebust ${CACHEBUST:-}"; \
+    HB=/run/fedora/flavor; export HB; \
+    pkgs=$(sed -e 's/#.*//' "$HB/package.list" | tr -s ' \t' '\n' | awk 'NF'); \
+    dnf -y install --setopt=install_weak_deps=False \
+        --skip-unavailable --skip-broken $pkgs; \
+    cp -a "$HB/overlay/." /; \
+    bash "$HB/scripts/configure.sh"; \
+    dnf clean all; \
+    rm -rf /var/cache/* /var/lib/dnf/history* /var/log/* /tmp/* /var/tmp/* 2>/dev/null || true
+
+RUN bootc container lint

@@ -1,0 +1,184 @@
+#!/usr/bin/env bash
+#
+# fedora-image
+#
+# Turn the built bootc image into a raw disk image and (optionally) write it to
+# an SD card / USB stick / NVMe drive for a Raspberry Pi 5.
+#
+# The raw image is produced by osbuild's image-builder (the successor of
+# bootc-image-builder), which runs `bootc install to-disk` internally: GPT + a
+# FAT32 ESP + ext4 /boot + ext4 root. Our bootupctl shim (image/scripts/configure.sh)
+# drops the Pi firmware and U-Boot onto that ESP during the install, which is what
+# makes the card bootable on a Pi 5 — the Pi has no UEFI of its own.
+#
+# Runs as root: image-builder needs a privileged container and root's podman
+# storage, and flashing writes a raw block device. Build the image rootful too so
+# it lands in the store image-builder reads: `sudo ./fedora-build`.
+#
+# Usage:
+#   sudo ./fedora-image [options] [flavor]
+#
+# Options:
+#   --image <ref>    image to build from (default: localhost/fedora-rpi5[-<flavor>]:latest)
+#   --output <dir>   output directory (default: ./target)
+#   --device <dev>   block device to flash, e.g. /dev/sdb or /dev/mmcblk0 (DESTRUCTIVE)
+#   --builder <ref>  image-builder container (default: ghcr.io/osbuild/image-builder-cli:latest)
+#   --yes            skip the flashing confirmation prompt
+#   -h, --help       show this help
+#
+# Examples:
+#   sudo ./fedora-image                            # just build ./target/*.raw
+#   sudo ./fedora-image --device /dev/mmcblk0      # build and write the SD card
+#   sudo ./fedora-image cephfs --device /dev/sdb   # the Ceph node image
+set -euo pipefail
+
+self_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+PODMAN=${PODMAN:-podman}
+
+die() { printf '\e[1;31m==> error:\e[0m %s\n' "$*" >&2; exit 1; }
+info() { printf '\e[1;32m==>\e[0m\e[1m %s\e[0m\n' "$*"; }
+warn() { printf '\e[1;33m==> warning:\e[0m %s\n' "$*" >&2; }
+
+image=
+outdir="$self_dir/target"
+device=
+builder=${FEDORA_IMAGE_BUILDER:-ghcr.io/osbuild/image-builder-cli:latest}
+assume_yes=0
+flavor=
+
+while [[ $# -gt 0 ]]; do
+	case "$1" in
+		--image)   image=$2; shift 2;;
+		--output)  outdir=$2; shift 2;;
+		--device)  device=$2; shift 2;;
+		--builder) builder=$2; shift 2;;
+		--yes|-y)  assume_yes=1; shift;;
+		-h|--help) sed -n '2,32p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'; exit 0;;
+		-*)        die "unknown option: $1";;
+		*)         flavor=$1; shift;;
+	esac
+done
+
+# Same tag convention as fedora-build: localhost/fedora-rpi5[-<flavor>]:latest.
+image=${image:-${FEDORA_TAG:-localhost/fedora-rpi5${flavor:+-$flavor}:latest}}
+
+command -v "$PODMAN" >/dev/null 2>&1 || die "$PODMAN not found"
+[[ $(id -u) -eq 0 ]] || die "must run as root (image-builder needs a privileged container): sudo ./fedora-image"
+
+outdir=$(mkdir -p "$outdir" && realpath -- "$outdir")
+
+# --- make sure the image is in ROOT's podman storage ---------------------
+# image-builder (rootful) reads root's storage, which is separate from a rootless
+# `./fedora-build`. Fast path: `sudo ./fedora-build` already put it there.
+root_id=$("$PODMAN" image inspect --format '{{.Id}}' "$image" 2>/dev/null || true)
+user_id=""
+if [[ -n ${SUDO_USER:-} ]]; then
+	user_id=$(sudo -u "$SUDO_USER" podman image inspect --format '{{.Id}}' "$image" 2>/dev/null || true)
+fi
+if [[ -n $user_id && $user_id != "$root_id" ]]; then
+	info "syncing image from ${SUDO_USER}'s storage to root; tip: 'sudo ./fedora-build' avoids this copy"
+	sudo -u "$SUDO_USER" podman image save "$image" | "$PODMAN" image load \
+		|| die "transfer failed — build the image first with: sudo ./fedora-build"
+elif [[ -n $root_id ]]; then
+	info "using image already in root storage (${root_id:0:12})"
+else
+	die "image '$image' not found in root or ${SUDO_USER:-local} podman storage; build it first: sudo ./fedora-build"
+fi
+
+# --- build the raw disk image -------------------------------------------
+# ext4 root, not the xfs default: the Pi's U-Boot/GRUB path and every Pi recovery
+# tool deal with ext4, and osbuild's growfs handles it on first boot.
+arch_args=()
+[[ $(uname -m) != aarch64 ]] && {
+	warn "building an aarch64 image on $(uname -m) — cross-building needs qemu-user-static and is slow"
+	arch_args=(--arch aarch64)
+}
+
+info "building raw disk image from $image"
+"$PODMAN" run --rm --privileged --pull=newer \
+	--security-opt label=type:unconfined_t \
+	-v /var/lib/containers/storage:/var/lib/containers/storage \
+	-v "$outdir":/output \
+	"$builder" build \
+	--bootc-ref "$image" \
+	--bootc-default-fs ext4 \
+	"${arch_args[@]}" \
+	raw
+
+# nullglob + array, not a bare `ls glob glob glob`: unmatched globs make ls exit
+# non-zero, and under `set -euo pipefail` that killed the script here SILENTLY —
+# it looked like the build had simply finished.
+shopt -s nullglob
+raws=("$outdir"/*.raw "$outdir"/*/*.raw "$outdir"/*/*/*.raw)
+shopt -u nullglob
+[[ ${#raws[@]} -gt 0 ]] || die "image-builder did not produce a .raw file under $outdir"
+raw=$(ls -t "${raws[@]}" | head -1)
+# The .raw is SPARSE: `du` shows what is allocated, but dd writes every byte
+# including the holes, so report both or the 10 GiB write looks inexplicable.
+info "artifact: $raw ($(du -h "$raw" | cut -f1) on disk, $(ls -lh "$raw" | awk '{print $5}') to write)"
+
+# --- verify the ESP actually got the Pi firmware -------------------------
+# bootupd knows nothing about Raspberry Pi; the firmware only reaches the ESP
+# via our bootupctl shim. If that shim silently no-ops, image-builder still
+# reports success and you get a card that never lights up. So look inside.
+info "checking the ESP for the Pi boot firmware"
+esp_start=$(sfdisk -lo Start "$raw" 2>/dev/null | awk '$1 ~ /^[0-9]+$/ {print $1; exit}')
+if [[ -z $esp_start ]]; then
+	warn "could not read the partition table of $raw — skipping the ESP check"
+else
+	espdir=$(mktemp -d)
+	if mount -o "ro,loop,offset=$((esp_start * 512))" "$raw" "$espdir" 2>/dev/null; then
+		missing=
+		for f in config.txt rpi-u-boot.bin bcm2712-rpi-5-b.dtb; do
+			[[ -e $espdir/$f ]] || missing="$missing $f"
+		done
+		[[ -d $espdir/EFI ]] || missing="$missing EFI/"
+		umount "$espdir"
+		[[ -n $missing ]] && die "ESP is missing:$missing
+The bootupctl shim did not populate /boot/efi — this card will NOT boot a Pi 5.
+Check 'Installing bootloader via bootupd' in the log above and image/scripts/configure.sh."
+		info "ESP looks bootable (config.txt, U-Boot, Pi 5 DTB and EFI/ present)"
+	else
+		warn "could not mount the ESP of $raw — skipping the check"
+	fi
+	rmdir "$espdir" 2>/dev/null || true
+fi
+
+# --- optionally flash ----------------------------------------------------
+if [[ -z $device ]]; then
+	cat <<EOF
+
+No --device given, so nothing was written.
+
+To write it to an SD card / NVMe manually:
+  sudo dd if='$raw' of=/dev/sdX bs=4M status=progress oflag=direct conv=fsync
+  sync
+
+(Check the device name with 'lsblk' first! The root filesystem grows to fill the
+card on first boot.)
+EOF
+	exit 0
+fi
+
+[[ -b $device ]] || die "$device is not a block device"
+if lsblk -rno MOUNTPOINT "$device" 2>/dev/null | grep -q '^/$'; then
+	die "$device appears to be mounted at /; refusing to flash"
+fi
+
+echo
+warn "About to OVERWRITE all data on $device:"
+lsblk -o NAME,SIZE,TYPE,MODEL,MOUNTPOINTS "$device" || lsblk "$device"
+echo
+if [[ $assume_yes -ne 1 ]]; then
+	read -r -p "Type 'YES' to write '$(basename "$raw")' to $device: " ans
+	[[ $ans == YES ]] || die "aborted by user"
+fi
+
+for part in $(lsblk -rno NAME "$device" | tail -n +2); do
+	umount "/dev/$part" 2>/dev/null || true
+done
+
+info "writing to $device ..."
+dd if="$raw" of="$device" bs=4M status=progress oflag=direct conv=fsync
+sync
+info "done — put the card in the Pi 5 and boot (login: fedora/fedora, ssh enabled)"

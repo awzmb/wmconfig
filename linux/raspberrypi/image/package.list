@@ -1,0 +1,50 @@
+# Package list for the minimal Raspberry Pi 5 bootc image.
+#
+# Lines beginning with '#' and blank lines are ignored. Everything else the
+# system needs (systemd, dnf, bootc, podman-free basics, coreutils, vim-minimal,
+# openssh-clients, ...) already comes from the fedora-bootc base — only add what
+# the base does NOT ship. Keep this list SHORT; this is an appliance, not a
+# workstation.
+
+# --- Raspberry Pi 5 boot chain (BUILD-TIME ONLY) -------------------------
+# The Pi 5 EEPROM has no UEFI: it loads the GPU firmware + DTB from a FAT32
+# partition, then U-Boot, which provides the EFI environment GRUB/bootc needs.
+# scripts/configure.sh relocates these files to /usr/lib/bootc-rpi-firmware and
+# REMOVES both packages again (they install into /boot/efi, which a bootc image
+# must not own); a bootupctl shim copies them onto the ESP at install time.
+bcm283x-firmware
+bcm283x-overlays
+uboot-images-armv8
+
+# --- Hardware ------------------------------------------------------------
+# Pi 5 Wi-Fi/BT is a CYW43455 (brcmfmac). linux-firmware no longer bundles the
+# per-vendor blobs, so request the Broadcom split explicitly.
+brcmfmac-firmware
+# Some drivers ship only in the "extra" kernel-modules split, not the base
+# kernel package the bootc base pulls in.
+kernel-modules-extra
+
+# --- Grow the rootfs to fill the card on first boot ----------------------
+# bootc-generic-growpart.service needs /usr/bin/growpart (ConditionPathExists),
+# and the base image does not ship it. Without this the root filesystem stays at
+# the image's ~8.5 GiB and the rest of the card is wasted. See the drop-in in
+# overlay/ that also lifts the unit's ConditionVirtualization=vm guard.
+cloud-utils-growpart
+
+# --- Networking ----------------------------------------------------------
+NetworkManager
+NetworkManager-wifi
+iproute
+iputils
+
+# --- Remote access (this is a HEADLESS device) ---------------------------
+openssh-server
+
+# --- Containers (the point of an image-mode host) ------------------------
+podman
+crun
+
+# --- Day-2 -------------------------------------------------------------
+# bootc + podman are what ./fedora-update needs on the device itself.
+bootc
+sudo

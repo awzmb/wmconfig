@@ -1,0 +1,105 @@
+#!/usr/bin/env bash
+#
+# fedora-update
+#
+# In-place update of an installed Raspberry Pi 5 bootc system: rebuild the image
+# locally on THIS machine and stage it as the bootc target for the NEXT boot
+# (atomic, with rollback). Day-2 counterpart to fedora-image (day-1 install).
+#
+# How it works:
+#   1. `fedora-build` rebuilds localhost/fedora-rpi5:latest into ROOT's podman
+#      storage — that's the store bootc reads from.
+#   2. `bootc switch --transport containers-storage localhost/fedora-rpi5:latest`
+#      (falling back to `bootc upgrade` when the origin already points there)
+#      deploys it for the next boot, then the staged deployment is finalized into
+#      the bootloader immediately instead of at shutdown. Reboot (or pass --apply)
+#      to activate; `bootc rollback` reverts.
+#
+# Meant to run ON the Pi (native aarch64 build, no cross-emulation). Must run as
+# root: both the rootful build and bootc need privilege. Requires this repo,
+# podman and bootc — all shipped in the image.
+#
+# NOTE: this updates the OS only. The Pi firmware and U-Boot on the ESP are
+# written once at install time (bootupd has no Raspberry Pi support), so they
+# stay at the version of the image you flashed. Re-flash to update them.
+#
+# Usage:
+#   sudo ./fedora-update [--apply] [flavor]
+#
+# Options:
+#   --apply     reboot immediately after staging
+#   -h, --help  show this help
+#
+set -euo pipefail
+
+self_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+
+die() { printf '\e[1;31m==> error:\e[0m %s\n' "$*" >&2; exit 1; }
+info() { printf '\e[1;32m==>\e[0m\e[1m %s\e[0m\n' "$*"; }
+
+apply=0
+flavor=
+while [[ $# -gt 0 ]]; do
+	case "$1" in
+		--apply)   apply=1; shift;;
+		-h|--help) sed -n '2,32p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'; exit 0;;
+		-*)        die "unknown option: $1";;
+		*)         flavor=$1; shift;;
+	esac
+done
+
+image=${FEDORA_TAG:-localhost/fedora-rpi5${flavor:+-$flavor}:latest}
+
+[[ $(id -u) -eq 0 ]] || die "must run as root: sudo ./fedora-update"
+command -v bootc >/dev/null 2>&1 || die "bootc not found — fedora-update runs on the installed Pi, not on your workstation"
+[[ -x $self_dir/fedora-build ]] || die "fedora-build not found next to fedora-update ($self_dir)"
+
+# 1. Rebuild into ROOT's containers-storage (where bootc looks). Native build on
+#    the Pi, so no arm64 emulation is involved.
+info "building $image locally"
+FEDORA_PLATFORM=${FEDORA_PLATFORM:-linux/arm64} "$self_dir/fedora-build" ${flavor:+"$flavor"}
+
+# 2. Stage it for the next boot straight from local storage. `switch` sets the
+#    origin to the containers-storage ref (correct on the first update after
+#    install), but NO-OPS with "Image specification is unchanged" once the origin
+#    already points there — it compares the spec, not the image. So every later
+#    run must go through `upgrade`, which re-reads the rebuilt image.
+#    ponytail: run switch, detect the no-op, fall through to upgrade.
+info "staging $image for next boot (containers-storage)"
+out=$(bootc switch --transport containers-storage "$image" 2>&1 | tee /dev/stderr)
+if grep -qi 'specification is unchanged' <<<"$out"; then
+	info "origin already set — pulling the rebuilt image with bootc upgrade"
+	bootc upgrade
+fi
+
+# 3. Prove something was actually staged. Both switch and upgrade exit 0 when
+#    they decide there is nothing to do, which silently boots the OLD image.
+if bootc status --format=json 2>/dev/null | grep -q '"staged":[[:space:]]*null'; then
+	die "nothing staged — bootc considers the running deployment up to date (check: bootc status)"
+fi
+
+# 4. Finalize NOW instead of at shutdown. ostree writes the new bootloader entry
+#    only in ostree-finalize-staged.service's ExecStop; a hung or power-button
+#    shutdown (the normal way a Pi goes down) throws the update away.
+#    ponytail: gives up ostree's "commit only on a clean shutdown" safety net —
+#    deliberate; an unfinalized update is the thing that actually bites here.
+info "finalizing staged deployment now (surviving an unclean shutdown)"
+systemctl stop ostree-finalize-staged.service || ostree admin finalize-staged
+
+# 5. Release container-storage mounts the rebuild left behind; they are what
+#    systemd-shutdown reports as "Failed to umount /run/shutdown/mounts/…".
+podman unmount --all >/dev/null 2>&1 || true
+
+if [[ $apply -eq 1 ]]; then
+	info "rebooting"
+	systemctl reboot
+else
+	cat <<EOF
+
+Staged for next boot. Reboot to apply:
+  sudo systemctl reboot
+
+If the new image misbehaves, roll back to the previous deployment:
+  sudo bootc rollback && sudo systemctl reboot
+EOF
+fi
