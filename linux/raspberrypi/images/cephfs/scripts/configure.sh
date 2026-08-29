@@ -23,23 +23,17 @@ enable_unit() {
 	ln -sfn "$src" "/usr/lib/systemd/system/${target}.wants/$unit"
 }
 
-# --- Enable the external PCIe port (the NVMe carrying the OSD) -----------
-# The Pi 5's PCIe port is not probed unless it is enabled. A HAT+ with an EEPROM
-# is supposed to enable it automatically, but plenty of adapters (and plenty of
-# HAT+ boards in practice) still need this explicitly — and the failure mode is
-# an NVMe that simply never appears in lsblk, i.e. a Ceph node with no OSD.
-# ponytail: Gen 2 (the default). Gen 3 roughly doubles NVMe throughput but is
-# out of spec, and this node's ceiling is the 1 GbE NIC anyway — add
-# `dtparam=pciex1_gen=3` here if you ever put a faster NIC in front of it.
-cfg=/usr/lib/bootc-rpi-firmware/config.txt
-if [[ -f $cfg ]]; then
-	if ! grep -q '^dtparam=pciex1' "$cfg"; then
-		info "Enabling the external PCIe port (dtparam=pciex1) for the NVMe"
-		printf '\n# Enable the external PCIe port so the NVMe (Ceph OSD) enumerates.\ndtparam=pciex1\n' >> "$cfg"
-	fi
-else
-	warn "$cfg not found — cannot enable PCIe; the NVMe may not be detected"
-fi
+# --- The external PCIe port (the NVMe carrying the OSD) ------------------
+# Nothing to do: the base layer puts the KERNEL's mainline DTB on the ESP (see
+# images/base/scripts/configure.sh), and mainline's bcm2712-rpi-5-b-base.dtsi already
+# sets pcie1 — the M.2 slot — to "okay".
+#
+# `dtparam=pciex1` is deliberately NOT written here. dtparams are applied by the
+# firmware through the DTB's `__overrides__` node, which only the DOWNSTREAM DTBs
+# carry; against a mainline DTB every dtparam is a silent no-op. Adding one back
+# would look like it enabled PCIe while doing nothing at all.
+# ponytail: Gen 2 (the mainline default). Gen 3 roughly doubles NVMe throughput
+# but is out of spec, and this node's ceiling is the 1 GbE NIC anyway.
 
 # --- NVMe Host Memory Buffer ---------------------------------------------
 # DRAM-less NVMe drives (Samsung 990 EVO, most modern budget/mid drives) keep

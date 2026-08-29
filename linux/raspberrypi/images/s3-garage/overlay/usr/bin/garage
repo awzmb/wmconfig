@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+#
+# garage — run the Garage CLI against the local server.
+#
+# The CLI and the server are the same binary, and it only ships inside the
+# container image. Upstream's own answer is `docker exec <container> /garage …`;
+# this only saves you having to remember that the container is called `garage`
+# and that the binary sits at the root of a FROM-scratch image.
+#
+# ponytail: four lines instead of documenting an incantation. The CLI version is
+# always the server version by construction, which is what upstream asks for.
+#
+#   garage status              # is the node up and does it have a role?
+#   garage bucket list
+#   garage key list
+#   garage meta snapshot       # metadata backup; your only recovery path at RF=1
+exec podman exec -i garage /garage "$@"

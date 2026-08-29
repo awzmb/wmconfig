@@ -7,7 +7,7 @@
 #
 # The raw image is produced by osbuild's image-builder (the successor of
 # bootc-image-builder), which runs `bootc install to-disk` internally: GPT + a
-# FAT32 ESP + ext4 /boot + ext4 root. Our bootupctl shim (image/scripts/configure.sh)
+# FAT32 ESP + ext4 /boot + ext4 root. Our bootupctl shim (images/base/scripts/configure.sh)
 # drops the Pi firmware and U-Boot onto that ESP during the install, which is what
 # makes the card bootable on a Pi 5 — the Pi has no UEFI of its own.
 #
@@ -136,7 +136,7 @@ else
 		umount "$espdir"
 		[[ -n $missing ]] && die "ESP is missing:$missing
 The bootupctl shim did not populate /boot/efi — this card will NOT boot a Pi 5.
-Check 'Installing bootloader via bootupd' in the log above and image/scripts/configure.sh."
+Check 'Installing bootloader via bootupd' in the log above and images/base/scripts/configure.sh."
 		info "ESP looks bootable (config.txt, U-Boot, Pi 5 DTB and EFI/ present)"
 	else
 		warn "could not mount the ESP of $raw — skipping the check"
@@ -181,4 +181,4 @@ done
 info "writing to $device ..."
 dd if="$raw" of="$device" bs=4M status=progress oflag=direct conv=fsync
 sync
-info "done — put the card in the Pi 5 and boot (login: fedora/fedora, ssh enabled)"
+info "done — put the card in the Pi 5 and boot, then: ssh core@<hostname>.local (or its DHCP address)"

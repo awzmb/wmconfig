@@ -1,0 +1,67 @@
+# garage.toml — Garage server configuration.
+#
+# Lives in /etc, so it is yours to edit: bootc 3-way merges /etc across upgrades,
+# and the container bind-mounts this exact file read-only at /etc/garage.toml
+# (Garage's default config path).
+#
+# NO SECRETS HERE. The RPC secret and the initial credentials are generated on
+# the device by /usr/libexec/garage-setup and passed in through the environment
+# instead — a secret in an image is a secret in every registry that image is ever
+# pushed to.
+
+# Both directories live on the NVMe (mounted at /var/lib/garage). Garage's docs
+# explicitly bless sharing one drive: "If you only have an HDD and no SSD, it's
+# fine to put your metadata alongside the data on the same drive" — and an NVMe
+# is a great deal better than the HDD that advice was written for.
+metadata_dir = "/var/lib/garage/meta"
+data_dir     = "/var/lib/garage/data"
+
+# sqlite, NOT the lmdb default — this is the single most important line in the
+# file for a Raspberry Pi. Upstream: "LMDB is prone to database corruption after
+# an unclean shutdown (e.g. a process kill or a power outage)... If you cannot
+# [take snapshots], you might want to switch to Sqlite which is more robust."
+# A Pi on a desk gets unplugged. With one node there is no replica to rebuild
+# corrupt metadata from, so robustness beats throughput here.
+db_engine = "sqlite"
+
+# One node, one copy. Garage's docs call this "test deployments only", and they
+# are right about what it means: there is NO redundancy, and a dead NVMe is dead
+# data. It is the honest setting for one Pi with one disk — back the box up.
+replication_factor = 1
+
+# Flush to disk instead of trusting the page cache. Both default to false, and
+# both are turned on here for the same reason as sqlite above: with
+# replication_factor = 1 there is no second copy to repair from, so a block or a
+# transaction lost to a power cut is lost for good.
+# ponytail: this costs write throughput. If this box is on a UPS, or you would
+# rather have speed than durability, set both back to false.
+metadata_fsync = true
+data_fsync     = true
+
+# A clean, consistent metadata snapshot every 6 hours, kept alongside the DB
+# (Garage keeps the two most recent). Cheap insurance, and the only recovery path
+# that exists at replication_factor = 1.
+metadata_auto_snapshot_interval = "6h"
+
+# RPC is how Garage nodes talk to each other. A single node still requires this
+# to be configured and still requires a secret; there is no way to switch it off.
+# The secret comes from GARAGE_RPC_SECRET in the environment file.
+rpc_bind_addr   = "[::]:3901"
+rpc_public_addr = "127.0.0.1:3901"
+
+# ponytail: upstream recommends 10-30 concurrent block writes per request for
+# NVMe (the default of 3 is sized for spinning rust). 15 is the middle of that
+# range; raise it if you ever benchmark and find the disk idle.
+block_max_concurrent_writes_per_request = 15
+
+[s3_api]
+s3_region     = "garage"
+api_bind_addr = "[::]:3900"
+# No root_domain: virtual-hosted-style addressing (bucket.s3.example.com) needs
+# DNS you do not have on a LAN appliance. Path-style requests — what the aws CLI
+# and rclone fall back to — work without it.
+
+# [s3_web] is deliberately absent: it serves buckets as static websites, which is
+# not what this box is for. [admin] is absent too — it exposes a metrics and
+# health endpoint on :3903 that nothing here scrapes. Add either back if you
+# start wanting them.

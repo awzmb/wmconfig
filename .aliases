@@ -46,6 +46,7 @@ alias pre-commit="${HOME}/.scripts/container-pre-commit.sh"
 alias kompose="${HOME}/.scripts/container-kompose.sh"
 alias tfschema="${HOME}/.scripts/container-tfschema.sh"
 alias tfupdate="${HOME}/.scripts/container-tfupdate.sh"
+alias incus-dhcp-clients="ssh core@192.168.0.1 cat /var/lib/incus/networks/incusbr0/dnsmasq.leases | sort -V"
 #alias k9s='podman run --rm -v ${HOME}/.config/k9s:/root/.config/k9s -v ${HOME}/.kube:/root/.kube:ro -v ${HOME}/.config/gcloud:/root/.config/gcloud:ro -it localhost/k9s:latest'
 #alias k9s='podman run --rm -v ${HOME}/.config/k9s:/root/.config/k9s -v ${HOME}/.kube/config:/root/.kube/config -v ${HOME}/.config/gcloud:/root/.config/gcloud --env=KUBECONFIG=/root/.kube/config --env=TERM=$(echo ${TERM}) -it localhost/gcloud-k9s:latest k9s --headless'
 #alias terraform="${HOME}/.scripts/container-terraform.sh"

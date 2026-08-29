@@ -4,8 +4,8 @@
 #
 # Build the minimal Fedora bootc image for a Raspberry Pi 5 (aarch64).
 #
-# image/Containerfile is the base and the driver; an optional flavor layer from
-# flavors/<flavor>/ is built FROM it. This script just resolves the tags, forces
+# images/base/Containerfile is the base and the driver; an optional flavor layer
+# from images/<flavor>/ is built FROM it. This script resolves the tags, forces
 # the arm64 platform and passes a content hash of each build context through as a
 # cache-buster.
 #
@@ -18,10 +18,16 @@
 # first, or just build on the Pi itself.
 #
 # Usage:
-#   ./fedora-build [flavor]
+#   ./fedora-build [flavor] [--hostname <name>] [--ssh-key <path/to/key.pub>]
+#
+# The image has NO password login: it asks for a hostname and an SSH public key
+# and bakes them in, so the device is reachable over SSH the moment it boots.
 #
 # Environment overrides:
-#   FEDORA_BASE       FROM of the base image (default: image/Containerfile's)
+#   FEDORA_HOSTNAME   device hostname (default: asked, then pi5)
+#   FEDORA_SSH_KEY    path to the public key to authorize (default: asked)
+#   FEDORA_USER       login user (default: core)
+#   FEDORA_BASE       FROM of the base image (default: images/base/Containerfile's)
 #   FEDORA_TAG        built image tag (default localhost/fedora-rpi5[-<flavor>]:latest)
 #   FEDORA_BASE_TAG   base image tag (default localhost/fedora-rpi5:latest)
 #   FEDORA_SKIP_BASE  set to 1 to reuse an existing base image (faster iteration)
@@ -31,26 +37,40 @@
 set -euo pipefail
 
 self_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
-imagedir="$self_dir/image"
+basedir="$self_dir/images/base"
 PODMAN=${PODMAN:-podman}
 platform=${FEDORA_PLATFORM:-linux/arm64}
 base_tag=${FEDORA_BASE_TAG:-localhost/fedora-rpi5:latest}
+image_user=${FEDORA_USER:-core}
 
 die() { printf '\e[1;31m==> error:\e[0m %s\n' "$*" >&2; exit 1; }
 info() { printf '\e[1;32m==>\e[0m\e[1m %s\e[0m\n' "$*"; }
 warn() { printf '\e[1;33m==> warning:\e[0m %s\n' "$*" >&2; }
 
-flavor=${1:-}
-flavordir="$self_dir/flavors/$flavor"
+flavor=
+hostname=${FEDORA_HOSTNAME:-}
+ssh_key_file=${FEDORA_SSH_KEY:-}
+while [[ $# -gt 0 ]]; do
+	case $1 in
+	--hostname) hostname=${2:?--hostname needs a value}; shift 2 ;;
+	--ssh-key)  ssh_key_file=${2:?--ssh-key needs a path}; shift 2 ;;
+	-*)         die "unknown option $1" ;;
+	*)          flavor=$1; shift ;;
+	esac
+done
+
+layerdir="$self_dir/images/$flavor"
 if [[ -n $flavor ]]; then
-	[[ -f $flavordir/Containerfile ]] \
-		|| die "no flavor '$flavor' — expected $flavordir/Containerfile (have: $(ls "$self_dir/flavors" 2>/dev/null | tr '\n' ' '))"
+	# images/base IS the base; asking for it as a layer would stack it on itself.
+	[[ $flavor == base ]] && die "'base' is the base image — build it with no argument"
+	[[ -f $layerdir/Containerfile ]] \
+		|| die "no flavor '$flavor' — expected $layerdir/Containerfile (have: $(ls "$self_dir/images" 2>/dev/null | grep -v '^base$' | tr '\n' ' '))"
 	image_tag=${FEDORA_TAG:-localhost/fedora-rpi5-${flavor}:latest}
 else
 	image_tag=${FEDORA_TAG:-$base_tag}
 fi
 
-[[ -f $imagedir/Containerfile ]] || die "missing $imagedir/Containerfile"
+[[ -f $basedir/Containerfile ]] || die "missing $basedir/Containerfile"
 command -v "$PODMAN" >/dev/null 2>&1 || die "$PODMAN not found; install podman/buildah"
 
 # Cross-building aarch64 on x86_64 needs binfmt_misc + qemu-user-static, and the
@@ -71,11 +91,59 @@ ctx_hash() {
 		| sort | sha256sum | cut -d' ' -f1
 }
 
-pkg_count=$(sed -e 's/#.*//' "$imagedir/package.list" | tr -s ' \t' '\n' | awk 'NF' | wc -l)
+pkg_count=$(sed -e 's/#.*//' "$basedir/package.list" | tr -s ' \t' '\n' | awk 'NF' | wc -l)
+
+# --- 0. identity ----------------------------------------------------------
+# The image has no password login, so the hostname and the SSH key are baked in
+# at build time — get them now rather than discovering they are missing after the
+# flash. Both can be preset with --hostname/--ssh-key or FEDORA_HOSTNAME/
+# FEDORA_SSH_KEY for unattended builds.
+#
+# `sudo` makes $HOME root's, so look for a default key in the invoking user's
+# home instead.
+user_home=$(getent passwd "${SUDO_USER:-${USER:-$(id -un)}}" 2>/dev/null | cut -d: -f6 || true)
+user_home=${user_home:-${SUDO_USER:+/home/$SUDO_USER}}
+user_home=${user_home:-${HOME:-/root}}
+
+if [[ -z $hostname ]]; then
+	if [[ -t 0 ]]; then
+		read -r -p "Hostname for this device [pi5]: " hostname
+	fi
+	hostname=${hostname:-pi5}
+fi
+
+if [[ -z $ssh_key_file ]]; then
+	for f in "$user_home"/.ssh/id_ed25519.pub "$user_home"/.ssh/id_rsa.pub; do
+		[[ -s $f ]] && { ssh_key_file=$f; break; }
+	done
+	if [[ -t 0 ]]; then
+		read -r -p "SSH public key to authorize for '$image_user'${ssh_key_file:+ [$ssh_key_file]}: " answer
+		[[ -n $answer ]] && ssh_key_file=$answer
+	fi
+fi
+
+ssh_key=
+if [[ -n $ssh_key_file ]]; then
+	[[ -s $ssh_key_file ]] || die "SSH key file not found or empty: $ssh_key_file"
+	ssh_key=$(cat "$ssh_key_file")
+	[[ $ssh_key == ssh-* || $ssh_key == ecdsa-* ]] \
+		|| die "$ssh_key_file does not look like a PUBLIC key (expected it to start with ssh-…) — do not pass a private key"
+elif [[ ! -s $basedir/authorized_keys ]]; then
+	warn "no SSH key given and no $basedir/authorized_keys — '$image_user' has no password either,"
+	warn "so the built image will be IMPOSSIBLE to log into. Re-run with --ssh-key <path>."
+fi
+
+info "hostname     : $hostname (user '$image_user'${ssh_key_file:+, key from $ssh_key_file})"
 info "base image   : $base_tag ($pkg_count packages, $platform)"
-[[ -n $flavor ]] && info "target image : $image_tag (+$(sed -e 's/#.*//' "$flavordir/package.list" | tr -s ' \t' '\n' | awk 'NF' | wc -l) $flavor packages)"
+[[ -n $flavor ]] && info "target image : $image_tag (+$(sed -e 's/#.*//' "$layerdir/package.list" | tr -s ' \t' '\n' | awk 'NF' | wc -l) $flavor packages)"
 
 # --- 1. base layer --------------------------------------------------------
+# --no-hostname is load-bearing: podman bind-mounts a generated /etc/hostname
+# over the path for the duration of every RUN, so a write to it inside the build
+# goes to the mount and is thrown away when the layer commits — the hostname
+# silently never reaches the image, and the device boots as "fedora" with an
+# unset static hostname. The flag leaves the base image's file alone so
+# configure.sh can actually write it.
 if [[ ${FEDORA_SKIP_BASE:-0} == 1 ]]; then
 	info "FEDORA_SKIP_BASE=1 — reusing existing base image $base_tag"
 	"$PODMAN" image exists "$base_tag" || die "base image $base_tag not found; build it once without FEDORA_SKIP_BASE"
@@ -83,17 +151,22 @@ else
 	base_args=()
 	[[ -n ${FEDORA_BASE:-} ]] && base_args=(--build-arg "BASE=$FEDORA_BASE")
 	"$PODMAN" build --pull=newer --platform "$platform" "${base_args[@]}" \
-		--build-arg "CACHEBUST=$(ctx_hash "$imagedir")" \
-		-t "$base_tag" -f "$imagedir/Containerfile" "$imagedir"
+		--no-hostname \
+		--build-arg "CACHEBUST=$(ctx_hash "$basedir")" \
+		--build-arg "IMAGE_HOSTNAME=$hostname" \
+		--build-arg "IMAGE_USER=$image_user" \
+		--build-arg "IMAGE_SSH_KEY=$ssh_key" \
+		-t "$base_tag" -f "$basedir/Containerfile" "$basedir"
 fi
 
 # --- 2. flavor layer ------------------------------------------------------
 if [[ -n $flavor ]]; then
 	info "building flavor layer ($flavor) FROM $base_tag"
 	"$PODMAN" build --platform "$platform" \
+		--no-hostname \
 		--build-arg "BASE=$base_tag" \
-		--build-arg "CACHEBUST=$(ctx_hash "$flavordir")" \
-		-t "$image_tag" -f "$flavordir/Containerfile" "$flavordir"
+		--build-arg "CACHEBUST=$(ctx_hash "$layerdir")" \
+		-t "$image_tag" -f "$layerdir/Containerfile" "$layerdir"
 fi
 
 info "built: $image_tag"

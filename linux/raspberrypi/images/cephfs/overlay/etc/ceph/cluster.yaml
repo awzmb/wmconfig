@@ -1,0 +1,60 @@
+# cluster.yaml — the whole cluster layout, declaratively.
+#
+# This is cephadm's OWN automation format; there is no wrapper script in this
+# repo on purpose. Feed it to `ceph orch apply -i /etc/ceph/cluster.yaml` (or to
+# `cephadm bootstrap --apply-spec`) and cephadm reconciles reality to match:
+# hosts are added, daemons are placed, and the NVMe is consumed as an OSD.
+# Re-applying is safe and idempotent — it is how you add the second node, and
+# later the third.
+#
+# EDIT BEFORE USE: the addresses below are placeholders. The hostnames must match
+# what each Pi actually reports (`hostnamectl`), i.e. what you passed to
+# ./fedora-build --hostname.
+#
+# See the "Ceph cluster" section of README.md for the three commands that use it.
+
+service_type: host
+hostname: cephfs01
+addr: 192.168.0.25
+labels:
+  - _admin
+  - mon
+  - mgr
+  - mds
+---
+service_type: host
+hostname: cephfs02
+addr: 192.168.0.26
+labels:
+  - _admin
+  - mon
+  - mgr
+  - mds
+---
+# ponytail: count 2 because that is all the hardware there is. Understand that
+# this buys you NOTHING in availability: mon quorum is a strict majority, so with
+# two mons losing EITHER node freezes the control plane — two mons is strictly
+# worse than one, because it doubles the chance of that happening. The fix is a
+# THIRD mon, which needs no disks and no OSD: any always-on box (a VM, an old Pi)
+# added as a host with the `mon` label. Do that as soon as you have one.
+service_type: mon
+placement:
+  count: 2
+  label: mon
+---
+service_type: mgr
+placement:
+  count: 2
+  label: mgr
+---
+# One OSD per node, on the NVMe. `all: true` matches every AVAILABLE device —
+# a disk with a partition table, filesystem or LVM on it is not available, so the
+# card holding the OS is never eligible and cannot be eaten by accident.
+# The NVMe must be blank: `wipefs -a /dev/nvme0n1` if it is not.
+service_type: osd
+service_id: nvme
+placement:
+  host_pattern: '*'
+spec:
+  data_devices:
+    all: true

@@ -1,0 +1,72 @@
+# garage.container — the Garage S3 server, as a podman Quadlet.
+#
+# Quadlet turns this file into a real systemd service (garage.service) at every
+# boot, via /usr/lib/systemd/system-generators/podman-system-generator. Two
+# consequences that matter on an image-mode host:
+#
+#   * `systemctl enable garage` DOES NOT WORK and neither does the .wants symlink
+#     trick the rest of this repo uses to enable units offline — the generated
+#     unit is transient, it lives in /run and there is nothing in /usr to link to.
+#     The [Install] section below IS the enablement: the generator applies it
+#     itself, exactly as `systemctl enable` would, on every boot. Do not "fix"
+#     this by adding a symlink; it would dangle.
+#   * Being in /usr/share/containers/systemd makes this the VENDOR copy — the
+#     lowest-precedence search path. An operator can override the whole thing by
+#     dropping a file of the same name in /etc/containers/systemd/.
+
+[Unit]
+Description=S3-compatible object storage (Garage)
+Documentation=https://garagehq.deuxfleurs.fr/documentation/
+# Objects go on the NVMe or nowhere: without this Garage would start before the
+# mount and write into the empty mount point on the SD card.
+Requires=var-lib-garage.mount
+After=var-lib-garage.mount network-online.target
+Wants=network-online.target
+
+[Container]
+# ponytail: pinned to a release tag, not :latest — upstream asks for this
+# explicitly ("use a fixed tag (eg. v2.3.0) and not the latest tag"), and a
+# reboot should never change what is serving your data.
+#
+# Do NOT pin below v2.2.0: it fixed a SIGILL crash on Raspberry Pi and older ARM
+# boards, so earlier releases die on this hardware.
+Image=docker.io/dxflrs/garage:v2.3.0
+ContainerName=garage
+
+# The image is FROM scratch with a CMD and NO ENTRYPOINT, so arguments REPLACE
+# the command rather than being appended to it — the binary path `/garage` must
+# be spelled out. Dropping it silently runs nothing useful.
+#
+# --single-node creates and applies the cluster layout on its own, replacing the
+# old `garage layout assign` / `layout apply --version N` dance. --default-bucket
+# creates the initial access key and bucket from the GARAGE_DEFAULT_* variables
+# in the environment file. Both need Garage >= v2.3.0.
+Exec=/garage server --single-node --default-bucket
+
+# Read-only: the config is image-owned policy, not runtime state. /etc/garage.toml
+# is Garage's default config path, so no --config-file flag is needed.
+Volume=/etc/garage.toml:/etc/garage.toml:ro,z
+
+# ponytail: lowercase :z, not :Z. Both relabel for SELinux; :Z adds a
+# per-container MCS category, which CHANGES on every start and would force podman
+# to recursively relabel the entire object store — every block on the NVMe — each
+# time the service restarts. :z gives the stable container_file_t:s0 label, so the
+# relabel is a no-op after the first run. Nothing else shares this volume.
+Volume=/var/lib/garage:/var/lib/garage:z
+
+# Published as 9000, which is not Garage's default (3900), so that every S3
+# flavor in this repo answers on the same port and clients need not care which
+# one is running. The RPC port (3901) is deliberately NOT published: it is how
+# nodes talk to each other and there is only one node.
+PublishPort=9000:3900
+
+# Generated on first start by ExecStartPre below; never baked into the image.
+EnvironmentFile=/etc/garage/env
+
+[Service]
+ExecStartPre=/usr/libexec/garage-setup
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,33 @@
+# Containerfile — S3 object-storage layer (Versity Gateway).
+#
+# FROM the minimal Pi 5 base image. The S3 server itself is NOT installed: it is
+# not packaged in Fedora and upstream ships a container, so it runs as a podman
+# Quadlet (overlay/usr/share/containers/systemd/s3.container). This layer only
+# adds the host-side pieces a container cannot provide for itself — formatting
+# and mounting the NVMe that holds the objects.
+#
+# The server is versitygw, NOT MinIO: MinIO's open-source repo was archived in
+# 2026. See "The `s3` flavor" in README.md for why this one.
+#
+#   package.list         packages to layer (xfsprogs is REQUIRED, see configure.sh)
+#   overlay/             the Quadlet, the mount + format units, the setup script
+#   scripts/configure.sh sanity checks
+#
+# ./fedora-build s3 passes BASE + CACHEBUST for you.
+ARG BASE=localhost/fedora-rpi5:latest
+FROM ${BASE}
+
+ARG CACHEBUST
+RUN --mount=type=bind,source=.,target=/run/fedora/flavor \
+    set -eu; \
+    : "cachebust ${CACHEBUST:-}"; \
+    HB=/run/fedora/flavor; export HB; \
+    pkgs=$(sed -e 's/#.*//' "$HB/package.list" | tr -s ' \t' '\n' | awk 'NF'); \
+    dnf -y install --setopt=install_weak_deps=False \
+        --skip-unavailable --skip-broken $pkgs; \
+    cp -a "$HB/overlay/." /; \
+    bash "$HB/scripts/configure.sh"; \
+    dnf clean all; \
+    rm -rf /var/cache/* /var/lib/dnf/history* /var/log/* /tmp/* /var/tmp/* 2>/dev/null || true
+
+RUN bootc container lint

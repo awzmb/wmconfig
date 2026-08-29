@@ -43,6 +43,9 @@ openssh-server
 # --- Containers (the point of an image-mode host) ------------------------
 podman
 crun
+# Explicit because weak deps are off: podman pulls this as a Recommends on some
+# builds, and without it every container bind-mount trips SELinux on enforcing.
+container-selinux
 
 # --- Day-2 -------------------------------------------------------------
 # bootc + podman are what ./fedora-update needs on the device itself.

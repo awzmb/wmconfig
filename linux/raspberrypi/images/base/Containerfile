@@ -4,7 +4,11 @@
 #   package.list         dnf packages to layer
 #   overlay/             rootfs overlay (/etc config)
 #   scripts/configure.sh Pi firmware relocation, services, user, kargs, initramfs
-#   authorized_keys      OPTIONAL: SSH public keys for the `fedora` user
+#   authorized_keys      OPTIONAL: SSH public key, if you prefer a file to
+#                        --build-arg IMAGE_SSH_KEY (./fedora-build asks for one)
+#
+# Build args: IMAGE_HOSTNAME (default pi5), IMAGE_USER (default core),
+# IMAGE_SSH_KEY (the public key authorized for that user).
 #
 # Base: standard Fedora bootc, aarch64. Override with `--build-arg BASE=<ref>`.
 ARG BASE=quay.io/fedora/fedora-bootc:rawhide
@@ -23,9 +27,13 @@ FROM ${BASE}
 # podman does NOT hash bind-mounted files, so without referencing it here an edit
 # to scripts/, package.list or overlay/ would silently reuse a stale layer.
 ARG CACHEBUST
+ARG IMAGE_HOSTNAME=pi5
+ARG IMAGE_USER=core
+ARG IMAGE_SSH_KEY=
 RUN --mount=type=bind,source=.,target=/run/fedora/image \
     set -eu; \
     : "cachebust ${CACHEBUST:-}"; \
+    export IMAGE_HOSTNAME IMAGE_USER IMAGE_SSH_KEY; \
     HB=/run/fedora/image; export HB; \
     if [ ! -L /opt ]; then rmdir /opt 2>/dev/null && ln -sfn var/opt /opt || true; fi; \
     mkdir -p /var/opt /var/roothome; \

@@ -1,0 +1,40 @@
+# s3-format.service — put an XFS filesystem on the NVMe, once, if it is blank.
+#
+# There is no script here on purpose: systemd already ships the exact tool for
+# this. `systemd-makefs <type> <device>` probes the device with libblkid and, if
+# it finds a filesystem, logs "'...' is not empty (contains file system of type
+# ...), exiting" and returns 0 WITHOUT touching it. So this unit is safe to run
+# on every boot and only ever formats a virgin disk.
+#
+# Normally you would get this from `x-systemd.makefs` in /etc/fstab, but that
+# option is implemented by systemd-fstab-generator, which SYNTHESISES this unit
+# at boot — there is no static systemd-makefs@.service template to depend on. On
+# a bootc host /etc/fstab is also bootc's file (it writes the /boot entries at
+# install time), so an image-owned mount belongs in /usr, not in fstab. Hence we
+# call the binary directly.
+#
+# THE GUARD BELOW IS NOT OPTIONAL. systemd-makefs probes for *filesystems*, not
+# for partition tables, so a disk carrying somebody's OS — a partition table and
+# no whole-disk filesystem — looks "blank" to it and would be wiped. ExecCondition
+# refuses if any partition table is present; a non-zero exit makes systemd skip
+# the unit cleanly rather than fail it.
+#
+# XFS is used because versitygw stores object metadata in user extended
+# attributes, which XFS supports out of the box with no mount options.
+
+[Unit]
+Description=Create an XFS filesystem on the S3 NVMe if it is blank
+Documentation=man:systemd-makefs@.service(8)
+DefaultDependencies=no
+BindsTo=dev-nvme0n1.device
+After=dev-nvme0n1.device
+Before=var-lib-s3.mount
+Conflicts=shutdown.target
+Before=shutdown.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecCondition=/usr/bin/bash -c '! /usr/sbin/blkid -p -o value -s PTTYPE /dev/nvme0n1 | grep -q .'
+ExecStart=/usr/lib/systemd/systemd-makefs xfs /dev/nvme0n1
+TimeoutSec=infinity

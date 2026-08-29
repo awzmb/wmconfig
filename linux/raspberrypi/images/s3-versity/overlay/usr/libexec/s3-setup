@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+#
+# s3-setup — prepare the object store and mint the root credentials.
+#
+# Run as ExecStartPre= by s3.service, after the NVMe is mounted. Does two things,
+# both exactly once:
+#
+#   1. creates the three directories versitygw needs on the volume,
+#   2. writes /etc/s3/root.env with a random root key pair, and never touches it
+#      again — so restarts and OS updates keep the same credentials.
+#
+# This is a script rather than an inline `bash -c` in the unit because systemd
+# expands '%' (specifiers) and '$' (variables) in Exec= lines before the shell
+# ever sees them, which makes a printf format or a $(...) a quoting minefield.
+#
+# Nothing is baked into the image: a password in an image is a password in every
+# registry that image is ever pushed to.
+set -euo pipefail
+
+volume=/var/lib/s3
+env_file=/etc/s3/root.env
+
+# versitygw does `chdir(rootdir)` on startup and refuses to run if the directory
+# is missing. The versioning and IAM directories must live OUTSIDE the gateway
+# root — versitygw rejects a versioning dir inside it, and anything else under
+# the root would show up over S3 as a bucket. Hence three siblings, not nesting.
+mountpoint -q "$volume" || { echo "s3-setup: $volume is not a mount point — refusing to write objects to the boot media" >&2; exit 1; }
+install -d -m 0700 "$volume/data" "$volume/versions" "$volume/iam"
+
+[[ -s $env_file ]] && exit 0
+
+install -d -m 0700 "$(dirname "$env_file")"
+
+# Restricting the secret to [A-Za-z0-9] keeps it safe to parse as a KEY=VALUE
+# environment file and safe to paste into client configs. 24 random bytes of
+# base64 leave ~32 characters once the non-alphanumerics are dropped.
+secret=$(head -c 24 /dev/urandom | base64 | tr -dc 'A-Za-z0-9')
+[[ ${#secret} -ge 16 ]] || { echo "s3-setup: refusing to write a short secret key" >&2; exit 1; }
+
+umask 077
+printf 'ROOT_ACCESS_KEY=s3admin\nROOT_SECRET_KEY=%s\n' "$secret" > "$env_file"
+chmod 0600 "$env_file"
+
+echo "s3-setup: wrote new root credentials to $env_file (read them with: sudo cat $env_file)"

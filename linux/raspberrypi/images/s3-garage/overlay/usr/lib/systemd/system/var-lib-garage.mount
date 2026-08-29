@@ -1,0 +1,27 @@
+# var-lib-garage.mount — the NVMe holding the objects.
+#
+# The unit name IS the mount point: /var/lib/garage -> var-lib-garage.mount. Rename one
+# and you must rename the other (`systemd-escape -p --suffix=mount <path>`).
+#
+# This unit is deliberately NOT enabled. Nothing pulls it in except garage.service
+# (`Requires=`), which gives us fstab's `nofail` behaviour for free: with no NVMe
+# attached the Pi still boots normally and only the S3 server fails, instead of
+# the boot blocking on a disk that is not there. It also guarantees the gateway
+# can never start before the mount and quietly fill the SD card through an empty
+# mount point.
+#
+# ponytail: /dev/nvme0n1 hard-coded — a Pi 5 has exactly one M.2 slot, so there is
+# nothing to disambiguate. If you ever attach a second NVMe, switch this and
+# garage-format.service to a /dev/disk/by-id/nvme-<model>_<serial> path, which is the
+# only stable name available before the disk has been formatted.
+
+[Unit]
+Description=Garage object storage volume (NVMe)
+Requires=garage-format.service
+After=garage-format.service
+
+[Mount]
+What=/dev/nvme0n1
+Where=/var/lib/garage
+Type=xfs
+Options=noatime

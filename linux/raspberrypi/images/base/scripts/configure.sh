@@ -17,6 +17,26 @@ ctx=${HB:-/run/fedora/image}
 info() { printf '\e[1;32m-->\e[0m\e[1m %s\e[0m\n' "$*"; }
 warn() { printf '!! %s\n' "$*" >&2; }
 
+# Build-time inputs, passed as --build-arg by ./fedora-build.
+user=${IMAGE_USER:-core}
+hostname=${IMAGE_HOSTNAME:-pi5}
+ssh_key=${IMAGE_SSH_KEY:-}
+# A key file in the build context still works and wins if present.
+[[ -z $ssh_key && -s $ctx/authorized_keys ]] && ssh_key=$(cat "$ctx/authorized_keys")
+
+# The hostname is also what NetworkManager announces to the DHCP server (it sends
+# the STATIC hostname — this file — and never the transient one, which is why an
+# unset /etc/hostname shows up as `*` in the lease). No NetworkManager config is
+# needed: ipv4.dhcp-send-hostname already defaults to true.
+#
+# This write only survives because ./fedora-build passes --no-hostname: podman
+# bind-mounts a generated /etc/hostname over the path during every RUN, and
+# without the flag everything written here is discarded when the layer commits.
+info "Setting hostname to \"$hostname\""
+printf '%s\n' "$hostname" > /etc/hostname
+# No point verifying it here: reading back through the bind mount succeeds even
+# when the write is being discarded. test.sh checks the committed layer instead.
+
 # --- Raspberry Pi 5 boot firmware ----------------------------------------
 # The Pi 5 EEPROM provides no UEFI. It reads config.txt from the FAT32 ESP, loads
 # the GPU firmware + DTB, then U-Boot (as `rpi-u-boot.bin`), which finally gives
@@ -36,6 +56,52 @@ cp -aP /usr/share/uboot/rpi_arm64/u-boot.bin "$fw/rpi-u-boot.bin" \
 
 [[ -e $fw/bcm2712-rpi-5-b.dtb ]] \
 	|| warn "bcm2712-rpi-5-b.dtb MISSING from $fw — this image will NOT boot on a Pi 5"
+
+# Use the KERNEL's device tree, not bcm283x-firmware's.
+#
+# bcm283x-firmware ships the DOWNSTREAM Raspberry Pi DTBs, which model RP1 — the
+# southbridge that carries BOTH USB and Ethernet on a Pi 5 — as a `simple-bus`
+# hanging off rp1_target. Mainline instead embeds RP1 under the PCIe endpoint
+# node `dev@0,0 { compatible = "pci1de4,1" }` and drivers/misc/rp1 populates the
+# USB and Ethernet devices from THAT subtree. Boot a mainline kernel with the
+# downstream DTB and it comes all the way up to a login prompt with no USB and
+# no network. Fedora papers over this on the Pi 3/4 with `dtoverlay=upstream` /
+# `upstream-pi4`; there is no upstream-pi5.dtbo, so the Pi 5 has no such escape
+# and needs the kernel's own DTB on the ESP.
+#
+# Mainline's bcm2712-rpi-5-b-base.dtsi also sets pcie1 (the M.2 slot) and pcie2
+# (RP1) to "okay", so the NVMe still enumerates without any dtparam.
+info "Replacing the Pi 5 DTBs with the kernel's mainline ones"
+kdtbs=(/usr/lib/modules/*/dtb/broadcom)
+kdtb=${kdtbs[0]}
+[[ -d $kdtb ]] || warn "no kernel DTB directory under /usr/lib/modules/*/dtb — the Pi 5 will have no USB and no Ethernet"
+# The firmware picks the DTB by file name and then, on D0 silicon, converts it by
+# auto-applying overlays/bcm2712d0.dtbo. That overlay cannot apply to a mainline
+# DTB, so the stepping fixup silently does not happen and the kernel drives C0
+# pinctrl registers on a D0 chip — `brcmstb_pull_config_set` then takes a bus
+# error and panics with "Asynchronous SError Interrupt" while gpio_keys probes
+# the power button. Mainline ships the stepping as a separate file instead, so
+# pick it here and write it under every name the firmware might ask for.
+# ponytail: hard-wired to D0 (every Pi 5 Rev 1.1 and later, incl. the 16 GB). For
+# an original Rev 1.0 / C-stepping board set pi5_soc=bcm2712-rpi-5-b.
+pi5_soc=bcm2712-d-rpi-5-b
+for dest in bcm2712-rpi-5-b bcm2712-d-rpi-5-b bcm2712d0-rpi-5-b; do
+	if [[ -f $kdtb/$pi5_soc.dtb ]]; then
+		cp -f "$kdtb/$pi5_soc.dtb" "$fw/$dest.dtb"
+	else
+		warn "$kdtb/$pi5_soc.dtb missing — $dest.dtb stays downstream (no USB, no Ethernet)"
+	fi
+done
+grep -qa 'bcm2712d0-pinctrl' "$fw/bcm2712-rpi-5-b.dtb" \
+	|| warn "$fw/bcm2712-rpi-5-b.dtb is not the D0 DTB — a Rev 1.1 Pi 5 will panic with an SError"
+grep -qa 'pci1de4,1' "$fw/bcm2712-rpi-5-b.dtb" \
+	|| warn "$fw/bcm2712-rpi-5-b.dtb has no RP1 PCIe node — USB and Ethernet will NOT work"
+
+# Downstream .dtbo overlays cannot apply to a mainline DTB (the labels they
+# patch do not exist there); mainline wires up HDMI/v3d in the DTB itself.
+if [[ -f $fw/config.txt ]]; then
+	sed -i '/^dtoverlay=vc4-kms-v3d-pi5/d' "$fw/config.txt"
+fi
 
 # Fedora's config.txt normally already chainloads U-Boot; make sure of it, since
 # without this line the firmware looks for a kernel8.img that isn't there.
@@ -114,23 +180,42 @@ printf 'LANG=C.UTF-8\n' > /etc/locale.conf
 # it then works under every install path (raw image flash included).
 # ponytail: password is literally "fedora". Change it on first login, or drop an
 # authorized_keys next to the Containerfile and disable password auth below.
-info 'Creating login user "fedora"'
+info "Creating login user \"$user\""
 mkdir -p /var/home
-getent passwd fedora >/dev/null 2>&1 || useradd -m -G wheel fedora
-echo 'fedora:fedora' | chpasswd
+getent passwd "$user" >/dev/null 2>&1 || useradd -m -G wheel "$user"
+# No password at all: SSH key only, as requested. `useradd` leaves the hash
+# blank, which PAM treats as "no password required" — lock it so console and
+# password SSH login are both impossible.
+passwd -l "$user" >/dev/null
 
-if [[ -s $ctx/authorized_keys ]]; then
-	info "Installing SSH authorized_keys for fedora"
-	install -d -m 0700 -o fedora -g fedora /var/home/fedora/.ssh
-	install -m 0600 -o fedora -g fedora "$ctx/authorized_keys" \
-		/var/home/fedora/.ssh/authorized_keys
-	# Keys present ⇒ no reason to accept passwords over the network.
-	mkdir -p /etc/ssh/sshd_config.d
-	printf 'PasswordAuthentication no\nPermitRootLogin no\n' \
-		> /etc/ssh/sshd_config.d/10-no-password.conf
+# A locked account cannot type a sudo password, so sudo must not ask for one.
+# (This is what Fedora CoreOS does for its own `core` user.)
+install -d -m 0750 /etc/sudoers.d
+printf '%s ALL=(ALL) NOPASSWD: ALL\n' "$user" > "/etc/sudoers.d/$user"
+chmod 0440 "/etc/sudoers.d/$user"
+
+# The key lives in /usr, not in the user's home: /var (and therefore /var/home)
+# is machine-local state that the image does not own after install, so a key
+# dropped there is easy to lose. sshd reads this path in addition to the usual
+# ~/.ssh/authorized_keys.
+if [[ -n $ssh_key ]]; then
+	info "Authorizing the build-time SSH key for $user"
+	install -d -m 0755 /usr/share/ssh
+	printf '%s\n' "$ssh_key" > "/usr/share/ssh/$user.keys"
+	chmod 0644 "/usr/share/ssh/$user.keys"
 else
-	warn "no image/authorized_keys — SSH password login stays enabled (user/pass: fedora/fedora)"
+	# Without a key and without a password there is no way in at all.
+	warn "no SSH key baked in and $user has no password — THIS IMAGE CANNOT BE LOGGED INTO"
+	warn "pass one with: ./fedora-build --ssh-key ~/.ssh/id_ed25519.pub"
 fi
+
+mkdir -p /etc/ssh/sshd_config.d
+cat > /etc/ssh/sshd_config.d/10-headless.conf <<EOF
+# Key-only access: $user has no password, so nothing can be typed anyway.
+AuthorizedKeysFile /usr/share/ssh/%u.keys .ssh/authorized_keys
+PasswordAuthentication no
+PermitRootLogin no
+EOF
 
 # --- Enable services statically ------------------------------------------
 # `systemctl enable` does not work reliably in an offline image build (the /etc

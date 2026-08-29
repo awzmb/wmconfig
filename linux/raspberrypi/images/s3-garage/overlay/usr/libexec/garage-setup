@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+#
+# garage-setup — prepare the volume and mint the secrets, exactly once.
+#
+# Run as ExecStartPre= by garage.service, after the NVMe is mounted. It writes
+# /etc/garage/env, which holds:
+#
+#   GARAGE_RPC_SECRET          required by the daemon even for a single node
+#   GARAGE_DEFAULT_ACCESS_KEY  \  consumed by `garage server --default-bucket`
+#   GARAGE_DEFAULT_SECRET_KEY   > on first start to create the initial S3
+#   GARAGE_DEFAULT_BUCKET      /  credentials and bucket
+#
+# Written once and never touched again, so restarts and OS updates keep the same
+# credentials — and so the RPC secret stays stable, which matters because it is
+# what a second node would have to match.
+#
+# This is a script rather than an inline `bash -c` in the unit because systemd
+# expands '%' (specifiers) and '$' (variables) in Exec= lines before the shell
+# ever sees them, which makes a printf format or a $(...) a quoting minefield.
+set -euo pipefail
+
+volume=/var/lib/garage
+env_file=/etc/garage/env
+bucket=${GARAGE_BUCKET_NAME:-default}
+
+# Refuse to run on the boot media. Without this a missing or unmounted NVMe would
+# silently start filling the SD card through the empty mount point.
+mountpoint -q "$volume" || { echo "garage-setup: $volume is not a mount point — refusing to write objects to the boot media" >&2; exit 1; }
+
+# Garage creates neither directory itself; it exits if metadata_dir or data_dir
+# is missing. Paths must match garage.toml.
+install -d -m 0700 "$volume/meta" "$volume/data"
+
+[[ -s $env_file ]] && exit 0
+
+install -d -m 0700 "$(dirname "$env_file")"
+
+# hex, because the RPC secret must be exactly 32 bytes of it. `openssl rand -hex
+# 32` is what upstream documents; /dev/urandom avoids depending on openssl being
+# in the image and is the same entropy source.
+rand_hex() { head -c "$1" /dev/urandom | od -An -tx1 | tr -d ' \n'; }
+
+rpc_secret=$(rand_hex 32)
+secret_key=$(rand_hex 32)
+# GK + 24 hex characters is Garage's own convention for an access key ID.
+access_key="GK$(rand_hex 12)"
+
+[[ ${#rpc_secret} -eq 64 ]] || { echo "garage-setup: RPC secret is not 32 bytes of hex — refusing to continue" >&2; exit 1; }
+
+umask 077
+cat > "$env_file" <<EOF
+# Generated on first start by /usr/libexec/garage-setup. Not from the image.
+# Deleting this file mints NEW credentials and a NEW RPC secret on next start;
+# the existing objects stay, but every client configuration breaks.
+GARAGE_RPC_SECRET=$rpc_secret
+GARAGE_DEFAULT_ACCESS_KEY=$access_key
+GARAGE_DEFAULT_SECRET_KEY=$secret_key
+GARAGE_DEFAULT_BUCKET=$bucket
+EOF
+chmod 0600 "$env_file"
+
+echo "garage-setup: wrote new credentials to $env_file (read them with: sudo cat $env_file)"

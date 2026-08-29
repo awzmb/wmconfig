@@ -1,0 +1,23 @@
+# Packages for the s3-garage flavor (single-node Garage, objects on the NVMe).
+#
+# Deliberately NO S3 server package: Garage is not in Fedora and upstream ships
+# it as a container, which podman + Quadlet run from
+# /usr/share/containers/systemd/. podman itself is already in the base image.
+#
+# No `attr` here, unlike the s3-versity flavor: Garage stores object metadata in
+# its own database, not in filesystem extended attributes.
+
+# --- Storage for the object volume ---------------------------------------
+xfsprogs # REQUIRED: systemd-makefs shells out to mkfs.xfs to format the NVMe
+util-linux # blkid guards the format step; lsblk to see what is actually there
+
+# --- NVMe / disk tooling -------------------------------------------------
+nvme-cli # namespace/format/smart-log for the object drive
+smartmontools # SMART health — the objects have no redundancy, watch the disk
+
+# --- Talking to the S3 endpoint from the box itself ----------------------
+awscli2 # the obvious smoke test: aws --endpoint-url http://localhost:9000 s3 ls
+
+# --- Diagnostics ---------------------------------------------------------
+iotop
+sysstat # iostat, mpstat, sar
