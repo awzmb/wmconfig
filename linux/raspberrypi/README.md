@@ -28,10 +28,16 @@ images/
 │   ├── package.list
 │   ├── overlay/              # the Quadlet + the mount and format units
 │   └── scripts/configure.sh
-└── s3-garage/                # FROM the base — `./fedora-build s3-garage`
-    ├── Containerfile         # Garage: content-addressed object store on the NVMe
+├── s3-garage/                # FROM the base — `./fedora-build s3-garage`
+│   ├── Containerfile         # Garage: content-addressed object store on the NVMe
+│   ├── package.list
+│   ├── overlay/              # the Quadlet, garage.toml, mount + format units
+│   └── scripts/configure.sh
+└── zot/                      # FROM s3-garage — `./fedora-build zot`
+    ├── parent                # "s3-garage": this layer stacks on that FLAVOR
+    ├── Containerfile         # zot: an OCI registry whose blobs live in Garage
     ├── package.list
-    ├── overlay/              # the Quadlet, garage.toml, mount + format units
+    ├── overlay/              # the Quadlet + zot's config
     └── scripts/configure.sh
 ```
 
@@ -475,6 +481,98 @@ Notes:
 
 [Quadlet]: https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html
 [Garage]: https://garagehq.deuxfleurs.fr/
+
+## The `zot` flavor
+
+An **OCI registry** on the Pi, with every blob stored in the Garage S3 service
+running beside it. Both servers are podman Quadlets; the registry answers on
+**:5000**, the S3 API on **:9000**, and the objects land on the NVMe.
+
+This is the one flavor that does not build on the base image: `images/zot/parent`
+says `s3-garage`, so `./fedora-build zot` builds base → s3-garage → zot in one
+command and the registry inherits the whole storage layer — the format unit, the
+mount, `garage.toml`, the credentials — unchanged.
+
+```sh
+sudo ./fedora-build zot --hostname registry01 --ssh-key ~/.ssh/id_ed25519.pub
+sudo ./fedora-image zot --device /dev/mmcblk0
+# then, on the device:
+sudo cat /etc/zot/credentials      # the registry admin account
+```
+
+First boot formats the NVMe, brings up Garage (which creates its own layout, key
+and `default` bucket), copies those S3 credentials into `/etc/zot/env` and starts
+the registry against them. Nothing to bootstrap.
+
+```sh
+podman login registry01:5000 -u admin             # password from /etc/zot/credentials
+podman push registry01:5000/myapp:v1
+skopeo list-tags docker://registry01:5000/myapp   # pulls are anonymous
+```
+
+The web UI is at `http://registry01:5000/`.
+
+### This was going to be Harbor
+
+It cannot be. **Harbor publishes no arm64 images**: `goharbor/harbor-core` and
+every sibling component are single-arch amd64, through v2.15.2, so Harbor does
+not run on a Raspberry Pi at all. The only prebuilt arm64 component set is
+Bitnami's `bitnamilegacy/*` catalog — frozen in August 2025, no further releases
+and no security fixes — which is the same objection this repo makes against MinIO
+in the `s3-versity` section, applied to the thing that holds your images. The
+remaining option is building Harbor's ten component images from source on arm64,
+which is a project, not a flavor.
+
+[zot] is a CNCF registry, conformant with the OCI distribution spec, publishes a
+real arm64 image, and takes the same S3 backend. What you lose against Harbor:
+**projects and RBAC, replication, vulnerability scanning, signing policy and a
+proxy cache.** What you keep: push/pull for `podman`, `docker`, `skopeo` and
+`helm`, htpasswd auth with per-repository policies, a search UI, and pull-through
+`sync` mirroring if you configure it.
+
+### How it works
+
+* **`zot.container`** — the Quadlet. `Requires=garage.service`, because the
+  registry has no storage of its own. It uses **host networking**, which is why
+  the S3 endpoint in the config is simply `127.0.0.1:9000` (Garage's published
+  port) and why zot serves on `:5000` with no port mapping.
+* **`/etc/zot/config.json`** — the S3 storage driver, htpasswd auth, and the
+  `search`/`ui` extensions. JSON takes no comments, so the reasoning lives in
+  `images/zot/scripts/configure.sh`, which re-checks each of these at build time.
+* **`/usr/libexec/zot-setup`** — copies Garage's generated access key into
+  `/etc/zot/env` as `AWS_ACCESS_KEY_ID`/`AWS_SECRET_ACCESS_KEY`, and mints a
+  random `admin` password into `/etc/zot/htpasswd` (bcrypt) and
+  `/etc/zot/credentials` (plaintext, 0600, not mounted into the container).
+
+Notes:
+
+* **`forcepathstyle: true` is not optional.** The S3 driver defaults it to
+  *false*, which means virtual-hosted-style addressing — `bucket.127.0.0.1:9000`
+  — and that needs wildcard DNS no LAN appliance has. Every request fails without
+  it. Garage handles the rest of what the driver needs: it implements
+  `CopyObject`, `ListObjectsV2` and `UploadPartCopy`, the last of which the
+  registry uses for every layer over 32 MB.
+* **Use the full image, not `zot-minimal-*`.** The minimal build parses the
+  `extensions` block and then ignores it, so the UI simply never appears and
+  nothing in the log explains why.
+* **Credentials are on the device, not in the image**, exactly like Garage's.
+  Deleting `/etc/zot/htpasswd` and `/etc/zot/credentials` mints a new admin
+  password on the next start; deleting `/etc/zot/env` re-reads Garage's keys.
+* **With no `auth` section zot accepts anonymous pushes** from anyone who can
+  reach port 5000, so the shipped config configures htpasswd auth: `admin` can
+  push, anonymous clients can pull. Drop `anonymousPolicy` from `config.json` to
+  require a login for pulls too.
+* **`dedupe` is off.** With it on, zot keeps a local boltdb cache the S3 contents
+  depend on; off, every blob stands alone in Garage and the SD card holds nothing
+  but derived state. The cost is some duplicated space in the store.
+* **The registry is plain HTTP**, so clients need `--tls-verify=false` (or an
+  `insecure` registry entry) unless you put a TLS reverse proxy in front. Same
+  caveat, and same fix, as the S3 endpoint.
+* **Everything the `s3-garage` section says about durability still applies** —
+  one disk, `replication_factor = 1`, and `garage meta snapshot` as the only
+  metadata recovery path. A registry is not a backup.
+
+[zot]: https://zotregistry.dev/
 
 ## Day 2
 

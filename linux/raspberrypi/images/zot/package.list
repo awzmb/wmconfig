@@ -1,0 +1,17 @@
+# Packages for the zot flavor (OCI registry backed by the local Garage S3 store).
+#
+# Short on purpose: this layer sits on top of s3-garage, which already brought
+# xfsprogs, nvme-cli, smartmontools, awscli2 and the diagnostics, and podman came
+# from the base. Neither server is an RPM — both run as Quadlet containers.
+
+# --- Talking to the registry from the box itself -------------------------
+skopeo # the smoke test: skopeo copy / list-tags against localhost:5000
+
+# --- Config handling -----------------------------------------------------
+jq # configure.sh validates /etc/zot/config.json with it at BUILD time, so a
+   # stray comma fails the build instead of the boot; also the obvious way to
+   # read zot's JSON API on the device
+
+# --- Credentials ---------------------------------------------------------
+httpd-tools # REQUIRED: zot-setup calls htpasswd -bB to mint the admin account.
+            # bcrypt is the only hash zot accepts, and -B is how you get it.

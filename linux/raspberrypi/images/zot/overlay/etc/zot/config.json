@@ -1,0 +1,48 @@
+{
+  "storage": {
+    "rootDirectory": "/var/lib/zot",
+    "dedupe": false,
+    "storageDriver": {
+      "name": "s3",
+      "region": "garage",
+      "regionendpoint": "http://127.0.0.1:9000",
+      "bucket": "default",
+      "rootdirectory": "/zot",
+      "secure": false,
+      "forcepathstyle": true
+    }
+  },
+  "http": {
+    "address": "0.0.0.0",
+    "port": "5000",
+    "auth": {
+      "htpasswd": {
+        "path": "/etc/zot/htpasswd"
+      },
+      "failDelay": 3
+    },
+    "accessControl": {
+      "repositories": {
+        "**": {
+          "anonymousPolicy": ["read"],
+          "defaultPolicy": ["read", "create", "update", "delete"]
+        }
+      },
+      "adminPolicy": {
+        "users": ["admin"],
+        "actions": ["read", "create", "update", "delete"]
+      }
+    }
+  },
+  "log": {
+    "level": "info"
+  },
+  "extensions": {
+    "search": {
+      "enable": true
+    },
+    "ui": {
+      "enable": true
+    }
+  }
+}

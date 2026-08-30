@@ -1,0 +1,42 @@
+# Containerfile — OCI registry layer (zot), objects in the Garage S3 store.
+#
+# This layer stacks on the s3-garage FLAVOR, not on the base: the registry keeps
+# its blobs in S3 and the S3 server it talks to is Garage on the same Pi. The
+# `parent` file next to this one is what makes ./fedora-build zot build
+# base -> s3-garage -> zot in one command; the ARG default below documents the
+# same thing for a manual `podman build`.
+#
+# Neither server is installed as an RPM — neither is packaged in Fedora and both
+# ship containers — so the whole deployment is podman Quadlets. Garage's
+# (garage.container) comes from the parent layer untouched; this layer adds
+# zot.container plus the config and the credential glue between the two.
+#
+# Harbor was the original ask and is NOT what this is. Harbor publishes no arm64
+# images (goharbor/harbor-core:v2.15.2 is single-arch amd64, as are all its
+# siblings), so it cannot run on a Pi 5 at all; the only prebuilt arm64 set is
+# Bitnami's frozen `bitnamilegacy/*` catalog, which gets no more security fixes.
+# zot is CNCF, publishes a real arm64 image, and speaks the same S3 backend.
+# See README.md for what you give up (RBAC UI, replication, scanning).
+#
+#   package.list         host-side tools only (the servers are containers)
+#   overlay/             the Quadlet, zot's config, the credential script
+#   scripts/configure.sh sanity checks
+#
+# ./fedora-build zot passes BASE + CACHEBUST for you.
+ARG BASE=localhost/fedora-rpi5-s3-garage:latest
+FROM ${BASE}
+
+ARG CACHEBUST
+RUN --mount=type=bind,source=.,target=/run/fedora/flavor \
+    set -eu; \
+    : "cachebust ${CACHEBUST:-}"; \
+    HB=/run/fedora/flavor; export HB; \
+    pkgs=$(sed -e 's/#.*//' "$HB/package.list" | tr -s ' \t' '\n' | awk 'NF'); \
+    dnf -y install --setopt=install_weak_deps=False \
+        --skip-unavailable --skip-broken $pkgs; \
+    cp -a "$HB/overlay/." /; \
+    bash "$HB/scripts/configure.sh"; \
+    dnf clean all; \
+    rm -rf /var/cache/* /var/lib/dnf/history* /var/log/* /tmp/* /var/tmp/* 2>/dev/null || true
+
+RUN bootc container lint

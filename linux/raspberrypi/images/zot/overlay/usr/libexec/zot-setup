@@ -1,0 +1,80 @@
+#!/usr/bin/env bash
+#
+# zot-setup — wire the registry to the local Garage store, exactly once.
+#
+# Run as ExecStartPre= by zot.service. It does two things, both of which are the
+# reason no secret is baked into the image:
+#
+#   /etc/zot/env          AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY, copied from
+#                         the credentials Garage minted for itself on first boot.
+#                         The S3 driver zot vendors (distribution's s3-aws, on
+#                         aws-sdk-go v1) falls back to the SDK's default
+#                         credential chain when accesskey/secretkey are absent
+#                         from config.json — env vars are the first link in it.
+#   /etc/zot/htpasswd     a random password for the `admin` account, bcrypt'd.
+#                         The plaintext lands in /etc/zot/credentials for you to
+#                         read once; it is NOT mounted into the container.
+#
+# Written once and never touched again, so restarts and OS updates keep the same
+# credentials. Delete /etc/zot/env to re-read Garage's keys, or
+# /etc/zot/htpasswd + /etc/zot/credentials to mint a new admin password.
+#
+# A script rather than an inline `bash -c` in the unit for the same reason as
+# garage-setup: systemd expands '%' and '$' in Exec= lines before any shell sees
+# them, which turns a $(...) into a quoting minefield.
+set -euo pipefail
+
+garage_env=/etc/garage/env
+env_file=/etc/zot/env
+htpasswd_file=/etc/zot/htpasswd
+cred_file=/etc/zot/credentials
+user=${ZOT_ADMIN_USER:-admin}
+
+install -d -m 0755 /var/lib/zot
+
+# Garage writes this on ITS first start. zot.service Requires=/After= garage,
+# so by the time we run it should exist; if it does not, Garage never came up
+# and starting the registry would only produce confusing S3 errors.
+[[ -s $garage_env ]] || {
+	echo "zot-setup: $garage_env is missing — Garage has not started, so there are no S3 credentials to use" >&2
+	exit 1
+}
+
+if [[ ! -s $env_file ]]; then
+	# shellcheck disable=SC1090
+	set -a; . "$garage_env"; set +a
+	: "${GARAGE_DEFAULT_ACCESS_KEY:?zot-setup: no GARAGE_DEFAULT_ACCESS_KEY in $garage_env}"
+	: "${GARAGE_DEFAULT_SECRET_KEY:?zot-setup: no GARAGE_DEFAULT_SECRET_KEY in $garage_env}"
+
+	umask 077
+	cat > "$env_file" <<-EOF
+		# Generated on first start by /usr/libexec/zot-setup, from $garage_env.
+		# These are Garage's own credentials: the registry is the only client of
+		# that store, so it uses the key Garage created for itself.
+		AWS_ACCESS_KEY_ID=$GARAGE_DEFAULT_ACCESS_KEY
+		AWS_SECRET_ACCESS_KEY=$GARAGE_DEFAULT_SECRET_KEY
+	EOF
+	chmod 0600 "$env_file"
+fi
+
+if [[ ! -s $htpasswd_file ]]; then
+	# 24 bytes of hex from the kernel; the same entropy source garage-setup uses,
+	# and no dependency on openssl being in the image.
+	password=$(head -c 24 /dev/urandom | od -An -tx1 | tr -d ' \n')
+
+	umask 077
+	# -B is bcrypt, which is the ONLY algorithm zot accepts in an htpasswd file.
+	# -n writes to stdout instead of a file, -b takes the password as an argument.
+	htpasswd -bBn "$user" "$password" > "$htpasswd_file"
+	chmod 0600 "$htpasswd_file"
+
+	cat > "$cred_file" <<-EOF
+		# Generated on first start by /usr/libexec/zot-setup. Not from the image.
+		# The registry account with push rights. Anonymous clients can pull.
+		ZOT_USER=$user
+		ZOT_PASSWORD=$password
+	EOF
+	chmod 0600 "$cred_file"
+
+	echo "zot-setup: created the '$user' account — read the password with: sudo cat $cred_file"
+fi

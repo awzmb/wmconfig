@@ -12,6 +12,10 @@
 #   ./fedora-build          -> localhost/fedora-rpi5:latest        (base only)
 #   ./fedora-build cephfs   -> localhost/fedora-rpi5-cephfs:latest (base + Ceph)
 #
+# A flavor may stack on ANOTHER flavor rather than on the base: a one-line
+# images/<flavor>/parent file names the one it needs (images/zot -> s3-garage).
+# The chain is built bottom-up, so `./fedora-build zot` stays one command.
+#
 # On an x86_64 host this is a cross-build: podman runs the aarch64 dnf under
 # qemu-user-static via binfmt_misc (~10x slower). Install qemu-user-static (or
 # run `podman run --privileged docker.io/multiarch/qemu-user-static --reset -p yes`)
@@ -159,15 +163,28 @@ else
 		-t "$base_tag" -f "$basedir/Containerfile" "$basedir"
 fi
 
-# --- 2. flavor layer ------------------------------------------------------
-if [[ -n $flavor ]]; then
-	info "building flavor layer ($flavor) FROM $base_tag"
+# --- 2. flavor layer(s) ---------------------------------------------------
+# Recursive because a flavor may name a parent flavor instead of the base; the
+# common case (no images/<flavor>/parent) is one build, exactly as before.
+build_layer() {
+	local f=$1 tag=$2 chain=${3:- } dir="$self_dir/images/$1" from=$base_tag parent
+	[[ $chain == *" $f "* ]] && die "flavor parent cycle:${chain// / -> }$f"
+	if [[ -f $dir/parent ]]; then
+		parent=$(tr -d '[:space:]' < "$dir/parent")
+		[[ -f $self_dir/images/$parent/Containerfile ]] \
+			|| die "images/$f/parent names '$parent', which is not a flavor"
+		from=localhost/fedora-rpi5-$parent:latest
+		build_layer "$parent" "$from" "$chain$f "
+	fi
+	info "building flavor layer ($f) FROM $from"
 	"$PODMAN" build --platform "$platform" \
 		--no-hostname \
-		--build-arg "BASE=$base_tag" \
-		--build-arg "CACHEBUST=$(ctx_hash "$layerdir")" \
-		-t "$image_tag" -f "$layerdir/Containerfile" "$layerdir"
-fi
+		--build-arg "BASE=$from" \
+		--build-arg "CACHEBUST=$(ctx_hash "$dir")" \
+		-t "$tag" -f "$dir/Containerfile" "$dir"
+}
+
+[[ -n $flavor ]] && build_layer "$flavor" "$image_tag"
 
 info "built: $image_tag"
 cat <<EOF

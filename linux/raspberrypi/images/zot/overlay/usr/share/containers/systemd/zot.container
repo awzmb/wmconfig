@@ -1,0 +1,74 @@
+# zot.container — the OCI registry, as a podman Quadlet.
+#
+# Same rules as garage.container in the parent layer, and they matter just as
+# much here:
+#
+#   * `systemctl enable zot` DOES NOT WORK, and neither does the .wants symlink
+#     trick the rest of this repo uses to enable units offline — Quadlet
+#     generates zot.service into /run at every boot, so there is nothing in /usr
+#     to link to. The [Install] section below IS the enablement.
+#   * /usr/share/containers/systemd is the VENDOR (lowest-precedence) path: drop
+#     a file of the same name into /etc/containers/systemd/ to override all of
+#     this without touching the image.
+
+[Unit]
+Description=OCI registry (zot), blobs stored in the local Garage S3 store
+Documentation=https://zotregistry.dev/
+# The registry keeps EVERYTHING in S3, so Garage is not an optional companion:
+# without it zot has no storage at all. Requires= also means /etc/garage/env
+# exists by the time zot-setup runs, which is where the S3 credentials come from.
+Requires=garage.service
+After=garage.service network-online.target
+Wants=network-online.target
+
+[Container]
+# ponytail: pinned, like Garage's. The full image, NOT zot-minimal-linux-arm64:
+# minimal silently ignores the [extensions] block, and the search + ui
+# extensions are the web UI — the one thing anybody actually misses when they
+# cannot have Harbor here.
+Image=ghcr.io/project-zot/zot-linux-arm64:v2.1.20
+ContainerName=zot
+
+# Unlike Garage's FROM-scratch image, this one HAS an ENTRYPOINT
+# (/usr/local/bin/zot-linux-arm64), so Exec= is APPENDED to it rather than
+# replacing a CMD. This happens to be the image's own default CMD; spelling it
+# out keeps the config path visible and survives an upstream CMD change.
+Exec=serve /etc/zot/config.json
+
+# ponytail: host networking, so the S3 endpoint in config.json can simply be
+# 127.0.0.1:9000 — Garage's published port. It also puts the registry straight
+# on :5000 with no port mapping. The ceiling: the two containers share the host
+# netns, so this stops being the right answer the moment a third service lands
+# here. Then give both a registry.network Quadlet and use container DNS
+# (http://garage:3900), which needs garage.container from the parent layer to
+# join the same network.
+Network=host
+
+# Mounted file by file, not as a directory: /etc/zot also holds the generated
+# admin password (/etc/zot/credentials), and the registry has no business
+# reading that.
+Volume=/etc/zot/config.json:/etc/zot/config.json:ro,z
+Volume=/etc/zot/htpasswd:/etc/zot/htpasswd:ro,z
+
+# Local scratch and the boltdb metadata zot derives from the S3 contents. The
+# registry's real state is in Garage; this is a cache, not the archive.
+# ponytail: lowercase :z for the same reason as Garage's data volume — :Z would
+# add a per-container MCS category that changes on every start.
+Volume=/var/lib/zot:/var/lib/zot:z
+
+# AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY, derived from Garage's own generated
+# credentials by zot-setup. The S3 driver takes them from the environment when
+# accesskey/secretkey are absent from config.json, which is how the image stays
+# free of secrets.
+EnvironmentFile=/etc/zot/env
+
+[Service]
+ExecStartPre=/usr/libexec/zot-setup
+# zot exits if it cannot reach the S3 endpoint, and Garage needs a few seconds to
+# create its layout on a fresh disk. Restarting until it works beats a readiness
+# handshake nobody has to maintain.
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

@@ -34,10 +34,16 @@ images/
 │   ├── package.list          # xfsprogs (REQUIRED), attr, util-linux, nvme-cli, smartmontools
 │   ├── overlay/              # s3.container Quadlet, var-lib-s3.mount, format unit
 │   └── scripts/configure.sh  # build-time sanity checks only; nothing to enable
-└── s3-garage/                # FROM the base: Garage object store (NVMe = objects)
-    ├── Containerfile         # FROM localhost/fedora-rpi5:latest
-    ├── package.list          # xfsprogs (REQUIRED), util-linux, nvme-cli, awscli2
-    ├── overlay/              # garage.container Quadlet, garage.toml, mount + format units
+├── s3-garage/                # FROM the base: Garage object store (NVMe = objects)
+│   ├── Containerfile         # FROM localhost/fedora-rpi5:latest
+│   ├── package.list          # xfsprogs (REQUIRED), util-linux, nvme-cli, awscli2
+│   ├── overlay/              # garage.container Quadlet, garage.toml, mount + format units
+│   └── scripts/configure.sh  # build-time sanity checks only; nothing to enable
+└── zot/                      # FROM s3-garage: OCI registry whose blobs live in Garage
+    ├── parent                # "s3-garage" — stacks on that FLAVOR, not on the base
+    ├── Containerfile         # FROM localhost/fedora-rpi5-s3-garage:latest
+    ├── package.list          # skopeo, jq (both servers are containers, not RPMs)
+    ├── overlay/              # zot.container Quadlet, config.json, registry.network
     └── scripts/configure.sh  # build-time sanity checks only; nothing to enable
 ```
 
@@ -48,6 +54,7 @@ sudo ./fedora-build                        # base image (prompts for hostname + 
 sudo ./fedora-build cephfs                 # base + the cephfs layer
 sudo ./fedora-build s3-versity             # base + the versitygw S3 layer
 sudo ./fedora-build s3-garage              # base + the Garage S3 layer
+sudo ./fedora-build zot                    # base + s3-garage + the zot registry layer
 # the full non-interactive form — this is the one to reach for:
 sudo ./fedora-build cephfs --hostname cephfs01 --ssh-key ~/.ssh/id_ed25519.pub
 FEDORA_SKIP_BASE=1 sudo ./fedora-build cephfs   # reuse the base (fast iteration)
@@ -61,6 +68,9 @@ bash -n <script>                           # syntax-check a changed shell script
 ```
 
 Tag convention, shared by all three scripts: `localhost/fedora-rpi5[-<flavor>]:latest`.
+A flavor stacks on the base unless it ships a one-line `images/<flavor>/parent`
+naming another flavor (`images/zot/parent` = `s3-garage`); `fedora-build` then
+builds the chain bottom-up in one invocation and refuses a parent cycle.
 Overrides: `FEDORA_BASE` (the `FROM`, via `--build-arg BASE`), `FEDORA_TAG`,
 `FEDORA_BASE_TAG`, `FEDORA_SKIP_BASE`, `FEDORA_PLATFORM`, `FEDORA_IMAGE_BUILDER`,
 `PODMAN`. There is no test suite; a real build needs podman, network and pulls a
@@ -538,6 +548,70 @@ not repeated. What follows is only what differs.
 - **Upgrades:** v2.x point releases need no metadata migration ("no breaking
   changes"); a major bump needs `garage migrate` and only works between
   contiguous majors. Bump the tag in `garage.container` and rebuild.
+
+## The `zot` flavor
+
+An OCI registry (zot) whose blobs live in the Garage store from the `s3-garage`
+flavor. Both servers are Quadlets; registry on :5000, S3 on :9000.
+
+- **This is the only flavor that stacks on another flavor.** `images/zot/parent`
+  contains `s3-garage`, and `fedora-build`'s `build_layer()` walks that chain
+  bottom-up (base → s3-garage → zot) from one `./fedora-build zot`. It refuses a
+  parent cycle. Nothing else in the repo duplicates the Garage overlay, and
+  nothing should: `configure.sh` **dies** (not warns) if `garage.container` is
+  absent, because an image built on the plain base looks fine and boots into a
+  registry with no storage.
+- **It was asked for as Harbor, and Harbor cannot run here.** `goharbor/*` images
+  are single-arch **amd64** — verified on `harbor-core` v2.14.0 and v2.15.2 by
+  pulling the config blob (`"architecture":"amd64"`, no manifest list). The only
+  prebuilt arm64 component set is `bitnamilegacy/harbor-*` (max 2.13.2), Bitnami's
+  catalog frozen in Aug 2025 with no further security fixes — the same objection
+  this repo documents against MinIO, on the component holding your images. Do not
+  "restore" Harbor without building its ten images for arm64 first.
+- **`forcepathstyle: true` in `config.json` is load-bearing and the driver
+  defaults it to FALSE.** Without it the S3 driver uses virtual-hosted-style
+  addressing (`bucket.127.0.0.1:9000`), which needs wildcard DNS a LAN appliance
+  does not have, and every request fails. (zot's own docs table wrongly claims the
+  default is true; `getParameterAsBool(parameters, "forcepathstyle", false)` in
+  distribution's `s3-aws/s3.go` is the truth.)
+- **Garage covers what the registry S3 driver needs** — its compatibility matrix
+  marks `CopyObject`, `ListObjectsV2` **and `UploadPartCopy`** as implemented. The
+  last matters: distribution has no rename, so every finished upload is *copied*
+  from `_uploads/` to the blob path, and anything over
+  `multipartcopythresholdsize` (32 MB default) takes the `UploadPartCopy` path.
+  No threshold workaround is needed here; don't add one.
+- **The zot image HAS an entrypoint** (`/usr/local/bin/zot-linux-arm64`), unlike
+  Garage's FROM-scratch image, so `Exec=` is APPENDED to it rather than replacing
+  a CMD. `Exec=serve /etc/zot/config.json` is also the image's own default CMD;
+  it is spelled out to survive an upstream change.
+- **Use the full image, never `zot-minimal-*`.** Minimal parses the `extensions`
+  block and silently ignores it, so `search`/`ui` — the web UI — never appear and
+  the log says nothing. `configure.sh` and `test.sh` both check.
+- **zot with no `auth` section accepts ANONYMOUS PUSHES** from anything that can
+  reach :5000. The shipped config therefore configures htpasswd auth (bcrypt is
+  the only hash zot accepts, hence `httpd-tools` and `htpasswd -bB`) with
+  `anonymousPolicy: ["read"]`. Never drop the auth block to "simplify" the config.
+- **Host networking, deliberately.** `Network=host` lets the S3 endpoint be
+  `http://127.0.0.1:9000` (Garage's published port) with no shared network and no
+  container DNS, and puts zot on :5000 directly. The ceiling: a third service
+  means giving both a `registry.network` Quadlet and switching the endpoint to
+  `http://garage:3900` — which needs `garage.container` from the PARENT layer to
+  join that network, so it cannot be done from this layer alone.
+- **`dedupe` is off on purpose.** With it on, zot keeps a local boltdb cache that
+  the S3 contents depend on; off, every blob is self-contained in Garage and
+  `/var/lib/zot` (SD card) holds only derived state. Costs space in the store.
+- **No secrets in the image.** `/usr/libexec/zot-setup` reads Garage's own
+  `/etc/garage/env` (written by `garage-setup` on ITS first start, which is why
+  `Requires=garage.service` is not just about ordering) and re-exports the key as
+  `AWS_ACCESS_KEY_ID`/`AWS_SECRET_ACCESS_KEY` in `/etc/zot/env` — the S3 driver
+  uses the aws-sdk-go v1 default credential chain when `accesskey`/`secretkey` are
+  absent from the config. The admin password goes to `/etc/zot/credentials`, which
+  is NOT mounted into the container (the Quadlet mounts `config.json` and
+  `htpasswd` file by file, not the directory). `test.sh` fails the image if any of
+  the three appears in it.
+- **`config.json` is JSON, so it carries none of this repo's usual comments.**
+  The reasoning lives in `images/zot/scripts/configure.sh`, which re-checks every
+  field with `jq` at build time; keep the two in step.
 
 ## Conventions
 

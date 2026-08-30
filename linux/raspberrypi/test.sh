@@ -270,6 +270,72 @@ if [ -e "$gq" ]; then
 else
   echo "(no garage quadlet — as expected unless this is the s3-garage image)"
 fi
+
+sep "zot flavor"
+zq=/usr/share/containers/systemd/zot.container
+zc=/etc/zot/config.json
+if [ -e "$zq" ]; then
+  # This layer stacks on s3-garage: the registry has no storage of its own.
+  [ -e /usr/share/containers/systemd/garage.container ] \
+    && ok "the Garage layer is underneath (the registry has an S3 store to use)" \
+    || bad "NO garage.container — this image was built on the wrong base and the registry has no storage"
+  grep -q '^\[Install\]' "$zq" \
+    && ok "zot.container has [Install] (Quadlet enables it at boot)" \
+    || bad "zot.container has NO [Install] — the registry would never start at boot"
+  grep -qE '^Image=.*zot-linux-arm64:v[0-9]' "$zq" \
+    && ok "zot image pinned to an arm64 version tag" \
+    || bad "zot.container does not pin an arm64 zot tag — Harbor has no arm64 image at all and :latest is not a strategy"
+  # The minimal image parses the extensions block and then ignores it: no search,
+  # no web UI, nothing in the log to say why.
+  grep -q '^Image=.*zot-minimal' "$zq" \
+    && bad "the MINIMAL zot image is pinned — it silently ignores [extensions], so there is no web UI" \
+    || ok "the full zot image (search + UI extensions are honoured)"
+  # This image HAS an entrypoint, unlike Garage's, so Exec= appends to it.
+  grep -q '^Exec=serve ' "$zq" \
+    && ok "Exec= names the config (appended to the image's entrypoint)" \
+    || bad "Exec= does not 'serve' a config — zot would fall back to whatever CMD the image ships"
+  grep -q '^Requires=garage.service' "$zq" \
+    && ok "zot.service requires garage.service (no S3, no registry)" \
+    || bad "zot.container does not Require= garage.service — it would start against a dead S3 endpoint"
+  [ -x /usr/libexec/zot-setup ] && ok "setup/credential script present" || bad "/usr/libexec/zot-setup MISSING"
+  command -v htpasswd >/dev/null 2>&1 && ok "htpasswd (mints the admin account; bcrypt is the only hash zot takes)" || bad "httpd-tools MISSING — zot-setup cannot create the admin account"
+  command -v skopeo >/dev/null 2>&1 && ok "skopeo (smoke-test the registry from the box)" || bad "skopeo MISSING"
+  if [ -f "$zc" ]; then
+    jq -e . "$zc" >/dev/null 2>&1 && ok "config.json is valid JSON" || bad "config.json is NOT valid JSON — zot exits at every start"
+    [ "$(jq -r '.storage.storageDriver.name' "$zc")" = s3 ] \
+      && ok "storage driver is s3 (blobs go to Garage, not the SD card)" \
+      || bad "storage driver is not s3 — the registry would fill the boot media"
+    # Garage has no wildcard DNS on a LAN, and the driver defaults this to false.
+    [ "$(jq -r '.storage.storageDriver.forcepathstyle' "$zc")" = true ] \
+      && ok "forcepathstyle = true (Garage cannot do virtual-host addressing)" \
+      || bad "forcepathstyle is not true — every S3 request would go to bucket.<endpoint> and fail"
+    [ "$(jq -r '.storage.storageDriver.secure' "$zc")" = false ] \
+      && ok "secure = false (Garage speaks plain HTTP on the loopback)" \
+      || bad "secure is not false — there is no TLS on the S3 endpoint to negotiate"
+    [ "$(jq -r '.storage.storageDriver | has("accesskey") or has("secretkey")' "$zc")" = false ] \
+      && ok "no S3 keys in config.json (taken from /etc/zot/env on the device)" \
+      || bad "SECRET BAKED INTO THE IMAGE: config.json carries accesskey/secretkey"
+    [ "$(jq -r '.http.auth.htpasswd.path // empty' "$zc")" = /etc/zot/htpasswd ] \
+      && ok "htpasswd auth configured (an unauthenticated zot lets anyone PUSH)" \
+      || bad "no htpasswd auth — with no auth section zot accepts anonymous pushes from the whole LAN"
+    # The endpoint must be Garage's published port, because both share the host netns.
+    ep=$(jq -r '.storage.storageDriver.regionendpoint' "$zc")
+    case "$ep" in
+      http://127.0.0.1:*) ok "S3 endpoint $ep (Garage's published port on the host netns)" ;;
+      *) bad "S3 endpoint is $ep — with Network=host, Garage is at 127.0.0.1, not a container name" ;;
+    esac
+    grep -q "^PublishPort=${ep##*:}:" /usr/share/containers/systemd/garage.container 2>/dev/null \
+      && ok "Garage publishes that port" \
+      || bad "garage.container does not publish port ${ep##*:} — the registry would talk to nothing"
+  else
+    bad "$zc MISSING — zot has no configuration and will not start"
+  fi
+  [ -e /etc/zot/env ] || [ -e /etc/zot/credentials ] || [ -e /etc/zot/htpasswd ] \
+    && bad "CREDENTIALS BAKED INTO THE IMAGE: /etc/zot/{env,credentials,htpasswd} must be generated on the device" \
+    || ok "no credentials in the image (minted on first start)"
+else
+  echo "(no zot quadlet — as expected unless this is the zot image)"
+fi
 sep "size"
 du -sh /usr 2>/dev/null | cut -f1
 PROBE
