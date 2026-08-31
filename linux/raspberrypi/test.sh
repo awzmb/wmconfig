@@ -73,6 +73,11 @@ sep "headless access"
 [ -e /usr/lib/systemd/system/multi-user.target.wants/NetworkManager.service ] && ok "NetworkManager enabled" || bad "NetworkManager NOT enabled — no network"
 [ -e /usr/lib/systemd/system/getty.target.wants/getty@tty1.service ] && ok "getty@tty1 enabled" || bad "getty@tty1 NOT enabled — no HDMI login prompt"
 
+sep "clock (the Pi 5 has no RTC)"
+[ -e /usr/lib/systemd/system/multi-user.target.wants/chronyd.service ] \
+  && ok "chronyd enabled — the clock gets corrected after boot" \
+  || bad "chronyd NOT enabled — the box boots with a past clock, and every TLS 'podman pull' fails as 'certificate is not yet valid'"
+
 sep "login user"
 u=core
 getent passwd $u >/dev/null && ok "$u user present" || bad "$u user MISSING"
@@ -294,9 +299,15 @@ if [ -e "$zq" ]; then
   grep -q '^Exec=serve ' "$zq" \
     && ok "Exec= names the config (appended to the image's entrypoint)" \
     || bad "Exec= does not 'serve' a config — zot would fall back to whatever CMD the image ships"
+  grep -q '^Wants=garage.service' "$zq" \
+    && ok "zot.service wants garage.service (ordered after it, but not cancelled by it)" \
+    || bad "zot.container does not Want= garage.service — it would start against a dead S3 endpoint"
   grep -q '^Requires=garage.service' "$zq" \
-    && ok "zot.service requires garage.service (no S3, no registry)" \
-    || bad "zot.container does not Require= garage.service — it would start against a dead S3 endpoint"
+    && bad "Requires=garage.service — a failed Garage start at boot CANCELS the registry's job permanently; use Wants= + After=" \
+    || ok "no Requires= on garage.service (a transient Garage failure cannot strand the registry)"
+  grep -q '^After=garage.service' "$zq" \
+    && ok "ordered after garage.service (its ExecStartPre writes the S3 credentials)" \
+    || bad "not ordered After= garage.service — zot-setup races the credentials Garage writes"
   [ -x /usr/libexec/zot-setup ] && ok "setup/credential script present" || bad "/usr/libexec/zot-setup MISSING"
   command -v htpasswd >/dev/null 2>&1 && ok "htpasswd (mints the admin account; bcrypt is the only hash zot takes)" || bad "httpd-tools MISSING — zot-setup cannot create the admin account"
   command -v skopeo >/dev/null 2>&1 && ok "skopeo (smoke-test the registry from the box)" || bad "skopeo MISSING"

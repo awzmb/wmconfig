@@ -15,9 +15,21 @@
 Description=OCI registry (zot), blobs stored in the local Garage S3 store
 Documentation=https://zotregistry.dev/
 # The registry keeps EVERYTHING in S3, so Garage is not an optional companion:
-# without it zot has no storage at all. Requires= also means /etc/garage/env
-# exists by the time zot-setup runs, which is where the S3 credentials come from.
-Requires=garage.service
+# without it zot has no storage at all.
+#
+# Wants=, NOT Requires=, and the difference is the whole reason this unit works.
+# Requires= binds the START JOBS together: if garage.service fails its initial
+# start — and a fresh Pi has several ways to lose that race, from the NVMe not
+# being ready to the first `podman pull` failing TLS validation because the
+# board has no RTC and boots with a past clock — systemd CANCELS zot's job with
+# "Dependency failed" and never revisits it. Garage then recovers on its own via
+# Restart=, and the registry stays dead until someone starts it by hand. Wants=
+# keeps the ordering and the pull-in, drops the cancellation, and lets
+# Restart=always below converge instead.
+#
+# Ordering still matters: garage.service's own ExecStartPre writes /etc/garage/env,
+# which is where zot-setup reads the S3 credentials from.
+Wants=garage.service
 After=garage.service network-online.target
 Wants=network-online.target
 

@@ -58,7 +58,11 @@ UI, but not the rest. If you need them, run Harbor on an amd64 box.
 
 ## Gotchas
 
-* `systemctl enable zot` **cannot work** — Quadlet; the `[Install]` section
+* **`Requires=` on `garage.service` is a trap, so the unit uses `Wants=`.** A
+  failed Garage start at boot would otherwise cancel zot's job permanently
+  ("Dependency failed for zot.service") and never retry it, leaving a running
+  Garage next to a dead registry.
+* **`systemctl enable zot` cannot work** — Quadlet; the `[Install]` section
   inside `zot.container` is the enablement. Same for `garage`.
 * **`forcepathstyle: true` is mandatory.** The S3 driver defaults it to *false*,
   and virtual-host addressing (`bucket.127.0.0.1:9000`) needs DNS a LAN

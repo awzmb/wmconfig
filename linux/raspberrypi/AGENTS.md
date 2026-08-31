@@ -205,6 +205,18 @@ with `bash -n` and reason about the Containerfiles.
   hostname, not NetworkManager. (An earlier `conf.d/10-dhcp-hostname.conf` was
   deleted as a no-op. If one is ever needed again, note that NM 1.52 renamed the
   key to `dhcp-send-hostname-v2` and *errors out* if the two disagree.)
+- **The Pi 5 has NO RTC, and that breaks container pulls, not just timestamps.**
+  It boots believing it is whenever the image was built, so every TLS handshake
+  fails certificate validity checks and the FIRST `podman pull` of any Quadlet
+  image dies with "certificate is not yet valid". The service then restart-loops
+  until the clock is corrected — which is why `chrony` is in the base
+  `package.list` and `chronyd.service` is enabled by the base `configure.sh`, not
+  by the flavors that happen to need it. Symptom to recognise in a journal:
+  entries dated months in the past, and a container that only came up minutes ago
+  on a box that booted long before. Do NOT "improve" this with
+  `chrony-wait.service` + `After=time-sync.target` on the container units: that
+  makes boot deterministic, but a box with no reachable NTP server then never
+  reaches `time-sync.target` and never starts its services at all.
 - **Service enablement is static** (`.wants` symlinks written into `/usr`),
   because `systemctl enable` is unreliable in an offline image build. Same for
   `getty@tty1`, which the container-derived base does not enable (containers have
@@ -287,9 +299,12 @@ with `bash -n` and reason about the Containerfiles.
 - **Fedora builds all Ceph packages for aarch64** (the spec's `ExcludeArch` is
   `i686 armv7hl` only). `cephadm`, `ceph-volume`, `ceph-mgr-cephadm` are noarch.
   Only `rbd_rwl_cache`/PMDK are disabled on arm64 — irrelevant for CephFS.
-- **chrony is enabled by this layer and is not optional.** The Pi 5 has NO RTC,
+- **chrony is not optional, and it now lives in the BASE.** The Pi 5 has NO RTC,
   so it boots with a bogus clock; Ceph monitors warn at 50 ms skew and refuse
-  quorum well before a whole-epoch offset.
+  quorum well before a whole-epoch offset. This layer still lists `chrony` and
+  still calls `enable_unit chronyd.service` — a harmless idempotent duplicate that
+  documents the hard requirement — but the base enables it for every flavor now,
+  because a past clock also fails TLS validation on the first `podman pull`.
 - **`fs.aio-max-nr` / `kernel.pid_max`** are raised in
   `overlay/etc/sysctl.d/90-ceph.conf`. The stock values make BlueStore OSDs fail
   with "aio submit got (11) Resource temporarily unavailable" under load.
@@ -580,6 +595,16 @@ flavor. Both servers are Quadlets; registry on :5000, S3 on :9000.
   from `_uploads/` to the blob path, and anything over
   `multipartcopythresholdsize` (32 MB default) takes the `UploadPartCopy` path.
   No threshold workaround is needed here; don't add one.
+- **`Wants=garage.service`, never `Requires=`.** This one has already bitten
+  once. `Requires=` couples the START JOBS: when garage.service fails its first
+  start — a fresh Pi has several ways to lose that race, including the first
+  `podman pull` failing TLS because the clock is in the past until chrony runs —
+  systemd cancels zot's job with `Dependency failed for zot.service` and NEVER retries it. Garage recovers
+  by itself through `Restart=always`, so you end up with a running Garage, a dead
+  registry, no `/etc/zot/credentials`, and a journal that only says "dependency".
+  `Wants=` + `After=` keeps the ordering (garage's own `ExecStartPre` writes
+  `/etc/garage/env`, which zot-setup reads) while letting `Restart=always`
+  converge. `configure.sh` and `test.sh` both fail on `Requires=` now.
 - **The zot image HAS an entrypoint** (`/usr/local/bin/zot-linux-arm64`), unlike
   Garage's FROM-scratch image, so `Exec=` is APPENDED to it rather than replacing
   a CMD. `Exec=serve /etc/zot/config.json` is also the image's own default CMD;

@@ -1,0 +1,41 @@
+#!/bin/bash
+
+IMAGE_NAME="localhost/android-tools:latest"
+USER_ID=$(id -u)
+GROUP_ID=$(id -g)
+
+# Bind-mounting the whole /dev/bus/usb tree (instead of --device) keeps
+# hot-plugged devices visible: adb/fastboot re-scan the directory, and a phone
+# rebooting into bootloader/recovery gets a new node without restarting the
+# container.
+#
+# --group-add keep-groups passes your host supplementary groups (plugdev/uucp)
+# through, so whatever udev rule grants you access on the host also applies
+# here. If `adb devices` shows "no permissions", the udev rule is missing on
+# the HOST - the container cannot fix that:
+#   /etc/udev/rules.d/51-android.rules
+#   SUBSYSTEM=="usb", ATTR{idVendor}=="18d1", MODE="0660", GROUP="plugdev"
+#
+# adb keys live in a named volume so the phone's "always allow from this
+# computer" survives --rm.
+podman volume create android_home >/dev/null 2>&1 || true
+
+# If the first arg is a directory, mount it as /workspace and drop it from the
+# args; otherwise keep args untouched (e.g. `android adb devices`).
+if [ -d "${1:-}" ]; then
+  WORKSPACE_DIR=$(realpath -- "$1")
+  shift
+else
+  WORKSPACE_DIR=$(realpath -- "$PWD")
+fi
+
+podman run --rm -it \
+  --group-add keep-groups \
+  --userns=keep-id \
+  --user "${USER_ID}:${GROUP_ID}" \
+  --volume /dev/bus/usb:/dev/bus/usb \
+  --security-opt label=disable \
+  --volume android_home:/home/"$(whoami)"/.android \
+  --volume "${WORKSPACE_DIR}:/workspace:Z" \
+  --workdir /workspace \
+  "${IMAGE_NAME}" "$@"

@@ -236,6 +236,21 @@ enable_unit NetworkManager.service
 enable_unit sshd.service
 enable_unit podman.socket sockets.target
 
+# The Pi 5 has NO RTC: it boots believing it is whenever the image was built, and
+# nothing corrects that on its own. A clock in the past is not a cosmetic problem
+# on this box — every TLS handshake fails certificate validity checks, so the
+# first `podman pull` of any Quadlet image dies with "certificate is not yet
+# valid" and the service restart-loops until something fixes the time. Enable it
+# here rather than per flavor: every flavor that pulls a container (s3-versity,
+# s3-garage, zot) hits this, and the cephfs flavor needs it for mon clock skew.
+#
+# ponytail: chronyd only, NOT chrony-wait.service + After=time-sync.target on the
+# containers. That would make the ordering deterministic instead of convergent,
+# but it also means a box with no reachable NTP server never reaches
+# time-sync.target and therefore never starts its services at all — turning a
+# slow boot into a dead appliance the moment the internet is out.
+enable_unit chronyd.service
+
 # The container-derived base does not statically enable getty@tty1 (containers
 # have no VTs), so on real hardware the HDMI console gets no login prompt. Enable
 # the instance the way systemd itself does: a wants-symlink named for the
@@ -267,6 +282,7 @@ EOF
 for chk in \
 	"NetworkManager:/usr/lib/systemd/system/NetworkManager.service" \
 	"sshd:/usr/lib/systemd/system/sshd.service" \
+	"chronyd (no RTC on a Pi 5; a past clock breaks every TLS pull):/usr/lib/systemd/system/chronyd.service" \
 	"pi-firmware:/usr/lib/bootc-rpi-firmware/rpi-u-boot.bin" \
 	"growpart:/usr/bin/growpart" \
 	"growpart drop-in:/usr/lib/systemd/system/bootc-generic-growpart.service.d/10-grow-on-bare-metal.conf" \

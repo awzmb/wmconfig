@@ -231,7 +231,8 @@ Notes:
   fsync-heavy. On a node that also runs a mon, move it to the NVMe or expect slow
   ops and a worn-out card.
 * **Time sync is mandatory** — the Pi 5 has no RTC and monitors reject clock
-  skew, so `chronyd` is enabled by the flavor.
+  skew. `chronyd` is enabled by the base image for every flavor (a past clock
+  also breaks TLS on the first container pull); this flavor asks for it too.
 * `fs.aio-max-nr` and `kernel.pid_max` are raised in
   `/etc/sysctl.d/90-ceph.conf`; the defaults will make BlueStore OSDs fail.
 
@@ -546,6 +547,14 @@ proxy cache.** What you keep: push/pull for `podman`, `docker`, `skopeo` and
 
 Notes:
 
+* **The registry depends on Garage with `Wants=`, not `Requires=`.** That looks
+  weaker than it should be and is deliberate: `Requires=` couples the *start
+  jobs*, so one failed Garage start at boot cancels the registry's job with
+  "Dependency failed" and never retries it — Garage then recovers on its own and
+  you are left with a running S3 store, a dead registry and no
+  `/etc/zot/credentials`. `Wants=` plus `After=` keeps the ordering and lets
+  `Restart=always` converge. (One likely trigger on this board: until `chronyd`
+  corrects the clock, an image pull can fail TLS validation.)
 * **`forcepathstyle: true` is not optional.** The S3 driver defaults it to
   *false*, which means virtual-hosted-style addressing — `bucket.127.0.0.1:9000`
   — and that needs wildcard DNS no LAN appliance has. Every request fails without

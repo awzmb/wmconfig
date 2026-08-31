@@ -56,10 +56,16 @@ gen=/usr/lib/systemd/system-generators/podman-system-generator
 grep -q '^\[Install\]' "$quadlet" \
 	|| warn "zot.container has no [Install] section — the registry will NOT start at boot"
 
-# The registry has no storage of its own; if this dependency is dropped, zot
-# starts before Garage and fails against a dead S3 endpoint until it is lucky.
+# The registry has no storage of its own, so it must start after Garage — but
+# NOT with Requires=: when garage.service fails its first start (bad clock, failed
+# pull), Requires= cancels zot's job permanently and Restart= never gets a chance.
+grep -q '^Wants=garage.service' "$quadlet" \
+	|| warn "zot.container does not Want= garage.service — the registry would start with no storage behind it"
 grep -q '^Requires=garage.service' "$quadlet" \
-	|| warn "zot.container does not Require= garage.service — the registry would start with no storage behind it"
+	&& warn "zot.container uses Requires=garage.service — one failed Garage start at boot cancels the registry's job for good; use Wants= plus After=" \
+	|| true
+grep -q '^After=garage.service' "$quadlet" \
+	|| warn "zot.container is not ordered After= garage.service — zot-setup would race the credentials Garage writes"
 
 # Unlike Garage's image this one HAS an entrypoint, so Exec= is appended to it.
 grep -q '^Exec=serve ' "$quadlet" \

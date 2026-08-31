@@ -36,6 +36,11 @@ NetworkManager
 NetworkManager-wifi
 iproute
 iputils
+# REQUIRED, not a nicety: the Pi 5 has NO RTC, so it boots with the image's build
+# date and every TLS handshake fails ("certificate is not yet valid") until
+# something corrects the clock. That breaks the first `podman pull` of every
+# Quadlet image on the box. configure.sh enables chronyd.
+chrony
 
 # --- Remote access (this is a HEADLESS device) ---------------------------
 openssh-server
