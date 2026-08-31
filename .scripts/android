@@ -21,16 +21,10 @@ GROUP_ID=$(id -g)
 # device you already trusted on the host keeps working and you confirm at most
 # one dialog ever.
 #
-# "device unauthorized" with NO dialog on the phone is a PHONE-side block, not
-# a container problem. On Samsung (One UI 6+, incl. Z Fold 4) the usual cause is
-# Auto Blocker, which silently drops ADB auth requests:
-#   Settings -> Security and privacy -> Auto Blocker -> off
-#   (or just its "Block USB commands"/"Software updates by USB" sub-toggle)
-# Then, still on the phone:
+# "device unauthorized" with NO dialog on the phone means the phone is holding
+# a stale authorisation record. On the phone:
 #   Developer options -> Revoke USB debugging authorizations
-#   toggle USB debugging off/on, unlock the screen, replug,
-#   and rerun `android adb kill-server && android adb devices`.
-# The phone must be UNLOCKED for the dialog to render.
+#   then toggle USB debugging off/on, replug, and rerun `android adb devices`.
 mkdir -p "$HOME/.android"
 
 # If the first arg is a directory, mount it as /workspace and drop it from the
