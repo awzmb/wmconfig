@@ -3,12 +3,13 @@
 # Completion path: gcloud's zsh completer (gcloud.zsh) re-execs this wrapper
 # with _ARGCOMPLETE=1 and COMP_LINE/COMP_POINT in the env, and reads the
 # results from fd 8. gcloud's bundled argcomplete ignores
-# _ARGCOMPLETE_STDOUT_FILENAME, so fd 8 must reach the container. podman only
-# forwards fds 3..N+2 with --preserve-fds, so open dummies 3-7 and let it pass
-# the caller's fd 8 (numbers are preserved inside the container). fd 9 (debug)
-# is not forwarded on purpose: argcomplete falls back to stderr when it's
-# absent. No -t (no TTY during completion); the completer already sends
-# stdout/stderr to /dev/null, so only fd 8 carries data.
+# _ARGCOMPLETE_STDOUT_FILENAME, so it always writes to fd 8 -- but fd 8 only
+# has to exist *inside* the container. So open it there as a dup of stdout,
+# mute the real stdout, and hand the container's stdout to the caller's fd 8.
+# ponytail: no --preserve-fds and no dummy fds 3-7; podman's "fds 3..N+2 only"
+# rule was the whole reason this ever broke. fd 9 (debug) is left unset on
+# purpose: argcomplete falls back to stderr, which is muted. No -t (no TTY
+# during completion).
 # Credentials live in the named podman volume "gcloud-config", mounted at a
 # fixed path with CLOUDSDK_CONFIG pointing at it. Previously the mount target
 # was guessed from the host username (/home/$(whoami)/.config/gcloud); with
@@ -17,20 +18,25 @@
 # auth login" once a day. The same volume is shared by flux/k9s/helm/istioctl/
 # kubectl. ponytail: named volume, no host path, nothing to keep in sync.
 if [ -n "${_ARGCOMPLETE:-}" ]; then
-  exec 3>/dev/null 4>/dev/null 5>/dev/null 6>/dev/null 7>/dev/null
   exec podman run --rm -i \
     --user "$(id -u):$(id -g)" \
     --userns=keep-id \
     --volume "gcloud-config:/gcloud-config" \
     --env=CLOUDSDK_CONFIG=/gcloud-config \
     --env _ARGCOMPLETE --env _ARGCOMPLETE_SHELL --env _ARGCOMPLETE_IFS \
+    --env _ARGCOMPLETE_DFS --env _ARGCOMPLETE_SUPPRESS_SPACE \
     --env _ARGCOMPLETE_COMP_WORDBREAKS --env COMP_LINE --env COMP_POINT \
     --env COMP_TYPE \
-    --preserve-fds=6 \
-    localhost/gcloud:latest "$@"
+    --entrypoint /bin/sh \
+    localhost/gcloud:latest -c 'exec gcloud "$@" 8>&1 1>/dev/null 2>/dev/null' \
+    gcloud "$@" >&8
 fi
 
-podman run --rm -it \
+# ponytail: -t only when stdin is a real terminal; piped/non-TTY callers
+# (scripts, $(gcloud ...), CI) otherwise get "input device is not a TTY".
+[ -t 0 ] && TTY=-t || TTY=
+
+podman run --rm -i $TTY \
   --user "$(id -u):$(id -g)" \
   --userns=keep-id \
   --volume "gcloud-config:/gcloud-config" \

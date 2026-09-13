@@ -229,6 +229,16 @@ hl.animation({ leaf = "workspaces", enabled = true, speed = 2, bezier = "default
 -- speed is in 100ms units, so lower = snappier.
 
 ----------------------------------------------------------------------
+-- WINDOW RULES
+----------------------------------------------------------------------
+
+-- steam remembers window positions from its last session and drags them onto
+-- whatever monitor it feels like. initial_class so games (steam_app_*) are
+-- unaffected. ponytail: placement only, no workspace pin - add " silent" to the
+-- monitor string if the focus follow is unwanted.
+hl.window_rule({ match = { initial_class = "^(steam)$" }, monitor = primaryMonitor })
+
+----------------------------------------------------------------------
 -- KEYBINDS (sway-like, via hy3)
 ----------------------------------------------------------------------
 

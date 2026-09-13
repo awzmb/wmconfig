@@ -1,4 +1,4 @@
-FROM cgr.dev/chainguard/wolfi-base:latest@sha256:19f7a7b40a11c435311e3784bd134c6b6f19677462440da48f96d5c84eefd669 AS build
+FROM cgr.dev/chainguard/wolfi-base:latest@sha256:918a593b8268c222afd4e2c4f06860ac984e60719b4697e4c71d796bc8fcd042 AS build
 
 RUN apk add --no-cache \
   ca-certificates \
@@ -20,7 +20,7 @@ RUN ARCH=$(uname -m) && \
   mv /download/coyote /usr/local/bin && \
   chmod +x /usr/local/bin/coyote
 
-FROM cgr.dev/chainguard/wolfi-base:latest@sha256:19f7a7b40a11c435311e3784bd134c6b6f19677462440da48f96d5c84eefd669
+FROM cgr.dev/chainguard/wolfi-base:latest@sha256:918a593b8268c222afd4e2c4f06860ac984e60719b4697e4c71d796bc8fcd042
 
 COPY --from=build /usr/local/bin/coyote /bin/coyote
 
