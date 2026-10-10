@@ -1,0 +1,12 @@
+#!/bin/sh
+
+podman run --rm -it --runtime=krun \
+  --annotation krun.ram_mib=4096 \
+  --annotation krun.cpus=4 \
+  --user "$(id -u):$(id -g)" \
+  --userns=keep-id \
+  --volume "$HOME/.config/copilot:/home/$(whoami)/.copilot:z" \
+  --volume "$(pwd):/home/$(whoami)/workspace:z" \
+  --workdir "/home/$(whoami)/workspace" \
+  --env=TERM=$(echo ${TERM}) \
+  localhost/copilot:latest "$@"
