@@ -158,6 +158,8 @@ RUN mkdir -p \
   chown -R "${USER_ID}:${GROUP_ID}" /var/lib/containers
 
 # fuse-overlayfs is what makes overlay storage work inside another container.
+# It needs /dev/fuse passed in; when that is missing the entrypoint below falls
+# back to the vfs driver.
 # ignore_chown_errors: if the outer namespace maps only a single UID, lchown for
 # any other UID would fail; ignoring is the standard rootless-in-container
 # workaround.
@@ -195,7 +197,26 @@ EOF
 # point at the directory baked in above.
 ENV XDG_RUNTIME_DIR=/var/lib/containers/tmp
 
+# Nested podman needs /dev/fuse for fuse-overlayfs and /dev/net/tun for pasta.
+# Neither is guaranteed: the host decides via --device. The overlay driver still
+# initialises without /dev/fuse and only fails once a container is created, so
+# storage.conf's driver_priority provides no fallback - the driver has to be
+# chosen up front, which is why this runs at start rather than at build.
+RUN tee /usr/bin/container-entrypoint <<'EOF' && chmod +x /usr/bin/container-entrypoint
+#!/bin/sh
+if [ ! -e /dev/fuse ]; then
+  # vfs needs no fuse and no privileges. It copies every layer instead of
+  # stacking them, so it is slower and heavier on disk - correctness over speed.
+  export STORAGE_DRIVER=vfs
+  echo "warn: /dev/fuse missing - nested podman falling back to vfs storage (slow). Pass --device /dev/fuse for overlay." >&2
+fi
+if [ ! -e /dev/net/tun ]; then
+  echo "warn: /dev/net/tun missing - pasta cannot create a netns, nested containers need --network host. Pass --device /dev/net/tun." >&2
+fi
+exec copilot "$@"
+EOF
+
 USER ${USERNAME}
 WORKDIR /home/${USERNAME}
 
-ENTRYPOINT ["copilot"]
+ENTRYPOINT ["/usr/bin/container-entrypoint"]
