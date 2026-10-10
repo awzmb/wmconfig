@@ -6,7 +6,7 @@ podman run --rm -i \
   --volume "gcloud-config:/gcloud-config" \
   --env=CLOUDSDK_CONFIG=/gcloud-config \
   --volume "$HOME/.kube:/home/$(whoami)/.kube:z" \
-  --volume "$(pwd):/workspace" \
+  --volume "$(pwd):/workspace:z" \
   --workdir "/workspace" \
   --env=KUBECONFIG=/home/$(whoami)/.kube/config \
   --env=TERM=$(echo ${TERM}) \
