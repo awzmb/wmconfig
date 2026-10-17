@@ -1,0 +1,10 @@
+#!/bin/sh
+
+podman run --rm -it \
+  --user "$(id -u):$(id -g)" \
+  --userns=keep-id \
+  --volume "$HOME/.config/opencode:/home/$(whoami)/.opencode:z" \
+  --volume "$(pwd):/home/$(whoami)/workspace:z" \
+  --workdir "/home/$(whoami)/workspace" \
+  --env=TERM=$(echo ${TERM}) \
+  localhost/opencode:latest "$@"

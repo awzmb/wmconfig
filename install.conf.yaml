@@ -49,6 +49,7 @@
       path: .w3m
     #~/.gitconfig: .gitconfig
     ~/.config/mc: .config/mc
+    ~/.config/opencode: .config/opencode
     ~/.config/MangoHud: .config/MangoHud
     ~/.config/kitty: .config/kitty
     ~/.config/foot: .config/foot

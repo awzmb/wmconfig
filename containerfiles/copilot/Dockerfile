@@ -1,6 +1,6 @@
 # pasta (passt) - rootless network backend for nested podman.# Wolfi has no passt package and podman >= 6.0 dropped slirp4netns support, so
 # build it from upstream.
-FROM cgr.dev/chainguard/wolfi-base:latest@sha256:c08875f557c44f2e376d40ab68a6674234a8eeef06a0d10fbe9d2db40bcdb531 AS pasta-build
+FROM cgr.dev/chainguard/wolfi-base:latest@sha256:256c88bb066424045021090932d50be93c8e3f2ce3586707702a401b146f3e43 AS pasta-build
 
 # Upstream lives on passt.top, not GitHub, so Renovate tracks it via git-tags
 # (`git ls-remote`). Tags are dates plus the short commit hash, hence the regex
@@ -26,7 +26,7 @@ RUN set -eux; \
   install -m755 passt passt.avx2 /out/; \
   cp -d pasta pasta.avx2 /out/
 
-FROM cgr.dev/chainguard/wolfi-base:latest@sha256:c08875f557c44f2e376d40ab68a6674234a8eeef06a0d10fbe9d2db40bcdb531 AS build
+FROM cgr.dev/chainguard/wolfi-base:latest@sha256:256c88bb066424045021090932d50be93c8e3f2ce3586707702a401b146f3e43 AS build
 
 RUN apk add --no-cache \
   ca-certificates \
@@ -37,7 +37,7 @@ ADD install-copilot.sh /tmp/install-copilot.sh
 
 RUN chmod +x /tmp/install-copilot.sh && /tmp/install-copilot.sh
 
-FROM cgr.dev/chainguard/wolfi-base:latest@sha256:c08875f557c44f2e376d40ab68a6674234a8eeef06a0d10fbe9d2db40bcdb531
+FROM cgr.dev/chainguard/wolfi-base:latest@sha256:256c88bb066424045021090932d50be93c8e3f2ce3586707702a401b146f3e43
 
 RUN apk add --no-cache \
   ca-certificates \
