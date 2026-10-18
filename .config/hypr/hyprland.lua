@@ -212,6 +212,9 @@ hl.config({
     accel_profile  = "flat",
     sensitivity    = 0, -- -1.0 to 1.0, 0 means no modification
     touchpad       = { natural_scroll = true },
+    -- touchscreen digitizer must match the panel's monitor transform (see
+    -- hl.monitor BOE YHB0AP23: transform 1), otherwise touches land offset.
+    touchdevice    = { transform = 1, output = "desc:BOE YHB0AP23" },
   },
 })
 
