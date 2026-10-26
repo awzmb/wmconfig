@@ -218,6 +218,30 @@ hl.config({
   },
 })
 
+-- apple magic trackpad 2. names are exactly what hyprctl devices reports - the
+-- trackpad exposes two interfaces and hyprland suffixes the duplicate. device
+-- blocks are inert when the device is absent, so no runtime detection needed.
+for _, name in ipairs({ "apple-inc.-magic-trackpad", "apple-inc.-magic-trackpad-1" }) do
+  hl.device({
+    name                    = name,
+    -- per-device override of the global flat profile: pointer accelerates with
+    -- finger speed, so the whole screen is reachable without lifting.
+    accel_profile           = "adaptive",
+    -- calibration knob: -1.0..1.0. raise if the trackpad still feels slow.
+    sensitivity             = -0.2,
+    natural_scroll          = true,
+    -- physical click only: the glass surface registers stray taps when resting
+    tap_to_click            = false,
+    -- 2/3 fingers anywhere = right/middle click, no corner zones
+    clickfinger_behavior    = true,
+    -- large high-res surface scrolls far too fast at 1.0
+    scroll_factor           = 0.4,
+    -- external device, never under the palms while typing
+    disable_while_typing    = false,
+    middle_button_emulation = false,
+  })
+end
+
 hl.curve("myBezier", { type = "bezier", points = { { 0.05, 0.9 }, { 0.1, 1.05 } } })
 
 hl.animation({ leaf = "windows", enabled = true, speed = 2, bezier = "default" })
