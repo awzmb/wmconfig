@@ -1,11 +1,11 @@
-FROM cgr.dev/chainguard/wolfi-base:latest@sha256:256c88bb066424045021090932d50be93c8e3f2ce3586707702a401b146f3e43 AS build
+FROM cgr.dev/chainguard/wolfi-base:latest@sha256:88a20e2d017bd20cdc0cb3910de603e7bea9512a6c351a8dd3c9df212ab03d73 AS build
 
 RUN apk add --no-cache python3 uv curl
 RUN VERSION=$(curl -fsSL https://api.github.com/repos/copier-org/copier/releases/latest | grep '"tag_name"' | cut -d'"' -f4 | sed 's/^v//') && \
   uv venv /opt/venv && \
   VIRTUAL_ENV=/opt/venv uv pip install --no-cache "copier==${VERSION}"
 
-FROM cgr.dev/chainguard/wolfi-base:latest@sha256:256c88bb066424045021090932d50be93c8e3f2ce3586707702a401b146f3e43
+FROM cgr.dev/chainguard/wolfi-base:latest@sha256:88a20e2d017bd20cdc0cb3910de603e7bea9512a6c351a8dd3c9df212ab03d73
 
 RUN apk add --no-cache \
   python3 \

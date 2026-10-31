@@ -14,7 +14,7 @@ ADD ./install-minio-client.sh /tmp/install-minio-client.sh
 RUN chmod +x /tmp/install-minio-client.sh && /tmp/install-minio-client.sh
 RUN chmod +x /tmp/install-incus-client.sh && /tmp/install-incus-client.sh
 
-FROM gcr.io/distroless/static-debian13:latest@sha256:58133991db06659feaabe0f4e97a35cebf15ef4ea08f8a4c6d2ee5f75e4aa6a0
+FROM gcr.io/distroless/static-debian13:latest@sha256:15f8637509792e05b97d83451b0b6ccfa4abd548f997e406ac1e72c87fe1fa78
 
 COPY --from=build /usr/local/bin/incus /usr/local/bin/incus
 COPY --from=build /usr/local/bin/minio /usr/local/bin/minio
