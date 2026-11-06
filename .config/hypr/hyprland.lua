@@ -11,8 +11,14 @@ hl.plugin.load("/usr/lib/libhy3.so")
 -- MONITORS
 ----------------------------------------------------------------------
 
--- primary display: workspaces default here, laptop panel is the fallback
-local primaryMonitor = "desc:Samsung Electric Company LS49AG95 HNTW800039"
+-- primary display: workspaces default here, laptop panel is the fallback.
+-- desc: is a prefix match, so this one string is the primary on both machines
+-- (LS49AG95 and Odyssey G95C). The monitor rules below use full descriptions so
+-- each ultrawide still gets its own mode.
+local primaryMonitor = "desc:Samsung Electric Company"
+-- every laptop panel across the supported machines (lid switch disables all of
+-- them; a rule for an absent output is a no-op)
+local laptopPanels = { "desc:BOE YHB0AP23", "desc:MS_ BW8" }
 
 -- fallback for anything not matched below
 hl.monitor({ output = "", mode = "preferred", position = "auto", scale = "auto" })
@@ -20,9 +26,14 @@ hl.monitor({ output = "", mode = "preferred", position = "auto", scale = "auto" 
 -- layout: QHX left of primary, laptop panel below it. auto-* placement lets
 -- Hyprland compute the offsets from the real (rotated, scaled) sizes, so the
 -- edges actually touch - directional monitor moves only work when they do.
-hl.monitor({ output = primaryMonitor, mode = "3840x1080@120", position = "0x0", scale = "1" })
+hl.monitor({ output = "desc:Samsung Electric Company LS49AG95 HNTW800039", mode = "3840x1080@120", position = "0x0", scale =
+"1" })
 hl.monitor({ output = "desc:QHX GF340H", mode = "highres", position = "auto-left", scale = "1", transform = 3 })
 hl.monitor({ output = "desc:BOE YHB0AP23", mode = "1600x2560@120", position = "auto-down", scale = "2", transform = 1 })
+-- second machine: Odyssey G95C primary, its laptop panel below it
+hl.monitor({ output = "desc:Samsung Electric Company Odyssey G95C HNTYA00632", mode = "3840x1080@239.761", position =
+"0x0", scale = "1" })
+hl.monitor({ output = "desc:MS_ BW8", mode = "2560x1600@60", position = "auto-down", scale = "1.6" })
 
 ----------------------------------------------------------------------
 -- PROGRAMS
@@ -359,13 +370,13 @@ end
 
 -- laptop lid. `hyprctl keyword` is gone in 0.57; hl.monitor() works at runtime and
 -- merges into the existing rule, so re-enabling keeps mode/position/scale/transform.
-local laptopPanel = "desc:BOE YHB0AP23"
-
 local function setLaptopPanel(disabled)
   -- hl.get_monitors() lists only enabled, non-mirror monitors: undocked it's just
   -- the panel, and blanking the last screen leaves nowhere to put the windows.
   if disabled and #hl.get_monitors() < 2 then return end
-  hl.monitor({ output = laptopPanel, disabled = disabled })
+  for _, panel in ipairs(laptopPanels) do
+    hl.monitor({ output = panel, disabled = disabled })
+  end
 end
 
 hl.bind("switch:off:Lid Switch", function() setLaptopPanel(false) end, { locked = true })
