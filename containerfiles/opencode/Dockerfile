@@ -1,6 +1,6 @@
 # pasta (passt) - rootless network backend for nested podman.# Wolfi has no passt package and podman >= 6.0 dropped slirp4netns support, so
 # build it from upstream.
-FROM cgr.dev/chainguard/wolfi-base:latest@sha256:88a20e2d017bd20cdc0cb3910de603e7bea9512a6c351a8dd3c9df212ab03d73 AS pasta-build
+FROM cgr.dev/chainguard/wolfi-base:latest@sha256:629d9acaceda7746cd9293365eb0d8e8fabf74e91830b05470cfbee20b53f447 AS pasta-build
 
 # Upstream lives on passt.top, not GitHub, so Renovate tracks it via git-tags
 # (`git ls-remote`). Tags are dates plus the short commit hash, hence the regex
@@ -26,7 +26,7 @@ RUN set -eux; \
   install -m755 passt passt.avx2 /out/; \
   cp -d pasta pasta.avx2 /out/
 
-FROM cgr.dev/chainguard/wolfi-base:latest@sha256:88a20e2d017bd20cdc0cb3910de603e7bea9512a6c351a8dd3c9df212ab03d73
+FROM cgr.dev/chainguard/wolfi-base:latest@sha256:629d9acaceda7746cd9293365eb0d8e8fabf74e91830b05470cfbee20b53f447
 
 RUN apk add --no-cache \
   ca-certificates \

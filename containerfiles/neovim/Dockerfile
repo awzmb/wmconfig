@@ -1,4 +1,4 @@
-FROM cgr.dev/chainguard/wolfi-base:latest@sha256:88a20e2d017bd20cdc0cb3910de603e7bea9512a6c351a8dd3c9df212ab03d73
+FROM cgr.dev/chainguard/wolfi-base:latest@sha256:629d9acaceda7746cd9293365eb0d8e8fabf74e91830b05470cfbee20b53f447
 
 # Layer 1: System Packages & Setup
 # Wolfi ships apk with the signing keys and repo preconfigured, so no
@@ -60,7 +60,6 @@ RUN apk add --no-cache \
   # --- Language Support: Golang (gopls installed by Mason below) ---
   go \
   # --- Language Support: Terraform/Terragrunt ---
-  terraform \
   opentofu \
   terragrunt
 

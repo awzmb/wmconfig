@@ -66,7 +66,6 @@ hl.env("TERMINAL", terminal)
 ----------------------------------------------------------------------
 
 hl.on("hyprland.start", function()
-  hl.exec_cmd("waybar")
   hl.exec_cmd("dunst")
   hl.exec_cmd("hypridle")
   hl.exec_cmd("nm-applet --indicator")
@@ -82,7 +81,12 @@ hl.on("hyprland.start", function()
   hl.exec_cmd("systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP")
   -- xdg-desktop-portal.service has Requisite=graphical-session.target; launching
   -- Hyprland straight from a TTY never starts it, so screensharing silently dies.
-  hl.exec_cmd("systemctl --user start hyprland-session.target")
+  -- Debian/Ubuntu ship waybar.service wanted by graphical-session.target, so the
+  -- target would start a second bar on top of ours. Runtime-mask it first (lives
+  -- in /run, re-applied every session), then start the target, then our own bar.
+  -- Chained in one shell so the mask is in place before the target is started.
+  hl.exec_cmd("sh -c 'systemctl --user mask --runtime waybar.service 2>/dev/null; " ..
+    "systemctl --user start hyprland-session.target; exec waybar'")
 
   hl.exec_cmd("hyprctl setcursor " .. cursorTheme .. " " .. cursorSize)
 
